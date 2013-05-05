@@ -20,6 +20,7 @@ public class Contact {
 	private String productId;
 	private String display;
 	private Name name;
+	private String formattedName;
 
 	public Contact(URL url) throws IOException, UnknownObjectException {
 		parse(url);
@@ -45,6 +46,7 @@ public class Contact {
 			if (line.startsWith("URL;") && (known = true)) readUrl(line);
 			if (line.startsWith("PRODID:") && (known = true)) readProductId(line.substring(7));
 			if (line.startsWith("N:") && (known = true)) readName(line);
+			if (line.startsWith("FN:") && (known=true)) readFormattedName(line.substring(3));
 
 			if (!known) {
 				System.err.println(sb.toString());
@@ -54,6 +56,11 @@ public class Contact {
 		in.close();
 		content.close();
 		connection.disconnect();
+	}
+
+	private void readFormattedName(String fn) {
+		if (fn.isEmpty()) return;
+		formattedName=fn;
 	}
 
 	private void readName(String line) throws InvalidFormatException, UnknownObjectException {
