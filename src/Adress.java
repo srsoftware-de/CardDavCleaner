@@ -39,30 +39,18 @@ public class Adress {
 	private void readAddr(String line) {
 		if (line.equals(";;;;;;")) return;
 		String[] parts = line.split(";");
-		if (!parts[0].isEmpty()) {
-			System.err.println("found "+parts[0]+" @0 in "+line);
-			throw new NotImplementedException();
-		}
-		if (!parts[1].isEmpty()) {
-			System.err.println("found "+parts[1]+" @1 in "+line);
-			throw new NotImplementedException();
-		}
-		if (!parts[2].isEmpty()) {
-			street=parts[2];
-		}
-		if (!parts[3].isEmpty()) {
-			city=parts[3];
-		}
-		if (!parts[4].isEmpty()) {
-			System.err.println("found "+parts[4]+" @4 in "+line);
-			throw new NotImplementedException();
-		}
-		if (!parts[5].isEmpty()) {
-			zip=parts[5];
-		}
-		if (parts.length>6){
-			System.err.println("found more than 6 parts in "+line);
-			throw new NotImplementedException();
+		for (int index=0; index<parts.length; index++){
+			String part=parts[index];
+			if (!part.isEmpty()){
+				switch (index){
+				case 2: street=part; break;
+				case 3: city=part; break;
+				case 5: zip=part; break;
+				default: 
+					System.err.println("found "+parts+" @"+index+" in "+line);
+					throw new NotImplementedException();				
+				}
+			}
 		}
 	}
 }

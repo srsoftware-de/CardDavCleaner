@@ -22,7 +22,8 @@ public class Contact {
 	private Name name;
 	private String formattedName;
 	private String uid;
-	private String title;	
+	private String title;
+	private boolean htmlMail;	
 
 	public Contact(URL url) throws UnknownObjectException, IOException  {
 		parse(url);
@@ -53,6 +54,7 @@ public class Contact {
 			if (line.startsWith("FN:") && (known=true)) readFormattedName(line.substring(3));
 			if (line.startsWith("ORG:") && (known = true)) readOrg(line);			
 			if (line.startsWith("TITLE:") && (known = true)) readTitle(line.substring(6));
+			if (line.startsWith("X-MOZILLA-HTML:") && (known=true)) readMailFormat(line.substring(15));
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known=true;
 			
 			
@@ -64,6 +66,10 @@ public class Contact {
 		in.close();
 		content.close();
 		connection.disconnect();
+	}
+
+	private void readMailFormat(String line) {
+		htmlMail=line.toUpperCase().equals("TRUE");
 	}
 
 	private void readTitle(String line) {
