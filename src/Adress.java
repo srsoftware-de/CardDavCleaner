@@ -24,6 +24,10 @@ public class Adress {
 				line=line.substring(9);
 				continue;
 			}
+			if (line.startsWith(";")){
+				line=line.substring(1);
+				continue;
+			}
 			throw new UnknownObjectException(line);
 		}
 		readAddr(line.substring(1));		
