@@ -31,10 +31,19 @@ public class Organization {
 		
 	}
 	
-
-	@Override
 	public String toString() {
-		return name;
+		StringBuffer sb=new StringBuffer();
+		sb.append("ORG:");
+		if (name!=null) sb.append(name);
+		sb.append(';');
+		if (sub1!=null)sb.append(sub1);
+		sb.append(';');
+		return sb.toString();
+	}
+
+
+	public boolean isEmpty() {
+		return (name==null) && (sub1==null);
 	}
 
 }

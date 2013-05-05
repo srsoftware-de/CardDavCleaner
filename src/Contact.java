@@ -24,12 +24,13 @@ public class Contact {
 	private Birthday birthday;	
 	private boolean htmlMail;
 	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
+	private String uid;
 
 	//private String revision;
 	private String note;
-	private String productId;
-	private String uid;
+	//private String productId;
 	private String photo;
+	private Organization org;
 
 	public Contact(URL url) throws UnknownObjectException, IOException  {
 		parse(url);
@@ -40,6 +41,8 @@ public class Contact {
 		sb.append("BEGIN:VCARD\n");
 
 		sb.append("VERSION:3.0\n");
+		sb.append("PRODID:-//SRSoftwae CalDavCleaner\n");
+		if (uid!=null) sb.append("UID:"+uid+"\n");
 		sb.append(newRevision()); sb.append("\n");
 		
 		sb.append("FN:"); if (formattedName!=null) sb.append(formattedName); // required for Version 3
@@ -49,6 +52,7 @@ public class Contact {
 		sb.append("\n");
 		
 		if (title!=null) sb.append("TITLE:"+title+"\n");
+		if (org!=null) sb.append(org+"\n");
 		if (role!=null) sb.append("ROLE:"+role+"\n");
 		if (birthday!=null) sb.append(birthday);
 		
@@ -70,6 +74,8 @@ public class Contact {
 			sb.append(url);
 			sb.append("\n");
 		}
+		if (note!=null) sb.append("NOTE:"+note+"\n");
+		if (photo!=null) sb.append(photo+"\n");
 		//TODO: verbleibende Felder einfügen
 		sb.append("END:VCARD\n");
 		return sb.toString();
@@ -113,7 +119,7 @@ public class Contact {
 			if (line.startsWith("BDAY") && (known = true)) readBirthday(line.substring(4));
 			if (line.startsWith("ROLE:") && (known = true)) readRole(line.substring(5));
 			if (line.startsWith("URL;") && (known = true)) readUrl(line);
-			if (line.startsWith("PRODID:") && (known = true)) readProductId(line.substring(7));
+			if (line.startsWith("PRODID:")) known = true; //readProductId(line.substring(7));
 			if (line.startsWith("N:") && (known = true)) readName(line);
 			if (line.startsWith("FN:") && (known=true)) readFormattedName(line.substring(3));
 			if (line.startsWith("ORG:") && (known = true)) readOrg(line);			
@@ -147,8 +153,8 @@ public class Contact {
 	}
 
 	private void readOrg(String line) throws InvalidFormatException, UnknownObjectException {
-		Organization org = new Organization(line);
-		
+		Organization org = new Organization(line);		
+		if (!org.isEmpty()) this.org=org;
 	}
 
 	private void readUID(String uid) {
@@ -167,10 +173,10 @@ public class Contact {
 
 	}
 
-	private void readProductId(String line) {
+	/*private void readProductId(String line) {
 		if (line.isEmpty()) return;
 		productId = line;
-	}
+	}*/
 
 	private void readUrl(String line) throws InvalidFormatException, UnknownObjectException {
 		Url url=new Url(line);
