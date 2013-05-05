@@ -19,12 +19,13 @@ public class Adress {
 		if (!line.startsWith("ADR;")) throw new InvalidFormatException("Adress does not start with \"ADR;\"");
 		line=line.substring(4);
 		while(!line.startsWith(":")){
-			if (line.startsWith("TYPE=HOME")){
+			String upper=line.toUpperCase();
+			if (upper.startsWith("TYPE=HOME")){
 				home=true;
 				line=line.substring(9);
 				continue;
 			} 
-			if (line.startsWith("TYPE=WORK")){
+			if (upper.startsWith("TYPE=WORK")){
 				work=true;
 				line=line.substring(9);
 				continue;
