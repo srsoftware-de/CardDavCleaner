@@ -116,8 +116,6 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		}
 	}
 
-
-
 	private String extractContactName(String line) {
 		String[] parts=line.split("/|\"");
 		for (String part:parts){
@@ -127,5 +125,4 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		}
 		return null;
 	}
-
 }

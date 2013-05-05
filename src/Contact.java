@@ -32,6 +32,18 @@ public class Contact {
 	public Contact(URL url) throws UnknownObjectException, IOException  {
 		parse(url);
 	}
+	
+	public String toString() {
+		StringBuffer sb=new StringBuffer();
+		sb.append("BEGIN:VCARD\n");
+		for (Adress adress:adresses){
+			sb.append(adress);
+		}
+		//TODO: verbleibende Felder einfügen
+		sb.append("END:VCARD\n");
+		return sb.toString();
+	}
+
 
 	private void parse(URL url) throws IOException, UnknownObjectException {
 		sb = new StringBuffer();
@@ -157,9 +169,4 @@ public class Contact {
 		Email mail = new Email(line);
 		if (mail.hasAdress()) mails.add(new Email(line));
 	}
-
-	public String toString() {
-		return sb.toString();
-	}
-
 }

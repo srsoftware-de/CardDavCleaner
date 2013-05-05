@@ -16,6 +16,27 @@ public class Adress {
 	private String state;
 	private String name;
 
+	public String toString() {
+		StringBuffer sb=new StringBuffer();
+		sb.append("ADR");
+		if (home) sb.append(";TYPE=HOME");
+		if (work) sb.append(";TYPE=WORK");
+		sb.append(':');
+		if (name!=null) sb.append(name);
+		sb.append(';');
+		if (street!=null) sb.append(street);
+		sb.append(';');
+		if (city!=null) sb.append(city);
+		sb.append(';');
+		if (state!=null) sb.append(state);
+		sb.append(';');
+		if (zip!=null) sb.append(zip);
+		sb.append(';');
+		if (country!=null) sb.append(country);
+		sb.append('\n');
+		return sb.toString();
+	}
+
 	public Adress(String content) throws UnknownObjectException, InvalidFormatException {
 		if (!content.startsWith("ADR;")) throw new InvalidFormatException("Adress does not start with \"ADR;\"");
 		String line=content.substring(4);
@@ -39,7 +60,7 @@ public class Adress {
 		}
 		readAddr(line.substring(1));		
 	}
-
+	
 	private void readAddr(String line) {
 		if (line.equals(";;;;;;")) return;
 		String[] parts = line.split(";");
