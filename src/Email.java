@@ -51,4 +51,15 @@ public class Email {
 	public boolean isEmpty() {
 		return adress==null;
 	}
+
+	public String adress() {
+		return adress;
+	}
+
+	public void merge(Email mail) throws InvalidAssignmentException {
+		if (!adress.equals(mail.adress)) throw new InvalidAssignmentException("Trying to merge two mails with different adresses!");
+		if (mail.home) home=true;
+		if (mail.work) work=true;
+
+	}
 }

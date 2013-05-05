@@ -6,7 +6,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -17,7 +20,7 @@ import com.sun.media.sound.InvalidFormatException;
 public class Contact {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
-	private TreeSet<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
+	private Collection<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
 	private TreeSet<Email> mails = new TreeSet<Email>(ObjectComparator.get());
 	private Name name;
 	private String formattedName;
@@ -34,6 +37,36 @@ public class Contact {
 	private String photo;
 	private Organization org;
 
+	public void merge(Contact contact) throws InvalidAssignmentException {
+		adresses.addAll(contact.adresses);
+		
+		/* merging phones by numbers */
+		TreeMap<String,Phone> phoneMap=new TreeMap<String, Phone>(ObjectComparator.get());
+		for (Phone phone:phones){
+			Phone existingPhone = phoneMap.get(phone.number());
+			if (existingPhone!=null){
+				existingPhone.merge(phone);
+			} else phoneMap.put(phone.number(), phone);
+		}
+		for (Phone phone:contact.phones){
+			Phone existingPhone = phoneMap.get(phone.number());
+			if (existingPhone!=null){
+				existingPhone.merge(phone);
+			} else phoneMap.put(phone.number(), phone);
+		}		
+		phones=phoneMap.values();
+		
+		TreeMap<String,Email> mailMap=new TreeMap<String,Email>(ObjectComparator.get());
+		for (Email mail:mails){
+			Email existingMail=mailMap.get(mail.adress());
+			if (existingMail!=null){
+				existingMail.merge(mail);
+			} else mailMap.put(mail.adress(), mail);
+		}
+		
+		throw new NotImplementedException();
+	}
+	
 	public Contact(URL url) throws UnknownObjectException, IOException  {
 		parse(url);
 	}
@@ -217,9 +250,5 @@ public class Contact {
 
 	public Name name() {
 		return name;
-	}
-
-	public void merge(Contact contact) {
-		throw new NotImplementedException();
 	}
 }

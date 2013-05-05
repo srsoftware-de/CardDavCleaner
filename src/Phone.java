@@ -89,4 +89,16 @@ public class Phone {
 	public boolean isEmpty() {
 		return (number==null);
 	}
+
+	public String number() {
+		return number;
+	}
+
+	public void merge(Phone phone) throws InvalidAssignmentException {
+		if (!number.equals(phone.number)) throw new InvalidAssignmentException("Trying to unite two phone number entries with different numbers!");
+		if (phone.home) home=true;
+		if (phone.work) work=true;
+		if (phone.cell)cell= true;
+		if (phone.fax) fax=true;
+	}
 }

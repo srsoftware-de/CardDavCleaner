@@ -88,7 +88,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		}
 	}
 
-	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException {
+	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password.toCharArray());
@@ -112,7 +112,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		scanContacts(host,contacts);
 	}
 
-	private void scanContacts(String host, Set<String> contacts) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException {
+	private void scanContacts(String host, Set<String> contacts) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
 		int total=contacts.size();
 		
 		TreeMap<String, Contact> names=new TreeMap<String, Contact>(ObjectComparator.get());
@@ -148,10 +148,10 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 
 	private boolean askForMege(String name, Contact contact, Contact contact2) {
 		VerticalPanel vp=new VerticalPanel();
-		vp.add(new JLabel("<html>The name \""+name+"\" is used by both following contacts:<br>"));
+		vp.add(new JLabel("The name \""+name+"\" is used by both following contacts:"));
 		HorizontalPanel hp=new HorizontalPanel();
-		hp.add(new JLabel("<html>"+contact.toString().replace("\n", "&nbsp<br>")));
-		hp.add(new JLabel("<html>"+contact2.toString().replace("\n", "<br>")));
+		hp.add(new JLabel("<html><br>"+contact.toString().replace("\n", "&nbsp<br>")));
+		hp.add(new JLabel("<html><br>"+contact2.toString().replace("\n", "<br>")));
 		hp.skalieren();
 		vp.add(hp);
 		vp.add(new JLabel("<html><br>Shall those contacts be merged?"));
