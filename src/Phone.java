@@ -29,6 +29,12 @@ public class Phone {
 				upper=line.toUpperCase();
 				continue;
 			}
+			if (upper.startsWith("\\,HOME")){
+				home=true;
+				line=line.substring(6);
+				upper=line.toUpperCase();
+				continue;
+			}
 			if (upper.startsWith("TYPE=CELL")){
 				cell=true;
 				line=line.substring(9);
