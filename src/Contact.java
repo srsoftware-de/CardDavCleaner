@@ -17,6 +17,8 @@ public class Contact {
 	private String revision;
 	private String note;
 	private TreeSet<Url> urls=new TreeSet<Url>(ObjectComparator.get());
+	private String productId;
+	private String nick;
 
 	public Contact(URL url) throws IOException, UnknownObjectException {
 		parse(url);
@@ -33,12 +35,14 @@ public class Contact {
 			boolean known=false;
 			if (line.equals("BEGIN:VCARD")) known=true;
 			if (line.startsWith("VERSION:")) known=true;
-			if (line.startsWith("ADR") && (known=true)) readAdress(line);
-			if (line.startsWith("TEL") && (known=true)) readPhone(line);
-			if (line.startsWith("EMAIL") && (known=true)) readMail(line);
+			if (line.startsWith("ADR:") && (known=true)) readAdress(line);
+			if (line.startsWith("TEL:") && (known=true)) readPhone(line);
+			if (line.startsWith("EMAIL:") && (known=true)) readMail(line);
 			if (line.startsWith("REV:") && (known=true)) readRevision(line.substring(4));
 			if (line.startsWith("NOTE:")&& (known=true)) readNote(line.substring(5));
-			if (line.startsWith("URL") && (known=true)) readUrl(line);
+			if (line.startsWith("URL:") && (known=true)) readUrl(line);
+			if (line.startsWith("PRODID:") && (known=true)) readProductId(line.substring(7));
+			if (line.startsWith("N:") && (known=true)) readNick(line.substring(2));
 			
 			if (!known) throw new UnknownObjectException("unknown entry/instruction found in vcard: "+line);
 			sb.append(line + "\n");
@@ -48,6 +52,16 @@ public class Contact {
 		connection.disconnect();		
 	}
 	
+	private void readNick(String line) {
+		if (line.isEmpty()) return;
+		nick=line;
+	}
+
+	private void readProductId(String line) {
+		if (line.isEmpty()) return;
+		productId=line;
+	}
+
 	private void readUrl(String line) throws InvalidFormatException, UnknownObjectException {
 		urls.add(new Url(line));
 		}
