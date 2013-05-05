@@ -49,6 +49,8 @@ public class Contact {
 			if (line.startsWith("PRODID:") && (known = true)) readProductId(line.substring(7));
 			if (line.startsWith("N:") && (known = true)) readName(line);
 			if (line.startsWith("FN:") && (known=true)) readFormattedName(line.substring(3));
+			if (line.startsWith("ORG:") && (known = true)) readOrg(line);
+			
 
 			if (!known) {
 				System.err.println(sb.toString());
@@ -58,6 +60,11 @@ public class Contact {
 		in.close();
 		content.close();
 		connection.disconnect();
+	}
+
+	private void readOrg(String line) throws InvalidFormatException, UnknownObjectException {
+		Organization org = new Organization(line);
+		
 	}
 
 	private void readUID(String uid) {
