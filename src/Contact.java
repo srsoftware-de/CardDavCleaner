@@ -21,6 +21,7 @@ public class Contact {
 	private String display;
 	private Name name;
 	private String formattedName;
+	private String uid;	
 
 	public Contact(URL url) throws IOException, UnknownObjectException {
 		parse(url);
@@ -39,6 +40,7 @@ public class Contact {
 			if (line.equals("BEGIN:VCARD")) known = true;
 			if (line.startsWith("VERSION:")) known = true;
 			if (line.startsWith("ADR;") && (known = true)) readAdress(line);
+			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
 			if (line.startsWith("TEL;") && (known = true)) readPhone(line);
 			if (line.startsWith("EMAIL;") && (known = true)) readMail(line);
 			if (line.startsWith("REV:") && (known = true)) readRevision(line.substring(4));
@@ -56,6 +58,11 @@ public class Contact {
 		in.close();
 		content.close();
 		connection.disconnect();
+	}
+
+	private void readUID(String uid) {
+		if (uid.isEmpty()) return;
+		this.uid=uid;
 	}
 
 	private void readFormattedName(String fn) {
