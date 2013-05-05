@@ -25,7 +25,7 @@ public class Contact {
 	private boolean htmlMail;
 	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
 
-	private String revision;
+	//private String revision;
 	private String note;
 	private String productId;
 	private String uid;
@@ -108,7 +108,7 @@ public class Contact {
 			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
 			if (line.startsWith("TEL;") && (known = true)) readPhone(line);
 			if (line.startsWith("EMAIL;") && (known = true)) readMail(line);
-			if (line.startsWith("REV:") && (known = true)) readRevision(line.substring(4));
+			if (line.startsWith("REV:")) known = true;//readRevision(line.substring(4));
 			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
 			if (line.startsWith("BDAY") && (known = true)) readBirthday(line.substring(4));
 			if (line.startsWith("ROLE:") && (known = true)) readRole(line.substring(5));
@@ -187,10 +187,10 @@ public class Contact {
 		role = line.replace("\\n", "\n");
 	}
 
-	private void readRevision(String line) {
+/*	private void readRevision(String line) {
 		if (line.isEmpty()) return;
 		revision = line;
-	}
+	}*/
 
 	private void readPhone(String line) throws InvalidFormatException, UnknownObjectException {
 		Phone phone = new Phone(line);
