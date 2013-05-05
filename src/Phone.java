@@ -58,7 +58,7 @@ public class Phone {
 
 	private void readPhone(String line) {
 		if (line.isEmpty())return;
-		line=line.replace(" ", "");
+		line=line.replace(" ", "").replace("/", "");
 		for (char c:line.toCharArray()){
 			if (!Character.isDigit(c) && c!='+') {
 				System.err.println(line);
