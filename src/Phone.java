@@ -47,6 +47,11 @@ public class Phone {
 				line=line.substring(9);
 				continue;
 			}
+			if (upper.startsWith("\\,WORK")){
+				work=true;
+				line=line.substring(6);
+				continue;
+			}
 			if (line.startsWith(";")){
 				line=line.substring(1);
 				continue;
