@@ -4,17 +4,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
+
+import javax.lang.model.element.UnknownElementException;
 
 public class Contact {
 	private StringBuffer sb;
 	private TreeSet<Adress> adresses=new TreeSet<Adress>();
 
-	public Contact(URL url) throws IOException {
+	public Contact(URL url) throws IOException, UnknownObjectException {
 		parse(url);
 	}
 
-	private void parse(URL url) throws IOException {
+	private void parse(URL url) throws IOException, UnknownObjectException {
 		sb=new StringBuffer();
 
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -22,18 +25,21 @@ public class Contact {
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
 		String line;
 		while ((line = in.readLine()) != null) {
-			if (line.startsWith("ADR")) readAdress(line);
-			System.out.println(line);
+			boolean known=false;
+			if (line.equals("BEGIN:VCARD")) known=true;
+			if (line.startsWith("VERSION:")) known=true;
+			if (line.startsWith("ADR") && (known=true)) readAdress(line);
+			
+			if (!known) throw new UnknownObjectException("unknown entry/instruction found in vcard: "+line);
 			sb.append(line + "\n");
 		}
 		in.close();
 		content.close();
-		connection.disconnect();
-System.exit(0);
+		connection.disconnect();		
 	}
 	
 	private void readAdress(String line) {
-		
+		adresses.add(new Adress(line));
 	}
 
 	public String toString() {		

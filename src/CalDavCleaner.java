@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -76,16 +77,22 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		try {
 			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getPassword()));
-		} catch (MalformedURLException e) {
+		} catch (MalformedURLException e) {			
 			e.printStackTrace();
+			System.exit(0);
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(0);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			System.exit(0);
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+			System.exit(0);
 		}
 	}
 
-	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException {
+	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException {
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password.toCharArray());
@@ -109,7 +116,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		scanContacts(host,contacts);
 	}
 
-	private void scanContacts(String host, Vector<String> contacts) throws IOException, InterruptedException {
+	private void scanContacts(String host, Vector<String> contacts) throws IOException, InterruptedException, UnknownObjectException {
 		for (String contactName:contacts){
 			Contact contact=new Contact(new URL(host+contactName));
 			System.out.println(contact);
