@@ -12,6 +12,8 @@ public class Adress {
 	private String street;
 	private String city;
 	private String zip;
+	private String country;
+	private String state;
 
 	public Adress(String line) throws UnknownObjectException, InvalidFormatException {
 		if (!line.startsWith("ADR;")) throw new InvalidFormatException("Adress does not start with \"ADR;\"");
@@ -45,9 +47,11 @@ public class Adress {
 				switch (index){
 				case 2: street=part; break;
 				case 3: city=part; break;
+				case 4: state=part; break;
 				case 5: zip=part; break;
+				case 6: country=part; break;
 				default: 
-					System.err.println("found "+parts+" @"+index+" in "+line);
+					System.err.println("found "+part+" @"+index+" in "+line);
 					throw new NotImplementedException();				
 				}
 			}
