@@ -15,29 +15,35 @@ public class Phone {
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
 		if (!content.startsWith("TEL;")) throw new InvalidFormatException("Phone does not start with \"TEL;\"");
 		String line=content.substring(4);
+		String upper=line.toUpperCase();
 		while(!line.startsWith(":")){
-			if (line.startsWith("TYPE=FAX")){
+			if (upper.startsWith("TYPE=FAX")){
 				fax=true;
 				line=line.substring(8);
+				upper=line.toUpperCase();
 				continue;
 			}
-			if (line.startsWith("TYPE=HOME")){
+			if (upper.startsWith("TYPE=HOME")){
 				home=true;
 				line=line.substring(9);
+				upper=line.toUpperCase();
 				continue;
 			}
-			if (line.startsWith("TYPE=CELL")){
+			if (upper.startsWith("TYPE=CELL")){
 				cell=true;
 				line=line.substring(9);
+				upper=line.toUpperCase();
 				continue;
 			}
-			if (line.startsWith("TYPE=WORK")){
+			if (upper.startsWith("TYPE=WORK")){
 				work=true;
 				line=line.substring(9);
+				upper=line.toUpperCase();
 				continue;
 			}
 			if (line.startsWith(";")){
 				line=line.substring(1);
+				upper=line.toUpperCase();
 				continue;
 			}
 			throw new UnknownObjectException(line+" in "+content);
