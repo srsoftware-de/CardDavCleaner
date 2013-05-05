@@ -53,6 +53,7 @@ public class Contact {
 			if (line.startsWith("FN:") && (known=true)) readFormattedName(line.substring(3));
 			if (line.startsWith("ORG:") && (known = true)) readOrg(line);			
 			if (line.startsWith("TITLE:") && (known = true)) readTitle(line.substring(6));
+			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known=true;
 			
 			
 			if (!known) {

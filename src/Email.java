@@ -14,15 +14,18 @@ public class Email {
 	public Email(String content) throws UnknownObjectException, InvalidFormatException {
 		if (!content.startsWith("EMAIL;")) throw new InvalidFormatException("Mail adress does not start with \"EMAIL;\"");
 		String line = content.substring(6);
+		String upper = line.toUpperCase();
 		while(!line.startsWith(":")){
-			if (line.startsWith("TYPE=WORK")){
+			if (upper.startsWith("TYPE=WORK")){
 				work=true;
 				line=line.substring(9);
+				upper = line.toUpperCase();
 				continue;
 			}
-			if (line.startsWith("TYPE=HOME")){
+			if (upper.startsWith("TYPE=HOME")){
 				home=true;
 				line=line.substring(9);
+				upper = line.toUpperCase();
 				continue;
 			} 
 			if (line.startsWith(";")){
