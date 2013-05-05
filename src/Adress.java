@@ -14,6 +14,7 @@ public class Adress {
 	private String zip;
 	private String country;
 	private String state;
+	private String name;
 
 	public Adress(String content) throws UnknownObjectException, InvalidFormatException {
 		if (!content.startsWith("ADR;")) throw new InvalidFormatException("Adress does not start with \"ADR;\"");
@@ -46,6 +47,7 @@ public class Adress {
 			String part=parts[index];
 			if (!part.isEmpty()){
 				switch (index){
+				case 1: name=part; break;
 				case 2: street=part; break;
 				case 3: city=part; break;
 				case 4: state=part; break;
