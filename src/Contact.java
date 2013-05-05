@@ -11,84 +11,88 @@ import com.sun.media.sound.InvalidFormatException;
 
 public class Contact {
 	private StringBuffer sb;
-	private TreeSet<Adress> adresses=new TreeSet<Adress>(ObjectComparator.get());
-	private TreeSet<Phone> phones=new TreeSet<Phone>(ObjectComparator.get());
-	private TreeSet<Email> mails=new TreeSet<Email>(ObjectComparator.get());
+	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
+	private TreeSet<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
+	private TreeSet<Email> mails = new TreeSet<Email>(ObjectComparator.get());
 	private String revision;
 	private String note;
-	private TreeSet<Url> urls=new TreeSet<Url>(ObjectComparator.get());
+	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
 	private String productId;
-	private String nick;
+	private String display;
+	private Name name;
 
 	public Contact(URL url) throws IOException, UnknownObjectException {
 		parse(url);
 	}
 
 	private void parse(URL url) throws IOException, UnknownObjectException {
-		sb=new StringBuffer();
+		sb = new StringBuffer();
 
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
 		String line;
 		while ((line = in.readLine()) != null) {
-			boolean known=false;
-			if (line.equals("BEGIN:VCARD")) known=true;
-			if (line.startsWith("VERSION:")) known=true;
-			if (line.startsWith("ADR:") && (known=true)) readAdress(line);
-			if (line.startsWith("TEL:") && (known=true)) readPhone(line);
-			if (line.startsWith("EMAIL:") && (known=true)) readMail(line);
-			if (line.startsWith("REV:") && (known=true)) readRevision(line.substring(4));
-			if (line.startsWith("NOTE:")&& (known=true)) readNote(line.substring(5));
-			if (line.startsWith("URL:") && (known=true)) readUrl(line);
-			if (line.startsWith("PRODID:") && (known=true)) readProductId(line.substring(7));
-			if (line.startsWith("N:") && (known=true)) readNick(line.substring(2));
-			
-			if (!known) throw new UnknownObjectException("unknown entry/instruction found in vcard: "+line);
 			sb.append(line + "\n");
+			boolean known = false;
+			if (line.equals("BEGIN:VCARD")) known = true;
+			if (line.startsWith("VERSION:")) known = true;
+			if (line.startsWith("ADR;") && (known = true)) readAdress(line);
+			if (line.startsWith("TEL;") && (known = true)) readPhone(line);
+			if (line.startsWith("EMAIL;") && (known = true)) readMail(line);
+			if (line.startsWith("REV:") && (known = true)) readRevision(line.substring(4));
+			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
+			if (line.startsWith("URL;") && (known = true)) readUrl(line);
+			if (line.startsWith("PRODID:") && (known = true)) readProductId(line.substring(7));
+			if (line.startsWith("N:") && (known = true)) readName(line);
+
+			if (!known) {
+				System.err.println(sb.toString());
+				throw new UnknownObjectException("unknown entry/instruction found in vcard: " + line);
+			}
 		}
 		in.close();
 		content.close();
-		connection.disconnect();		
+		connection.disconnect();
 	}
-	
-	private void readNick(String line) {
-		if (line.isEmpty()) return;
-		nick=line;
+
+	private void readName(String line) {
+		name=new Name(line);
+
 	}
 
 	private void readProductId(String line) {
 		if (line.isEmpty()) return;
-		productId=line;
+		productId = line;
 	}
 
 	private void readUrl(String line) throws InvalidFormatException, UnknownObjectException {
 		urls.add(new Url(line));
-		}
+	}
 
 	private void readNote(String line) {
 		if (line.isEmpty()) return;
-		note=line;
+		note = line;
 	}
 
 	private void readRevision(String line) {
 		if (line.isEmpty()) return;
-		revision=line;		
+		revision = line;
 	}
 
-	private void readPhone(String line) throws InvalidFormatException, UnknownObjectException {		
+	private void readPhone(String line) throws InvalidFormatException, UnknownObjectException {
 		phones.add(new Phone(line));
 	}
 
-	private void readAdress(String line) throws UnknownObjectException, InvalidFormatException {		
+	private void readAdress(String line) throws UnknownObjectException, InvalidFormatException {
 		adresses.add(new Adress(line));
 	}
 
-	private void readMail(String line) throws UnknownObjectException, InvalidFormatException {		
+	private void readMail(String line) throws UnknownObjectException, InvalidFormatException {
 		mails.add(new Email(line));
 	}
 
-	public String toString() {		
+	public String toString() {
 		return sb.toString();
 	}
 
