@@ -61,6 +61,6 @@ public class Name {
 	}
 
 	public String first() {
-		return last;
+		return first;
 	}
 }
