@@ -12,6 +12,7 @@ import com.sun.media.sound.InvalidFormatException;
 public class Contact {
 	private StringBuffer sb;
 	private TreeSet<Adress> adresses=new TreeSet<Adress>(ObjectComparator.get());
+	private TreeSet<Phone> phones=new TreeSet<Phone>(ObjectComparator.get());
 
 	public Contact(URL url) throws IOException, UnknownObjectException {
 		parse(url);
@@ -29,6 +30,7 @@ public class Contact {
 			if (line.equals("BEGIN:VCARD")) known=true;
 			if (line.startsWith("VERSION:")) known=true;
 			if (line.startsWith("ADR") && (known=true)) readAdress(line);
+			if (line.startsWith("TEL") && (known=true)) readPhone(line);
 			
 			if (!known) throw new UnknownObjectException("unknown entry/instruction found in vcard: "+line);
 			sb.append(line + "\n");
@@ -38,6 +40,10 @@ public class Contact {
 		connection.disconnect();		
 	}
 	
+	private void readPhone(String line) throws InvalidFormatException, UnknownObjectException {		
+		phones.add(new Phone(line));
+	}
+
 	private void readAdress(String line) throws UnknownObjectException, InvalidFormatException {		
 		adresses.add(new Adress(line));
 	}
