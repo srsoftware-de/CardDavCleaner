@@ -11,7 +11,7 @@ import com.sun.media.sound.InvalidFormatException;
 
 public class Contact {
 	private StringBuffer sb;
-	private TreeSet<Adress> adresses=new TreeSet<Adress>();
+	private TreeSet<Adress> adresses=new TreeSet<Adress>(ObjectComparator.get());
 
 	public Contact(URL url) throws IOException, UnknownObjectException {
 		parse(url);
@@ -38,7 +38,7 @@ public class Contact {
 		connection.disconnect();		
 	}
 	
-	private void readAdress(String line) throws UnknownObjectException, InvalidFormatException {
+	private void readAdress(String line) throws UnknownObjectException, InvalidFormatException {		
 		adresses.add(new Adress(line));
 	}
 
