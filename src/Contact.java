@@ -38,6 +38,11 @@ public class Contact {
 		sb.append("BEGIN:VCARD\n");
 		for (Adress adress:adresses){
 			sb.append(adress);
+			sb.append("\n");
+		}
+		for(Phone phone:phones){
+			sb.append(phone);
+			sb.append("\n");			
 		}
 		//TODO: verbleibende Felder einfügen
 		sb.append("END:VCARD\n");

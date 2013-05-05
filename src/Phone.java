@@ -11,6 +11,19 @@ public class Phone {
 	private boolean home=false;
 	private boolean cell=false;
 	private boolean work=false;
+	private String number;
+	
+	public String toString() {
+		StringBuffer sb=new StringBuffer();
+		sb.append("TEL");
+		if (fax) sb.append(";TYPE=FAX");
+		if (home) sb.append(";TYPE=HOME");
+		if (cell) sb.append(";TYPE=CELL");
+		if (work) sb.append(";TYPE=WORK");
+		sb.append(':');
+		sb.append(number);
+		return sb.toString();
+	}
 
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
 		if (!content.startsWith("TEL;")) throw new InvalidFormatException("Phone does not start with \"TEL;\"");
@@ -70,6 +83,6 @@ public class Phone {
 				throw new NotImplementedException();				
 			}
 		}
-		String number = line;
+		number = line;
 	}
 }

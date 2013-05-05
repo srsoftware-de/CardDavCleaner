@@ -33,7 +33,6 @@ public class Adress {
 		if (zip!=null) sb.append(zip);
 		sb.append(';');
 		if (country!=null) sb.append(country);
-		sb.append('\n');
 		return sb.toString();
 	}
 
