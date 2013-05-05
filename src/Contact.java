@@ -56,7 +56,7 @@ public class Contact {
 		connection.disconnect();
 	}
 
-	private void readName(String line) {
+	private void readName(String line) throws InvalidFormatException, UnknownObjectException {
 		name=new Name(line);
 
 	}
