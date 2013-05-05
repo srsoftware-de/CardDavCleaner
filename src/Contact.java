@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -18,16 +20,16 @@ public class Contact {
 	private Name name;
 	private String formattedName;
 	private String title;
+	private String role;
+	private Birthday birthday;	
+	private boolean htmlMail;
+	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
 
 	private String revision;
 	private String note;
-	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
 	private String productId;
 	private String uid;
-	private boolean htmlMail;
 	private String photo;
-	private String role;
-	private Birthday birthday;	
 
 	public Contact(URL url) throws UnknownObjectException, IOException  {
 		parse(url);
@@ -37,6 +39,9 @@ public class Contact {
 		StringBuffer sb=new StringBuffer();
 		sb.append("BEGIN:VCARD\n");
 
+		sb.append("VERSION:3.0\n");
+		sb.append(newRevision()); sb.append("\n");
+		
 		sb.append("FN:"); if (formattedName!=null) sb.append(formattedName); // required for Version 3
 		sb.append("\n");
 		
@@ -44,6 +49,7 @@ public class Contact {
 		sb.append("\n");
 		
 		if (title!=null) sb.append("TITLE:"+title+"\n");
+		if (role!=null) sb.append("ROLE:"+role+"\n");
 		if (birthday!=null) sb.append(birthday);
 		
 		for (Adress adress:adresses){
@@ -58,11 +64,26 @@ public class Contact {
 			sb.append(mail);
 			sb.append("\n");
 		}
+		if (htmlMail) sb.append("X-MOZILLA-HTML:TRUE\n");
+		
+		for (Url url:urls){
+			sb.append(url);
+			sb.append("\n");
+		}
 		//TODO: verbleibende Felder einfügen
 		sb.append("END:VCARD\n");
 		return sb.toString();
 	}
 
+
+	private String newRevision() {
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
+		Date currentTime = new Date();
+		String date=formatter.format(currentTime);
+		System.out.println(date);        // 2012.04.14 - 21:34:07
+		System.exit(0);
+		return date;
+	}
 
 	private void parse(URL url) throws IOException, UnknownObjectException {
 		sb = new StringBuffer();
@@ -159,7 +180,8 @@ public class Contact {
 	}
 
 	private void readUrl(String line) throws InvalidFormatException, UnknownObjectException {
-		urls.add(new Url(line));
+		Url url=new Url(line);
+		if (!url.isEmpty()) urls.add(url);
 	}
 
 	private void readNote(String line) {

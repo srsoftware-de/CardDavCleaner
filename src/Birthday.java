@@ -17,7 +17,7 @@ public class Birthday {
 
 	public Birthday(String bday) {
 		if (bday.startsWith(";VALUE=DATE-TIME")) {
-			bday = bday.substring(17);
+			bday = bday.substring(16);
 		}
 		if (!bday.startsWith(":")) {
 			System.out.println(bday);

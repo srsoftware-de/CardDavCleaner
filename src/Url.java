@@ -8,6 +8,16 @@ public class Url {
 	private boolean home=false;
 	private boolean work=false;
 	private String url;
+	
+	public String toString() {
+		StringBuffer sb=new StringBuffer();
+		sb.append("URL");
+		if (home) sb.append(";TYPE=HOME");
+		if (work) sb.append(";TYPE=WORK");
+		sb.append(":");
+		sb.append(url);
+		return sb.toString();
+	}
 
 	public Url(String content) throws UnknownObjectException, InvalidFormatException {
 		if (!content.startsWith("URL;")) throw new InvalidFormatException("Url does not start with \"URL;\"");
@@ -35,5 +45,9 @@ public class Url {
 	private void readUrl(String line) {
 		if (line.isEmpty()) return;
 		url = line;
+	}
+
+	public boolean isEmpty() {
+		return url==null;
 	}
 }
