@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -32,8 +33,10 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		VerticalPanel mainPanel = new VerticalPanel("Server settings");
 
 		serverField = addInput(mainPanel, "Server:");
+		serverField.setText("http://kommune10.dyndns.info:815/cloud/remote.php/carddav/addressbooks/srichter/standard");
 		userField = addInput(mainPanel, "User:");
-		passwordField = addPassword(mainPanel, "Password:");
+		userField.setText("srichter");
+		passwordField = addPassword(mainPanel, "Password:");		
 
 		JButton startButton = new JButton("start");
 		startButton.addActionListener(this);
@@ -77,28 +80,53 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 	}
 
-	private void startCleaning(String host, final String user, final String password) throws IOException {
+	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException {
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password.toCharArray());
 			}
 		});
 
+		if (!host.endsWith("/")) host+="/";
 		URL url = new URL(host);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
 		String line;
+		Vector<String> contacts=new Vector<String>();
 		while ((line = in.readLine()) != null) {
-			if (line.contains(".vcf")) addContact(extractContactUrl(line)));
-			
+			if (line.contains(".vcf")) contacts.add(extractContactName(line));			
 		}
 		in.close();
 		content.close();
 		connection.disconnect();
+		
+		scanContacts(host,contacts);
+	}
+
+	private void scanContacts(String host, Vector<String> contacts) throws IOException, InterruptedException {
+		for (String contactName:contacts){
+			Contact contact=new Contact(new URL(host+contactName));
+			System.out.println(contact);
+			System.out.println("\n\n");
+		}
+	}
+
+
+
+	private String extractContactName(String line) {
+		String[] parts=line.split("/|\"");
+		for (String part:parts){
+			if (part.contains("vcf")){
+				return part;
+			}
+		}
+		return null;
 	}
 
 }
