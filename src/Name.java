@@ -24,6 +24,7 @@ public class Name {
 
 	public Name(String line) throws UnknownObjectException, InvalidFormatException {		
 		if (!line.startsWith("N:")) throw new InvalidFormatException("Name does not start with \"N:\"");
+		line=line.substring(2);
 		if (line.contains(";")){
 			String[] parts = line.split(";");
 			if (parts.length>0) setLast(parts[0]);
@@ -58,7 +59,6 @@ public class Name {
 	public String last() {
 		return last;
 	}
-
 
 	public String first() {
 		return last;

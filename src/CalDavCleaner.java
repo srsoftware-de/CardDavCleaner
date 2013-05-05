@@ -10,8 +10,9 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.rmi.AlreadyBoundException;
 import java.rmi.activation.UnknownObjectException;
+import java.util.Set;
 import java.util.TreeMap;
-import java.util.Vector;
+import java.util.TreeSet;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -97,7 +98,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
 		String line;
-		Vector<String> contacts=new Vector<String>();
+		TreeSet<String> contacts=new TreeSet<String>(ObjectComparator.get());
 		while ((line = in.readLine()) != null) {
 			if (line.contains(".vcf")) contacts.add(extractContactName(line));			
 		}
@@ -108,26 +109,29 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		scanContacts(host,contacts);
 	}
 
-	private void scanContacts(String host, Vector<String> contacts) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException {
+	private void scanContacts(String host, Set<String> contacts) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException {
 		int total=contacts.size();
 		
 		TreeMap<String, Contact> names=new TreeMap<String, Contact>(ObjectComparator.get());
-		for (int index=0; index<total; index++){
-			String contactName=contacts.elementAt(index);
-			System.out.println((index+1)+"/"+total);
+		int index=0;
+		for (String contactName:contacts){
+			System.out.println((++index)+"/"+total);
+			System.out.println(contactName);
 			Contact contact=new Contact(new URL(host+contactName));
-			
-			String name1=contact.name().first()+" "+contact.name().last();
-			String name2=contact.name().last()+" "+contact.name().first();
-			if (names.containsKey(name1)){
-				throw new AlreadyBoundException("Name conflict between\n"+contact+"\nand\n"+names.get(name1));
-			}
-			if (names.containsKey(name2)){
-				throw new AlreadyBoundException("Name conflict between\n"+contact+"\nand\n"+names.get(name2));
-			}
-			names.put(name1, contact);
-			
 			System.out.println(contact);
+			
+			Name name=contact.name();
+			if (name!=null){
+				String name1=name.first()+" "+name.last();
+				String name2=name.last()+" "+name.first();
+				if (names.containsKey(name1)){
+					throw new AlreadyBoundException("Name conflict ("+name1+") between\n"+contact+"\nand\n"+names.get(name1));
+				}
+				if (names.containsKey(name2)){
+					throw new AlreadyBoundException("Name conflict ("+name2+") between\n"+contact+"\nand\n"+names.get(name2));
+				}
+				names.put(name1, contact);
+			}
 		}
 	}
 
