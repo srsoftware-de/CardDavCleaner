@@ -26,7 +26,8 @@ public class Contact {
 	private String title;
 	private boolean htmlMail;
 	private String photo;
-	private String role;	
+	private String role;
+	private Birthday birthday;	
 
 	public Contact(URL url) throws UnknownObjectException, IOException  {
 		parse(url);
@@ -63,6 +64,7 @@ public class Contact {
 			if (line.startsWith("EMAIL;") && (known = true)) readMail(line);
 			if (line.startsWith("REV:") && (known = true)) readRevision(line.substring(4));
 			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
+			if (line.startsWith("BDAY") && (known = true)) readBirthday(line.substring(4));
 			if (line.startsWith("ROLE:") && (known = true)) readRole(line.substring(5));
 			if (line.startsWith("URL;") && (known = true)) readUrl(line);
 			if (line.startsWith("PRODID:") && (known = true)) readProductId(line.substring(7));
@@ -80,6 +82,10 @@ public class Contact {
 				throw new UnknownObjectException("unknown entry/instruction found in vcard: " + line);
 			}
 		}
+	}
+
+	private void readBirthday(String bday) {
+		birthday=new Birthday(bday);
 	}
 
 	private void readPhoto(String line) {		
