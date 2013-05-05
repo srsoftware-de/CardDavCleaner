@@ -25,7 +25,8 @@ public class Contact {
 	private String uid;
 	private String title;
 	private boolean htmlMail;
-	private String photo;	
+	private String photo;
+	private String role;	
 
 	public Contact(URL url) throws UnknownObjectException, IOException  {
 		parse(url);
@@ -62,6 +63,7 @@ public class Contact {
 			if (line.startsWith("EMAIL;") && (known = true)) readMail(line);
 			if (line.startsWith("REV:") && (known = true)) readRevision(line.substring(4));
 			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
+			if (line.startsWith("ROLE:") && (known = true)) readRole(line.substring(5));
 			if (line.startsWith("URL;") && (known = true)) readUrl(line);
 			if (line.startsWith("PRODID:") && (known = true)) readProductId(line.substring(7));
 			if (line.startsWith("N:") && (known = true)) readName(line);
@@ -125,6 +127,11 @@ public class Contact {
 	private void readNote(String line) {
 		if (line.isEmpty()) return;
 		note = line.replace("\\n", "\n");
+	}
+	
+	private void readRole(String line) {
+		if (line.isEmpty()) return;
+		role = line.replace("\\n", "\n");
 	}
 
 	private void readRevision(String line) {
