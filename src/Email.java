@@ -8,6 +8,16 @@ public class Email {
 	private boolean work=false;
 	private boolean home=false;
 	private String adress=null;
+	
+	public String toString() {
+		StringBuffer sb=new StringBuffer();
+		sb.append("EMAIL");
+		if (home) sb.append(";TYPE=HOME");
+		if (work) sb.append(";TYPE=WORK");
+		sb.append(":");
+		sb.append(adress);
+		return sb.toString();
+	}
 
 	public Email(String content) throws UnknownObjectException, InvalidFormatException {
 		if (!content.startsWith("EMAIL;")) throw new InvalidFormatException("Mail adress does not start with \"EMAIL;\"");
@@ -38,12 +48,7 @@ public class Email {
 		adress = line;
 	}
 	
-	@Override
-	public String toString() {
-		return adress;
-	}
-
-	public boolean hasAdress() {
-		return adress!=null;
+	public boolean isEmpty() {
+		return adress==null;
 	}
 }

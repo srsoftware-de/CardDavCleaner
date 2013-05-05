@@ -5,12 +5,22 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import com.sun.media.sound.InvalidFormatException;
 
 
-public class Name {
-	
-	
+public class Name {	
 	
 	private String last;
 	private String first;
+	
+	@Override
+	public String toString() {
+		StringBuffer sb=new StringBuffer();
+		sb.append("N:");
+		if (last!=null) sb.append(last);
+		sb.append(';');
+		if (first!=null) sb.append(first);
+		sb.append(";;;");
+		return sb.toString();
+	}
+	
 
 	public Name(String line) throws UnknownObjectException, InvalidFormatException {		
 		if (!line.startsWith("N:")) throw new InvalidFormatException("Name does not start with \"N:\"");
@@ -35,10 +45,9 @@ public class Name {
 		if (string.isEmpty()) return;
 		first=string;		
 	}
-
-	@Override
-	public String toString() {
-		return first+" "+last;
+	
+	public boolean isEmpty() {
+		return ((last==null) && (first==null));
+		
 	}
-
 }

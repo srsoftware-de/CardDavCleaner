@@ -15,15 +15,15 @@ public class Contact {
 	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
 	private TreeSet<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
 	private TreeSet<Email> mails = new TreeSet<Email>(ObjectComparator.get());
+	private Name name;
+	private String formattedName;
+	private String title;
+
 	private String revision;
 	private String note;
 	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
 	private String productId;
-	private String display;
-	private Name name;
-	private String formattedName;
 	private String uid;
-	private String title;
 	private boolean htmlMail;
 	private String photo;
 	private String role;
@@ -36,6 +36,16 @@ public class Contact {
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
 		sb.append("BEGIN:VCARD\n");
+
+		sb.append("FN:"); if (formattedName!=null) sb.append(formattedName); // required for Version 3
+		sb.append("\n");
+		
+		sb.append(name);// required for Version 3
+		sb.append("\n");
+		
+		if (title!=null) sb.append("TITLE:"+title+"\n");
+		if (birthday!=null) sb.append(birthday);
+		
 		for (Adress adress:adresses){
 			sb.append(adress);
 			sb.append("\n");
@@ -138,7 +148,8 @@ public class Contact {
 	}
 
 	private void readName(String line) throws InvalidFormatException, UnknownObjectException {
-		name=new Name(line);
+		Name n = new Name(line);
+		if (!n.isEmpty())	name=n;
 
 	}
 
@@ -178,6 +189,6 @@ public class Contact {
 
 	private void readMail(String line) throws UnknownObjectException, InvalidFormatException {
 		Email mail = new Email(line);
-		if (mail.hasAdress()) mails.add(new Email(line));
+		if (!mail.isEmpty()) mails.add(new Email(line));
 	}
 }
