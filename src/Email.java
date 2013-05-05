@@ -11,9 +11,9 @@ public class Email {
 	private boolean home=false;
 	private String adress=null;
 
-	public Email(String line) throws UnknownObjectException, InvalidFormatException {
-		if (!line.startsWith("EMAIL;")) throw new InvalidFormatException("Mail adress does not start with \"EMAIL;\"");
-		line = line.substring(6);
+	public Email(String content) throws UnknownObjectException, InvalidFormatException {
+		if (!content.startsWith("EMAIL;")) throw new InvalidFormatException("Mail adress does not start with \"EMAIL;\"");
+		String line = content.substring(6);
 		while(!line.startsWith(":")){
 			String upper = line.toUpperCase();
 			if (upper.startsWith("TYPE=WORK")){
@@ -30,7 +30,7 @@ public class Email {
 				line=line.substring(1);
 				continue;
 			}
-			throw new UnknownObjectException(line+" in "+line);
+			throw new UnknownObjectException(line+" in "+content);
 		}
 		readAddr(line.substring(1));		
 	}

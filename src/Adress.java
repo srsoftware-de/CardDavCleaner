@@ -15,9 +15,9 @@ public class Adress {
 	private String country;
 	private String state;
 
-	public Adress(String line) throws UnknownObjectException, InvalidFormatException {
-		if (!line.startsWith("ADR;")) throw new InvalidFormatException("Adress does not start with \"ADR;\"");
-		line=line.substring(4);
+	public Adress(String content) throws UnknownObjectException, InvalidFormatException {
+		if (!content.startsWith("ADR;")) throw new InvalidFormatException("Adress does not start with \"ADR;\"");
+		String line=content.substring(4);
 		while(!line.startsWith(":")){
 			String upper=line.toUpperCase();
 			if (upper.startsWith("TYPE=HOME")){

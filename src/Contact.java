@@ -24,7 +24,8 @@ public class Contact {
 	private String formattedName;
 	private String uid;
 	private String title;
-	private boolean htmlMail;	
+	private boolean htmlMail;
+	private String photo;	
 
 	public Contact(URL url) throws UnknownObjectException, IOException  {
 		parse(url);
@@ -67,6 +68,7 @@ public class Contact {
 			if (line.startsWith("FN:") && (known=true)) readFormattedName(line.substring(3));
 			if (line.startsWith("ORG:") && (known = true)) readOrg(line);			
 			if (line.startsWith("TITLE:") && (known = true)) readTitle(line.substring(6));
+			if (line.startsWith("PHOTO;") && (known = true)) readPhoto(line);
 			if (line.startsWith("X-MOZILLA-HTML:") && (known=true)) readMailFormat(line.substring(15));
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known=true;
 			
@@ -76,6 +78,10 @@ public class Contact {
 				throw new UnknownObjectException("unknown entry/instruction found in vcard: " + line);
 			}
 		}
+	}
+
+	private void readPhoto(String line) {		
+		photo=line;
 	}
 
 	private void readMailFormat(String line) {
