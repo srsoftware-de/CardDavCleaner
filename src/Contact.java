@@ -7,7 +7,7 @@ import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
 
-import javax.lang.model.element.UnknownElementException;
+import com.sun.media.sound.InvalidFormatException;
 
 public class Contact {
 	private StringBuffer sb;
@@ -38,7 +38,7 @@ public class Contact {
 		connection.disconnect();		
 	}
 	
-	private void readAdress(String line) {
+	private void readAdress(String line) throws UnknownObjectException, InvalidFormatException {
 		adresses.add(new Adress(line));
 	}
 
