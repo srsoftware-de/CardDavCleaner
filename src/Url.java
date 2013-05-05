@@ -9,6 +9,7 @@ public class Url {
 	
 	private boolean home=false;
 	private boolean work=false;
+	private String url;
 
 	public Url(String content) throws UnknownObjectException, InvalidFormatException {
 		if (!content.startsWith("URL;")) throw new InvalidFormatException("Url does not start with \"URL;\"");
@@ -35,7 +36,6 @@ public class Url {
 
 	private void readUrl(String line) {
 		if (line.isEmpty()) return;
-		System.err.println(line);
-		throw new NotImplementedException();
+		url = line;
 	}
 }
