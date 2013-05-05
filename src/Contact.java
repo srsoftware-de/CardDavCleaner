@@ -212,4 +212,8 @@ public class Contact {
 		Email mail = new Email(line);
 		if (!mail.isEmpty()) mails.add(new Email(line));
 	}
+
+	public Name name() {
+		return name;
+	}
 }

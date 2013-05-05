@@ -47,7 +47,20 @@ public class Name {
 	}
 	
 	public boolean isEmpty() {
-		return ((last==null) && (first==null));
-		
+		return ((last==null) && (first==null));	
+	}
+	
+	public boolean equals(Name name){
+		return this.first.equals(name.first) && this.last.equals(name.last);
+	}
+
+
+	public String last() {
+		return last;
+	}
+
+
+	public String first() {
+		return last;
 	}
 }

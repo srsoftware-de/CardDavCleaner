@@ -8,7 +8,9 @@ import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
+import java.rmi.AlreadyBoundException;
 import java.rmi.activation.UnknownObjectException;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -82,7 +84,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		}
 	}
 
-	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException {
+	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException {
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password.toCharArray());
@@ -106,12 +108,25 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		scanContacts(host,contacts);
 	}
 
-	private void scanContacts(String host, Vector<String> contacts) throws IOException, InterruptedException, UnknownObjectException {
+	private void scanContacts(String host, Vector<String> contacts) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException {
 		int total=contacts.size();
+		
+		TreeMap<String, Contact> names=new TreeMap<String, Contact>(ObjectComparator.get());
 		for (int index=0; index<total; index++){
 			String contactName=contacts.elementAt(index);
 			System.out.println((index+1)+"/"+total);
 			Contact contact=new Contact(new URL(host+contactName));
+			
+			String name1=contact.name().first()+" "+contact.name().last();
+			String name2=contact.name().last()+" "+contact.name().first();
+			if (names.containsKey(name1)){
+				throw new AlreadyBoundException("Name conflict between\n"+contact+"\nand\n"+names.get(name1));
+			}
+			if (names.containsKey(name2)){
+				throw new AlreadyBoundException("Name conflict between\n"+contact+"\nand\n"+names.get(name2));
+			}
+			names.put(name1, contact);
+			
 			System.out.println(contact);
 		}
 	}
