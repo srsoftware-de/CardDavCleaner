@@ -14,6 +14,9 @@ public class Contact {
 	private TreeSet<Adress> adresses=new TreeSet<Adress>(ObjectComparator.get());
 	private TreeSet<Phone> phones=new TreeSet<Phone>(ObjectComparator.get());
 	private TreeSet<Email> mails=new TreeSet<Email>(ObjectComparator.get());
+	private String revision;
+	private String note;
+	private TreeSet<Url> urls=new TreeSet<Url>(ObjectComparator.get());
 
 	public Contact(URL url) throws IOException, UnknownObjectException {
 		parse(url);
@@ -33,6 +36,9 @@ public class Contact {
 			if (line.startsWith("ADR") && (known=true)) readAdress(line);
 			if (line.startsWith("TEL") && (known=true)) readPhone(line);
 			if (line.startsWith("EMAIL") && (known=true)) readMail(line);
+			if (line.startsWith("REV:") && (known=true)) readRevision(line.substring(4));
+			if (line.startsWith("NOTE:")&& (known=true)) readNote(line.substring(5));
+			if (line.startsWith("URL") && (known=true)) readUrl(line);
 			
 			if (!known) throw new UnknownObjectException("unknown entry/instruction found in vcard: "+line);
 			sb.append(line + "\n");
@@ -42,6 +48,20 @@ public class Contact {
 		connection.disconnect();		
 	}
 	
+	private void readUrl(String line) throws InvalidFormatException, UnknownObjectException {
+		urls.add(new Url(line));
+		}
+
+	private void readNote(String line) {
+		if (line.isEmpty()) return;
+		note=line;
+	}
+
+	private void readRevision(String line) {
+		if (line.isEmpty()) return;
+		revision=line;		
+	}
+
 	private void readPhone(String line) throws InvalidFormatException, UnknownObjectException {		
 		phones.add(new Phone(line));
 	}
