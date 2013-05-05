@@ -1,12 +1,26 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.URL;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 public class CalDavCleaner extends JFrame implements ActionListener {
+
+	private JTextField serverField;
+	private JTextField userField;
+	private JPasswordField passwordField;
 
 	public CalDavCleaner() {
 		super();
@@ -15,17 +29,16 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private void createComponents() {
-		VerticalPanel mainPanel=new VerticalPanel("Server settings");
-				
-		SuggestField serverField=addInput(mainPanel,"Server:");
-		SuggestField userfield=addInput(mainPanel, "User:");
-		JPasswordField passwordField=addPassword(mainPanel, "Password:");
-		
+		VerticalPanel mainPanel = new VerticalPanel("Server settings");
+
+		serverField = addInput(mainPanel, "Server:");
+		userField = addInput(mainPanel, "User:");
+		passwordField = addPassword(mainPanel, "Password:");
+
 		JButton startButton = new JButton("start");
 		startButton.addActionListener(this);
 		mainPanel.add(startButton);
-		
-		
+
 		mainPanel.skalieren();
 		add(mainPanel);
 		pack();
@@ -33,19 +46,19 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private JPasswordField addPassword(VerticalPanel mainPanel, String text) {
-		HorizontalPanel hp=new HorizontalPanel();
-		hp.add(new JLabel(text+" "));
-		JPasswordField result=new JPasswordField(50);
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.add(new JLabel(text + " "));
+		JPasswordField result = new JPasswordField(50);
 		hp.add(result);
 		hp.skalieren();
 		mainPanel.add(hp);
 		return result;
 	}
 
-	private SuggestField addInput(VerticalPanel mainPanel, String text) {
-		HorizontalPanel hp=new HorizontalPanel();
-		hp.add(new JLabel(text+" "));
-		SuggestField result=new SuggestField(50, false);
+	private JTextField addInput(VerticalPanel mainPanel, String text) {
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.add(new JLabel(text + " "));
+		JTextField result = new JTextField(50);
 		hp.add(result);
 		hp.skalieren();
 		mainPanel.add(hp);
@@ -58,8 +71,34 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
-		System.out.println("start pressed");
+		try {
+			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getPassword()));
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void startCleaning(String host, final String user, final String password) throws IOException {
+		Authenticator.setDefault(new Authenticator() {
+			protected PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(user, password.toCharArray());
+			}
+		});
+
+		URL url = new URL(host);
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		InputStream content = (InputStream) connection.getInputStream();
+		BufferedReader in = new BufferedReader(new InputStreamReader(content));
+		String line;
+		while ((line = in.readLine()) != null) {
+			if (line.contains(".vcf")) addContact(extractContactUrl(line)));
+			
+		}
+		in.close();
+		content.close();
+		connection.disconnect();
 	}
 
 }
