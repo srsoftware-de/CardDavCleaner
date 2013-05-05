@@ -15,9 +15,12 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class CalDavCleaner extends JFrame implements ActionListener {
@@ -114,6 +117,8 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		
 		TreeMap<String, Contact> names=new TreeMap<String, Contact>(ObjectComparator.get());
 		int index=0;
+		boolean restart=false;
+		do {
 		for (String contactName:contacts){
 			System.out.println((++index)+"/"+total);
 			System.out.println(contactName);
@@ -125,7 +130,12 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 				String name1=name.first()+" "+name.last();
 				String name2=name.last()+" "+name.first();
 				if (names.containsKey(name1)){
-					throw new AlreadyBoundException("Name conflict ("+name1+") between\n"+contact+"\nand\n"+names.get(name1));
+					if (askForMege(name1,contact,names.get(name1))) {
+						names.get(name1).merge(contact);
+						contacts.remove(contactName);
+						restart=true;
+						break;
+					}
 				}
 				if (names.containsKey(name2)){
 					throw new AlreadyBoundException("Name conflict ("+name2+") between\n"+contact+"\nand\n"+names.get(name2));
@@ -133,6 +143,22 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 				names.put(name1, contact);
 			}
 		}
+		} while (restart);
+	}
+
+	private boolean askForMege(String name, Contact contact, Contact contact2) {
+		VerticalPanel vp=new VerticalPanel();
+		vp.add(new JLabel("<html>The name \""+name+"\" is used by both following contacts:<br>"));
+		HorizontalPanel hp=new HorizontalPanel();
+		hp.add(new JLabel("<html>"+contact.toString().replace("\n", "&nbsp<br>")));
+		hp.add(new JLabel("<html>"+contact2.toString().replace("\n", "<br>")));
+		hp.skalieren();
+		vp.add(hp);
+		vp.add(new JLabel("<html><br>Shall those contacts be merged?"));
+		vp.skalieren();
+		int decision=JOptionPane.showConfirmDialog(null, vp, "Please decide!", JOptionPane.YES_NO_CANCEL_OPTION);
+		if (decision==JOptionPane.CANCEL_OPTION) System.exit(0);
+		return decision==JOptionPane.YES_OPTION;
 	}
 
 	private String extractContactName(String line) {

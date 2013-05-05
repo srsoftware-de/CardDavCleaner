@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 import com.sun.media.sound.InvalidFormatException;
 
 public class Contact {
@@ -215,5 +217,9 @@ public class Contact {
 
 	public Name name() {
 		return name;
+	}
+
+	public void merge(Contact contact) {
+		throw new NotImplementedException();
 	}
 }
