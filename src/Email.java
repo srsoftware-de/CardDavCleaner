@@ -9,6 +9,7 @@ public class Email {
 	
 	private boolean work=false;
 	private boolean home=false;
+	private String adress=null;
 
 	public Email(String content) throws UnknownObjectException, InvalidFormatException {
 		if (!content.startsWith("EMAIL;")) throw new InvalidFormatException("Mail adress does not start with \"EMAIL;\"");
@@ -35,6 +36,15 @@ public class Email {
 
 	private void readAddr(String line) {
 		if (line.isEmpty()) return;
-		throw new NotImplementedException();
+		adress = line;
+	}
+	
+	@Override
+	public String toString() {
+		return adress;
+	}
+
+	public boolean hasAdress() {
+		return adress!=null;
 	}
 }

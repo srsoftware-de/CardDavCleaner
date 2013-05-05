@@ -77,16 +77,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		try {
 			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getPassword()));
-		} catch (MalformedURLException e) {			
-			e.printStackTrace();
-			System.exit(0);
-		} catch (IOException e) {
-			e.printStackTrace();
-			System.exit(0);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.exit(0);
-		} catch (UnknownObjectException e) {
+		} catch (Exception e) {			
 			e.printStackTrace();
 			System.exit(0);
 		}

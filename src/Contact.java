@@ -24,7 +24,7 @@ public class Contact {
 	private String uid;
 	private String title;	
 
-	public Contact(URL url) throws IOException, UnknownObjectException {
+	public Contact(URL url) throws UnknownObjectException, IOException  {
 		parse(url);
 	}
 
@@ -39,6 +39,7 @@ public class Contact {
 			sb.append(line + "\n");
 			boolean known = false;
 			if (line.equals("BEGIN:VCARD")) known = true;
+			if (line.equals("END:VCARD")) known = true;
 			if (line.startsWith("VERSION:")) known = true;
 			if (line.startsWith("ADR;") && (known = true)) readAdress(line);
 			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
@@ -52,7 +53,8 @@ public class Contact {
 			if (line.startsWith("FN:") && (known=true)) readFormattedName(line.substring(3));
 			if (line.startsWith("ORG:") && (known = true)) readOrg(line);			
 			if (line.startsWith("TITLE:") && (known = true)) readTitle(line.substring(6));
-
+			
+			
 			if (!known) {
 				System.err.println(sb.toString());
 				throw new UnknownObjectException("unknown entry/instruction found in vcard: " + line);
@@ -116,7 +118,8 @@ public class Contact {
 	}
 
 	private void readMail(String line) throws UnknownObjectException, InvalidFormatException {
-		mails.add(new Email(line));
+		Email mail = new Email(line);
+		if (mail.hasAdress()) mails.add(new Email(line));
 	}
 
 	public String toString() {

@@ -47,7 +47,13 @@ public class Phone {
 
 	private void readPhone(String line) {
 		if (line.isEmpty())return;
-		System.err.println(line);
-		throw new NotImplementedException();
+		line=line.replace(" ", "");
+		for (char c:line.toCharArray()){
+			if (!Character.isDigit(c) && c!='+') {
+				System.err.println(line);
+				throw new NotImplementedException();				
+			}
+		}
+		String number = line;
 	}
 }
