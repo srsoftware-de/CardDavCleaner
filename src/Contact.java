@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import com.sun.media.sound.InvalidFormatException;
 
@@ -35,8 +36,20 @@ public class Contact {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
+		Vector<String> lines=new Vector<String>();
 		String line;
 		while ((line = in.readLine()) != null) {
+			lines.add(line);
+		}
+		in.close();
+		content.close();
+		connection.disconnect();
+		for (int index=0; index<lines.size(); index++){
+			line=lines.elementAt(index);
+			while (index+1<lines.size() && lines.elementAt(index+1).startsWith(" ")){
+				index++;
+				line+=lines.elementAt(index).substring(2);
+			}			
 			sb.append(line + "\n");
 			boolean known = false;
 			if (line.equals("BEGIN:VCARD")) known = true;
@@ -63,9 +76,6 @@ public class Contact {
 				throw new UnknownObjectException("unknown entry/instruction found in vcard: " + line);
 			}
 		}
-		in.close();
-		content.close();
-		connection.disconnect();
 	}
 
 	private void readMailFormat(String line) {
@@ -108,7 +118,7 @@ public class Contact {
 
 	private void readNote(String line) {
 		if (line.isEmpty()) return;
-		note = line;
+		note = line.replace("\\n", "\n");
 	}
 
 	private void readRevision(String line) {
