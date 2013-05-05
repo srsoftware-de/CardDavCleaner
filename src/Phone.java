@@ -65,7 +65,7 @@ public class Phone {
 		if (line.isEmpty())return;
 		line=line.replace(" ", "").replace("/", "").replace("-", "");
 		for (char c:line.toCharArray()){
-			if (!Character.isDigit(c) && c!='+') {
+			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') {
 				System.err.println(line);
 				throw new NotImplementedException();				
 			}
