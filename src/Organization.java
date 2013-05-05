@@ -13,6 +13,7 @@ public class Organization {
 		if (!content.startsWith("ORG:")) throw new InvalidFormatException("Organization does not start with \"ORG:\"");
 		String line=content.substring(4);
 		if (line.contains(";")){
+			if (line.equals(";")) return;
 			System.err.println("Organization with several parts found: "+line);
 			throw new NotImplementedException();
 		} else name=line; 
