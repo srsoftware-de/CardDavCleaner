@@ -13,7 +13,7 @@ import java.util.Vector;
 import com.sun.media.sound.InvalidFormatException;
 
 public class Contact {
-	private StringBuffer sb;
+	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
 	private TreeSet<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
 	private TreeSet<Email> mails = new TreeSet<Email>(ObjectComparator.get());
@@ -77,16 +77,11 @@ public class Contact {
 
 
 	private String newRevision() {
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
-		Date currentTime = new Date();
-		String date=formatter.format(currentTime);
-		System.out.println(date);        // 2012.04.14 - 21:34:07
-		System.exit(0);
-		return date;
+		String date=formatter.format(new Date()).replace('#','T');
+		return "REV:"+date;
 	}
 
 	private void parse(URL url) throws IOException, UnknownObjectException {
-		sb = new StringBuffer();
 
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
@@ -105,7 +100,6 @@ public class Contact {
 				index++;
 				line+=lines.elementAt(index).substring(2);
 			}			
-			sb.append(line + "\n");
 			boolean known = false;
 			if (line.equals("BEGIN:VCARD")) known = true;
 			if (line.equals("END:VCARD")) known = true;
@@ -130,7 +124,6 @@ public class Contact {
 			
 			
 			if (!known) {
-				System.err.println(sb.toString());
 				throw new UnknownObjectException("unknown entry/instruction found in vcard: " + line);
 			}
 		}
