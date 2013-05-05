@@ -13,6 +13,7 @@ public class Contact {
 	private StringBuffer sb;
 	private TreeSet<Adress> adresses=new TreeSet<Adress>(ObjectComparator.get());
 	private TreeSet<Phone> phones=new TreeSet<Phone>(ObjectComparator.get());
+	private TreeSet<Email> mails=new TreeSet<Email>(ObjectComparator.get());
 
 	public Contact(URL url) throws IOException, UnknownObjectException {
 		parse(url);
@@ -31,6 +32,7 @@ public class Contact {
 			if (line.startsWith("VERSION:")) known=true;
 			if (line.startsWith("ADR") && (known=true)) readAdress(line);
 			if (line.startsWith("TEL") && (known=true)) readPhone(line);
+			if (line.startsWith("EMAIL") && (known=true)) readMail(line);
 			
 			if (!known) throw new UnknownObjectException("unknown entry/instruction found in vcard: "+line);
 			sb.append(line + "\n");
@@ -46,6 +48,10 @@ public class Contact {
 
 	private void readAdress(String line) throws UnknownObjectException, InvalidFormatException {		
 		adresses.add(new Adress(line));
+	}
+
+	private void readMail(String line) throws UnknownObjectException, InvalidFormatException {		
+		mails.add(new Email(line));
 	}
 
 	public String toString() {		
