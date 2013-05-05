@@ -110,8 +110,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		int total=contacts.size();
 		for (int index=0; index<total; index++){
 			String contactName=contacts.elementAt(index);
-			System.out.println(index+"/"+total);
+			System.out.println((index+1)+"/"+total);
 			Contact contact=new Contact(new URL(host+contactName));
+			System.out.println(contact);
 		}
 	}
 

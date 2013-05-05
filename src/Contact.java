@@ -44,6 +44,10 @@ public class Contact {
 			sb.append(phone);
 			sb.append("\n");			
 		}
+		for(Email mail:mails){
+			sb.append(mail);
+			sb.append("\n");
+		}
 		//TODO: verbleibende Felder einfügen
 		sb.append("END:VCARD\n");
 		return sb.toString();
@@ -163,11 +167,13 @@ public class Contact {
 	}
 
 	private void readPhone(String line) throws InvalidFormatException, UnknownObjectException {
-		phones.add(new Phone(line));
+		Phone phone = new Phone(line);
+		if (!phone.isEmpty()) phones.add(phone);
 	}
 
 	private void readAdress(String line) throws UnknownObjectException, InvalidFormatException {
-		adresses.add(new Adress(line));
+		Adress adress = new Adress(line);
+		if (!adress.isEmpty()) adresses.add(adress);
 	}
 
 	private void readMail(String line) throws UnknownObjectException, InvalidFormatException {

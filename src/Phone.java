@@ -85,4 +85,8 @@ public class Phone {
 		}
 		number = line;
 	}
+
+	public boolean isEmpty() {
+		return (number==null);
+	}
 }
