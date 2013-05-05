@@ -4,11 +4,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.rmi.AlreadyBoundException;
 import java.rmi.activation.UnknownObjectException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -64,10 +64,26 @@ public class Contact {
 			} else mailMap.put(mail.adress(), mail);
 		}
 		
+		if (name==null) name=contact.name;
+		if (formattedName==null) formattedName=contact.formattedName;
+		if (title==null) title=contact.title;
+		if (role==null) role=contact.role;
+		if (birthday==null) birthday=contact.birthday;
+		if (contact.htmlMail) htmlMail=true;
+		urls.addAll(contact.urls);
+		if (uid==null) uid=contact.uid;
+		if (note==null) {
+			note=contact.note;
+		} else {
+			if (contact.note!=null) note+=contact.note;
+		}
+		if (photo==null) photo=contact.photo;
+		if (org==null) org=contact.org;
+		
 		throw new NotImplementedException();
 	}
 	
-	public Contact(URL url) throws UnknownObjectException, IOException  {
+	public Contact(URL url) throws UnknownObjectException, IOException, AlreadyBoundException  {
 		parse(url);
 	}
 	
@@ -122,7 +138,7 @@ public class Contact {
 		return "REV:"+date;
 	}
 
-	private void parse(URL url) throws IOException, UnknownObjectException {
+	private void parse(URL url) throws IOException, UnknownObjectException, AlreadyBoundException {
 
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
@@ -182,12 +198,15 @@ public class Contact {
 		htmlMail=line.toUpperCase().equals("TRUE");
 	}
 
-	private void readTitle(String line) {
+	private void readTitle(String line) throws AlreadyBoundException {
+		if (title!=null) throw new AlreadyBoundException("Trying to assign title, although it is already assigned");
+
 		if (line.isEmpty()) return;
 		title = line;
 	}
 
-	private void readOrg(String line) throws InvalidFormatException, UnknownObjectException {
+	private void readOrg(String line) throws InvalidFormatException, UnknownObjectException, AlreadyBoundException {
+		if (this.org!=null) throw new AlreadyBoundException("Trying to assign organization, although it is already assigned");
 		Organization org = new Organization(line);		
 		if (!org.isEmpty()) this.org=org;
 	}
@@ -218,12 +237,15 @@ public class Contact {
 		if (!url.isEmpty()) urls.add(url);
 	}
 
-	private void readNote(String line) {
+	private void readNote(String line) throws AlreadyBoundException {
+		if (note!=null) throw new AlreadyBoundException("Trying to assign note, although it is already assigned");
 		if (line.isEmpty()) return;
 		note = line.replace("\\n", "\n");
 	}
 	
-	private void readRole(String line) {
+	private void readRole(String line) throws AlreadyBoundException {
+		if (role!=null) throw new AlreadyBoundException("Trying to assign role, although it is already assigned");
+
 		if (line.isEmpty()) return;
 		role = line.replace("\\n", "\n");
 	}
