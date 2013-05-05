@@ -108,10 +108,11 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private void scanContacts(String host, Vector<String> contacts) throws IOException, InterruptedException, UnknownObjectException {
-		for (String contactName:contacts){
+		int total=contacts.size();
+		for (int index=0; index<total; index++){
+			String contactName=contacts.elementAt(index);
+			System.out.println(index+"/"+total);
 			Contact contact=new Contact(new URL(host+contactName));
-			System.out.println(contact);
-			System.out.println("\n\n");
 		}
 	}
 
