@@ -9,6 +9,7 @@ public class Phone {
 	
 	private boolean fax=false;
 	private boolean home=false;
+	private boolean cell=false;
 	private boolean work=false;
 
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
@@ -22,6 +23,11 @@ public class Phone {
 			}
 			if (line.startsWith("TYPE=HOME")){
 				home=true;
+				line=line.substring(9);
+				continue;
+			}
+			if (line.startsWith("TYPE=CELL")){
+				cell=true;
 				line=line.substring(9);
 				continue;
 			}
