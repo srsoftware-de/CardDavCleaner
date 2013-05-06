@@ -35,7 +35,15 @@ public class Contact {
 	private Organization org;
 
 	public boolean isEmpty() {
-		return adresses.isEmpty() && phones.isEmpty() && mails.isEmpty() && title==null && role==null && birthday==null && urls==null && note==null && org==null;
+		return adresses.isEmpty() &&
+					phones.isEmpty() &&
+					mails.isEmpty() && 
+					title==null &&
+					role==null && 
+					birthday==null &&
+					urls.isEmpty() &&
+					note==null && 
+					org==null;
 	}
 	
 	public void merge(Contact contact) throws InvalidAssignmentException {
