@@ -119,7 +119,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			System.out.println(++counter + "/" + total);
 			Contact contact = new Contact(new URL(host + contactName));
 			if (contact.isEmpty()) {
-				System.out.println("Waring: empty contact found (" + contactName + ")");
+				System.out.println("Waring: skipping empty contact " + contactName);
 			} else
 				contacts.add(contact);
 		}
