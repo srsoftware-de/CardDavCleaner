@@ -24,7 +24,7 @@ public class Contact {
 	private TreeSet<Email> mails = new TreeSet<Email>(ObjectComparator.get());
 	private Name name;
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
-	private String title; // TODO: eine vcard kann auch mehrere haben!
+	private TreeSet<String> titles=new TreeSet<String>(ObjectComparator.get()); // TODO: eine vcard kann auch mehrere haben!
 	private String role; // TODO: eine vcard kann auch mehrere haben!
 	private Birthday birthday;	
 	private boolean htmlMail;
@@ -38,7 +38,7 @@ public class Contact {
 		return adresses.isEmpty() &&
 					phones.isEmpty() &&
 					mails.isEmpty() && 
-					title==null &&
+					titles.isEmpty() &&
 					role==null && 
 					birthday==null &&
 					urls.isEmpty() &&
@@ -75,7 +75,7 @@ public class Contact {
 		
 		if (name==null) name=contact.name;
 		if (formattedName==null) formattedName=contact.formattedName;
-		if (title==null) title=contact.title;
+		titles.addAll(contact.titles);
 		if (role==null) role=contact.role;
 		if (birthday==null) birthday=contact.birthday;
 		if (contact.htmlMail) htmlMail=true;
@@ -105,7 +105,9 @@ public class Contact {
 		sb.append(name);// required for Version 3
 		sb.append("\n");
 		
-		if (title!=null) sb.append("TITLE:"+title+"\n");
+		for (String title:titles){
+			sb.append("TITLE:"+title+"\n");
+		}
 		for (Organization org:orgs){
 			sb.append(org);
 			sb.append("\n");
@@ -208,10 +210,8 @@ public class Contact {
 	}
 
 	private void readTitle(String line) throws AlreadyBoundException {
-		if (title!=null) throw new AlreadyBoundException("Trying to assign title, although it is already assigned");
-
 		if (line.isEmpty()) return;
-		title = line;
+		titles.add(line);
 	}
 
 	private void readOrg(String line) throws InvalidFormatException, UnknownObjectException, AlreadyBoundException {
