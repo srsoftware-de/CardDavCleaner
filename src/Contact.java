@@ -24,14 +24,14 @@ public class Contact {
 	private TreeSet<Email> mails = new TreeSet<Email>(ObjectComparator.get());
 	private Name name;
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
-	private TreeSet<String> titles=new TreeSet<String>(ObjectComparator.get()); // TODO: eine vcard kann auch mehrere haben!
+	private TreeSet<String> titles=new TreeSet<String>(ObjectComparator.get());
 	private String role; // TODO: eine vcard kann auch mehrere haben!
 	private Birthday birthday;	
 	private boolean htmlMail;
 	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
 	private String uid;
 	private TreeSet<String> notes=new TreeSet<String>(ObjectComparator.get());
-	private String photo; // TODO: eine vcard kann auch mehrere haben!
+	private TreeSet<String> photos=new TreeSet<String>(ObjectComparator.get());
 	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
 
 	public boolean isEmpty() {
@@ -42,7 +42,8 @@ public class Contact {
 					role==null && 
 					birthday==null &&
 					urls.isEmpty() &&
-					notes.isEmpty() && 
+					notes.isEmpty() &&
+					photos.isEmpty() &&
 					orgs.isEmpty();
 	}
 	
@@ -82,7 +83,7 @@ public class Contact {
 		urls.addAll(contact.urls);
 		if (uid==null) uid=contact.uid;
 		notes.addAll(contact.notes);
-		if (photo==null) photo=contact.photo;
+		photos.addAll(contact.photos);
 		orgs.addAll(contact.orgs);		
 	}
 	
@@ -137,7 +138,7 @@ public class Contact {
 			sb.append("NOTE:"+note+"\n");	
 		}
 		
-		if (photo!=null) sb.append(photo+"\n");
+		for (String photo:photos) sb.append(photo+"\n");
 		//TODO: verbleibende Felder einfügen
 		sb.append("END:VCARD\n");
 		return sb.toString();
@@ -201,8 +202,8 @@ public class Contact {
 		birthday=new Birthday(bday);
 	}
 
-	private void readPhoto(String line) {		
-		photo=line;
+	private void readPhoto(String line) {
+		photos.add(line);
 	}
 
 	private void readMailFormat(String line) {

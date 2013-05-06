@@ -112,22 +112,22 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
-		Vector<Contact> contacts=new Vector<Contact>();
-		int total=contactNamess.size();
-		int counter=0;
+		Vector<Contact> contacts = new Vector<Contact>();
+		int total = contactNamess.size();
+		int counter = 0;
 		for (String contactName : contactNamess) {
-			System.out.println(++counter+"/"+total);
+			System.out.println(++counter + "/" + total);
 			Contact contact = new Contact(new URL(host + contactName));
 			if (contact.isEmpty()) {
-				System.out.println("Waring: empty contact found ("+contactName+")");				
-			} else contacts.add(contact);
+				System.out.println("Waring: empty contact found (" + contactName + ")");
+			} else
+				contacts.add(contact);
 		}
-		
-		
+
 		TreeMap<String, Contact> names;
 		boolean restart;
 		do {
-			restart=false;
+			restart = false;
 			names = new TreeMap<String, Contact>(ObjectComparator.get());
 			total = contacts.size();
 			int index = 0;
@@ -139,28 +139,25 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 				if (name != null) {
 					String name1 = name.first() + " " + name.last();
 					String name2 = name.last() + " " + name.first();
-					
+
 					Contact existingContact = names.get(name1);
-					if (existingContact!=null) {
-						if (askForMege(name1, contact, existingContact)) {
-							existingContact.merge(contact);
-							contacts.remove(contact);
-							restart = true;
-							break;
-						}
+					if ((existingContact != null) && askForMege(name1, contact, existingContact)) {
+						existingContact.merge(contact);
+						contacts.remove(contact);
+						restart = true;
+						break;
+
 					}
 					existingContact = names.get(name2);
-					if (existingContact!=null) {
-						if (askForMege(name2, contact, existingContact)) {
-							existingContact.merge(contact);
-							contacts.remove(contact);
-							restart = true;
-							break;
-						}
+					if ((existingContact != null) && askForMege(name2, contact, existingContact)) {
+						existingContact.merge(contact);
+						contacts.remove(contact);
+						restart = true;
+						break;
 					}
 					names.put(name1, contact);
 				}
-			}
+			} // for
 		} while (restart);
 	}
 
