@@ -23,15 +23,15 @@ public class Contact {
 	private Collection<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
 	private TreeSet<Email> mails = new TreeSet<Email>(ObjectComparator.get());
 	private Name name;
-	private String formattedName;
-	private String title;
-	private String role;
+	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
+	private String title; // TODO: eine vcard kann auch mehrere haben!
+	private String role; // TODO: eine vcard kann auch mehrere haben!
 	private Birthday birthday;	
 	private boolean htmlMail;
 	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
 	private String uid;
-	private String note;
-	private String photo;
+	private String note; // TODO: eine vcard kann auch mehrere haben!
+	private String photo; // TODO: eine vcard kann auch mehrere haben!
 	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
 
 	public boolean isEmpty() {
