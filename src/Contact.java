@@ -32,7 +32,7 @@ public class Contact {
 	private String uid;
 	private String note;
 	private String photo;
-	private Organization org;
+	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
 
 	public boolean isEmpty() {
 		return adresses.isEmpty() &&
@@ -43,7 +43,7 @@ public class Contact {
 					birthday==null &&
 					urls.isEmpty() &&
 					note==null && 
-					org==null;
+					orgs.isEmpty();
 	}
 	
 	public void merge(Contact contact) throws InvalidAssignmentException {
@@ -87,7 +87,7 @@ public class Contact {
 			if (contact.note!=null) note+=contact.note;
 		}
 		if (photo==null) photo=contact.photo;
-		if (org==null) org=contact.org;		
+		orgs.addAll(contact.orgs);		
 	}
 	
 	public Contact(URL url) throws UnknownObjectException, IOException, AlreadyBoundException  {
@@ -110,7 +110,10 @@ public class Contact {
 		sb.append("\n");
 		
 		if (title!=null) sb.append("TITLE:"+title+"\n");
-		if (org!=null) sb.append(org+"\n");
+		for (Organization org:orgs){
+			sb.append(org);
+			sb.append("\n");
+		}
 		if (role!=null) sb.append("ROLE:"+role+"\n");
 		if (birthday!=null) sb.append(birthday);
 		
@@ -213,9 +216,8 @@ public class Contact {
 	}
 
 	private void readOrg(String line) throws InvalidFormatException, UnknownObjectException, AlreadyBoundException {
-		if (this.org!=null) throw new AlreadyBoundException("Trying to assign organization, although it is already assigned");
 		Organization org = new Organization(line);		
-		if (!org.isEmpty()) this.org=org;
+		if (!org.isEmpty()) orgs.add(org);
 	}
 
 	private void readUID(String uid) {
