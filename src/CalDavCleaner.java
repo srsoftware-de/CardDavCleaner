@@ -16,12 +16,10 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 public class CalDavCleaner extends JFrame implements ActionListener {
@@ -115,9 +113,14 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 
 	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
 		Vector<Contact> contacts=new Vector<Contact>();
+		int total=contactNamess.size();
+		int counter=0;
 		for (String contactName : contactNamess) {
+			System.out.println(++counter+"/"+total);
 			Contact contact = new Contact(new URL(host + contactName));
-			if (!contact.isEmpty()) contacts.add(contact);
+			if (contact.isEmpty()) {
+				System.out.println("Waring: empty contact found ("+contactName+")");				
+			} else contacts.add(contact);
 		}
 		
 		
@@ -126,7 +129,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		do {
 			restart=false;
 			names = new TreeMap<String, Contact>(ObjectComparator.get());
-			int total = contacts.size();
+			total = contacts.size();
 			int index = 0;
 			for (Contact contact : contacts) {
 				System.out.println((++index) + "/" + total);
