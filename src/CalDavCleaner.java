@@ -13,6 +13,7 @@ import java.rmi.activation.UnknownObjectException;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -42,7 +43,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		serverField.setText("http://kommune10.dyndns.info:815/cloud/remote.php/carddav/addressbooks/srichter/standard");
 		userField = addInput(mainPanel, "User:");
 		userField.setText("srichter");
-		passwordField = addPassword(mainPanel, "Password:");		
+		passwordField = addPassword(mainPanel, "Password:");
 
 		JButton startButton = new JButton("start");
 		startButton.addActionListener(this);
@@ -82,7 +83,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 		try {
 			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getPassword()));
-		} catch (Exception e) {			
+		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(0);
 		}
@@ -95,76 +96,84 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			}
 		});
 
-		if (!host.endsWith("/")) host+="/";
+		if (!host.endsWith("/")) host += "/";
 		URL url = new URL(host);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
 		String line;
-		TreeSet<String> contacts=new TreeSet<String>(ObjectComparator.get());
+		TreeSet<String> contacts = new TreeSet<String>(ObjectComparator.get());
 		while ((line = in.readLine()) != null) {
-			if (line.contains(".vcf")) contacts.add(extractContactName(line));			
+			if (line.contains(".vcf")) contacts.add(extractContactName(line));
 		}
 		in.close();
 		content.close();
 		connection.disconnect();
-		
-		scanContacts(host,contacts);
+
+		scanContacts(host, contacts);
 	}
 
-	private void scanContacts(String host, Set<String> contacts) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
-		int total=contacts.size();
-		
-		TreeMap<String, Contact> names=new TreeMap<String, Contact>(ObjectComparator.get());
-		int index=0;
-		boolean restart=false;
-		do {
-		for (String contactName:contacts){
-			System.out.println((++index)+"/"+total);
-			System.out.println(contactName);
-			Contact contact=new Contact(new URL(host+contactName));
-			System.out.println(contact);
-			
-			Name name=contact.name();
-			if (name!=null){
-				String name1=name.first()+" "+name.last();
-				String name2=name.last()+" "+name.first();
-				if (names.containsKey(name1)){
-					if (askForMege(name1,contact,names.get(name1))) {
-						names.get(name1).merge(contact);
-						contacts.remove(contactName);
-						restart=true;
-						break;
-					}
-				}
-				if (names.containsKey(name2)){
-					throw new AlreadyBoundException("Name conflict ("+name2+") between\n"+contact+"\nand\n"+names.get(name2));
-				}
-				names.put(name1, contact);
-			}
+	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
+		Vector<Contact> contacts=new Vector<Contact>();
+		for (String contactName : contactNamess) {
+			Contact contact = new Contact(new URL(host + contactName));
+			if (!contact.isEmpty()) contacts.add(contact);
 		}
+		
+		
+		TreeMap<String, Contact> names;
+		boolean restart;
+		do {
+			restart=false;
+			names = new TreeMap<String, Contact>(ObjectComparator.get());
+			int total = contacts.size();
+			int index = 0;
+			for (Contact contact : contacts) {
+				System.out.println((++index) + "/" + total);
+				System.out.println(contact);
+
+				Name name = contact.name();
+				if (name != null) {
+					String name1 = name.first() + " " + name.last();
+					String name2 = name.last() + " " + name.first();
+					
+					Contact existingContact = names.get(name1);
+					if (existingContact!=null) {
+						if (askForMege(name1, contact, existingContact)) {
+							existingContact.merge(contact);
+							contacts.remove(contact);
+							restart = true;
+							break;
+						}
+					}
+					if (names.containsKey(name2)) {
+						throw new AlreadyBoundException("Name conflict (" + name2 + ") between\n" + contact + "\nand\n" + names.get(name2));
+					}
+					names.put(name1, contact);
+				}
+			}
 		} while (restart);
 	}
 
 	private boolean askForMege(String name, Contact contact, Contact contact2) {
-		VerticalPanel vp=new VerticalPanel();
-		vp.add(new JLabel("The name \""+name+"\" is used by both following contacts:"));
-		HorizontalPanel hp=new HorizontalPanel();
-		hp.add(new JLabel("<html><br>"+contact.toString().replace("\n", "&nbsp<br>")));
-		hp.add(new JLabel("<html><br>"+contact2.toString().replace("\n", "<br>")));
+		VerticalPanel vp = new VerticalPanel();
+		vp.add(new JLabel("The name \"" + name + "\" is used by both following contacts:"));
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.add(new JLabel("<html><br>" + contact.toString().replace("\n", "&nbsp<br>")));
+		hp.add(new JLabel("<html><br>" + contact2.toString().replace("\n", "<br>")));
 		hp.skalieren();
 		vp.add(hp);
 		vp.add(new JLabel("<html><br>Shall those contacts be merged?"));
 		vp.skalieren();
-		int decision=JOptionPane.showConfirmDialog(null, vp, "Please decide!", JOptionPane.YES_NO_CANCEL_OPTION);
-		if (decision==JOptionPane.CANCEL_OPTION) System.exit(0);
-		return decision==JOptionPane.YES_OPTION;
+		int decision = JOptionPane.showConfirmDialog(null, vp, "Please decide!", JOptionPane.YES_NO_CANCEL_OPTION);
+		if (decision == JOptionPane.CANCEL_OPTION) System.exit(0);
+		return decision == JOptionPane.YES_OPTION;
 	}
 
 	private String extractContactName(String line) {
-		String[] parts=line.split("/|\"");
-		for (String part:parts){
-			if (part.contains("vcf")){
+		String[] parts = line.split("/|\"");
+		for (String part : parts) {
+			if (part.contains("vcf")) {
 				return part;
 			}
 		}

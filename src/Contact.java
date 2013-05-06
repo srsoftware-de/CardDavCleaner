@@ -13,12 +13,12 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import com.sun.media.sound.InvalidFormatException;
 
 public class Contact {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
+	//private String revision;
+	//private String productId;
 	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
 	private Collection<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
 	private TreeSet<Email> mails = new TreeSet<Email>(ObjectComparator.get());
@@ -30,13 +30,14 @@ public class Contact {
 	private boolean htmlMail;
 	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
 	private String uid;
-
-	//private String revision;
 	private String note;
-	//private String productId;
 	private String photo;
 	private Organization org;
 
+	public boolean isEmpty() {
+		return adresses.isEmpty() && phones.isEmpty() && mails.isEmpty() && title==null && role==null && birthday==null && urls==null && note==null && org==null;
+	}
+	
 	public void merge(Contact contact) throws InvalidAssignmentException {
 		adresses.addAll(contact.adresses);
 		
@@ -78,9 +79,7 @@ public class Contact {
 			if (contact.note!=null) note+=contact.note;
 		}
 		if (photo==null) photo=contact.photo;
-		if (org==null) org=contact.org;
-		
-		throw new NotImplementedException();
+		if (org==null) org=contact.org;		
 	}
 	
 	public Contact(URL url) throws UnknownObjectException, IOException, AlreadyBoundException  {
