@@ -30,7 +30,7 @@ public class Contact {
 	private boolean htmlMail;
 	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
 	private String uid;
-	private String note; // TODO: eine vcard kann auch mehrere haben!
+	private TreeSet<String> notes=new TreeSet<String>(ObjectComparator.get());
 	private String photo; // TODO: eine vcard kann auch mehrere haben!
 	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
 
@@ -42,7 +42,7 @@ public class Contact {
 					role==null && 
 					birthday==null &&
 					urls.isEmpty() &&
-					note==null && 
+					notes.isEmpty() && 
 					orgs.isEmpty();
 	}
 	
@@ -81,11 +81,7 @@ public class Contact {
 		if (contact.htmlMail) htmlMail=true;
 		urls.addAll(contact.urls);
 		if (uid==null) uid=contact.uid;
-		if (note==null) {
-			note=contact.note;
-		} else {
-			if (contact.note!=null) note+=contact.note;
-		}
+		notes.addAll(contact.notes);
 		if (photo==null) photo=contact.photo;
 		orgs.addAll(contact.orgs);		
 	}
@@ -135,7 +131,10 @@ public class Contact {
 			sb.append(url);
 			sb.append("\n");
 		}
-		if (note!=null) sb.append("NOTE:"+note+"\n");
+		for (String note:notes){
+			sb.append("NOTE:"+note+"\n");	
+		}
+		
 		if (photo!=null) sb.append(photo+"\n");
 		//TODO: verbleibende Felder einfügen
 		sb.append("END:VCARD\n");
@@ -247,9 +246,8 @@ public class Contact {
 	}
 
 	private void readNote(String line) throws AlreadyBoundException {
-		if (note!=null) throw new AlreadyBoundException("Trying to assign note, although it is already assigned");
 		if (line.isEmpty()) return;
-		note = line.replace("\\n", "\n");
+		notes.add(line);
 	}
 	
 	private void readRole(String line) throws AlreadyBoundException {

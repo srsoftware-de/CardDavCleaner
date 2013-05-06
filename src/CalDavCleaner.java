@@ -149,8 +149,14 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 							break;
 						}
 					}
-					if (names.containsKey(name2)) {
-						throw new AlreadyBoundException("Name conflict (" + name2 + ") between\n" + contact + "\nand\n" + names.get(name2));
+					existingContact = names.get(name2);
+					if (existingContact!=null) {
+						if (askForMege(name2, contact, existingContact)) {
+							existingContact.merge(contact);
+							contacts.remove(contact);
+							restart = true;
+							break;
+						}
 					}
 					names.put(name1, contact);
 				}
