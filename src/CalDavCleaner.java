@@ -165,8 +165,8 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(new JLabel("The name \"" + name + "\" is used by both following contacts:"));
 		HorizontalPanel hp = new HorizontalPanel();
-		hp.add(new JLabel("<html><br>" + contact.toString().replace("\n", "&nbsp<br>")));
-		hp.add(new JLabel("<html><br>" + contact2.toString().replace("\n", "<br>")));
+		hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
+		hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));
 		hp.skalieren();
 		vp.add(hp);
 		vp.add(new JLabel("<html><br>Shall those contacts be merged?"));

@@ -48,6 +48,7 @@ public class Contact {
 	}
 	
 	public void merge(Contact contact) throws InvalidAssignmentException {
+		System.err.println("merging contacts!");
 		adresses.addAll(contact.adresses);
 		
 		/* merging phones by numbers */
@@ -139,12 +140,57 @@ public class Contact {
 		}
 		
 		for (String photo:photos) sb.append(photo+"\n");
-		//TODO: verbleibende Felder einfügen
 		sb.append("END:VCARD\n");
 		return sb.toString();
 	}
 
+	public String toString(boolean shorter) {
+		StringBuffer sb=new StringBuffer();
+		sb.append("BEGIN:VCARD\n");
 
+		if (uid!=null) sb.append("UID:"+uid+"\n");
+		
+		sb.append("FN:"); if (formattedName!=null) sb.append(formattedName); // required for Version 3
+		sb.append("\n");
+		
+		sb.append(name);// required for Version 3
+		sb.append("\n");
+		
+		for (String title:titles){
+			sb.append("TITLE:"+title+"\n");
+		}
+		for (Organization org:orgs){
+			sb.append(org);
+			sb.append("\n");
+		}
+		if (role!=null) sb.append("ROLE:"+role+"\n");
+		if (birthday!=null) sb.append(birthday);
+		
+		for (Adress adress:adresses){
+			sb.append(adress);
+			sb.append("\n");
+		}
+		for(Phone phone:phones){
+			sb.append(phone);
+			sb.append("\n");			
+		}
+		for(Email mail:mails){
+			sb.append(mail);
+			sb.append("\n");
+		}
+		if (htmlMail) sb.append("X-MOZILLA-HTML:TRUE\n");
+		
+		for (Url url:urls){
+			sb.append(url);
+			sb.append("\n");
+		}
+		for (String note:notes){
+			sb.append("NOTE:"+note+"\n");	
+		}
+		
+		sb.append("END:VCARD\n");
+		return sb.toString();
+	}
 	private String newRevision() {
 		String date=formatter.format(new Date()).replace('#','T');
 		return "REV:"+date;
