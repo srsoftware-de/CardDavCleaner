@@ -129,6 +129,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		TreeMap<String, TreeSet<Contact>> numbers; // on number can be used by multiple persons, as people living together may share a landline number
 		boolean restart;
 		do {
+
 			restart = false;
 			names = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
 			numbers = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
@@ -141,7 +142,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 				TreeSet<Contact> blacklist = blackLists.get(contact);
 
 				Name name = contact.name();
-				if (name != null) {
+				if (name != null) { // we can only do name comparison for contacts with name...
 					String canonicalName = name.canonical();
 					TreeSet<Contact> contactsForName = names.get(canonicalName);
 
@@ -167,10 +168,10 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 								}
 								blacklist.add(existingContact);
 							}
-						}
+						} // ---> for (Contact existingContact : contactsForName)
 						if (restart) break; // this has to be done, as contacts changed
 					}
-				}
+				} // ---> if (name != null)
 			} // for
 		} while (restart);
 	}
