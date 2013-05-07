@@ -124,11 +124,14 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 				contacts.add(contact);
 		}
 
+		TreeMap<Contact, TreeSet<Contact>> dontMerge = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
 		TreeMap<String, Contact> names;
+		TreeMap<String, Contact> numbers;
 		boolean restart;
 		do {
 			restart = false;
 			names = new TreeMap<String, Contact>(ObjectComparator.get());
+			numbers = new TreeMap<String, Contact>(ObjectComparator.get());
 			total = contacts.size();
 			int index = 0;
 			for (Contact contact : contacts) {
@@ -141,19 +144,41 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 					String name2 = name.last() + " " + name.first();
 
 					Contact existingContact = names.get(name1);
-					if ((existingContact != null) && askForMege("name",name1, contact, existingContact)) {
-						existingContact.merge(contact);
-						contacts.remove(contact);
-						restart = true;
-						break;
-
+					if (existingContact != null) {
+						TreeSet<Contact> blacklist = dontMerge.get(existingContact);
+						if (blacklist==null || !blacklist.contains(contact)){ // if contact is not on the blacklist of existingContact
+							if (askForMege("name", name1, contact, existingContact)) {
+								existingContact.merge(contact);
+								contacts.remove(contact);
+								restart = true;
+								break;
+							} else {
+								if (blacklist == null) {
+									blacklist = new TreeSet<Contact>(ObjectComparator.get());
+									dontMerge.put(existingContact, blacklist);
+								}
+								blacklist.add(contact);
+							}
+						}
 					}
 					existingContact = names.get(name2);
-					if ((existingContact != null) && askForMege("name",name2, contact, existingContact)) {
-						existingContact.merge(contact);
-						contacts.remove(contact);
-						restart = true;
-						break;
+					if (existingContact != null) {
+						TreeSet<Contact> blacklist = dontMerge.get(existingContact);
+						if (blacklist==null || !blacklist.contains(contact)){ // if contact is not on the blacklist of existingContact
+							if (askForMege("name", name2, contact, existingContact)) {
+								existingContact.merge(contact);
+								contacts.remove(contact);
+								restart = true;
+								break;
+							} else {
+								if (blacklist == null) {
+									blacklist = new TreeSet<Contact>(ObjectComparator.get());
+									dontMerge.put(existingContact, blacklist);
+								}
+								blacklist.add(contact);
+							}
+						}
+
 					}
 					names.put(name1, contact);
 				}
@@ -161,9 +186,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		} while (restart);
 	}
 
-	private boolean askForMege(String identifier,String name, Contact contact, Contact contact2) {
+	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) {
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new JLabel("The "+identifier+" \"" + name + "\" is used by both following contacts:"));
+		vp.add(new JLabel("The " + identifier + " \"" + name + "\" is used by both following contacts:"));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
 		hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));
