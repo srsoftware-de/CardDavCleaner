@@ -143,19 +143,22 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 				String canonicalName=contact.name().canonical();
 				TreeSet<Contact> contactsForName=names.get(canonicalName);
 				
-				if (contactsForName==null) {
+				if (contactsForName==null) { // if we didn't have contacts with this name before, we can't compare.
 					contactsForName=new TreeSet<Contact>(ObjectComparator.get());
-					contactsForName.add(contact);
+					contactsForName.add(contact); // add a mapping for this contacts name
 					names.put(canonicalName, contactsForName);
-				} else {
+				} else { // this name appeared before:
 					for (Contact existingContact:contactsForName){
 						if (blacklist!=null && blacklist.contains(existingContact)) continue;
+						
+						// if this contact pair is not blacklisted:
 						if (askForMege("name", canonicalName, contact, existingContact)) {
 							contact.merge(existingContact);
-							contacts.remove(contact);
+							contactsForName.remove(existingContact);
+							contacts.remove(existingContact);
 							restart = true;
-							break;
-						} else {
+							break; // this has to be done, as contactsForName changed
+						} else { // if merging was denied: add contact pair to blacklist
 							if (blacklist==null) {
 								blacklist=new TreeSet<Contact>(ObjectComparator.get());
 								blackLists.put(contact, blacklist);
@@ -163,6 +166,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 							blacklist.add(existingContact);
 						}
 					} 
+					if (restart) break; // this has to be done, as contacts changed
 				}
 				
 			} // for
