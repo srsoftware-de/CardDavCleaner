@@ -1,4 +1,5 @@
 import java.rmi.activation.UnknownObjectException;
+import java.util.TreeSet;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -21,7 +22,10 @@ public class Name {
 		return sb.toString();
 	}
 	
-
+	public String full(){
+		return first+" "+last;
+	}
+	
 	public Name(String line) throws UnknownObjectException, InvalidFormatException {		
 		if (!line.startsWith("N:")) throw new InvalidFormatException("Name does not start with \"N:\"");
 		line=line.substring(2);
@@ -62,5 +66,13 @@ public class Name {
 
 	public String first() {
 		return first;
+	}
+
+
+	public String canonical() {
+		TreeSet<String> parts=new TreeSet<String>();
+		parts.add(first);
+		parts.add(last);
+		return parts.toString(); // sorted set of name parts
 	}
 }

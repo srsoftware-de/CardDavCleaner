@@ -124,13 +124,13 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 				contacts.add(contact);
 		}
 
-		TreeMap<Contact, TreeSet<Contact>> dontMerge = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
-		TreeMap<String, Contact> names;
+		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
+		TreeMap<String, TreeSet<Contact>> names;
 		TreeMap<String, Contact> numbers;
 		boolean restart;
 		do {
 			restart = false;
-			names = new TreeMap<String, Contact>(ObjectComparator.get());
+			names = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
 			numbers = new TreeMap<String, Contact>(ObjectComparator.get());
 			total = contacts.size();
 			int index = 0;
@@ -138,50 +138,33 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 				System.out.println((++index) + "/" + total);
 				System.out.println(contact);
 
-				Name name = contact.name();
-				if (name != null) {
-					String name1 = name.first() + " " + name.last();
-					String name2 = name.last() + " " + name.first();
-
-					Contact existingContact = names.get(name1);
-					if (existingContact != null) {
-						TreeSet<Contact> blacklist = dontMerge.get(existingContact);
-						if (blacklist==null || !blacklist.contains(contact)){ // if contact is not on the blacklist of existingContact
-							if (askForMege("name", name1, contact, existingContact)) {
-								existingContact.merge(contact);
-								contacts.remove(contact);
-								restart = true;
-								break;
-							} else {
-								if (blacklist == null) {
-									blacklist = new TreeSet<Contact>(ObjectComparator.get());
-									dontMerge.put(existingContact, blacklist);
-								}
-								blacklist.add(contact);
+				TreeSet<Contact> blacklist = blackLists.get(contact);				
+				
+				String canonicalName=contact.name().canonical();
+				TreeSet<Contact> contactsForName=names.get(canonicalName);
+				
+				if (contactsForName==null) {
+					contactsForName=new TreeSet<Contact>(ObjectComparator.get());
+					contactsForName.add(contact);
+					names.put(canonicalName, contactsForName);
+				} else {
+					for (Contact existingContact:contactsForName){
+						if (blacklist!=null && blacklist.contains(existingContact)) continue;
+						if (askForMege("name", canonicalName, contact, existingContact)) {
+							contact.merge(existingContact);
+							contacts.remove(contact);
+							restart = true;
+							break;
+						} else {
+							if (blacklist==null) {
+								blacklist=new TreeSet<Contact>(ObjectComparator.get());
+								blackLists.put(contact, blacklist);
 							}
+							blacklist.add(existingContact);
 						}
-					}
-					existingContact = names.get(name2);
-					if (existingContact != null) {
-						TreeSet<Contact> blacklist = dontMerge.get(existingContact);
-						if (blacklist==null || !blacklist.contains(contact)){ // if contact is not on the blacklist of existingContact
-							if (askForMege("name", name2, contact, existingContact)) {
-								existingContact.merge(contact);
-								contacts.remove(contact);
-								restart = true;
-								break;
-							} else {
-								if (blacklist == null) {
-									blacklist = new TreeSet<Contact>(ObjectComparator.get());
-									dontMerge.put(existingContact, blacklist);
-								}
-								blacklist.add(contact);
-							}
-						}
-
-					}
-					names.put(name1, contact);
+					} 
 				}
+				
 			} // for
 		} while (restart);
 	}
