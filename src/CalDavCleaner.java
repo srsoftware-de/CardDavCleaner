@@ -125,50 +125,52 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		}
 
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
-		TreeMap<String, TreeSet<Contact>> names;
-		TreeMap<String, Contact> numbers;
+		TreeMap<String, TreeSet<Contact>> names; // one name may map to multiple contacts, as multiple persons may have the same name
+		TreeMap<String, TreeSet<Contact>> numbers; // on number can be used by multiple persons, as people living together may share a landline number
 		boolean restart;
 		do {
 			restart = false;
 			names = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
-			numbers = new TreeMap<String, Contact>(ObjectComparator.get());
+			numbers = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
 			total = contacts.size();
 			int index = 0;
 			for (Contact contact : contacts) {
 				System.out.println((++index) + "/" + total);
 				System.out.println(contact);
 
-				TreeSet<Contact> blacklist = blackLists.get(contact);				
-				
-				String canonicalName=contact.name().canonical();
-				TreeSet<Contact> contactsForName=names.get(canonicalName);
-				
-				if (contactsForName==null) { // if we didn't have contacts with this name before, we can't compare.
-					contactsForName=new TreeSet<Contact>(ObjectComparator.get());
-					contactsForName.add(contact); // add a mapping for this contacts name
-					names.put(canonicalName, contactsForName);
-				} else { // this name appeared before:
-					for (Contact existingContact:contactsForName){
-						if (blacklist!=null && blacklist.contains(existingContact)) continue;
-						
-						// if this contact pair is not blacklisted:
-						if (askForMege("name", canonicalName, contact, existingContact)) {
-							contact.merge(existingContact);
-							contactsForName.remove(existingContact);
-							contacts.remove(existingContact);
-							restart = true;
-							break; // this has to be done, as contactsForName changed
-						} else { // if merging was denied: add contact pair to blacklist
-							if (blacklist==null) {
-								blacklist=new TreeSet<Contact>(ObjectComparator.get());
-								blackLists.put(contact, blacklist);
+				TreeSet<Contact> blacklist = blackLists.get(contact);
+
+				Name name = contact.name();
+				if (name != null) {
+					String canonicalName = name.canonical();
+					TreeSet<Contact> contactsForName = names.get(canonicalName);
+
+					if (contactsForName == null) { // if we didn't have contacts with this name before, we can't compare.
+						contactsForName = new TreeSet<Contact>(ObjectComparator.get());
+						contactsForName.add(contact); // add a mapping for this contacts name
+						names.put(canonicalName, contactsForName);
+					} else { // this name appeared before:
+						for (Contact existingContact : contactsForName) {
+							if (blacklist != null && blacklist.contains(existingContact)) continue;
+
+							// if this contact pair is not blacklisted:
+							if (askForMege("name", canonicalName, contact, existingContact)) {
+								contact.merge(existingContact);
+								contactsForName.remove(existingContact);
+								contacts.remove(existingContact);
+								restart = true;
+								break; // this has to be done, as contactsForName changed
+							} else { // if merging was denied: add contact pair to blacklist
+								if (blacklist == null) {
+									blacklist = new TreeSet<Contact>(ObjectComparator.get());
+									blackLists.put(contact, blacklist);
+								}
+								blacklist.add(existingContact);
 							}
-							blacklist.add(existingContact);
 						}
-					} 
-					if (restart) break; // this has to be done, as contacts changed
+						if (restart) break; // this has to be done, as contacts changed
+					}
 				}
-				
 			} // for
 		} while (restart);
 	}
