@@ -63,7 +63,7 @@ public class Contact {
 			System.out.println("mail conflict");
 			return true;
 		}
-		if (!adresses.isEmpty() && c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) {
+		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) {
 			System.out.println("adress conflict");
 			return true;
 		}
