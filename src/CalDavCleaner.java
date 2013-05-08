@@ -221,7 +221,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 						if (blacklist != null && blacklist.contains(existingContact)) continue;
 
 							// if this contact pair is not blacklisted:
-						if (askForMege("phone number", mail, contact, existingContact)) {
+						if (askForMege("e-mail", mail, contact, existingContact)) {
 							contact.merge(existingContact);
 							contacts.remove(existingContact);
 							restart = true;
