@@ -257,7 +257,7 @@ public class Contact {
 			sb.append("\n");
 		}
 		for (String note:notes){
-			sb.append("NOTE:"+note+"\n");	
+			sb.append("NOTE:"+note.substring(0,20)+"\n");	
 		}
 		for (String photo:photos) sb.append(photo.substring(0,20)+"\n");
 
@@ -414,5 +414,13 @@ public class Contact {
 
 	public Name name() {
 		return name;
+	}
+
+	public TreeSet<String> phoneNumbers() {
+		TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
+		for (Phone p:phones){
+			numbers.add(p.number());
+		}
+		return numbers;
 	}
 }

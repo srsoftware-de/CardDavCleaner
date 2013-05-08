@@ -71,8 +71,8 @@ public class Name {
 
 	public String canonical() {
 		TreeSet<String> parts=new TreeSet<String>(ObjectComparator.get());
-		parts.add(first);
-		parts.add(last);
-		return parts.toString(); // sorted set of name parts
+		if (first!=null) parts.add(first);
+		if (last!=null) parts.add(last);		
+		return parts.toString().replace("[", "").replace("]", ""); // sorted set of name parts
 	}
 }
