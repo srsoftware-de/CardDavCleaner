@@ -257,9 +257,9 @@ public class Contact {
 			sb.append("\n");
 		}
 		for (String note:notes){
-			sb.append("NOTE:"+note.substring(0,20)+"\n");	
+			sb.append("NOTE:"+note.substring(0,30)+"\n");	
 		}
-		for (String photo:photos) sb.append(photo.substring(0,20)+"\n");
+		for (String photo:photos) sb.append(photo.substring(0,30)+"\n");
 
 		sb.append("END:VCARD\n");
 		return sb.toString();
@@ -422,5 +422,13 @@ public class Contact {
 			numbers.add(p.number());
 		}
 		return numbers;
+	}
+
+	public TreeSet<String> mailAdresses() {
+		TreeSet<String> mails=new TreeSet<String>(ObjectComparator.get());
+		for (Email e:this.mails){
+			mails.add(e.adress());
+		}
+		return mails;
 	}
 }
