@@ -270,34 +270,17 @@ public class Contact {
 	}
 
 	private void parse(URL url) throws IOException, UnknownObjectException, AlreadyBoundException {
-		String u = url.toString();
-		int i = u.lastIndexOf('/');
-		u = "tmp/" + u.substring(i + 1);
-		File file = new File(u);
-		Vector<String> lines = new Vector<String>();
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		InputStream content = (InputStream) connection.getInputStream();
+		BufferedReader in = new BufferedReader(new InputStreamReader(content));
+		Vector<String> lines=new Vector<String>();
 		String line;
-
-		if (file.exists()) {
-			BufferedReader in = new BufferedReader(new FileReader(file));
-			while ((line = in.readLine()) != null) {
-				lines.add(line);
-			}
-			in.close();
-		} else {
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			InputStream content = (InputStream) connection.getInputStream();
-			BufferedReader in = new BufferedReader(new InputStreamReader(content));
-			BufferedWriter out = new BufferedWriter(new FileWriter(file));
-			while ((line = in.readLine()) != null) {
-				lines.add(line);
-				out.write(line + "\n");
-			}
-			in.close();
-			out.close();
-			content.close();
-			connection.disconnect();
+		while ((line = in.readLine()) != null) {
+			lines.add(line);
 		}
-
+		in.close();
+		content.close();
+		connection.disconnect();
 		for (int index = 0; index < lines.size(); index++) {
 			line = lines.elementAt(index);
 			while (index + 1 < lines.size() && lines.elementAt(index + 1).startsWith(" ")) {
