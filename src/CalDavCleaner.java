@@ -183,8 +183,12 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		} while (restart);
 	}
 
-	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) {
-		if (!contact.conflictsWith(contact2)) return true;
+	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
+		if (!contact.conflictsWith(contact2)) { // todo: hier funktioniert was noch nicht
+			System.out.println("mixing "+contact+"\n\nwith\n\n"+contact2);
+			Thread.sleep(10000);
+			return true;
+		}
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(new JLabel("The " + identifier + " \"" + name + "\" is used by both following contacts:"));
 		HorizontalPanel hp = new HorizontalPanel();

@@ -51,7 +51,7 @@ public class Contact {
 
 	private TreeSet<String> getMailAdresses() {
 		TreeSet<String> result=new TreeSet<String>(ObjectComparator.get());
-		for (Adress adress:adresses) result.add(adress.canonical());
+		for (Email mail:mails) result.add(mail.adress());
 		return result;
 	}
 
@@ -63,7 +63,7 @@ public class Contact {
 
 	private TreeSet<String> getAdressData() {
 		TreeSet<String> result=new TreeSet<String>(ObjectComparator.get());
-		for (Email mail:mails) result.add(mail.adress());
+		for (Adress adress:adresses) result.add(adress.canonical());
 		return result;
 	}
 	

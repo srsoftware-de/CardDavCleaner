@@ -52,7 +52,7 @@ public class Email {
 
 	private void readAddr(String line) {
 		if (line.isEmpty()) return;
-		adress = line;
+		adress = line.toLowerCase();
 	}
 	
 	public boolean isEmpty() {
