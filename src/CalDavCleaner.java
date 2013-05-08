@@ -189,6 +189,11 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			Thread.sleep(10000);
 			return true;
 		}
+		System.out.println("asking for the following contacts:");
+		System.out.println(contact);
+		System.out.println("\nand\n");
+		System.out.println(contact2);
+		System.out.println();
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(new JLabel("The " + identifier + " \"" + name + "\" is used by both following contacts:"));
 		HorizontalPanel hp = new HorizontalPanel();
