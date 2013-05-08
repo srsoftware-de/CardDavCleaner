@@ -1,4 +1,8 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -266,24 +270,40 @@ public class Contact {
 	}
 
 	private void parse(URL url) throws IOException, UnknownObjectException, AlreadyBoundException {
-
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			InputStream content = (InputStream) connection.getInputStream();
-			BufferedReader in = new BufferedReader(new InputStreamReader(content));
-		Vector<String> lines=new Vector<String>();
+		String u = url.toString();
+		int i = u.lastIndexOf('/');
+		u = "tmp/" + u.substring(i + 1);
+		File file = new File(u);
+		Vector<String> lines = new Vector<String>();
 		String line;
+
+		if (file.exists()) {
+			BufferedReader in = new BufferedReader(new FileReader(file));
 			while ((line = in.readLine()) != null) {
 				lines.add(line);
 			}
 			in.close();
+		} else {
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			InputStream content = (InputStream) connection.getInputStream();
+			BufferedReader in = new BufferedReader(new InputStreamReader(content));
+			BufferedWriter out = new BufferedWriter(new FileWriter(file));
+			while ((line = in.readLine()) != null) {
+				lines.add(line);
+				out.write(line + "\n");
+			}
+			in.close();
+			out.close();
 			content.close();
 			connection.disconnect();
-		for (int index=0; index<lines.size(); index++){
-			line=lines.elementAt(index);
-			while (index+1<lines.size() && lines.elementAt(index+1).startsWith(" ")){
+		}
+
+		for (int index = 0; index < lines.size(); index++) {
+			line = lines.elementAt(index);
+			while (index + 1 < lines.size() && lines.elementAt(index + 1).startsWith(" ")) {
 				index++;
-				line+=lines.elementAt(index).substring(2);
-			}			
+				line += lines.elementAt(index).substring(2);
+			}
 			boolean known = false;
 			if (line.equals("BEGIN:VCARD")) known = true;
 			if (line.equals("END:VCARD")) known = true;
@@ -292,21 +312,20 @@ public class Contact {
 			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
 			if (line.startsWith("TEL;") && (known = true)) readPhone(line);
 			if (line.startsWith("EMAIL;") && (known = true)) readMail(line);
-			if (line.startsWith("REV:")) known = true;//readRevision(line.substring(4));
+			if (line.startsWith("REV:")) known = true;// readRevision(line.substring(4));
 			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
 			if (line.startsWith("BDAY") && (known = true)) readBirthday(line.substring(4));
 			if (line.startsWith("ROLE:") && (known = true)) readRole(line.substring(5));
 			if (line.startsWith("URL;") && (known = true)) readUrl(line);
-			if (line.startsWith("PRODID:")) known = true; //readProductId(line.substring(7));
+			if (line.startsWith("PRODID:")) known = true; // readProductId(line.substring(7));
 			if (line.startsWith("N:") && (known = true)) readName(line);
-			if (line.startsWith("FN:") && (known=true)) readFormattedName(line.substring(3));
-			if (line.startsWith("ORG:") && (known = true)) readOrg(line);			
+			if (line.startsWith("FN:") && (known = true)) readFormattedName(line.substring(3));
+			if (line.startsWith("ORG:") && (known = true)) readOrg(line);
 			if (line.startsWith("TITLE:") && (known = true)) readTitle(line.substring(6));
 			if (line.startsWith("PHOTO;") && (known = true)) readPhoto(line);
-			if (line.startsWith("X-MOZILLA-HTML:") && (known=true)) readMailFormat(line.substring(15));
-			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known=true;
-			
-			
+			if (line.startsWith("X-MOZILLA-HTML:") && (known = true)) readMailFormat(line.substring(15));
+			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
+
 			if (!known) {
 				throw new UnknownObjectException("unknown entry/instruction found in vcard: " + line);
 			}
