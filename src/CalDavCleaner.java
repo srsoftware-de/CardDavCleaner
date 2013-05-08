@@ -141,6 +141,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 
 				TreeSet<Contact> blacklist = blackLists.get(contact);
 
+				/************* name *****************/
 				Name name = contact.name();
 				if (name != null) { // we can only do name comparison for contacts with name...
 					String canonicalName = name.canonical();
@@ -170,6 +171,12 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 							}
 						} // ---> for (Contact existingContact : contactsForName)
 						if (restart) break; // this has to be done, as contacts changed
+						
+						/************* name *****************/
+						/************* phone ****************/
+						
+						/************* phone ****************/
+						
 					}
 				} // ---> if (name != null)
 			} // for
@@ -177,6 +184,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) {
+		if (!contact.conflictsWith(contact2)) return true;
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(new JLabel("The " + identifier + " \"" + name + "\" is used by both following contacts:"));
 		HorizontalPanel hp = new HorizontalPanel();

@@ -33,6 +33,41 @@ public class Contact {
 	private TreeSet<String> notes=new TreeSet<String>(ObjectComparator.get());
 	private TreeSet<String> photos=new TreeSet<String>(ObjectComparator.get());
 	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
+	
+	public boolean conflictsWith(Contact c2){
+		if (name!=null && c2.name!=null && name.canonical()!=c2.name.canonical()) return true;
+		if (birthday!=null && c2.birthday!=null && !birthday.equals(c2.birthday)) return true;
+		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) return true;
+		if (role!=null && c2.role!=null && !role.equals(c2.role)) return true;
+		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getPhoneNumbers().equals(c2.getPhoneNumbers())) return true;
+		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) return true;
+		if (!adresses.isEmpty() && c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) return true;
+		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls)) return true;
+		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes)) return true;
+		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) return true;
+		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos)) return true;		
+		return false;
+	}
+
+	private TreeSet<String> getMailAdresses() {
+		TreeSet<String> result=new TreeSet<String>(ObjectComparator.get());
+		for (Adress adress:adresses) result.add(adress.canonical());
+		return result;
+	}
+
+	private TreeSet<String> getPhoneNumbers() {
+		TreeSet<String> result=new TreeSet<String>(ObjectComparator.get());
+		for (Phone phone:phones) result.add(phone.number());
+		return result;
+	}
+
+	private TreeSet<String> getAdressData() {
+		TreeSet<String> result=new TreeSet<String>(ObjectComparator.get());
+		for (Email mail:mails) result.add(mail.adress());
+		return result;
+	}
+	
+	
 
 	public boolean isEmpty() {
 		return adresses.isEmpty() &&
@@ -187,7 +222,8 @@ public class Contact {
 		for (String note:notes){
 			sb.append("NOTE:"+note+"\n");	
 		}
-		
+		for (String photo:photos) sb.append(photo.substring(0,20)+"\n");
+
 		sb.append("END:VCARD\n");
 		return sb.toString();
 	}

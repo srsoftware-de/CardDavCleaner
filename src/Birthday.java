@@ -5,6 +5,10 @@ public class Birthday {
 	private String time;
 	private String birtdate;
 	
+	public boolean equals(Birthday b2){
+		return birtdate.equals(b2.birtdate);
+	}
+	
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
 		sb.append("BDAY");
