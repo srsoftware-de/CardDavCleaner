@@ -1,11 +1,14 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.rmi.AlreadyBoundException;
@@ -93,7 +96,8 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 				return new PasswordAuthentication(user, password.toCharArray());
 			}
 		});
-
+		
+		putTestFile(host);
 		if (!host.endsWith("/")) host += "/";
 		URL url = new URL(host);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -110,6 +114,27 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 
 		scanContacts(host, contacts);
 	}
+
+	private void putTestFile(String host) throws IOException {
+		String message="BEGIN:VCARD\nFN:John Doe\nN:Doe;John;;Dr;\nVERSION:3.0\nEND:VCARD";
+		byte[] data=message.getBytes();
+		URL putUrl=new URL(host+"/aaaa.vcf");
+		System.out.println(putUrl);
+		HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
+		conn.setRequestMethod( "PUT" );  
+    conn.setDoOutput( true );  
+    conn.setRequestProperty( "Content-Type", "text/x-vcard" );  
+    conn.connect();  
+    OutputStream out = conn.getOutputStream();  
+    ByteArrayInputStream in = new ByteArrayInputStream( data );  
+    int read = -1;  
+  
+    while ((read=in.read()) != -1 ) out.write( read );
+    out.close();
+    System.out.println( conn.getResponseCode() );
+    conn.disconnect();
+		System.exit(0);
+}
 
 	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
 		Vector<Contact> contacts = new Vector<Contact>();
