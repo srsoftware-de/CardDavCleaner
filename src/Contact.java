@@ -17,6 +17,8 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import com.sun.media.sound.InvalidFormatException;
 
 public class Contact {
@@ -147,11 +149,32 @@ public class Contact {
 			} else mailMap.put(mail.adress(), mail);
 		}
 		
-		if (name==null) name=contact.name;
-		if (formattedName==null) formattedName=contact.formattedName;
+		if (name!=null){
+			if (contact.name!=null && !contact.name.equals(name)){
+				name=(Name) selectOneOf("name",name,contact.name);
+			}
+		} else name=contact.name;
+		
+		if (formattedName!=null){
+			if (contact.formattedName!=null && !contact.formattedName.equals(formattedName)){
+				formattedName=(String) selectOneOf("formated name", formattedName, contact.formattedName);
+			}
+		} else formattedName=contact.formattedName;
+		
 		titles.addAll(contact.titles);
-		if (role==null) role=contact.role;
-		if (birthday==null) birthday=contact.birthday;
+		
+		if (role!=null){
+			if (contact.role!=null && !contact.role.equals(role)){
+				role=(String)selectOneOf("role", role, contact.role);
+			}
+		} else role=contact.role;
+		
+		if (birthday!=null){
+			if (contact.birthday!=null && !contact.birthday.equals(birthday)){
+				birthday= (Birthday) selectOneOf("birtday", birthday, contact.birthday);
+			}
+		} else birthday=contact.birthday;
+		
 		if (contact.htmlMail) htmlMail=true;
 		urls.addAll(contact.urls);
 		if (uid==null) uid=contact.uid;
@@ -160,6 +183,18 @@ public class Contact {
 		orgs.addAll(contact.orgs);		
 	}
 	
+	private Object selectOneOf(String title, Object name1, Object name2) {
+		int decision = JOptionPane.showConfirmDialog(null, "<html>You have two options for the "+title+" field:<br>1. "+name1+"<br>2. "+name2+"<br><br>Shall i take the first name?", "Please select", JOptionPane.YES_NO_CANCEL_OPTION);
+		switch (decision){
+		case JOptionPane.YES_OPTION:
+			return name1;
+		case JOptionPane.NO_OPTION:
+			return name2;
+		default: System.exit(0);
+		}
+		return null;
+	}
+
 	public Contact(URL url) throws UnknownObjectException, IOException, AlreadyBoundException  {
 		parse(url);
 	}
@@ -257,9 +292,11 @@ public class Contact {
 			sb.append("\n");
 		}
 		for (String note:notes){
-			sb.append("NOTE:"+note.substring(0,30)+"\n");	
+			sb.append("NOTE:"+((note.length()>30)?(note.substring(0,28)+"..."):note)+"\n");	
 		}
-		for (String photo:photos) sb.append(photo.substring(0,30)+"\n");
+		for (String photo:photos) {
+			sb.append(photo.substring(0,30)+"...\n");
+		}
 
 		sb.append("END:VCARD\n");
 		return sb.toString();

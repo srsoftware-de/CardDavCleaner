@@ -10,7 +10,6 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.rmi.AlreadyBoundException;
 import java.rmi.activation.UnknownObjectException;
-import java.util.Collection;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
