@@ -28,7 +28,7 @@ public class Name {
 	
 	public Name(String line) throws UnknownObjectException, InvalidFormatException {		
 		if (!line.startsWith("N:")) throw new InvalidFormatException("Name does not start with \"N:\"");
-		line=line.substring(2);
+		line=line.substring(2).trim();
 		if (line.contains(";")){
 			String[] parts = line.split(";");
 			if (parts.length>0) setLast(parts[0]);
@@ -56,7 +56,19 @@ public class Name {
 	}
 	
 	public boolean equals(Name name){
-		return this.first.equals(name.first) && this.last.equals(name.last);
+		if (first!=null){
+			if (name.first==null) return false;
+			if (!name.first.equals(first)) return false;
+		} else {
+			if (name.first==null) return false;
+		}
+		if (last!=null){
+			if (name.last==null) return false;
+			if (!name.last.equals(last)) return false;
+		} else {
+			if (name.last==null) return false;
+		}
+		return true;
 	}
 
 

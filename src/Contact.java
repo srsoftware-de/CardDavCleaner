@@ -186,11 +186,9 @@ public class Contact {
 	private Object selectOneOf(String title, Object name1, Object name2) {
 		int decision = JOptionPane.showConfirmDialog(null, "<html>You have two options for the "+title+" field:<br>1. "+name1+"<br>2. "+name2+"<br><br>Shall i take the first name?", "Please select", JOptionPane.YES_NO_CANCEL_OPTION);
 		switch (decision){
-		case JOptionPane.YES_OPTION:
-			return name1;
-		case JOptionPane.NO_OPTION:
-			return name2;
-		default: System.exit(0);
+			case JOptionPane.YES_OPTION:	return name1;
+			case JOptionPane.NO_OPTION:	return name2;
+			case JOptionPane.CANCEL_OPTION: System.exit(0);
 		}
 		return null;
 	}
