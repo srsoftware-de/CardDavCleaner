@@ -1,8 +1,4 @@
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -41,52 +37,21 @@ public class Contact {
 	private TreeSet<String> notes=new TreeSet<String>(ObjectComparator.get());
 	private TreeSet<String> photos=new TreeSet<String>(ObjectComparator.get());
 	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
+	private String vcfName;
 	
 	public boolean conflictsWith(Contact c2){
-		if (name!=null && c2.name!=null && !name.canonical().equals(c2.name.canonical())) {
-			System.out.println("name conflict");
-			return true;
-		}
-		if (birthday!=null && c2.birthday!=null && !birthday.equals(c2.birthday)) {
-			System.out.println("birthday conflict");
-			return true;
-		}
-		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) {
-			System.out.println("title conflict");
-			return true;
-		}
-		if (role!=null && c2.role!=null && !role.equals(c2.role)) {
-			System.out.println("role conflict");
-			return true;
-		}
-		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getPhoneNumbers().equals(c2.getPhoneNumbers())) {
-			System.out.println("phone conflict");
-			return true;
-		}
-		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) {
-			System.out.println("mail conflict");
-			return true;
-		}
-		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) {
-			System.out.println("adress conflict");
-			return true;
-		}
-		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls)) {
-			System.out.println("ur conflict");
-			return true;
-		}
-		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes)){
-			System.out.println("notes conflict");
-			return true;
-		}
-		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) {
-			System.out.println("orgs conflict");
-			return true;
-		}
-		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos)){
-			System.out.println("photo conflict");
-			return true;		
-		}
+		if (name!=null && c2.name!=null && !name.canonical().equals(c2.name.canonical())) return true;
+		if (birthday!=null && c2.birthday!=null && !birthday.equals(c2.birthday)) return true;
+		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) return true;
+		if (role!=null && c2.role!=null && !role.equals(c2.role)) return true;
+		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getPhoneNumbers().equals(c2.getPhoneNumbers())) return true;
+		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) return true;
+		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) return true;
+		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls))	return true;
+		
+		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes))return true;
+		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) return true;
+		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos))	return true;		
 		return false;
 	}
 
@@ -124,7 +89,6 @@ public class Contact {
 	}
 	
 	public void merge(Contact contact) throws InvalidAssignmentException {
-		System.err.println("merging contacts!");
 		adresses.addAll(contact.adresses);
 		
 		/* merging phones by numbers */
@@ -191,10 +155,10 @@ public class Contact {
 		HorizontalPanel hp=new HorizontalPanel();
 		hp.add(new JLabel("<html>"+this.toString(true).replace("\n", "&nbsp;<br>")));
 		hp.add(new JLabel("<html>"+contact2.toString(true).replace("\n", "<br>")));
-		hp.skalieren();
+		hp.scale();
 		vp.add(hp);
 		vp.add(new JLabel("<html><br>Which "+title+" shall be used?"));
-		vp.skalieren();
+		vp.scale();
 		UIManager.put("OptionPane.yesButtonText", o1.toString());
 		UIManager.put("OptionPane.noButtonText", o2.toString());
 		int decision = JOptionPane.showConfirmDialog(null, vp, "Please select", JOptionPane.YES_NO_CANCEL_OPTION);
@@ -208,8 +172,9 @@ public class Contact {
 		return null;
 	}
 
-	public Contact(URL url) throws UnknownObjectException, IOException, AlreadyBoundException  {
-		parse(url);
+	public Contact(String directory,String name) throws UnknownObjectException, IOException, AlreadyBoundException  {
+		vcfName=name;
+		parse(new URL(directory+name));
 	}
 	
 	public String toString() {
@@ -235,7 +200,10 @@ public class Contact {
 			sb.append("\n");
 		}
 		if (role!=null) sb.append("ROLE:"+role+"\n");
-		if (birthday!=null) sb.append(birthday);
+		if (birthday!=null) {
+			sb.append(birthday);
+			sb.append("\n");
+		}
 		
 		for (Adress adress:adresses){
 			sb.append(adress);
@@ -320,34 +288,17 @@ public class Contact {
 	}
 
 	private void parse(URL url) throws IOException, UnknownObjectException, AlreadyBoundException {
-		String u = url.toString();
-		int i = u.lastIndexOf('/');
-		u = "tmp/" + u.substring(i + 1);
-		File file = new File(u);
-		Vector<String> lines = new Vector<String>();
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		InputStream content = (InputStream) connection.getInputStream();
+		BufferedReader in = new BufferedReader(new InputStreamReader(content));
+		Vector<String> lines=new Vector<String>();
 		String line;
-
-		if (file.exists()) {
-			BufferedReader in = new BufferedReader(new FileReader(file));
-			while ((line = in.readLine()) != null) {
-				lines.add(line);
-			}
-			in.close();
-		} else {
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			InputStream content = (InputStream) connection.getInputStream();
-			BufferedReader in = new BufferedReader(new InputStreamReader(content));
-			BufferedWriter out = new BufferedWriter(new FileWriter(file));
-			while ((line = in.readLine()) != null) {
-				lines.add(line);
-				out.write(line + "\n");
-			}
-			in.close();
-			out.close();
-			content.close();
-			connection.disconnect();
+		while ((line = in.readLine()) != null) {
+			lines.add(line);
 		}
-
+		in.close();
+		content.close();
+		connection.disconnect();
 		for (int index = 0; index < lines.size(); index++) {
 			line = lines.elementAt(index);
 			while (index + 1 < lines.size() && lines.elementAt(index + 1).startsWith(" ")) {
@@ -377,7 +328,7 @@ public class Contact {
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
 
 			if (!known) {
-				throw new UnknownObjectException("unknown entry/instruction found in vcard: " + line);
+				throw new UnknownObjectException("unknown entry/instruction found in vcard "+vcfName+": " + line);
 			}
 		}
 	}
@@ -480,5 +431,13 @@ public class Contact {
 			mails.add(e.adress());
 		}
 		return mails;
+	}
+	
+	public String vcfName(){
+		return vcfName;
+	}
+
+	public byte[] getBytes() {
+		return toString().getBytes();
 	}
 }

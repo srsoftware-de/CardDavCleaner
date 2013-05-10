@@ -11,9 +11,9 @@ public class VerticalPanel extends JPanel {
    * 
    */
   private static final long serialVersionUID = -3284460780727609981L;
-	private static int versatz=5;
-	private int breite=0;
-	private int höhe=versatz;
+	private static int offset=5;
+	private int width=0;
+	private int height=offset;
 	
 	public VerticalPanel(){
 		super();
@@ -23,7 +23,7 @@ public class VerticalPanel extends JPanel {
 	public VerticalPanel(String string) {
 		super();
 		init();
-		höhe+=15;
+		height+=15;
 		setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),string)); // Rahmen um Feld Erzeugen
 	}
 
@@ -33,13 +33,13 @@ public class VerticalPanel extends JPanel {
 	
 	public void add(JComponent c){
 		c.setSize(c.getPreferredSize());
-		c.setLocation(versatz, höhe);
-		breite=Math.max(breite, c.getWidth());
-		höhe+=c.getHeight();
+		c.setLocation(offset, height);
+		width=Math.max(width, c.getWidth());
+		height+=c.getHeight();
 		super.add(c);
 	}
 	
-	public void skalieren(){
-		setPreferredSize(new Dimension(breite+versatz+versatz,höhe+versatz));
+	public void scale(){
+		setPreferredSize(new Dimension(width+offset+offset,height+offset));
 	}
 }

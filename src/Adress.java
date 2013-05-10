@@ -8,12 +8,13 @@ public class Adress {
 
 	private boolean home = false;
 	private boolean work = false;
-	private String street;
+	private String streetAdress;
 	private String city;
 	private String zip;
 	private String country;
-	private String state;
-	private String name;
+	private String region;
+	private String extendedAdress;
+	private String postOfficeBox;
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
@@ -27,13 +28,15 @@ public class Adress {
 	
 	public String canonical() {
 		StringBuffer sb = new StringBuffer();
-		if (name != null) sb.append(name);
+		if (postOfficeBox != null) sb.append(postOfficeBox);
 		sb.append(';');
-		if (street != null) sb.append(street);
+		if (extendedAdress != null) sb.append(extendedAdress);
+		sb.append(';');
+		if (streetAdress != null) sb.append(streetAdress);
 		sb.append(';');
 		if (city != null) sb.append(city);
 		sb.append(';');
-		if (state != null) sb.append(state);
+		if (region != null) sb.append(region);
 		sb.append(';');
 		if (zip != null) sb.append(zip);
 		sb.append(';');
@@ -72,17 +75,19 @@ public class Adress {
 			String part = parts[index];
 			if (!part.isEmpty()) {
 				switch (index) {
+				case 0:
+					postOfficeBox=part.trim();
 				case 1:
-					name = part;
+					extendedAdress = part;
 					break;
 				case 2:
-					street = part;
+					streetAdress = part;
 					break;
 				case 3:
 					city = part;
 					break;
 				case 4:
-					state = part;
+					region = part;
 					break;
 				case 5:
 					zip = part;
@@ -97,9 +102,9 @@ public class Adress {
 			}
 		}
 	}
-
+	
 	public boolean isEmpty() {
-		return ((street==null) && (city==null) && (zip==null) && (country==null) && (state==null) && (name==null));
+		return ((postOfficeBox==null)&&(extendedAdress==null)&&(streetAdress==null)&&(city==null)&&(region==null)&&(zip==null)&&(country==null));
 	}
 
 

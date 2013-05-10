@@ -12,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.rmi.AlreadyBoundException;
+import java.rmi.UnexpectedException;
 import java.rmi.activation.UnknownObjectException;
 import java.util.Set;
 import java.util.TreeMap;
@@ -42,16 +43,14 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		VerticalPanel mainPanel = new VerticalPanel("Server settings");
 
 		serverField = addInput(mainPanel, "Server:");
-		serverField.setText("http://kommune10.dyndns.info:815/cloud/remote.php/carddav/addressbooks/srichter/standard");
 		userField = addInput(mainPanel, "User:");
-		userField.setText("srichter");
 		passwordField = addPassword(mainPanel, "Password:");
 
 		JButton startButton = new JButton("start");
 		startButton.addActionListener(this);
 		mainPanel.add(startButton);
 
-		mainPanel.skalieren();
+		mainPanel.scale();
 		add(mainPanel);
 		pack();
 		setVisible(true);
@@ -62,7 +61,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		hp.add(new JLabel(text + " "));
 		JPasswordField result = new JPasswordField(50);
 		hp.add(result);
-		hp.skalieren();
+		hp.scale();
 		mainPanel.add(hp);
 		return result;
 	}
@@ -72,7 +71,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		hp.add(new JLabel(text + " "));
 		JTextField result = new JTextField(50);
 		hp.add(result);
-		hp.skalieren();
+		hp.scale();
 		mainPanel.add(hp);
 		return result;
 	}
@@ -118,39 +117,18 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		scanContacts(host, contacts);
 	}
 
-	private void putTestFile(String host) throws IOException {
-		String message="BEGIN:VCARD\nFN:John Doe\nN:Doe;John;;Dr;\nVERSION:3.0\nEND:VCARD";
-		byte[] data=message.getBytes();
-		URL putUrl=new URL(host+"/aaaa.vcf");
-		System.out.println(putUrl);
-		HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
-		conn.setRequestMethod( "PUT" );  
-    conn.setDoOutput( true );  
-    conn.setRequestProperty( "Content-Type", "text/x-vcard" );  
-    conn.connect();  
-    OutputStream out = conn.getOutputStream();  
-    ByteArrayInputStream in = new ByteArrayInputStream( data );  
-    int read = -1;  
-  
-    while ((read=in.read()) != -1 ) out.write( read );
-    out.close();
-    System.out.println( conn.getResponseCode() );
-    conn.disconnect();
-		System.exit(0);
-}
-
 	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
 		TreeSet<Contact> writeList=new TreeSet<Contact>(ObjectComparator.get());
-		TreeSet<Contact> deleteListe=new TreeSet<Contact>(ObjectComparator.get());
+		TreeSet<Contact> deleteList=new TreeSet<Contact>(ObjectComparator.get());
 		Vector<Contact> contacts = new Vector<Contact>();
 		int total = contactNamess.size();
 		int counter = 0;
 		for (String contactName : contactNamess) {
-			System.out.println(++counter + "/" + total);
-			Contact contact = new Contact(new URL(host + contactName));
+			System.out.println("reading contact "+(++counter) + "/" + total+": "+contactName);
+			Contact contact = new Contact(host,contactName);
 			if (contact.isEmpty()) {
-				deleteListe.add(contact);
-				System.out.println("Waring: skipping empty contact " + contactName);
+				deleteList.add(contact);
+				System.out.println("Warning: skipping empty contact " + contactName);
 			} else
 				contacts.add(contact);
 		}
@@ -167,7 +145,6 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			numberMap = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
 			mailMap = new TreeMap<String, Contact>(ObjectComparator.get());
 			total = contacts.size();
-			int index = 0;
 			for (Contact contact : contacts) {
 				TreeSet<Contact> blacklist = blackLists.get(contact);
 
@@ -191,7 +168,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 								writeList.add(contact);
 								writeList.remove(existingContact);
 								contactsForName.remove(existingContact);
-								deleteListe.add(existingContact);
+								deleteList.add(existingContact);
 								contacts.remove(existingContact);
 								restart = true;
 								break; // this has to be done, as contactsForName changed
@@ -226,7 +203,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 								writeList.add(contact);
 								writeList.remove(existingContact);
 								contactsForNumber.remove(existingContact);
-								deleteListe.add(existingContact);
+								deleteList.add(existingContact);
 								contacts.remove(existingContact);
 								restart = true;
 								break; // this has to be done, as contactsForName changed
@@ -259,7 +236,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 							contacts.remove(existingContact);
 							writeList.add(contact);
 							writeList.remove(existingContact);
-							deleteListe.add(existingContact);
+							deleteList.add(existingContact);
 							restart = true;
 							break; // this has to be done, as contactsForName changed
 						} else { // if merging was denied: add contact pair to blacklist
@@ -278,10 +255,15 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			} // for
 		} while (restart);
 		
-		if (confirmLists(writeList,deleteListe)){
-			putMergedContacts(writeList);
-			deleteUselessContacts(deleteListe);
-		}		
+		if (!(writeList.isEmpty() && deleteList.isEmpty()) && confirmLists(writeList,deleteList)){
+			putMergedContacts(host,writeList);
+			deleteUselessContacts(host,deleteList);
+		}
+		JOptionPane.showMessageDialog(null, "Scanning, merging and cleaning successfully done! Godbye!");
+		setVisible(false);
+		System.exit(0);
+		
+		
 	}
 
 	private boolean confirmLists(TreeSet<Contact> writeList, TreeSet<Contact> deleteList) {
@@ -293,13 +275,13 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		
 		VerticalPanel delList=new VerticalPanel();
 		for (Contact c:deleteList) delList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
-		delList.skalieren();
+		delList.scale();
 		
 		JScrollPane sp=new JScrollPane(delList);
 		sp.setPreferredSize(new Dimension(300,300));
 		sp.setSize(sp.getPreferredSize());
 		deleteListPanel.add(sp);
-		deleteListPanel.skalieren();
+		deleteListPanel.scale();
 		
 		
 		
@@ -309,33 +291,65 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		
 		VerticalPanel wrList=new VerticalPanel();
 		for (Contact c:writeList) wrList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
-		wrList.skalieren();
+		wrList.scale();
 		
 		JScrollPane sp2=new JScrollPane(wrList);
 		sp2.setPreferredSize(new Dimension(300,300));
 		sp2.setSize(sp2.getPreferredSize());
 		writeListPanel.add(sp2);
-		writeListPanel.skalieren();
+		writeListPanel.scale();
 
 		listsPanel.add(deleteListPanel);
 		listsPanel.add(writeListPanel);
-		listsPanel.skalieren();
+		listsPanel.scale();
 		
 		vp.add(listsPanel);
 		vp.add(new JLabel("Please confirm those changes."));
-		vp.skalieren();
+		vp.scale();
 		int decision=JOptionPane.showConfirmDialog(null, vp, "Please confirm", JOptionPane.YES_NO_OPTION);
 		return decision==JOptionPane.YES_OPTION;
 	}
 
-	private void putMergedContacts(TreeSet<Contact> writeList) {
-		System.out.println("Changed contacts:");
-		System.out.println(writeList.toString().replace(", BEGIN","\nBEGIN"));
+	private void putMergedContacts(String host,TreeSet<Contact> writeList) throws IOException {
+		for (Contact c:writeList) {
+			System.out.println("Uploading "+c.vcfName());
+			
+			byte[] data=c.getBytes();
+			URL putUrl=new URL(host+"/"+c.vcfName());
+			HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
+			conn.setRequestMethod( "PUT" );  
+	    conn.setDoOutput( true );  
+	    conn.setRequestProperty( "Content-Type", "text/x-vcard" );  
+	    conn.connect();  
+	    OutputStream out = conn.getOutputStream();  
+	    ByteArrayInputStream in = new ByteArrayInputStream( data );  
+	    int read = -1;  
+	  
+	    while ((read=in.read()) != -1 ) out.write( read );
+	    out.close();
+	    int response=conn.getResponseCode();
+	    conn.disconnect();
+	    if (response!=204){
+	    	throw new UnexpectedException("Server responded with CODE 204");
+	    }
+		}
 	}
 
-	private void deleteUselessContacts(TreeSet<Contact> deleteListe) {
-		System.out.println("\n\nContacts to delete");
-		System.out.println(deleteListe.toString().replace(", BEGIN","\nBEGIN"));
+	private void deleteUselessContacts(String host,TreeSet<Contact> deleteList) throws IOException {	
+		for (Contact c:deleteList) {
+			System.out.println("Deleting "+c.vcfName());
+			
+			URL putUrl=new URL(host+"/"+c.vcfName());
+			HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
+			conn.setRequestMethod( "DELETE" );  
+	    conn.setDoOutput( true );  
+	    conn.connect();  
+	    int response=conn.getResponseCode();
+	    conn.disconnect();
+	    if (response!=204){
+	    	throw new UnexpectedException("Server responded with CODE 204");
+	    }
+		}
 	}
 
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
@@ -345,10 +359,10 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
 		hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));
-		hp.skalieren();
+		hp.scale();
 		vp.add(hp);
 		vp.add(new JLabel("<html><br>Shall those contacts be merged?"));
-		vp.skalieren();
+		vp.scale();
 		int decision = JOptionPane.showConfirmDialog(null, vp, "Please decide!", JOptionPane.YES_NO_CANCEL_OPTION);
 		if (decision == JOptionPane.CANCEL_OPTION) System.exit(0);
 		return decision == JOptionPane.YES_OPTION;

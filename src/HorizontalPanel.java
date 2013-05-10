@@ -16,9 +16,9 @@ public class HorizontalPanel extends JPanel {
    * 
    */
   private static final long serialVersionUID = -3763921236213613770L;
-	private static int versatz=5; // der Absatnd zwischen den Elementen
-	private int breite=0; // die Breite des Panels, anfänglich null
-	private int höhe=0; // die Höhe des Panels, anfänglich null
+	private static int offset=5; // der Absatnd zwischen den Elementen
+	private int width=0; // die Breite des Panels, anfänglich null
+	private int height=0; // die Höhe des Panels, anfänglich null
 	
 	/**
 	 * erzeugt ein neues, leeres Panel
@@ -35,7 +35,7 @@ public class HorizontalPanel extends JPanel {
 	public HorizontalPanel(String string) {
 		super(); // leeres Panel erzuegen
 		init(); // Java-internes automatisches Layout abschalten
-		höhe+=15; // höhe initialisieren
+		height+=15; // höhe initialisieren
 		setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),string)); // Rahmen um Feld Erzeugen
 	}
 
@@ -52,16 +52,16 @@ public class HorizontalPanel extends JPanel {
 	 */
 	public void add(JComponent c){
 		c.setSize(c.getPreferredSize()); // skaliert die zuzufügende Komponente auf ihre bevorzugte Größe		
-		c.setLocation(breite, versatz/2); // ordnet die Komponente an
-		breite+=c.getWidth(); // speichert die aktuelle Position, bis zu der Komponenten gehen, damit auch die nächste Komponente angeordnert werden kann
-		höhe=Math.max(höhe, c.getHeight()); // bestimmt die minimalgröße des Panels nach Addition der grafischen Komponente
+		c.setLocation(width, offset/2); // ordnet die Komponente an
+		width+=c.getWidth(); // speichert die aktuelle Position, bis zu der Komponenten gehen, damit auch die nächste Komponente angeordnert werden kann
+		height=Math.max(height, c.getHeight()); // bestimmt die minimalgröße des Panels nach Addition der grafischen Komponente
 		super.add(c); // fügt die grafische Komponente dem Panel hinzu
 	}
 	
 	/**
 	 * skaliert das gesamte Panel so, dass alle hinzugefügten Komponenten sichtbar bleiben
 	 */
-	public void skalieren(){
-		setPreferredSize(new Dimension(breite+versatz+versatz,höhe+versatz));
+	public void scale(){
+		setPreferredSize(new Dimension(width+offset+offset,height+offset));
 	}
 }
