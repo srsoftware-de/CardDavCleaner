@@ -17,7 +17,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 import com.sun.media.sound.InvalidFormatException;
 
@@ -151,13 +153,13 @@ public class Contact {
 		
 		if (name!=null){
 			if (contact.name!=null && !contact.name.equals(name)){
-				name=(Name) selectOneOf("name",name,contact.name);
+				name=(Name) selectOneOf("name",name,contact.name,contact);
 			}
 		} else name=contact.name;
 		
 		if (formattedName!=null){
 			if (contact.formattedName!=null && !contact.formattedName.equals(formattedName)){
-				formattedName=(String) selectOneOf("formated name", formattedName, contact.formattedName);
+				formattedName=(String) selectOneOf("formated name", formattedName, contact.formattedName,contact);
 			}
 		} else formattedName=contact.formattedName;
 		
@@ -165,13 +167,13 @@ public class Contact {
 		
 		if (role!=null){
 			if (contact.role!=null && !contact.role.equals(role)){
-				role=(String)selectOneOf("role", role, contact.role);
+				role=(String)selectOneOf("role", role, contact.role,contact);
 			}
 		} else role=contact.role;
 		
 		if (birthday!=null){
 			if (contact.birthday!=null && !contact.birthday.equals(birthday)){
-				birthday= (Birthday) selectOneOf("birtday", birthday, contact.birthday);
+				birthday= (Birthday) selectOneOf("birtday", birthday, contact.birthday,contact);
 			}
 		} else birthday=contact.birthday;
 		
@@ -183,11 +185,24 @@ public class Contact {
 		orgs.addAll(contact.orgs);		
 	}
 	
-	private Object selectOneOf(String title, Object name1, Object name2) {
-		int decision = JOptionPane.showConfirmDialog(null, "<html>You have two options for the "+title+" field:<br>1. "+name1+"<br>2. "+name2+"<br><br>Shall i take the first name?", "Please select", JOptionPane.YES_NO_CANCEL_OPTION);
+	private Object selectOneOf(String title, Object o1, Object o2, Contact contact2) {
+		VerticalPanel vp=new VerticalPanel();
+		vp.add(new JLabel("<html>Merging the following two contacts:<br>&nbsp;"));
+		HorizontalPanel hp=new HorizontalPanel();
+		hp.add(new JLabel("<html>"+this.toString(true).replace("\n", "&nbsp;<br>")));
+		hp.add(new JLabel("<html>"+contact2.toString(true).replace("\n", "<br>")));
+		hp.skalieren();
+		vp.add(hp);
+		vp.add(new JLabel("<html><br>Which "+title+" shall be used?"));
+		vp.skalieren();
+		UIManager.put("OptionPane.yesButtonText", o1.toString());
+		UIManager.put("OptionPane.noButtonText", o2.toString());
+		int decision = JOptionPane.showConfirmDialog(null, vp, "Please select", JOptionPane.YES_NO_CANCEL_OPTION);
+		UIManager.put("OptionPane.yesButtonText","Yes");
+		UIManager.put("OptionPane.noButtonText", "No");
 		switch (decision){
-			case JOptionPane.YES_OPTION:	return name1;
-			case JOptionPane.NO_OPTION:	return name2;
+			case JOptionPane.YES_OPTION:	return o1;
+			case JOptionPane.NO_OPTION:	return o2;
 			case JOptionPane.CANCEL_OPTION: System.exit(0);
 		}
 		return null;
