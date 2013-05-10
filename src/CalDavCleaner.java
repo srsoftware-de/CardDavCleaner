@@ -344,9 +344,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	    conn.connect();  
 	    int response=conn.getResponseCode();
 	    conn.disconnect();
-	    //if (response!=204){
+	    if (response!=204){
 	    	throw new UnexpectedException("Server responded with CODE 204");
-	    //}
+	    }
 		}
 	}
 
