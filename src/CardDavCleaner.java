@@ -330,7 +330,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	    int response=conn.getResponseCode();
 	    conn.disconnect();
 	    if (response!=204){
-	    	throw new UnexpectedException("Server responded with CODE 204");
+	    	throw new UnexpectedException("Server responded with CODE "+response);
 	    }
 		}
 	}
