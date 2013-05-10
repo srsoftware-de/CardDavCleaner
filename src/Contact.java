@@ -200,7 +200,10 @@ public class Contact {
 			sb.append("\n");
 		}
 		if (role!=null) sb.append("ROLE:"+role+"\n");
-		if (birthday!=null) sb.append(birthday);
+		if (birthday!=null) {
+			sb.append(birthday);
+			sb.append("\n");
+		}
 		
 		for (Adress adress:adresses){
 			sb.append(adress);

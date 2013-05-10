@@ -260,7 +260,12 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		if (confirmLists(writeList,deleteListe)){
 			putMergedContacts(host,writeList);
 			deleteUselessContacts(host,deleteListe);
-		}		
+		}
+		JOptionPane.showMessageDialog(null, "Scanning, merging and cleaning successfully done! Godbye!");
+		setVisible(false);
+		System.exit(0);
+		
+		
 	}
 
 	private boolean confirmLists(TreeSet<Contact> writeList, TreeSet<Contact> deleteList) {

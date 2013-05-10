@@ -28,13 +28,13 @@ public class Birthday {
 			throw new NotImplementedException();
 		}
 		bday=bday.substring(1);
-		String year = bday.substring(0, 3);
+		String year = bday.substring(0, 4);
 		bday = bday.substring(4);
 		if (bday.startsWith("-")) bday = bday.substring(1);
-		String month = bday.substring(0, 1);
+		String month = bday.substring(0, 2);
 		bday = bday.substring(2);
 		if (bday.startsWith("-")) bday = bday.substring(1);
-		String day = bday.substring(0, 1);
+		String day = bday.substring(0, 2);
 		bday = bday.substring(2);
 
 		birtdate = year + month + day;
