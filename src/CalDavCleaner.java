@@ -147,6 +147,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			System.out.println(++counter + "/" + total);
 			Contact contact = new Contact(new URL(host + contactName));
 			if (contact.isEmpty()) {
+				deleteListe.add(contact);
 				System.out.println("Waring: skipping empty contact " + contactName);
 			} else
 				contacts.add(contact);
@@ -186,6 +187,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 							if (askForMege("name", canonicalName, contact, existingContact)) {
 								contact.merge(existingContact);
 								writeList.add(contact);
+								writeList.remove(existingContact);
 								contactsForName.remove(existingContact);
 								deleteListe.add(existingContact);
 								contacts.remove(existingContact);
@@ -220,6 +222,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 							if (askForMege("phone number", number, contact, existingContact)) {
 								contact.merge(existingContact);
 								writeList.add(contact);
+								writeList.remove(existingContact);
 								contactsForNumber.remove(existingContact);
 								deleteListe.add(existingContact);
 								contacts.remove(existingContact);
@@ -251,8 +254,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 							// if this contact pair is not blacklisted:
 						if (askForMege("e-mail", mail, contact, existingContact)) {
 							contact.merge(existingContact);
-							writeList.add(contact);
 							contacts.remove(existingContact);
+							writeList.add(contact);
+							writeList.remove(existingContact);
 							deleteListe.add(existingContact);
 							restart = true;
 							break; // this has to be done, as contactsForName changed
@@ -273,9 +277,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		} while (restart);
 		
 		System.out.println("Changed contacts:");
-		System.out.println(writeList);
+		System.out.println(writeList.toString().replace(", BEGIN","\nBEGIN"));
 		System.out.println("\n\nContacts to delete");
-		System.out.println(deleteListe);
+		System.out.println(deleteListe.toString().replace(", BEGIN","\nBEGIN"));
 		
 	}
 
