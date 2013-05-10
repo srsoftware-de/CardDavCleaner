@@ -21,6 +21,12 @@ public class Adress {
 		if (home) sb.append(";TYPE=HOME");
 		if (work) sb.append(";TYPE=WORK");
 		sb.append(':');
+		sb.append(canonical());
+		return sb.toString();
+	}
+	
+	public String canonical() {
+		StringBuffer sb = new StringBuffer();
 		if (name != null) sb.append(name);
 		sb.append(';');
 		if (street != null) sb.append(street);
@@ -95,4 +101,6 @@ public class Adress {
 	public boolean isEmpty() {
 		return ((street==null) && (city==null) && (zip==null) && (country==null) && (state==null) && (name==null));
 	}
+
+
 }

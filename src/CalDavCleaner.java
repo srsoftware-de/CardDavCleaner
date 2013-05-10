@@ -1,9 +1,12 @@
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
@@ -20,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 public class CalDavCleaner extends JFrame implements ActionListener {
@@ -93,7 +97,10 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 				return new PasswordAuthentication(user, password.toCharArray());
 			}
 		});
+		
 
+		
+		//putTestFile(host);
 		if (!host.endsWith("/")) host += "/";
 		URL url = new URL(host);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -111,7 +118,30 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		scanContacts(host, contacts);
 	}
 
+	private void putTestFile(String host) throws IOException {
+		String message="BEGIN:VCARD\nFN:John Doe\nN:Doe;John;;Dr;\nVERSION:3.0\nEND:VCARD";
+		byte[] data=message.getBytes();
+		URL putUrl=new URL(host+"/aaaa.vcf");
+		System.out.println(putUrl);
+		HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
+		conn.setRequestMethod( "PUT" );  
+    conn.setDoOutput( true );  
+    conn.setRequestProperty( "Content-Type", "text/x-vcard" );  
+    conn.connect();  
+    OutputStream out = conn.getOutputStream();  
+    ByteArrayInputStream in = new ByteArrayInputStream( data );  
+    int read = -1;  
+  
+    while ((read=in.read()) != -1 ) out.write( read );
+    out.close();
+    System.out.println( conn.getResponseCode() );
+    conn.disconnect();
+		System.exit(0);
+}
+
 	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
+		TreeSet<Contact> writeList=new TreeSet<Contact>(ObjectComparator.get());
+		TreeSet<Contact> deleteListe=new TreeSet<Contact>(ObjectComparator.get());
 		Vector<Contact> contacts = new Vector<Contact>();
 		int total = contactNamess.size();
 		int counter = 0;
@@ -119,51 +149,199 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			System.out.println(++counter + "/" + total);
 			Contact contact = new Contact(new URL(host + contactName));
 			if (contact.isEmpty()) {
-				System.out.println("Waring: empty contact found (" + contactName + ")");
+				deleteListe.add(contact);
+				System.out.println("Waring: skipping empty contact " + contactName);
 			} else
 				contacts.add(contact);
 		}
 
-		TreeMap<String, Contact> names;
+		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
+		TreeMap<String, TreeSet<Contact>> nameMap; // one name may map to multiple contacts, as multiple persons may have the same name
+		TreeMap<String, TreeSet<Contact>> numberMap; // on number can be used by multiple persons, as people living together may share a landline number
+		TreeMap<String, Contact> mailMap; 
 		boolean restart;
 		do {
+
 			restart = false;
-			names = new TreeMap<String, Contact>(ObjectComparator.get());
+			nameMap = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
+			numberMap = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
+			mailMap = new TreeMap<String, Contact>(ObjectComparator.get());
 			total = contacts.size();
 			int index = 0;
 			for (Contact contact : contacts) {
-				System.out.println((++index) + "/" + total);
-				System.out.println(contact);
+				TreeSet<Contact> blacklist = blackLists.get(contact);
 
+				/************* name *****************/
 				Name name = contact.name();
-				if (name != null) {
-					String name1 = name.first() + " " + name.last();
-					String name2 = name.last() + " " + name.first();
+				if (name != null) { // we can only do name comparison for contacts with name...
+					String canonicalName = name.canonical();
+					TreeSet<Contact> contactsForName = nameMap.get(canonicalName);
 
-					Contact existingContact = names.get(name1);
-					if ((existingContact != null) && askForMege(name1, contact, existingContact)) {
-						existingContact.merge(contact);
-						contacts.remove(contact);
-						restart = true;
-						break;
+					if (contactsForName == null) { // if we didn't have contacts with this name before, we can't compare.
+						contactsForName = new TreeSet<Contact>(ObjectComparator.get());
+						contactsForName.add(contact); // add a mapping for this contacts name
+						nameMap.put(canonicalName, contactsForName);
+					} else { // this name appeared before:
+						for (Contact existingContact : contactsForName) {
+							if (blacklist != null && blacklist.contains(existingContact)) continue;
 
+							// if this contact pair is not blacklisted:
+							if (askForMege("name", canonicalName, contact, existingContact)) {
+								contact.merge(existingContact);
+								writeList.add(contact);
+								writeList.remove(existingContact);
+								contactsForName.remove(existingContact);
+								deleteListe.add(existingContact);
+								contacts.remove(existingContact);
+								restart = true;
+								break; // this has to be done, as contactsForName changed
+							} else { // if merging was denied: add contact pair to blacklist
+								if (blacklist == null) {
+									blacklist = new TreeSet<Contact>(ObjectComparator.get());
+									blackLists.put(contact, blacklist);
+								}
+								blacklist.add(existingContact);
+							}
+						} // ---> for (Contact existingContact : contactsForName)
+						if (restart) break; // this has to be done, as contacts changed
+						
 					}
-					existingContact = names.get(name2);
-					if ((existingContact != null) && askForMege(name2, contact, existingContact)) {
-						existingContact.merge(contact);
-						contacts.remove(contact);
-						restart = true;
-						break;
+				} // ---> if (name != null)
+				/************* name *****************/
+				/************* phone ****************/
+				TreeSet<String> numbers = contact.phoneNumbers();
+				for (String number:numbers){
+					TreeSet<Contact> contactsForNumber = numberMap.get(number);
+					if (contactsForNumber==null){
+						contactsForNumber=new TreeSet<Contact>(ObjectComparator.get());
+						contactsForNumber.add(contact);
+						numberMap.put(number, contactsForNumber);
+					} else {
+						for (Contact existingContact:contactsForNumber){
+							if (blacklist != null && blacklist.contains(existingContact)) continue;
+
+							// if this contact pair is not blacklisted:
+							if (askForMege("phone number", number, contact, existingContact)) {
+								contact.merge(existingContact);
+								writeList.add(contact);
+								writeList.remove(existingContact);
+								contactsForNumber.remove(existingContact);
+								deleteListe.add(existingContact);
+								contacts.remove(existingContact);
+								restart = true;
+								break; // this has to be done, as contactsForName changed
+							} else { // if merging was denied: add contact pair to blacklist
+								if (blacklist == null) {
+									blacklist = new TreeSet<Contact>(ObjectComparator.get());
+									blackLists.put(contact, blacklist);
+								}
+								blacklist.add(existingContact);
+							}
+						}
+						if (restart) break;
 					}
-					names.put(name1, contact);
 				}
+				if (restart) break;				
+				/************* phone ****************/
+				/************* email ****************/
+				TreeSet<String> mails = contact.mailAdresses();
+				for (String mail:mails){
+					Contact existingContact = mailMap.get(mail);
+					if (existingContact==null){
+						existingContact=contact;
+						mailMap.put(mail, contact);
+					} else {
+						if (blacklist != null && blacklist.contains(existingContact)) continue;
+
+							// if this contact pair is not blacklisted:
+						if (askForMege("e-mail", mail, contact, existingContact)) {
+							contact.merge(existingContact);
+							contacts.remove(existingContact);
+							writeList.add(contact);
+							writeList.remove(existingContact);
+							deleteListe.add(existingContact);
+							restart = true;
+							break; // this has to be done, as contactsForName changed
+						} else { // if merging was denied: add contact pair to blacklist
+							if (blacklist == null) {
+								blacklist = new TreeSet<Contact>(ObjectComparator.get());
+								blackLists.put(contact, blacklist);
+							}
+							blacklist.add(existingContact);							
+						}
+						if (restart) break;
+					}
+				}
+				if (restart) break;				
+				/************* email ****************/
+				
 			} // for
 		} while (restart);
+		
+		if (confirmLists(writeList,deleteListe)){
+			putMergedContacts(writeList);
+			deleteUselessContacts(deleteListe);
+		}		
 	}
 
-	private boolean askForMege(String name, Contact contact, Contact contact2) {
+	private boolean confirmLists(TreeSet<Contact> writeList, TreeSet<Contact> deleteList) {
+		VerticalPanel vp=new VerticalPanel();
+		HorizontalPanel listsPanel=new HorizontalPanel();
+		
+		VerticalPanel deleteListPanel=new VerticalPanel();
+		deleteListPanel.add(new JLabel("The following contacts will be deleted:"));
+		
+		VerticalPanel delList=new VerticalPanel();
+		for (Contact c:deleteList) delList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
+		delList.skalieren();
+		
+		JScrollPane sp=new JScrollPane(delList);
+		sp.setPreferredSize(new Dimension(300,300));
+		sp.setSize(sp.getPreferredSize());
+		deleteListPanel.add(sp);
+		deleteListPanel.skalieren();
+		
+		
+		
+		
+		VerticalPanel writeListPanel=new VerticalPanel();
+		writeListPanel.add(new JLabel("The following merged contacts will be written to the server:"));
+		
+		VerticalPanel wrList=new VerticalPanel();
+		for (Contact c:writeList) wrList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
+		wrList.skalieren();
+		
+		JScrollPane sp2=new JScrollPane(wrList);
+		sp2.setPreferredSize(new Dimension(300,300));
+		sp2.setSize(sp2.getPreferredSize());
+		writeListPanel.add(sp2);
+		writeListPanel.skalieren();
+
+		listsPanel.add(deleteListPanel);
+		listsPanel.add(writeListPanel);
+		listsPanel.skalieren();
+		
+		vp.add(listsPanel);
+		vp.add(new JLabel("Please confirm those changes."));
+		vp.skalieren();
+		int decision=JOptionPane.showConfirmDialog(null, vp, "Please confirm", JOptionPane.YES_NO_OPTION);
+		return decision==JOptionPane.YES_OPTION;
+	}
+
+	private void putMergedContacts(TreeSet<Contact> writeList) {
+		System.out.println("Changed contacts:");
+		System.out.println(writeList.toString().replace(", BEGIN","\nBEGIN"));
+	}
+
+	private void deleteUselessContacts(TreeSet<Contact> deleteListe) {
+		System.out.println("\n\nContacts to delete");
+		System.out.println(deleteListe.toString().replace(", BEGIN","\nBEGIN"));
+	}
+
+	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
+		if (!contact.conflictsWith(contact2)) return true;
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new JLabel("The name \"" + name + "\" is used by both following contacts:"));
+		vp.add(new JLabel("The " + identifier + " \"" + name + "\" is used by both following contacts:"));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
 		hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));

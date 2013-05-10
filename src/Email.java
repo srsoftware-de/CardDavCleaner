@@ -7,6 +7,7 @@ public class Email {
 	
 	private boolean work=false;
 	private boolean home=false;
+	private boolean internet=false;
 	private String adress=null;
 	
 	public String toString() {
@@ -14,6 +15,7 @@ public class Email {
 		sb.append("EMAIL");
 		if (home) sb.append(";TYPE=HOME");
 		if (work) sb.append(";TYPE=WORK");
+		if (internet) sb.append(";TYPE=INTERNET");
 		sb.append(":");
 		sb.append(adress);
 		return sb.toString();
@@ -34,6 +36,11 @@ public class Email {
 				line=line.substring(9);
 				continue;
 			} 
+			if (upper.startsWith("TYPE=INTERNET")){
+				internet=true;
+				line=line.substring(13);
+				continue;
+			} 
 			if (line.startsWith(";")){
 				line=line.substring(1);
 				continue;
@@ -45,7 +52,7 @@ public class Email {
 
 	private void readAddr(String line) {
 		if (line.isEmpty()) return;
-		adress = line;
+		adress = line.toLowerCase();
 	}
 	
 	public boolean isEmpty() {
@@ -60,6 +67,7 @@ public class Email {
 		if (!adress.equals(mail.adress)) throw new InvalidAssignmentException("Trying to merge two mails with different adresses!");
 		if (mail.home) home=true;
 		if (mail.work) work=true;
+		if (mail.internet) internet=true;;
 
 	}
 }
