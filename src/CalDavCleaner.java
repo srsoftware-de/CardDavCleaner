@@ -147,11 +147,11 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		int total = contactNamess.size();
 		int counter = 0;
 		for (String contactName : contactNamess) {
-			System.out.println(++counter + "/" + total);
+			System.out.println("reading contact "+(++counter) + "/" + total);
 			Contact contact = new Contact(host,contactName);
 			if (contact.isEmpty()) {
 				deleteListe.add(contact);
-				System.out.println("Waring: skipping empty contact " + contactName);
+				System.out.println("Warning: skipping empty contact " + contactName);
 			} else
 				contacts.add(contact);
 		}
