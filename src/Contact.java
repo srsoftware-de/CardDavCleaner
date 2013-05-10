@@ -301,10 +301,10 @@ public class Contact {
 		connection.disconnect();
 		for (int index = 0; index < lines.size(); index++) {
 			line = lines.elementAt(index);
-			while (index + 1 < lines.size() && (lines.elementAt(index + 1).startsWith(" ") ||lines.elementAt(index + 1).startsWith("\\n"))) {
+			while (index + 1 < lines.size() && (lines.elementAt(index + 1).startsWith(" ") || lines.elementAt(index + 1).startsWith("\\n"))) {
 				index++;
 				String dummy=lines.elementAt(index);
-				if (dummy.startsWith(" ")) dummy=line.substring(1);
+				if (dummy.startsWith(" ")) dummy=dummy.substring(1);
 				line += dummy;
 			}
 			boolean known = false;

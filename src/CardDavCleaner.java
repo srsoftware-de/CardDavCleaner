@@ -319,7 +319,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
 			conn.setRequestMethod( "PUT" );  
 	    conn.setDoOutput( true );  
-	    conn.setRequestProperty( "Content-Type", "text/x-vcard" );  
+	    conn.setRequestProperty( "Content-Type", "text/vcard" );  
 	    conn.connect();  
 	    OutputStream out = conn.getOutputStream();  
 	    ByteArrayInputStream in = new ByteArrayInputStream( data );  
