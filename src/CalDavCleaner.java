@@ -279,14 +279,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		} while (restart);
 		
 		if (confirmLists(writeList,deleteListe)){
-			deleteUselessContacts();
-			putMergedContacts();
-		}
-		System.out.println("Changed contacts:");
-		System.out.println(writeList.toString().replace(", BEGIN","\nBEGIN"));
-		System.out.println("\n\nContacts to delete");
-		System.out.println(deleteListe.toString().replace(", BEGIN","\nBEGIN"));
-		
+			putMergedContacts(writeList);
+			deleteUselessContacts(deleteListe);
+		}		
 	}
 
 	private boolean confirmLists(TreeSet<Contact> writeList, TreeSet<Contact> deleteList) {
@@ -333,14 +328,14 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		return decision==JOptionPane.YES_OPTION;
 	}
 
-	private void putMergedContacts() {
-		// TODO Auto-generated method stub
-		
+	private void putMergedContacts(TreeSet<Contact> writeList) {
+		System.out.println("Changed contacts:");
+		System.out.println(writeList.toString().replace(", BEGIN","\nBEGIN"));
 	}
 
-	private void deleteUselessContacts() {
-		// TODO Auto-generated method stub
-		
+	private void deleteUselessContacts(TreeSet<Contact> deleteListe) {
+		System.out.println("\n\nContacts to delete");
+		System.out.println(deleteListe.toString().replace(", BEGIN","\nBEGIN"));
 	}
 
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
