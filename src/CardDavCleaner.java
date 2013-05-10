@@ -27,13 +27,13 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-public class CalDavCleaner extends JFrame implements ActionListener {
+public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private JTextField serverField;
 	private JTextField userField;
 	private JPasswordField passwordField;
 
-	public CalDavCleaner() {
+	public CardDavCleaner() {
 		super();
 		createComponents();
 		setVisible(true);
@@ -77,7 +77,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	}
 
 	public static void main(String[] args) {
-		CalDavCleaner cleaner = new CalDavCleaner();
+		CardDavCleaner cleaner = new CardDavCleaner();
 		cleaner.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
