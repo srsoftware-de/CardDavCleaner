@@ -159,8 +159,8 @@ public class Contact {
 		vp.add(hp);
 		vp.add(new JLabel("<html><br>Which "+title+" shall be used?"));
 		vp.scale();
-		UIManager.put("OptionPane.yesButtonText", o1.toString());
-		UIManager.put("OptionPane.noButtonText", o2.toString());
+		UIManager.put("OptionPane.yesButtonText", o1.toString().replace("\\,",","));
+		UIManager.put("OptionPane.noButtonText", o2.toString().replace("\\,",","));
 		int decision = JOptionPane.showConfirmDialog(null, vp, "Please select", JOptionPane.YES_NO_CANCEL_OPTION);
 		UIManager.put("OptionPane.yesButtonText","Yes");
 		UIManager.put("OptionPane.noButtonText", "No");
