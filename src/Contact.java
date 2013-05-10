@@ -328,7 +328,7 @@ public class Contact {
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
 
 			if (!known) {
-				throw new UnknownObjectException("unknown entry/instruction found in vcard: " + line);
+				throw new UnknownObjectException("unknown entry/instruction found in vcard "+vcfName+": " + line);
 			}
 		}
 	}

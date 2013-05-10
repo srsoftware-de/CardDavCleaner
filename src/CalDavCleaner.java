@@ -43,9 +43,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		VerticalPanel mainPanel = new VerticalPanel("Server settings");
 
 		serverField = addInput(mainPanel, "Server:");
-		serverField.setText("http://kommune10.dyndns.info:815/cloud/remote.php/carddav/addressbooks/test/contacts");
 		userField = addInput(mainPanel, "User:");
-		userField.setText("test");
 		passwordField = addPassword(mainPanel, "Password:");
 
 		JButton startButton = new JButton("start");
