@@ -121,7 +121,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 
 	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
 		TreeSet<Contact> writeList=new TreeSet<Contact>(ObjectComparator.get());
-		TreeSet<Contact> deleteListe=new TreeSet<Contact>(ObjectComparator.get());
+		TreeSet<Contact> deleteList=new TreeSet<Contact>(ObjectComparator.get());
 		Vector<Contact> contacts = new Vector<Contact>();
 		int total = contactNamess.size();
 		int counter = 0;
@@ -129,7 +129,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			System.out.println("reading contact "+(++counter) + "/" + total+": "+contactName);
 			Contact contact = new Contact(host,contactName);
 			if (contact.isEmpty()) {
-				deleteListe.add(contact);
+				deleteList.add(contact);
 				System.out.println("Warning: skipping empty contact " + contactName);
 			} else
 				contacts.add(contact);
@@ -170,7 +170,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 								writeList.add(contact);
 								writeList.remove(existingContact);
 								contactsForName.remove(existingContact);
-								deleteListe.add(existingContact);
+								deleteList.add(existingContact);
 								contacts.remove(existingContact);
 								restart = true;
 								break; // this has to be done, as contactsForName changed
@@ -205,7 +205,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 								writeList.add(contact);
 								writeList.remove(existingContact);
 								contactsForNumber.remove(existingContact);
-								deleteListe.add(existingContact);
+								deleteList.add(existingContact);
 								contacts.remove(existingContact);
 								restart = true;
 								break; // this has to be done, as contactsForName changed
@@ -238,7 +238,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 							contacts.remove(existingContact);
 							writeList.add(contact);
 							writeList.remove(existingContact);
-							deleteListe.add(existingContact);
+							deleteList.add(existingContact);
 							restart = true;
 							break; // this has to be done, as contactsForName changed
 						} else { // if merging was denied: add contact pair to blacklist
@@ -257,9 +257,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			} // for
 		} while (restart);
 		
-		if (confirmLists(writeList,deleteListe)){
+		if (!(writeList.isEmpty() && deleteList.isEmpty()) && confirmLists(writeList,deleteList)){
 			putMergedContacts(host,writeList);
-			deleteUselessContacts(host,deleteListe);
+			deleteUselessContacts(host,deleteList);
 		}
 		JOptionPane.showMessageDialog(null, "Scanning, merging and cleaning successfully done! Godbye!");
 		setVisible(false);
@@ -341,7 +341,6 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		for (Contact c:deleteList) {
 			System.out.println("Deleting "+c.vcfName());
 			
-			byte[] data=c.getBytes();
 			URL putUrl=new URL(host+"/"+c.vcfName());
 			HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
 			conn.setRequestMethod( "DELETE" );  
