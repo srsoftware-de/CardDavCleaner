@@ -1,3 +1,4 @@
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -22,6 +23,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 public class CalDavCleaner extends JFrame implements ActionListener {
@@ -276,10 +278,68 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			} // for
 		} while (restart);
 		
+		if (confirmLists(writeList,deleteListe)){
+			deleteUselessContacts();
+			putMergedContacts();
+		}
 		System.out.println("Changed contacts:");
 		System.out.println(writeList.toString().replace(", BEGIN","\nBEGIN"));
 		System.out.println("\n\nContacts to delete");
 		System.out.println(deleteListe.toString().replace(", BEGIN","\nBEGIN"));
+		
+	}
+
+	private boolean confirmLists(TreeSet<Contact> writeList, TreeSet<Contact> deleteList) {
+		VerticalPanel vp=new VerticalPanel();
+		HorizontalPanel listsPanel=new HorizontalPanel();
+		
+		VerticalPanel deleteListPanel=new VerticalPanel();
+		deleteListPanel.add(new JLabel("The following contacts will be deleted:"));
+		
+		VerticalPanel delList=new VerticalPanel();
+		for (Contact c:deleteList) delList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
+		delList.skalieren();
+		
+		JScrollPane sp=new JScrollPane(delList);
+		sp.setPreferredSize(new Dimension(300,300));
+		sp.setSize(sp.getPreferredSize());
+		deleteListPanel.add(sp);
+		deleteListPanel.skalieren();
+		
+		
+		
+		
+		VerticalPanel writeListPanel=new VerticalPanel();
+		writeListPanel.add(new JLabel("The following merged contacts will be written to the server:"));
+		
+		VerticalPanel wrList=new VerticalPanel();
+		for (Contact c:writeList) wrList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
+		wrList.skalieren();
+		
+		JScrollPane sp2=new JScrollPane(wrList);
+		sp2.setPreferredSize(new Dimension(300,300));
+		sp2.setSize(sp2.getPreferredSize());
+		writeListPanel.add(sp2);
+		writeListPanel.skalieren();
+
+		listsPanel.add(deleteListPanel);
+		listsPanel.add(writeListPanel);
+		listsPanel.skalieren();
+		
+		vp.add(listsPanel);
+		vp.add(new JLabel("Please confirm those changes."));
+		vp.skalieren();
+		int decision=JOptionPane.showConfirmDialog(null, vp, "Please confirm", JOptionPane.YES_NO_OPTION);
+		return decision==JOptionPane.YES_OPTION;
+	}
+
+	private void putMergedContacts() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void deleteUselessContacts() {
+		// TODO Auto-generated method stub
 		
 	}
 
