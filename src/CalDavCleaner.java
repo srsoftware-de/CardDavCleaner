@@ -52,7 +52,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		startButton.addActionListener(this);
 		mainPanel.add(startButton);
 
-		mainPanel.skalieren();
+		mainPanel.scale();
 		add(mainPanel);
 		pack();
 		setVisible(true);
@@ -63,7 +63,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		hp.add(new JLabel(text + " "));
 		JPasswordField result = new JPasswordField(50);
 		hp.add(result);
-		hp.skalieren();
+		hp.scale();
 		mainPanel.add(hp);
 		return result;
 	}
@@ -73,7 +73,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		hp.add(new JLabel(text + " "));
 		JTextField result = new JTextField(50);
 		hp.add(result);
-		hp.skalieren();
+		hp.scale();
 		mainPanel.add(hp);
 		return result;
 	}
@@ -272,13 +272,13 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		
 		VerticalPanel delList=new VerticalPanel();
 		for (Contact c:deleteList) delList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
-		delList.skalieren();
+		delList.scale();
 		
 		JScrollPane sp=new JScrollPane(delList);
 		sp.setPreferredSize(new Dimension(300,300));
 		sp.setSize(sp.getPreferredSize());
 		deleteListPanel.add(sp);
-		deleteListPanel.skalieren();
+		deleteListPanel.scale();
 		
 		
 		
@@ -288,21 +288,21 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		
 		VerticalPanel wrList=new VerticalPanel();
 		for (Contact c:writeList) wrList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
-		wrList.skalieren();
+		wrList.scale();
 		
 		JScrollPane sp2=new JScrollPane(wrList);
 		sp2.setPreferredSize(new Dimension(300,300));
 		sp2.setSize(sp2.getPreferredSize());
 		writeListPanel.add(sp2);
-		writeListPanel.skalieren();
+		writeListPanel.scale();
 
 		listsPanel.add(deleteListPanel);
 		listsPanel.add(writeListPanel);
-		listsPanel.skalieren();
+		listsPanel.scale();
 		
 		vp.add(listsPanel);
 		vp.add(new JLabel("Please confirm those changes."));
-		vp.skalieren();
+		vp.scale();
 		int decision=JOptionPane.showConfirmDialog(null, vp, "Please confirm", JOptionPane.YES_NO_OPTION);
 		return decision==JOptionPane.YES_OPTION;
 	}
@@ -357,10 +357,10 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
 		hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));
-		hp.skalieren();
+		hp.scale();
 		vp.add(hp);
 		vp.add(new JLabel("<html><br>Shall those contacts be merged?"));
-		vp.skalieren();
+		vp.scale();
 		int decision = JOptionPane.showConfirmDialog(null, vp, "Please decide!", JOptionPane.YES_NO_CANCEL_OPTION);
 		if (decision == JOptionPane.CANCEL_OPTION) System.exit(0);
 		return decision == JOptionPane.YES_OPTION;

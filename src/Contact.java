@@ -155,10 +155,10 @@ public class Contact {
 		HorizontalPanel hp=new HorizontalPanel();
 		hp.add(new JLabel("<html>"+this.toString(true).replace("\n", "&nbsp;<br>")));
 		hp.add(new JLabel("<html>"+contact2.toString(true).replace("\n", "<br>")));
-		hp.skalieren();
+		hp.scale();
 		vp.add(hp);
 		vp.add(new JLabel("<html><br>Which "+title+" shall be used?"));
-		vp.skalieren();
+		vp.scale();
 		UIManager.put("OptionPane.yesButtonText", o1.toString());
 		UIManager.put("OptionPane.noButtonText", o2.toString());
 		int decision = JOptionPane.showConfirmDialog(null, vp, "Please select", JOptionPane.YES_NO_CANCEL_OPTION);
