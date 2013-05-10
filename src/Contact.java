@@ -301,9 +301,9 @@ public class Contact {
 		connection.disconnect();
 		for (int index = 0; index < lines.size(); index++) {
 			line = lines.elementAt(index);
-			while (index + 1 < lines.size() && lines.elementAt(index + 1).startsWith(" ")) {
+			while (index + 1 < lines.size() && (lines.elementAt(index + 1).startsWith(" ") ||lines.elementAt(index + 1).startsWith("\\n"))) {
 				index++;
-				line += lines.elementAt(index).substring(2);
+				line += lines.elementAt(index).trim();
 			}
 			boolean known = false;
 			if (line.equals("BEGIN:VCARD")) known = true;
@@ -328,7 +328,7 @@ public class Contact {
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
 
 			if (!known) {
-				throw new UnknownObjectException("unknown entry/instruction found in vcard "+vcfName+": " + line);
+				throw new UnknownObjectException("unknown entry/instruction found in vcard "+vcfName+": '" + line+"'");
 			}
 		}
 	}
