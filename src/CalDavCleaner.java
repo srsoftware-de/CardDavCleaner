@@ -167,7 +167,6 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			numberMap = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
 			mailMap = new TreeMap<String, Contact>(ObjectComparator.get());
 			total = contacts.size();
-			int index = 0;
 			for (Contact contact : contacts) {
 				TreeSet<Contact> blacklist = blackLists.get(contact);
 
