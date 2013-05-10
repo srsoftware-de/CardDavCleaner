@@ -97,7 +97,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			}
 		});
 		
-		putTestFile(host);
+
+		
+		//putTestFile(host);
 		if (!host.endsWith("/")) host += "/";
 		URL url = new URL(host);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -137,6 +139,8 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 }
 
 	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
+		TreeSet<Contact> writeList=new TreeSet<Contact>(ObjectComparator.get());
+		TreeSet<Contact> deleteListe=new TreeSet<Contact>(ObjectComparator.get());
 		Vector<Contact> contacts = new Vector<Contact>();
 		int total = contactNamess.size();
 		int counter = 0;
@@ -163,9 +167,6 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			total = contacts.size();
 			int index = 0;
 			for (Contact contact : contacts) {
-				System.out.println((++index) + "/" + total);
-				System.out.println(contact);
-
 				TreeSet<Contact> blacklist = blackLists.get(contact);
 
 				/************* name *****************/
@@ -185,7 +186,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 							// if this contact pair is not blacklisted:
 							if (askForMege("name", canonicalName, contact, existingContact)) {
 								contact.merge(existingContact);
+								writeList.add(contact);
 								contactsForName.remove(existingContact);
+								deleteListe.add(existingContact);
 								contacts.remove(existingContact);
 								restart = true;
 								break; // this has to be done, as contactsForName changed
@@ -217,7 +220,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 							// if this contact pair is not blacklisted:
 							if (askForMege("phone number", number, contact, existingContact)) {
 								contact.merge(existingContact);
+								writeList.add(contact);
 								contactsForNumber.remove(existingContact);
+								deleteListe.add(existingContact);
 								contacts.remove(existingContact);
 								restart = true;
 								break; // this has to be done, as contactsForName changed
@@ -247,7 +252,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 							// if this contact pair is not blacklisted:
 						if (askForMege("e-mail", mail, contact, existingContact)) {
 							contact.merge(existingContact);
+							writeList.add(contact);
 							contacts.remove(existingContact);
+							deleteListe.add(existingContact);
 							restart = true;
 							break; // this has to be done, as contactsForName changed
 						} else { // if merging was denied: add contact pair to blacklist
@@ -265,6 +272,12 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 				
 			} // for
 		} while (restart);
+		
+		System.out.println("Changed contacts:");
+		System.out.println(writeList);
+		System.out.println("\n\nContacts to delete");
+		System.out.println(deleteListe);
+		
 	}
 
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
