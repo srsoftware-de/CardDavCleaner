@@ -280,7 +280,7 @@ public class Contact {
 		}
 
 		sb.append("END:VCARD\n");
-		return sb.toString();
+		return sb.toString().replace("\\,",",");
 	}
 	private String newRevision() {
 		String date=formatter.format(new Date()).replace('#','T');
@@ -303,7 +303,9 @@ public class Contact {
 			line = lines.elementAt(index);
 			while (index + 1 < lines.size() && (lines.elementAt(index + 1).startsWith(" ") ||lines.elementAt(index + 1).startsWith("\\n"))) {
 				index++;
-				line += lines.elementAt(index).trim();
+				String dummy=lines.elementAt(index);
+				if (dummy.startsWith(" ")) dummy=line.substring(1);
+				line += dummy;
 			}
 			boolean known = false;
 			if (line.equals("BEGIN:VCARD")) known = true;
