@@ -12,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.rmi.AlreadyBoundException;
+import java.rmi.UnexpectedException;
 import java.rmi.activation.UnknownObjectException;
 import java.util.Set;
 import java.util.TreeMap;
@@ -279,7 +280,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		
 		if (confirmLists(writeList,deleteListe)){
 			putMergedContacts(host,writeList);
-			deleteUselessContacts(deleteListe);
+			deleteUselessContacts(host,deleteListe);
 		}		
 	}
 
@@ -333,7 +334,6 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 			
 			byte[] data=c.getBytes();
 			URL putUrl=new URL(host+"/"+c.vcfName());
-			System.out.println(putUrl);
 			HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
 			conn.setRequestMethod( "PUT" );  
 	    conn.setDoOutput( true );  
@@ -345,16 +345,31 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 	  
 	    while ((read=in.read()) != -1 ) out.write( read );
 	    out.close();
-	    System.out.println( conn.getResponseCode() );
+	    int response=conn.getResponseCode();
 	    conn.disconnect();
-			System.exit(0);
+	    if (response!=204){
+	    	throw new UnexpectedException("Server responded with CODE 204");
+	    }
 		}
 	}
 
-	private void deleteUselessContacts(TreeSet<Contact> deleteList) {	
-		System.out.println("Changed contacts:");
-		for (Contact c:deleteList) System.out.println(c.vcfName());
-}
+	private void deleteUselessContacts(String host,TreeSet<Contact> deleteList) throws IOException {	
+		for (Contact c:deleteList) {
+			System.out.println("Deleting "+c.vcfName());
+			
+			byte[] data=c.getBytes();
+			URL putUrl=new URL(host+"/"+c.vcfName());
+			HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
+			conn.setRequestMethod( "DELETE" );  
+	    conn.setDoOutput( true );  
+	    conn.connect();  
+	    int response=conn.getResponseCode();
+	    conn.disconnect();
+	    //if (response!=204){
+	    	throw new UnexpectedException("Server responded with CODE 204");
+	    //}
+		}
+	}
 
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
 		if (!contact.conflictsWith(contact2)) return true;
