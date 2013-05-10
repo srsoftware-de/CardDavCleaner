@@ -42,9 +42,9 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		VerticalPanel mainPanel = new VerticalPanel("Server settings");
 
 		serverField = addInput(mainPanel, "Server:");
-		serverField.setText("http://kommune10.dyndns.info:815/cloud/remote.php/carddav/addressbooks/srichter/standard");
+		serverField.setText("http://kommune10.dyndns.info:815/cloud/remote.php/carddav/addressbooks/test/contacts");
 		userField = addInput(mainPanel, "User:");
-		userField.setText("srichter");
+		userField.setText("test");
 		passwordField = addPassword(mainPanel, "Password:");
 
 		JButton startButton = new JButton("start");
@@ -147,7 +147,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		int counter = 0;
 		for (String contactName : contactNamess) {
 			System.out.println(++counter + "/" + total);
-			Contact contact = new Contact(new URL(host + contactName));
+			Contact contact = new Contact(host,contactName);
 			if (contact.isEmpty()) {
 				deleteListe.add(contact);
 				System.out.println("Waring: skipping empty contact " + contactName);
@@ -278,7 +278,7 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		} while (restart);
 		
 		if (confirmLists(writeList,deleteListe)){
-			putMergedContacts(writeList);
+			putMergedContacts(host,writeList);
 			deleteUselessContacts(deleteListe);
 		}		
 	}
@@ -327,15 +327,34 @@ public class CalDavCleaner extends JFrame implements ActionListener {
 		return decision==JOptionPane.YES_OPTION;
 	}
 
-	private void putMergedContacts(TreeSet<Contact> writeList) {
-		System.out.println("Changed contacts:");
-		System.out.println(writeList.toString().replace(", BEGIN","\nBEGIN"));
+	private void putMergedContacts(String host,TreeSet<Contact> writeList) throws IOException {
+		for (Contact c:writeList) {
+			System.out.println("Uploading "+c.vcfName());
+			
+			byte[] data=c.getBytes();
+			URL putUrl=new URL(host+"/"+c.vcfName());
+			System.out.println(putUrl);
+			HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
+			conn.setRequestMethod( "PUT" );  
+	    conn.setDoOutput( true );  
+	    conn.setRequestProperty( "Content-Type", "text/x-vcard" );  
+	    conn.connect();  
+	    OutputStream out = conn.getOutputStream();  
+	    ByteArrayInputStream in = new ByteArrayInputStream( data );  
+	    int read = -1;  
+	  
+	    while ((read=in.read()) != -1 ) out.write( read );
+	    out.close();
+	    System.out.println( conn.getResponseCode() );
+	    conn.disconnect();
+			System.exit(0);
+		}
 	}
 
-	private void deleteUselessContacts(TreeSet<Contact> deleteListe) {
-		System.out.println("\n\nContacts to delete");
-		System.out.println(deleteListe.toString().replace(", BEGIN","\nBEGIN"));
-	}
+	private void deleteUselessContacts(TreeSet<Contact> deleteList) {	
+		System.out.println("Changed contacts:");
+		for (Contact c:deleteList) System.out.println(c.vcfName());
+}
 
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
 		if (!contact.conflictsWith(contact2)) return true;

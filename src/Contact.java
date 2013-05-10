@@ -37,52 +37,21 @@ public class Contact {
 	private TreeSet<String> notes=new TreeSet<String>(ObjectComparator.get());
 	private TreeSet<String> photos=new TreeSet<String>(ObjectComparator.get());
 	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
+	private String vcfName;
 	
 	public boolean conflictsWith(Contact c2){
-		if (name!=null && c2.name!=null && !name.canonical().equals(c2.name.canonical())) {
-			System.out.println("name conflict");
-			return true;
-		}
-		if (birthday!=null && c2.birthday!=null && !birthday.equals(c2.birthday)) {
-			System.out.println("birthday conflict");
-			return true;
-		}
-		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) {
-			System.out.println("title conflict");
-			return true;
-		}
-		if (role!=null && c2.role!=null && !role.equals(c2.role)) {
-			System.out.println("role conflict");
-			return true;
-		}
-		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getPhoneNumbers().equals(c2.getPhoneNumbers())) {
-			System.out.println("phone conflict");
-			return true;
-		}
-		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) {
-			System.out.println("mail conflict");
-			return true;
-		}
-		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) {
-			System.out.println("adress conflict");
-			return true;
-		}
-		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls)) {
-			System.out.println("ur conflict");
-			return true;
-		}
-		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes)){
-			System.out.println("notes conflict");
-			return true;
-		}
-		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) {
-			System.out.println("orgs conflict");
-			return true;
-		}
-		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos)){
-			System.out.println("photo conflict");
-			return true;		
-		}
+		if (name!=null && c2.name!=null && !name.canonical().equals(c2.name.canonical())) return true;
+		if (birthday!=null && c2.birthday!=null && !birthday.equals(c2.birthday)) return true;
+		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) return true;
+		if (role!=null && c2.role!=null && !role.equals(c2.role)) return true;
+		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getPhoneNumbers().equals(c2.getPhoneNumbers())) return true;
+		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) return true;
+		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) return true;
+		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls))	return true;
+		
+		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes))return true;
+		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) return true;
+		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos))	return true;		
 		return false;
 	}
 
@@ -120,7 +89,6 @@ public class Contact {
 	}
 	
 	public void merge(Contact contact) throws InvalidAssignmentException {
-		System.err.println("merging contacts!");
 		adresses.addAll(contact.adresses);
 		
 		/* merging phones by numbers */
@@ -204,8 +172,9 @@ public class Contact {
 		return null;
 	}
 
-	public Contact(URL url) throws UnknownObjectException, IOException, AlreadyBoundException  {
-		parse(url);
+	public Contact(String directory,String name) throws UnknownObjectException, IOException, AlreadyBoundException  {
+		vcfName=name;
+		parse(new URL(directory+name));
 	}
 	
 	public String toString() {
@@ -459,5 +428,13 @@ public class Contact {
 			mails.add(e.adress());
 		}
 		return mails;
+	}
+	
+	public String vcfName(){
+		return vcfName;
+	}
+
+	public byte[] getBytes() {
+		return toString().getBytes();
 	}
 }
