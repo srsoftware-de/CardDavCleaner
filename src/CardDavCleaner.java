@@ -312,6 +312,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private void putMergedContacts(String host,TreeSet<Contact> writeList) throws IOException {
 		for (Contact c:writeList) {
+			
+			/* the next two lines have been added to circumvent the problem, that on some caldav servers, entries can not simply be overwritten */
+			deleteContact(new URL(host+"/"+c.vcfName()));
+			c.generateName();
+			
 			System.out.println("Uploading "+c.vcfName());
 			
 			byte[] data=c.getBytes();
@@ -329,7 +334,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	    out.close();
 	    int response=conn.getResponseCode();
 	    conn.disconnect();
-	    if (response!=204){
+	    if (response<200 || response>299){
 	    	throw new UnexpectedException("Server responded with CODE "+response);
 	    }
 		}
@@ -337,19 +342,21 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private void deleteUselessContacts(String host,TreeSet<Contact> deleteList) throws IOException {	
 		for (Contact c:deleteList) {
-			System.out.println("Deleting "+c.vcfName());
-			
-			URL putUrl=new URL(host+"/"+c.vcfName());
-			HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
-			conn.setRequestMethod( "DELETE" );  
-	    conn.setDoOutput( true );  
-	    conn.connect();  
-	    int response=conn.getResponseCode();
-	    conn.disconnect();
-	    if (response!=204){
-	    	throw new UnexpectedException("Server responded with CODE 204");
-	    }
+			System.out.println("Deleting "+c.vcfName());			
+			deleteContact(new URL(host+"/"+c.vcfName()));
 		}
+	}
+	
+	private void deleteContact(URL u) throws IOException{
+		HttpURLConnection conn = ( HttpURLConnection ) u.openConnection();
+		conn.setRequestMethod( "DELETE" );  
+    conn.setDoOutput( true );  
+    conn.connect();  
+    int response=conn.getResponseCode();
+    conn.disconnect();
+    if (response!=204){
+    	throw new UnexpectedException("Server responded with CODE "+response);
+    }
 	}
 
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
