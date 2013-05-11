@@ -313,9 +313,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private void putMergedContacts(String host,TreeSet<Contact> writeList) throws IOException {
 		for (Contact c:writeList) {
 			
-			/* the next two lines have been added to circumvent the problem, that on some caldav servers, entries can not simply be overwritten */
-			deleteContact(new URL(host+"/"+c.vcfName()));
-			c.generateName();
 			
 			System.out.println("Uploading "+c.vcfName());
 			
@@ -334,8 +331,31 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	    out.close();
 	    int response=conn.getResponseCode();
 	    conn.disconnect();
+	    
+
 	    if (response<200 || response>299){
-	    	throw new UnexpectedException("Server responded with CODE "+response);
+	    	System.out.println("...not successful ("+response+" / "+conn.getResponseMessage()+"). Trying to remove first...");
+	    	
+				/* the next two lines have been added to circumvent the problem, that on some caldav servers, entries can not simply be overwritten */
+				deleteContact(new URL(host+"/"+c.vcfName()));
+				c.generateName();
+
+				data=c.getBytes();
+				putUrl=new URL(host+"/"+c.vcfName());
+				conn = ( HttpURLConnection ) putUrl.openConnection();
+				conn.setRequestMethod( "PUT" );  
+		    conn.setDoOutput( true );  
+		    conn.setRequestProperty( "Content-Type", "text/vcard" );  
+		    conn.connect();  
+		    out = conn.getOutputStream();  
+		    in = new ByteArrayInputStream( data );  
+		    read = -1;  
+		  
+		    while ((read=in.read()) != -1 ) out.write( read );
+		    out.close();
+		    response=conn.getResponseCode();
+		    conn.disconnect();
+		    if (response<200 || response>299) throw new UnexpectedException("Server responded with CODE "+response);
 	    }
 		}
 	}
