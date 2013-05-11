@@ -344,6 +344,18 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		for (Contact c:deleteList) {
 			System.out.println("Deleting "+c.vcfName());			
 			deleteContact(new URL(host+"/"+c.vcfName()));
+			System.out.println("Deleting "+c.vcfName());
+			
+			URL putUrl=new URL(host+"/"+c.vcfName());
+			HttpURLConnection conn = ( HttpURLConnection ) putUrl.openConnection();
+			conn.setRequestMethod( "DELETE" );  
+	    conn.setDoOutput( true );  
+	    conn.connect();  
+	    int response=conn.getResponseCode();
+	    conn.disconnect();
+	    if (response!=204){
+	    	throw new UnexpectedException("Server responded with CODE "+response);
+	    }
 		}
 	}
 	
