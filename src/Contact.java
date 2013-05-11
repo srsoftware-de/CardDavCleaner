@@ -1,4 +1,7 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -451,5 +454,13 @@ public class Contact {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public File writeToFile() throws IOException {
+		File f=new File(vcfName());
+		BufferedWriter bw=new BufferedWriter(new FileWriter(f));
+		bw.write(toString());
+		bw.close();
+		return f;
 	}
 }

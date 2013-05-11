@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -74,11 +75,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		hp.scale();
 		mainPanel.add(hp);
 		return result;
-	}
-
-	public static void main(String[] args) {
-		CardDavCleaner cleaner = new CardDavCleaner();
-		cleaner.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
 	public void actionPerformed(ActionEvent arg0) {
@@ -259,7 +255,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			putMergedContacts(host,writeList);
 			deleteUselessContacts(host,deleteList);
 		}
-		JOptionPane.showMessageDialog(null, "Scanning, merging and cleaning successfully done! Godbye!");
+		JOptionPane.showMessageDialog(null, "Scanning, merging and cleaning <i>successfully</i> done! Godbye!");
 		setVisible(false);
 		System.exit(0);
 		
@@ -271,7 +267,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		HorizontalPanel listsPanel=new HorizontalPanel();
 		
 		VerticalPanel deleteListPanel=new VerticalPanel();
-		deleteListPanel.add(new JLabel("The following contacts will be deleted:"));
+		deleteListPanel.add(new JLabel("The following contacts will be <b>deleted</b>:"));
 		
 		VerticalPanel delList=new VerticalPanel();
 		for (Contact c:deleteList) delList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
@@ -287,7 +283,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 		
 		VerticalPanel writeListPanel=new VerticalPanel();
-		writeListPanel.add(new JLabel("The following merged contacts will be written to the server:"));
+		writeListPanel.add(new JLabel("The following <b>merged contacts</b> will be written to the server:"));
 		
 		VerticalPanel wrList=new VerticalPanel();
 		for (Contact c:writeList) wrList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
@@ -304,7 +300,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		listsPanel.scale();
 		
 		vp.add(listsPanel);
-		vp.add(new JLabel("Please confirm those changes."));
+		vp.add(new JLabel("No data has been modified on the server <b>until now</b>. Continue?"));
 		vp.scale();
 		int decision=JOptionPane.showConfirmDialog(null, vp, "Please confirm", JOptionPane.YES_NO_OPTION);
 		return decision==JOptionPane.YES_OPTION;
@@ -355,7 +351,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		    out.close();
 		    response=conn.getResponseCode();
 		    conn.disconnect();
-		    if (response<200 || response>299) throw new UnexpectedException("Server responded with CODE "+response);
+		    if (response<200 || response>299){
+		    	File f=c.writeToFile();
+		    	JOptionPane.showMessageDialog(this, "<html>Sorry! Unfortunateley, i was not able to write a file to the WebDAV server.<br>But don't worry, i created a <b>Backup</b> of the file at "+f.getAbsolutePath());
+		    	throw new UnexpectedException("Server responded with CODE "+response);
+		    }
 	    }
 	    System.out.println("...success!");
 		}
@@ -383,13 +383,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
 		if (!contact.conflictsWith(contact2)) return true;
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new JLabel("The " + identifier + " \"" + name + "\" is used by both following contacts:"));
+		vp.add(new JLabel("The " + identifier + " \"<b>" + name + "</b>\" is used by both following contacts:"));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
 		hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));
 		hp.scale();
 		vp.add(hp);
-		vp.add(new JLabel("<html><br>Shall those contacts be merged?"));
+		vp.add(new JLabel("<html><br>Shall those contacts be <i>merged</i>?"));
 		vp.scale();
 		int decision = JOptionPane.showConfirmDialog(null, vp, "Please decide!", JOptionPane.YES_NO_CANCEL_OPTION);
 		if (decision == JOptionPane.CANCEL_OPTION) System.exit(0);
@@ -399,10 +399,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private String extractContactName(String line) {
 		String[] parts = line.split("/|\"");
 		for (String part : parts) {
-			if (part.contains("vcf")) {
-				return part;
-			}
+			if (part.contains("vcf")) return part;	
 		}
 		return null;
+	}
+
+	public static void main(String[] args) {
+		CardDavCleaner cleaner = new CardDavCleaner();
+		cleaner.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 }
