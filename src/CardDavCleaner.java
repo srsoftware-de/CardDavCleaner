@@ -128,6 +128,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			} else
 				contacts.add(contact);
 		}
+		
+		for (String num:Phone.numbers){
+			System.out.println(num);
+			System.exit(-1);
+		}
 
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
 		TreeMap<String, TreeSet<Contact>> nameMap; // one name may map to multiple contacts, as multiple persons may have the same name

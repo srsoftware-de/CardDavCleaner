@@ -1,4 +1,5 @@
 import java.rmi.activation.UnknownObjectException;
+import java.util.TreeSet;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -12,6 +13,8 @@ public class Phone {
 	private boolean cell=false;
 	private boolean work=false;
 	private String number;
+	
+	static TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
 	
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
@@ -84,6 +87,7 @@ public class Phone {
 			}
 		}
 		number = line;
+		numbers.add(number);
 	}
 
 	public boolean isEmpty() {
