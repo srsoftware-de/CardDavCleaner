@@ -425,9 +425,13 @@ public class Contact {
 
 	public TreeSet<String> phoneNumbers() {
 		TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
-		for (Phone p:phones){
-			numbers.add(p.number());
-		}
+		for (Phone p:phones)	numbers.add(p.number());
+		return numbers;
+	}
+	
+	public TreeSet<String> simpleNumbers(){
+		TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
+		for (Phone p:phones)	numbers.add(p.simpleNumber());
 		return numbers;
 	}
 

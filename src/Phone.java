@@ -105,4 +105,11 @@ public class Phone {
 		if (phone.cell)cell= true;
 		if (phone.fax) fax=true;
 	}
+
+	public String simpleNumber() {
+		String number=this.number.replace("(", "").replace(")", "");
+		if (number.startsWith("+49")) number=0+number.substring(3);
+		if (number.startsWith("0049")) number=0+number.substring(4);
+		return number;
+}
 }
