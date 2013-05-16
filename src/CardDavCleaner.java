@@ -189,10 +189,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				/************* phone ****************/
 				TreeSet<String> numbers = contact.phoneNumbers();
 				for (String number:numbers){
+					number=number.replace("(", "").replace(")", "");
+					if (number.startsWith("+49")) number=0+number.substring(3);
+					if (number.startsWith("0049")) number=0+number.substring(4);
 					TreeSet<Contact> contactsForNumber = numberMap.get(number);
 					if (contactsForNumber==null){
 						contactsForNumber=new TreeSet<Contact>(ObjectComparator.get());
-						contactsForNumber.add(contact);
+						contactsForNumber.add(contact);						
 						numberMap.put(number, contactsForNumber);
 					} else {
 						for (Contact existingContact:contactsForNumber){
