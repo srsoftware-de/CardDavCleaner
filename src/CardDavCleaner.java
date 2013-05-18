@@ -129,11 +129,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				contacts.add(contact);
 		}
 		
-		for (String num:Phone.numbers){
-			System.out.println(num);
-			System.exit(-1);
-		}
-
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
 		TreeMap<String, TreeSet<Contact>> nameMap; // one name may map to multiple contacts, as multiple persons may have the same name
 		TreeMap<String, TreeSet<Contact>> numberMap; // on number can be used by multiple persons, as people living together may share a landline number
@@ -260,7 +255,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			putMergedContacts(host,writeList);
 			deleteUselessContacts(host,deleteList);
 		}
-		JOptionPane.showMessageDialog(null, "Scanning, merging and cleaning <i>successfully</i> done! Godbye!");
+		JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!");
 		setVisible(false);
 		System.exit(0);
 		
@@ -272,7 +267,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		HorizontalPanel listsPanel=new HorizontalPanel();
 		
 		VerticalPanel deleteListPanel=new VerticalPanel();
-		deleteListPanel.add(new JLabel("The following contacts will be <b>deleted</b>:"));
+		deleteListPanel.add(new JLabel("<html>The following contacts will be <b>deleted</b>:"));
 		
 		VerticalPanel delList=new VerticalPanel();
 		for (Contact c:deleteList) delList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
@@ -288,7 +283,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 		
 		VerticalPanel writeListPanel=new VerticalPanel();
-		writeListPanel.add(new JLabel("The following <b>merged contacts</b> will be written to the server:"));
+		writeListPanel.add(new JLabel("<html>The following <b>merged contacts</b> will be written to the server:"));
 		
 		VerticalPanel wrList=new VerticalPanel();
 		for (Contact c:writeList) wrList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
@@ -305,7 +300,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		listsPanel.scale();
 		
 		vp.add(listsPanel);
-		vp.add(new JLabel("No data has been modified on the server <b>until now</b>. Continue?"));
+		vp.add(new JLabel("<html>No data has been modified on the server <b>until now</b>. Continue?"));
 		vp.scale();
 		int decision=JOptionPane.showConfirmDialog(null, vp, "Please confirm", JOptionPane.YES_NO_OPTION);
 		return decision==JOptionPane.YES_OPTION;
@@ -388,7 +383,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
 		if (!contact.conflictsWith(contact2)) return true;
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new JLabel("The " + identifier + " \"<b>" + name + "</b>\" is used by both following contacts:"));
+		vp.add(new JLabel("<html>The " + identifier + " \"<b>" + name + "</b>\" is used by both following contacts:"));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
 		hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));
