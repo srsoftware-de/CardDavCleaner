@@ -3,6 +3,7 @@ import java.rmi.activation.UnknownObjectException;
 
 public class Messenger {
 	
+	private boolean aim=false;
 	private boolean icq=false;
 	private boolean skype=false;
 	private boolean msn=false;
@@ -12,6 +13,7 @@ public class Messenger {
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
 		sb.append("IMPP:");
+		if (aim) sb.append("aim");
 		if (icq) sb.append("icq");
 		if (skype) sb.append("skype");
 		if (msn) sb.append("msn");
@@ -28,6 +30,11 @@ public class Messenger {
 			String upper = line.toUpperCase();
 			if (upper.startsWith("ICQ")){
 				icq=true;
+				line=line.substring(3);
+				continue;
+			}
+			if (upper.startsWith("AIM")){
+				aim=true;
 				line=line.substring(3);
 				continue;
 			}
@@ -67,6 +74,7 @@ public class Messenger {
 
 	public void merge(Messenger m) throws InvalidAssignmentException {
 		if (!nick.equals(m.nick)) throw new InvalidAssignmentException("Trying to merge two messenger accounts with different ids!");
+		if (m.aim) aim=true;
 		if (m.icq) icq=true;
 		if (m.skype) skype=true;
 		if (m.msn) msn=true;
@@ -74,6 +82,7 @@ public class Messenger {
 	}
 
 	public String id() throws UnknownObjectException {
+		if (aim) return "aim:"+nick;
 		if (icq) return "icq:"+nick;
 		if (skype) return "skype:"+nick;
 		if (msn) return "msn:"+nick;

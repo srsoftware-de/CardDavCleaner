@@ -42,6 +42,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private void createComponents() {
+		
 		VerticalPanel mainPanel = new VerticalPanel("Server settings");
 
 		serverField = addInput(mainPanel, "Server:");

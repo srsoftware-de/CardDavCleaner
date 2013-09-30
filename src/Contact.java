@@ -318,9 +318,11 @@ public class Contact {
 			if (line.startsWith("ADR;") && (known = true)) readAdress(line);
 			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
 			if (line.startsWith("TEL;") && (known = true)) readPhone(line);
+			if (line.startsWith("TEL:") && (known = true)) readPhone(line.replace(":", ";TYPE=home:"));
 			if (line.startsWith("EMAIL;") && (known = true)) readMail(line);
 			if (line.startsWith("IMPP:") && (known = true)) readIMPP(line);
 			if (line.startsWith("X-ICQ:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
+			if (line.startsWith("X-AIM:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
 			if (line.startsWith("X-SKYPE:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
 			if (line.startsWith("REV:")) known = true;// readRevision(line.substring(4));
 			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
