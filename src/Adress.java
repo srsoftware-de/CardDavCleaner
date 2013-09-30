@@ -2,8 +2,6 @@ import java.rmi.activation.UnknownObjectException;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import com.sun.media.sound.InvalidFormatException;
-
 public class Adress {
 
 	private boolean home = false;

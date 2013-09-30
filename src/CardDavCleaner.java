@@ -30,6 +30,7 @@ import javax.swing.JTextField;
 
 public class CardDavCleaner extends JFrame implements ActionListener {
 
+  private static final long serialVersionUID = -2875331857455588061L;
 	private JTextField serverField;
 	private JTextField userField;
 	private JPasswordField passwordField;
@@ -86,7 +87,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 	}
 
-	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
+	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password.toCharArray());
@@ -113,7 +114,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		scanContacts(host, contacts);
 	}
 
-	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
+	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
 		TreeSet<Contact> writeList=new TreeSet<Contact>(ObjectComparator.get());
 		TreeSet<Contact> deleteList=new TreeSet<Contact>(ObjectComparator.get());
 		Vector<Contact> contacts = new Vector<Contact>();
@@ -132,14 +133,15 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
 		TreeMap<String, TreeSet<Contact>> nameMap; // one name may map to multiple contacts, as multiple persons may have the same name
 		TreeMap<String, TreeSet<Contact>> numberMap; // on number can be used by multiple persons, as people living together may share a landline number
-		TreeMap<String, Contact> mailMap; 
+		TreeMap<String, Contact> mailMap;
+		TreeMap<String, Contact> messengerMap;
 		boolean restart;
 		do {
-
 			restart = false;
 			nameMap = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
 			numberMap = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
 			mailMap = new TreeMap<String, Contact>(ObjectComparator.get());
+			messengerMap = new TreeMap<String, Contact>(ObjectComparator.get());
 			total = contacts.size();
 			for (Contact contact : contacts) {
 				TreeSet<Contact> blacklist = blackLists.get(contact);
@@ -181,6 +183,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					}
 				} // ---> if (name != null)
 				/************* name *****************/
+				
 				/************* phone ****************/
 				TreeSet<String> numbers = contact.simpleNumbers();
 				for (String number:numbers){
@@ -216,6 +219,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				}
 				if (restart) break;				
 				/************* phone ****************/
+				
 				/************* email ****************/
 				TreeSet<String> mails = contact.mailAdresses();
 				for (String mail:mails){
@@ -248,6 +252,37 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				if (restart) break;				
 				/************* email ****************/
 				
+				/************* messenger *****************/
+				TreeSet<String> messsengers = contact.messengers();
+				for (String messenger:messsengers){
+					Contact existingMessenger = messengerMap.get(messenger);
+					if (existingMessenger==null){
+						existingMessenger=contact;
+						mailMap.put(messenger, contact);
+					} else {
+						if (blacklist != null && blacklist.contains(existingMessenger)) continue;
+
+							// if this contact pair is not blacklisted:
+						if (askForMege("messenger", messenger, contact, existingMessenger)) {
+							contact.merge(existingMessenger);
+							contacts.remove(existingMessenger);
+							writeList.add(contact);
+							writeList.remove(existingMessenger);
+							deleteList.add(existingMessenger);
+							restart = true;
+							break;
+						} else { // if merging was denied: add contact pair to blacklist
+							if (blacklist == null) {
+								blacklist = new TreeSet<Contact>(ObjectComparator.get());
+								blackLists.put(contact, blacklist);
+							}
+							blacklist.add(existingMessenger);							
+						}
+						if (restart) break;
+					}
+				}
+				if (restart) break;
+				/************* messenger *****************/
 			} // for
 		} while (restart);
 		

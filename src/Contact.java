@@ -1,3 +1,4 @@
+import java.awt.Container;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -21,8 +22,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import com.sun.media.sound.InvalidFormatException;
-
 public class Contact {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	//private String revision;
@@ -42,6 +41,7 @@ public class Contact {
 	private TreeSet<String> photos=new TreeSet<String>(ObjectComparator.get());
 	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
 	private String vcfName;
+	private TreeSet<Messenger> messengers=new TreeSet<Messenger>(ObjectComparator.get());
 	
 	public boolean conflictsWith(Contact c2){
 		if (name!=null && c2.name!=null && !name.canonical().equals(c2.name.canonical())) return true;
@@ -176,7 +176,7 @@ public class Contact {
 		return null;
 	}
 
-	public Contact(String directory,String name) throws UnknownObjectException, IOException, AlreadyBoundException  {
+	public Contact(String directory,String name) throws UnknownObjectException, IOException, AlreadyBoundException, InvalidFormatException  {
 		vcfName=name;
 		parse(new URL(directory+name));
 	}
@@ -291,7 +291,7 @@ public class Contact {
 		return "REV:"+date;
 	}
 
-	private void parse(URL url) throws IOException, UnknownObjectException, AlreadyBoundException {
+	private void parse(URL url) throws IOException, UnknownObjectException, AlreadyBoundException, InvalidFormatException {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
@@ -319,6 +319,9 @@ public class Contact {
 			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
 			if (line.startsWith("TEL;") && (known = true)) readPhone(line);
 			if (line.startsWith("EMAIL;") && (known = true)) readMail(line);
+			if (line.startsWith("IMPP:") && (known = true)) readIMPP(line);
+			if (line.startsWith("X-ICQ:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
+			if (line.startsWith("X-SKYPE:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
 			if (line.startsWith("REV:")) known = true;// readRevision(line.substring(4));
 			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
 			if (line.startsWith("BDAY") && (known = true)) readBirthday(line.substring(4));
@@ -338,6 +341,11 @@ public class Contact {
 			}
 		}
 	}
+
+	private void readIMPP(String line) throws UnknownObjectException, InvalidFormatException {
+			Messenger messenger = new Messenger(line);
+			if (!messenger.isEmpty()) messengers.add(messenger);
+		}
 
 	private void readBirthday(String bday) {
 		birthday=new Birthday(bday);
@@ -416,7 +424,7 @@ public class Contact {
 
 	private void readMail(String line) throws UnknownObjectException, InvalidFormatException {
 		Email mail = new Email(line);
-		if (!mail.isEmpty()) mails.add(new Email(line));
+		if (!mail.isEmpty()) mails.add(mail);
 	}
 
 	public Name name() {
@@ -466,5 +474,13 @@ public class Contact {
 		bw.write(toString());
 		bw.close();
 		return f;
+	}
+
+	public TreeSet<String> messengers() throws UnknownObjectException {
+		TreeSet<String> messengers=new TreeSet<String>(ObjectComparator.get());
+		for (Messenger m:this.messengers){
+			messengers.add(m.id());
+		}
+		return messengers;
 	}
 }

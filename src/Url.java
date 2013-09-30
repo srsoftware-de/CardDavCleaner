@@ -1,7 +1,5 @@
 import java.rmi.activation.UnknownObjectException;
 
-import com.sun.media.sound.InvalidFormatException;
-
 
 public class Url {
 	
@@ -23,12 +21,12 @@ public class Url {
 		if (!content.startsWith("URL;")) throw new InvalidFormatException("Url does not start with \"URL;\"");
 		String line = content.substring(4);
 		while(!line.startsWith(":")){
-			if (line.startsWith("TYPE=HOME")){
+			if (line.toUpperCase().startsWith("TYPE=HOME")){
 				home=true;
 				line=line.substring(9);
 				continue;
 			} 
-			if (line.startsWith("TYPE=WORK")){
+			if (line.toUpperCase().startsWith("TYPE=WORK")){
 				home=true;
 				line=line.substring(9);
 				continue;
