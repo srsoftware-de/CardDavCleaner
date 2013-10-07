@@ -24,15 +24,14 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 public class CardDavCleaner extends JFrame implements ActionListener {
 
-	private JTextField serverField;
-	private JTextField userField;
-	private JPasswordField passwordField;
+	private JTextField serverField, userField, passwordField;
 
 	public CardDavCleaner() {
 		super();
@@ -46,9 +45,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private void createComponents() {
 		VerticalPanel mainPanel = new VerticalPanel("Server settings");
 
-		serverField = createInputField(mainPanel, "Server:");
-		userField = createInputField(mainPanel, "User:");
-		passwordField = createPasswordField(mainPanel, "Password:");
+		serverField = createInputField(mainPanel,"Server + Path to addressbook:",false);
+		userField = createInputField(mainPanel,"User:",false);
+		passwordField = createInputField(mainPanel,"Password:",true);
 
 		JButton startButton = new JButton("start");
 		startButton.addActionListener(this);
@@ -61,34 +60,19 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * used to create the password field for the server form
-	 * @param mainPanel the panel to which the component shall be added
-	 * @param text the label for the field
-	 * @return the password field component
-	 */
-	private JPasswordField createPasswordField(VerticalPanel mainPanel, String text) {
-		HorizontalPanel hp = new HorizontalPanel();
-		hp.add(new JLabel(text + " "));
-		JPasswordField result = new JPasswordField(50);
-		hp.add(result);
-		hp.scale();
-		mainPanel.add(hp);
-		return result;
-	}
-
-	/**
 	 * used to create non-password input fields for the server login form
-	 * @param mainPanel the panel, to which the component shall be added 
+	 * @param owner the panel, to which the component shall be added 
 	 * @param text the label for the field
+	 * @param password if set to ture, a password field will be created
 	 * @return the input field component
 	 */
-	private JTextField createInputField(VerticalPanel mainPanel, String text) {
+	private JTextField createInputField(VerticalPanel owner, String text,boolean password) {
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel(text + " "));
-		JTextField result = new JTextField(50);
+		JTextField result = password?(new JPasswordField(50)):(new JTextField(50));
 		hp.add(result);
 		hp.scale();
-		mainPanel.add(hp);
+		owner.add(hp);
 		return result;
 	}
 
@@ -97,7 +81,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent arg0) {
 		try {
-			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getPassword()));
+			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()));
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.exit(0);
