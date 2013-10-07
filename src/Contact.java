@@ -91,24 +91,31 @@ public class Contact {
 					orgs.isEmpty();
 	}
 	
-	public void merge(Contact contact) throws InvalidAssignmentException {
+	public void merge(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchNumbersForThunderbirdException {
 		adresses.addAll(contact.adresses);
 		
 		/* merging phones by numbers */
 		TreeMap<String,Phone> phoneMap=new TreeMap<String, Phone>(ObjectComparator.get());
+		
+		/* add the current phones to the phone map */
 		for (Phone phone:phones){
 			Phone existingPhone = phoneMap.get(phone.number());
 			if (existingPhone!=null){
 				existingPhone.merge(phone);
 			} else phoneMap.put(phone.number(), phone);
 		}
+		
+		/* add the phone numbers of the second contact to the phone map */
 		for (Phone phone:contact.phones){
 			Phone existingPhone = phoneMap.get(phone.number());
 			if (existingPhone!=null){
 				existingPhone.merge(phone);
 			} else phoneMap.put(phone.number(), phone);
-		}		
-		phones=phoneMap.values();
+		}
+		
+		if (thunderbirdMerge) {
+			phones=thunderbirdMerge(phoneMap.values());
+		} else phones=phoneMap.values();
 		
 		TreeMap<String,Email> mailMap=new TreeMap<String,Email>(ObjectComparator.get());
 		for (Email mail:mails){
@@ -152,6 +159,65 @@ public class Contact {
 		orgs.addAll(contact.orgs);		
 	}
 	
+	private Collection<Phone> thunderbirdMerge(Collection<Phone> phones) throws ToMuchNumbersForThunderbirdException {
+		TreeSet<Phone> overloadedCategoryNumbers=new TreeSet<Phone>(ObjectComparator.get());
+		boolean fax=false;
+		boolean home=false;
+		boolean cell=false;
+		boolean work=false;	
+
+		for (Phone phone:phones){
+			if (phone.isHomePhone()){
+				if (home) {
+					overloadedCategoryNumbers.add(phone);
+				} else home=true;
+			}
+			if (phone.isWorkPhone()){
+				if (work) {
+					overloadedCategoryNumbers.add(phone);
+				} else work=true;
+			}
+			if (phone.isCellPhone()){
+				if (cell) {
+					overloadedCategoryNumbers.add(phone);
+				} else cell=true;
+			}
+			if (phone.isFax()){
+				if (fax) {
+					overloadedCategoryNumbers.add(phone);
+				} else fax=true;
+			}
+		}
+		for (Phone phone:overloadedCategoryNumbers){
+			if (!home) {
+				System.out.println("Storing "+phone.simpleNumber()+" as home phone number, as '"+phone.category()+"' is already used by another number.");
+				phone.setHome();
+				home=true;
+				continue;
+			}
+			if (!cell) {
+				System.out.println("Storing "+phone.simpleNumber()+" as cell phone number, as '"+phone.category()+"' is already used by another number.");
+				phone.setCell();
+				cell=true;
+				continue;
+			}
+			if (!work) {
+				System.out.println("Storing "+phone.simpleNumber()+" as home work number, as '"+phone.category()+"' is already used by another number.");
+				phone.setWork();
+				work=true;
+				continue;
+			}
+			if (!fax) {
+				System.out.println("Storing "+phone.simpleNumber()+" as home fax number, as '"+phone.category()+"' is already used by another number.");
+				phone.setFax();
+				fax=true;
+				continue;
+			}
+			throw new ToMuchNumbersForThunderbirdException(phone);
+		}
+		return phones;
+	}
+
 	private Object selectOneOf(String title, Object o1, Object o2, Contact contact2) {
 		VerticalPanel vp=new VerticalPanel();
 		vp.add(new JLabel("<html>Merging the following two contacts:<br>&nbsp;"));

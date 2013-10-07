@@ -110,4 +110,56 @@ public class Phone {
 		if (number.startsWith("0049")) number=0+number.substring(4);
 		return number;
 }
+
+	public boolean isHomePhone() {
+		return home;
+	}
+
+	public boolean isWorkPhone() {
+		return work;
+	}
+
+	public boolean isCellPhone() {
+		return cell;
+	}
+
+	public boolean isFax() {
+		return fax;
+	}
+
+	public void setHome() {
+		home=true;
+		work=false;
+		fax=false;
+		cell=false;
+	}
+
+	public void setCell() {
+		home=false;
+		work=false;
+		fax=false;
+		cell=true;
+	}
+
+	public void setWork() {
+		home=false;
+		work=true;
+		fax=false;
+		cell=false;
+	}
+
+	public void setFax() {
+		home=false;
+		work=false;
+		fax=true;
+		cell=false;
+	}
+
+	public String category() {
+		if (home) return "home";
+		if (work) return "work";
+		if (fax) return "fax";
+		if (cell) return "cell";
+		return "empty category";
+	}
 }

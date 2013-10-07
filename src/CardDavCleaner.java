@@ -21,10 +21,10 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -32,6 +32,7 @@ import javax.swing.JTextField;
 public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private JTextField serverField, userField, passwordField;
+	private JCheckBox thunderbirdBox;
   private static final long serialVersionUID = -2875331857455588061L;
 
   public CardDavCleaner() {
@@ -50,7 +51,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		serverField = createInputField(mainPanel,"Server + Path to addressbook:",false);
 		userField = createInputField(mainPanel,"User:",false);
 		passwordField = createInputField(mainPanel,"Password:",true);
-
+		thunderbirdBox = new JCheckBox("I use Thunderbird with this address book");
+		mainPanel.add(thunderbirdBox);
 		JButton startButton = new JButton("start");
 		startButton.addActionListener(this);
 		mainPanel.add(startButton);
@@ -123,7 +125,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		content.close();
 		connection.disconnect();
 
-		scanContacts(host, contacts);
+		try {
+			scanContacts(host, contacts);
+		} catch (ToMuchNumbersForThunderbirdException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage());
+		}
 	}
 
 	/**
@@ -135,8 +141,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws UnknownObjectException
 	 * @throws AlreadyBoundException
 	 * @throws InvalidAssignmentException
+	 * @throws ToMuchNumbersForThunderbirdException 
 	 */
-	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
+	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchNumbersForThunderbirdException {
 		TreeSet<Contact> writeList=new TreeSet<Contact>(ObjectComparator.get());
 		TreeSet<Contact> deleteList=new TreeSet<Contact>(ObjectComparator.get());
 		Vector<Contact> contacts = new Vector<Contact>();
@@ -184,7 +191,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 							// if this contact pair is not blacklisted:
 							if (askForMege("name", canonicalName, contact, existingContact)) {
-								contact.merge(existingContact);
+								contact.merge(existingContact,thunderbirdBox.isSelected());
 								writeList.add(contact);
 								writeList.remove(existingContact);
 								contactsForName.remove(existingContact);
@@ -220,7 +227,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 							// if this contact pair is not blacklisted:
 							if (askForMege("phone number", number, contact, existingContact)) {
-								contact.merge(existingContact);
+								contact.merge(existingContact,thunderbirdBox.isSelected());
 								writeList.add(contact);
 								writeList.remove(existingContact);
 								contactsForNumber.remove(existingContact);
@@ -254,7 +261,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 							// if this contact pair is not blacklisted:
 						if (askForMege("e-mail", mail, contact, existingContact)) {
-							contact.merge(existingContact);
+							contact.merge(existingContact,thunderbirdBox.isSelected());
 							contacts.remove(existingContact);
 							writeList.add(contact);
 							writeList.remove(existingContact);
@@ -286,7 +293,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 							// if this contact pair is not blacklisted:
 						if (askForMege("messenger", messenger, contact, existingMessenger)) {
-							contact.merge(existingMessenger);
+							contact.merge(existingMessenger,thunderbirdBox.isSelected());
 							contacts.remove(existingMessenger);
 							writeList.add(contact);
 							writeList.remove(existingMessenger);
