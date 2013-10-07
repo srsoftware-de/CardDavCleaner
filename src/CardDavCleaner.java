@@ -40,12 +40,15 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		setVisible(true);
 	}
 
+	/**
+	 * creates all the components for the server login form
+	 */
 	private void createComponents() {
 		VerticalPanel mainPanel = new VerticalPanel("Server settings");
 
-		serverField = addInput(mainPanel, "Server:");
-		userField = addInput(mainPanel, "User:");
-		passwordField = addPassword(mainPanel, "Password:");
+		serverField = createInputField(mainPanel, "Server:");
+		userField = createInputField(mainPanel, "User:");
+		passwordField = createPasswordField(mainPanel, "Password:");
 
 		JButton startButton = new JButton("start");
 		startButton.addActionListener(this);
@@ -57,7 +60,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		setVisible(true);
 	}
 
-	private JPasswordField addPassword(VerticalPanel mainPanel, String text) {
+	/**
+	 * used to create the password field for the server form
+	 * @param mainPanel the panel to which the component shall be added
+	 * @param text the label for the field
+	 * @return the password field component
+	 */
+	private JPasswordField createPasswordField(VerticalPanel mainPanel, String text) {
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel(text + " "));
 		JPasswordField result = new JPasswordField(50);
@@ -67,7 +76,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		return result;
 	}
 
-	private JTextField addInput(VerticalPanel mainPanel, String text) {
+	/**
+	 * used to create non-password input fields for the server login form
+	 * @param mainPanel the panel, to which the component shall be added 
+	 * @param text the label for the field
+	 * @return the input field component
+	 */
+	private JTextField createInputField(VerticalPanel mainPanel, String text) {
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel(text + " "));
 		JTextField result = new JTextField(50);
@@ -77,6 +92,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	public void actionPerformed(ActionEvent arg0) {
 		try {
 			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getPassword()));
@@ -86,14 +104,23 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * tries to log in to the server using the given credentials and scans the contacts
+	 * @param host the server hostname
+	 * @param user the username used to log in
+	 * @param password the password corrosponding to the username
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws UnknownObjectException
+	 * @throws AlreadyBoundException
+	 * @throws InvalidAssignmentException
+	 */
 	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password.toCharArray());
 			}
 		});
-		
-
 		
 		//putTestFile(host);
 		if (!host.endsWith("/")) host += "/";
@@ -113,6 +140,16 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		scanContacts(host, contacts);
 	}
 
+	/**
+	 * starts the actual scanning of contacts upon server login
+	 * @param host the hostname
+	 * @param contactNamess the list of contact file names
+	 * @throws IOException
+	 * @throws InterruptedException
+	 * @throws UnknownObjectException
+	 * @throws AlreadyBoundException
+	 * @throws InvalidAssignmentException
+	 */
 	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
 		TreeSet<Contact> writeList=new TreeSet<Contact>(ObjectComparator.get());
 		TreeSet<Contact> deleteList=new TreeSet<Contact>(ObjectComparator.get());
@@ -262,6 +299,12 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 	}
 
+	/**
+	 * subsumes changes to be performed and asks usert to confirm to apply those changes
+	 * @param writeList list of contacts to be written to the server
+	 * @param deleteList list of contacts to be DELETED from the server
+	 * @return true, only if the user has confirmed to propagate the suggested changes
+	 */
 	private boolean confirmLists(TreeSet<Contact> writeList, TreeSet<Contact> deleteList) {
 		VerticalPanel vp=new VerticalPanel();
 		HorizontalPanel listsPanel=new HorizontalPanel();
@@ -306,6 +349,12 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		return decision==JOptionPane.YES_OPTION;
 	}
 
+	/**
+	 * writes back the modified contacts to the server
+	 * @param host the hostname and path to write to
+	 * @param writeList the set of contacts to upload
+	 * @throws IOException
+	 */
 	private void putMergedContacts(String host,TreeSet<Contact> writeList) throws IOException {
 		for (Contact c:writeList) {
 			
@@ -361,6 +410,12 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 	}
 
+	/**
+	 * removes the contacts in the given list from the server
+	 * @param host the hostname and path to the server contact list
+	 * @param deleteList the set of contacts to be deleted
+	 * @throws IOException
+	 */
 	private void deleteUselessContacts(String host,TreeSet<Contact> deleteList) throws IOException {	
 		for (Contact c:deleteList) {
 			System.out.println("Deleting "+c.vcfName());
@@ -368,6 +423,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 	}
 	
+	/**
+	 * actually removes a contact from the server
+	 * @param u the url of the contact to be erased
+	 * @throws IOException
+	 */
 	private void deleteContact(URL u) throws IOException{
 		HttpURLConnection conn = ( HttpURLConnection ) u.openConnection();
 		conn.setRequestMethod( "DELETE" );  
@@ -380,6 +440,15 @@ public class CardDavCleaner extends JFrame implements ActionListener {
     }
 	}
 
+	/**
+	 * asks, whether the given contacts shall be merged
+	 * @param identifier as string to clarify, which contacts may be merged
+	 * @param name the name of the person
+	 * @param contact the first contact to be merged with the second
+	 * @param contact2 the second contact to be merged with the first
+	 * @return true, only if, the user confirms to the merging
+	 * @throws InterruptedException
+	 */
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
 		if (!contact.conflictsWith(contact2)) return true;
 		VerticalPanel vp = new VerticalPanel();
@@ -396,6 +465,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		return decision == JOptionPane.YES_OPTION;
 	}
 
+	/**
+	 * extracts a person's name from a vcard line
+	 * @param line the vcard text containing a name
+	 * @return the extracted name
+	 */
 	private String extractContactName(String line) {
 		String[] parts = line.split("/|\"");
 		for (String part : parts) {
