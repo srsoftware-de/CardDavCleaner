@@ -32,8 +32,9 @@ import javax.swing.JTextField;
 public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private JTextField serverField, userField, passwordField;
+  private static final long serialVersionUID = -2875331857455588061L;
 
-	public CardDavCleaner() {
+  public CardDavCleaner() {
 		super();
 		createComponents();
 		setVisible(true);
@@ -43,6 +44,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * creates all the components for the server login form
 	 */
 	private void createComponents() {
+		
 		VerticalPanel mainPanel = new VerticalPanel("Server settings");
 
 		serverField = createInputField(mainPanel,"Server + Path to addressbook:",false);
@@ -99,7 +101,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws AlreadyBoundException
 	 * @throws InvalidAssignmentException
 	 */
-	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
+	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password.toCharArray());
@@ -134,7 +136,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws AlreadyBoundException
 	 * @throws InvalidAssignmentException
 	 */
-	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException {
+	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
 		TreeSet<Contact> writeList=new TreeSet<Contact>(ObjectComparator.get());
 		TreeSet<Contact> deleteList=new TreeSet<Contact>(ObjectComparator.get());
 		Vector<Contact> contacts = new Vector<Contact>();
@@ -149,18 +151,19 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			} else
 				contacts.add(contact);
 		}
-
+		
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
 		TreeMap<String, TreeSet<Contact>> nameMap; // one name may map to multiple contacts, as multiple persons may have the same name
 		TreeMap<String, TreeSet<Contact>> numberMap; // on number can be used by multiple persons, as people living together may share a landline number
-		TreeMap<String, Contact> mailMap; 
+		TreeMap<String, Contact> mailMap;
+		TreeMap<String, Contact> messengerMap;
 		boolean restart;
 		do {
-
 			restart = false;
 			nameMap = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
 			numberMap = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
 			mailMap = new TreeMap<String, Contact>(ObjectComparator.get());
+			messengerMap = new TreeMap<String, Contact>(ObjectComparator.get());
 			total = contacts.size();
 			for (Contact contact : contacts) {
 				TreeSet<Contact> blacklist = blackLists.get(contact);
@@ -202,13 +205,14 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					}
 				} // ---> if (name != null)
 				/************* name *****************/
+				
 				/************* phone ****************/
-				TreeSet<String> numbers = contact.phoneNumbers();
+				TreeSet<String> numbers = contact.simpleNumbers();
 				for (String number:numbers){
 					TreeSet<Contact> contactsForNumber = numberMap.get(number);
 					if (contactsForNumber==null){
 						contactsForNumber=new TreeSet<Contact>(ObjectComparator.get());
-						contactsForNumber.add(contact);
+						contactsForNumber.add(contact);						
 						numberMap.put(number, contactsForNumber);
 					} else {
 						for (Contact existingContact:contactsForNumber){
@@ -237,6 +241,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				}
 				if (restart) break;				
 				/************* phone ****************/
+				
 				/************* email ****************/
 				TreeSet<String> mails = contact.mailAdresses();
 				for (String mail:mails){
@@ -269,6 +274,37 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				if (restart) break;				
 				/************* email ****************/
 				
+				/************* messenger *****************/
+				TreeSet<String> messsengers = contact.messengers();
+				for (String messenger:messsengers){
+					Contact existingMessenger = messengerMap.get(messenger);
+					if (existingMessenger==null){
+						existingMessenger=contact;
+						mailMap.put(messenger, contact);
+					} else {
+						if (blacklist != null && blacklist.contains(existingMessenger)) continue;
+
+							// if this contact pair is not blacklisted:
+						if (askForMege("messenger", messenger, contact, existingMessenger)) {
+							contact.merge(existingMessenger);
+							contacts.remove(existingMessenger);
+							writeList.add(contact);
+							writeList.remove(existingMessenger);
+							deleteList.add(existingMessenger);
+							restart = true;
+							break;
+						} else { // if merging was denied: add contact pair to blacklist
+							if (blacklist == null) {
+								blacklist = new TreeSet<Contact>(ObjectComparator.get());
+								blackLists.put(contact, blacklist);
+							}
+							blacklist.add(existingMessenger);							
+						}
+						if (restart) break;
+					}
+				}
+				if (restart) break;
+				/************* messenger *****************/
 			} // for
 		} while (restart);
 		
@@ -276,7 +312,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			putMergedContacts(host,writeList);
 			deleteUselessContacts(host,deleteList);
 		}
-		JOptionPane.showMessageDialog(null, "Scanning, merging and cleaning <i>successfully</i> done! Godbye!");
+		JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!");
 		setVisible(false);
 		System.exit(0);
 		
@@ -294,7 +330,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		HorizontalPanel listsPanel=new HorizontalPanel();
 		
 		VerticalPanel deleteListPanel=new VerticalPanel();
-		deleteListPanel.add(new JLabel("The following contacts will be <b>deleted</b>:"));
+		deleteListPanel.add(new JLabel("<html>The following contacts will be <b>deleted</b>:"));
 		
 		VerticalPanel delList=new VerticalPanel();
 		for (Contact c:deleteList) delList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
@@ -310,7 +346,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 		
 		VerticalPanel writeListPanel=new VerticalPanel();
-		writeListPanel.add(new JLabel("The following <b>merged contacts</b> will be written to the server:"));
+		writeListPanel.add(new JLabel("<html>The following <b>merged contacts</b> will be written to the server:"));
 		
 		VerticalPanel wrList=new VerticalPanel();
 		for (Contact c:writeList) wrList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
@@ -327,7 +363,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		listsPanel.scale();
 		
 		vp.add(listsPanel);
-		vp.add(new JLabel("No data has been modified on the server <b>until now</b>. Continue?"));
+		vp.add(new JLabel("<html>No data has been modified on the server <b>until now</b>. Continue?"));
 		vp.scale();
 		int decision=JOptionPane.showConfirmDialog(null, vp, "Please confirm", JOptionPane.YES_NO_OPTION);
 		return decision==JOptionPane.YES_OPTION;
@@ -436,7 +472,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
 		if (!contact.conflictsWith(contact2)) return true;
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new JLabel("The " + identifier + " \"<b>" + name + "</b>\" is used by both following contacts:"));
+		vp.add(new JLabel("<html>The " + identifier + " \"<b>" + name + "</b>\" is used by both following contacts:"));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
 		hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));
