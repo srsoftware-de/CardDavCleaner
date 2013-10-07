@@ -197,18 +197,18 @@ public class Contact {
 		}
 		for (Email email:overloadedCategoryNumbers){
 			if (!work) {
-				System.out.println("Storing "+email.address()+" as home mail address, as '"+email.category()+"' is already used by another number.");
+				System.out.println("Using "+email.address()+" as home mail address, as '"+email.category()+"' is already used by another number.");
 				email.setWork();
 				work=true;
 				continue;
 			}
 			if (!home) {
-				System.out.println("Storing "+email.address()+" as home mail address, as '"+email.category()+"' is already used by another number.");
+				System.out.println("Using "+email.address()+" as home mail address, as '"+email.category()+"' is already used by another number.");
 				email.setHome();
 				home=true;
 				continue;
 			}
-			throw new ToMuchEntriesForThunderbirdException(email);
+			throw new ToMuchEntriesForThunderbirdException("There is no thunderbird slot left for the following email entry: "+email);			
 		}
 		return mails;
 	}
@@ -244,25 +244,25 @@ public class Contact {
 		}
 		for (Phone phone:overloadedCategoryNumbers){
 			if (!home) {
-				System.out.println("Storing "+phone.simpleNumber()+" as home phone number, as '"+phone.category()+"' is already used by another number.");
+				System.out.println("Using "+phone.simpleNumber()+" as home phone number, as '"+phone.category()+"' is already used by another number.");
 				phone.setHome();
 				home=true;
 				continue;
 			}
 			if (!cell) {
-				System.out.println("Storing "+phone.simpleNumber()+" as cell phone number, as '"+phone.category()+"' is already used by another number.");
+				System.out.println("Using "+phone.simpleNumber()+" as cell phone number, as '"+phone.category()+"' is already used by another number.");
 				phone.setCell();
 				cell=true;
 				continue;
 			}
 			if (!work) {
-				System.out.println("Storing "+phone.simpleNumber()+" as home work number, as '"+phone.category()+"' is already used by another number.");
+				System.out.println("Using "+phone.simpleNumber()+" as home work number, as '"+phone.category()+"' is already used by another number.");
 				phone.setWork();
 				work=true;
 				continue;
 			}
 			if (!fax) {
-				System.out.println("Storing "+phone.simpleNumber()+" as home fax number, as '"+phone.category()+"' is already used by another number.");
+				System.out.println("Using "+phone.simpleNumber()+" as home fax number, as '"+phone.category()+"' is already used by another number.");
 				phone.setFax();
 				fax=true;
 				continue;
