@@ -181,15 +181,14 @@ public class Contact {
 
 		for (Email mail:mails){
 			if (mail.isWorkMail()){
-				if (mail.isHomeMail()){
-					mail.setWork(); // if address is tagged both, home and work, then set to work only
-				}
+				mail.setWork(); // if address is tagged both, home and work, then set to work only
 				if (work) {
 					overloadedCategoryNumbers.add(mail);
 				} else work=true;
 			}
 			
 			if (mail.isHomeMail()){
+				mail.setHome();
 				if (home) {
 					overloadedCategoryNumbers.add(mail);
 				} else home=true;
@@ -221,22 +220,26 @@ public class Contact {
 		boolean work=false;	
 
 		for (Phone phone:phones){
-			if (phone.isHomePhone()){
-				if (home) {
-					overloadedCategoryNumbers.add(phone);
-				} else home=true;
-			}
 			if (phone.isWorkPhone()){
+				phone.setWork();
 				if (work) {
 					overloadedCategoryNumbers.add(phone);
 				} else work=true;
 			}
+			if (phone.isHomePhone()){
+				phone.setHome();
+				if (home) {
+					overloadedCategoryNumbers.add(phone);
+				} else home=true;
+			}
 			if (phone.isCellPhone()){
+				phone.setCell();
 				if (cell) {
 					overloadedCategoryNumbers.add(phone);
 				} else cell=true;
 			}
 			if (phone.isFax()){
+				phone.setFax();
 				if (fax) {
 					overloadedCategoryNumbers.add(phone);
 				} else fax=true;

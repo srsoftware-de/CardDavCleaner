@@ -128,7 +128,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		try {
 			scanContacts(host, contacts);
 		} catch (ToMuchEntriesForThunderbirdException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage());
+			JOptionPane.showMessageDialog(this, "<html>"+e.getMessage()+"<br>Will abort operation now.");
 			System.exit(-1);
 		}
 	}
@@ -319,8 +319,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		if (!(writeList.isEmpty() && deleteList.isEmpty()) && confirmLists(writeList,deleteList)){
 			putMergedContacts(host,writeList);
 			deleteUselessContacts(host,deleteList);
+			JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!");
+		} else {
+			JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> aborted! Goodbye!");
+
 		}
-		JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!");
 		setVisible(false);
 		System.exit(0);
 		
