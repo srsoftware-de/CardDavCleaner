@@ -57,7 +57,7 @@ public class Email {
 		return adress==null;
 	}
 
-	public String adress() {
+	public String address() {
 		return adress;
 	}
 
@@ -65,7 +65,30 @@ public class Email {
 		if (!adress.equals(mail.adress)) throw new InvalidAssignmentException("Trying to merge two mails with different adresses!");
 		if (mail.home) home=true;
 		if (mail.work) work=true;
-		if (mail.internet) internet=true;;
+		if (mail.internet) internet=true;
+	}
 
+	public boolean isHomeMail() {
+		return home;
+	}
+
+	public boolean isWorkMail() {
+		return work;
+	}
+
+	public void setWork() {
+		work=true;
+		home=false;
+	}
+
+	public void setHome() {
+		work=false;
+		home=true;
+	}
+
+	public String category() {
+		if (work) return "work";
+		if (home) return "home";
+		return "no category";
 	}
 }

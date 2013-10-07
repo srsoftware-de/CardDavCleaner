@@ -27,7 +27,7 @@ public class Contact {
 	//private String productId;
 	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
 	private Collection<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
-	private TreeSet<Email> mails = new TreeSet<Email>(ObjectComparator.get());
+	private Collection<Email> mails = new TreeSet<Email>(ObjectComparator.get());
 	private Name name;
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
 	private TreeSet<String> titles=new TreeSet<String>(ObjectComparator.get());
@@ -60,7 +60,7 @@ public class Contact {
 
 	private TreeSet<String> getMailAdresses() {
 		TreeSet<String> result=new TreeSet<String>(ObjectComparator.get());
-		for (Email mail:mails) result.add(mail.adress());
+		for (Email mail:mails) result.add(mail.address());
 		return result;
 	}
 
@@ -91,12 +91,13 @@ public class Contact {
 					orgs.isEmpty();
 	}
 	
-	public void merge(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchNumbersForThunderbirdException {
+	public void merge(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
 		adresses.addAll(contact.adresses);
 		
 		/* merging phones by numbers */
 		TreeMap<String,Phone> phoneMap=new TreeMap<String, Phone>(ObjectComparator.get());
 		
+		/** phones **/
 		/* add the current phones to the phone map */
 		for (Phone phone:phones){
 			Phone existingPhone = phoneMap.get(phone.number());
@@ -114,16 +115,30 @@ public class Contact {
 		}
 		
 		if (thunderbirdMerge) {
-			phones=thunderbirdMerge(phoneMap.values());
+			phones=thunderbirdMergePhone(phoneMap.values());
 		} else phones=phoneMap.values();
-		
+		/** endof phones **/
+
+		/** email adresses **/
 		TreeMap<String,Email> mailMap=new TreeMap<String,Email>(ObjectComparator.get());
+		
 		for (Email mail:mails){
-			Email existingMail=mailMap.get(mail.adress());
+			Email existingMail=mailMap.get(mail.address());
 			if (existingMail!=null){
 				existingMail.merge(mail);
-			} else mailMap.put(mail.adress(), mail);
+			} else mailMap.put(mail.address(), mail);
 		}
+		
+		for (Email mail:contact.mails){
+			Email existingMail=mailMap.get(mail.address());
+			if (existingMail!=null){
+				existingMail.merge(mail);
+			} else mailMap.put(mail.address(), mail);
+		}
+		
+		if (thunderbirdMerge) {
+			mails=thunderbirdMergeMail(mailMap.values());
+		} else mails=mailMap.values();
 		
 		if (name!=null){
 			if (contact.name!=null && !contact.name.equals(name)){
@@ -159,7 +174,46 @@ public class Contact {
 		orgs.addAll(contact.orgs);		
 	}
 	
-	private Collection<Phone> thunderbirdMerge(Collection<Phone> phones) throws ToMuchNumbersForThunderbirdException {
+	private Collection<Email> thunderbirdMergeMail(Collection<Email> mails) throws ToMuchEntriesForThunderbirdException {
+		TreeSet<Email> overloadedCategoryNumbers=new TreeSet<Email>(ObjectComparator.get());
+		boolean home=false;
+		boolean work=false;	
+
+		for (Email mail:mails){
+			if (mail.isWorkMail()){
+				if (mail.isHomeMail()){
+					mail.setWork(); // if address is tagged both, home and work, then set to work only
+				}
+				if (work) {
+					overloadedCategoryNumbers.add(mail);
+				} else work=true;
+			}
+			
+			if (mail.isHomeMail()){
+				if (home) {
+					overloadedCategoryNumbers.add(mail);
+				} else home=true;
+			}
+		}
+		for (Email email:overloadedCategoryNumbers){
+			if (!work) {
+				System.out.println("Storing "+email.address()+" as home mail address, as '"+email.category()+"' is already used by another number.");
+				email.setWork();
+				work=true;
+				continue;
+			}
+			if (!home) {
+				System.out.println("Storing "+email.address()+" as home mail address, as '"+email.category()+"' is already used by another number.");
+				email.setHome();
+				home=true;
+				continue;
+			}
+			throw new ToMuchEntriesForThunderbirdException(email);
+		}
+		return mails;
+	}
+
+	private Collection<Phone> thunderbirdMergePhone(Collection<Phone> phones) throws ToMuchEntriesForThunderbirdException {
 		TreeSet<Phone> overloadedCategoryNumbers=new TreeSet<Phone>(ObjectComparator.get());
 		boolean fax=false;
 		boolean home=false;
@@ -213,7 +267,7 @@ public class Contact {
 				fax=true;
 				continue;
 			}
-			throw new ToMuchNumbersForThunderbirdException(phone);
+			throw new ToMuchEntriesForThunderbirdException("There is no thunderbird slot left for the following number entry: "+phone);
 		}
 		return phones;
 	}
@@ -513,7 +567,7 @@ public class Contact {
 	public TreeSet<String> mailAdresses() {
 		TreeSet<String> mails=new TreeSet<String>(ObjectComparator.get());
 		for (Email e:this.mails){
-			mails.add(e.adress());
+			mails.add(e.address());
 		}
 		return mails;
 	}

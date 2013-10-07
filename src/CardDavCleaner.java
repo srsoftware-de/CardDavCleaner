@@ -127,8 +127,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 		try {
 			scanContacts(host, contacts);
-		} catch (ToMuchNumbersForThunderbirdException e) {
+		} catch (ToMuchEntriesForThunderbirdException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage());
+			System.exit(-1);
 		}
 	}
 
@@ -141,9 +142,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws UnknownObjectException
 	 * @throws AlreadyBoundException
 	 * @throws InvalidAssignmentException
-	 * @throws ToMuchNumbersForThunderbirdException 
+	 * @throws ToMuchEntriesForThunderbirdException 
 	 */
-	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchNumbersForThunderbirdException {
+	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
 		TreeSet<Contact> writeList=new TreeSet<Contact>(ObjectComparator.get());
 		TreeSet<Contact> deleteList=new TreeSet<Contact>(ObjectComparator.get());
 		Vector<Contact> contacts = new Vector<Contact>();
