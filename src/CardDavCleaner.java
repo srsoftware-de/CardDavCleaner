@@ -155,7 +155,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			Contact contact = new Contact(host,contactName);
 			if (contact.isEmpty()) {
 				deleteList.add(contact);
-				System.out.println("Warning: skipping empty contact " + contactName);
+				System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
 			} else
 				contacts.add(contact);
 		}
@@ -316,12 +316,16 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			} // for
 		} while (restart);
 		
-		if (!(writeList.isEmpty() && deleteList.isEmpty()) && confirmLists(writeList,deleteList)){
-			putMergedContacts(host,writeList);
-			deleteUselessContacts(host,deleteList);
-			JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!");
+		if (!(writeList.isEmpty() && deleteList.isEmpty())){ 
+			if (confirmLists(writeList,deleteList)){
+				putMergedContacts(host,writeList);
+				deleteUselessContacts(host,deleteList);
+				JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!");
+			} else {
+				JOptionPane.showMessageDialog(null, "<html>Merging and cleaning aborted! Goodbye!");
+			}
 		} else {
-			JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> aborted! Goodbye!");
+			JOptionPane.showMessageDialog(null, "<html>Nothing to do. You adress book is either empty or well sorted!!");
 
 		}
 		setVisible(false);
