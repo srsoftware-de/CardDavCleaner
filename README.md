@@ -19,3 +19,4 @@ Download the CardDavCleaner.jar file and from a terminal, start
 java -jar CardDavCleaner.jar
 
 
+If you want to run it from source: the main entry point resides in CardDavCleaner.java in the src directory
