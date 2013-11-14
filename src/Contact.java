@@ -13,6 +13,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -41,6 +42,7 @@ public class Contact {
 	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
 	private String vcfName;
 	private TreeSet<Messenger> messengers=new TreeSet<Messenger>(ObjectComparator.get());
+	private TreeSet<String> categories;
 	
 	public boolean conflictsWith(Contact c2){
 		if (name!=null && c2.name!=null && !name.canonical().equals(c2.name.canonical())) return true;
@@ -85,6 +87,7 @@ public class Contact {
 					titles.isEmpty() &&
 					role==null && 
 					birthday==null &&
+					categories==null &&
 					urls.isEmpty() &&
 					notes.isEmpty() &&
 					photos.isEmpty() &&
@@ -159,6 +162,12 @@ public class Contact {
 				role=(String)selectOneOf("role", role, contact.role,contact);
 			}
 		} else role=contact.role;
+		
+		if (categories!=null){
+			if (contact.categories!=null){
+				categories.addAll(contact.categories);
+			}
+		} else categories=contact.categories;
 		
 		if (birthday!=null){
 			if (contact.birthday!=null && !contact.birthday.equals(birthday)){
@@ -363,6 +372,7 @@ public class Contact {
 			sb.append(adress);
 			sb.append("\n");
 		}
+		
 		for(Phone phone:phones){
 			sb.append(phone);
 			sb.append("\n");			
@@ -455,6 +465,7 @@ public class Contact {
 			if (line.startsWith("ORG:") && (known = true)) readOrg(line);
 			if (line.startsWith("TITLE:") && (known = true)) readTitle(line.substring(6));
 			if (line.startsWith("PHOTO;") && (known = true)) readPhoto(line);
+			if (line.startsWith("CATEGORIES:") && (known = true)) readCategories(line.substring(11));
 			if (line.startsWith("X-MOZILLA-HTML:") && (known = true)) readMailFormat(line.substring(15));
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
 
@@ -527,6 +538,15 @@ public class Contact {
 
 		if (line.isEmpty()) return;
 		role = line.replace("\\n", "\n");
+	}
+	
+	private void readCategories(String line) throws AlreadyBoundException {
+		if (line.isEmpty()) return;
+		if (categories==null) categories=new TreeSet<String>(ObjectComparator.get());
+		String[] cats = line.split(",");
+		for (String category:cats){
+			categories.add(category.trim());
+		}
 	}
 
 /*	private void readRevision(String line) {
