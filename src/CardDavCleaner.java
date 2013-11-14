@@ -74,22 +74,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel(text + " "));
 		JTextField result = password?(new JPasswordField(50)):(new JTextField(50));
+		
 		hp.add(result);
 		hp.scale();
 		owner.add(hp);
 		return result;
-	}
-
-	/* (non-Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	public void actionPerformed(ActionEvent arg0) {
-		try {
-			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(0);
-		}
 	}
 
 	/**
@@ -516,6 +505,18 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		return null;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	public void actionPerformed(ActionEvent arg0) {
+		try {
+			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()));
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+	}
+	
 	public static void main(String[] args) {
 		CardDavCleaner cleaner = new CardDavCleaner();
 		cleaner.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
