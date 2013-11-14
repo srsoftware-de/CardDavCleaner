@@ -304,28 +304,56 @@ public class Contact {
 	}
 	
 	public String toString() {
+		return toString(false);
+	}
+	
+	/**
+	 * @param shorter if set to TRUE, the contact will be cut down (for display purposes).
+	 * @return the code of that contact
+	 */
+	public String toString(boolean shorter) {
 		StringBuffer sb=new StringBuffer();
 		sb.append("BEGIN:VCARD\n");
-
-		sb.append("VERSION:3.0\n");
-		sb.append("PRODID:-//SRSoftwae CalDavCleaner\n");
-		if (uid!=null) sb.append("UID:"+uid+"\n");
-		sb.append(newRevision()); sb.append("\n");
 		
+		if (!shorter){
+			sb.append("VERSION:3.0\n");
+			sb.append("PRODID:-//SRSoftwae CalDavCleaner\n");
+		}
+
+		if (uid!=null) sb.append("UID:"+uid+"\n");
+		
+		if (!shorter){
+			sb.append(newRevision()); sb.append("\n");			
+		}
+
 		sb.append("FN:"); if (formattedName!=null) sb.append(formattedName); // required for Version 3
 		sb.append("\n");
 		
 		sb.append(name);// required for Version 3
 		sb.append("\n");
 		
+		if (categories!=null){
+			sb.append("CATEGORIES:");
+			for (Iterator<String> it = categories.iterator(); it.hasNext();){
+				sb.append(it.next());
+				if (it.hasNext()) {
+					sb.append(",");
+				}		
+			}
+			sb.append("\n");
+		}
+		
 		for (String title:titles){
 			sb.append("TITLE:"+title+"\n");
 		}
+		
 		for (Organization org:orgs){
 			sb.append(org);
 			sb.append("\n");
 		}
+		
 		if (role!=null) sb.append("ROLE:"+role+"\n");
+		
 		if (birthday!=null) {
 			sb.append(birthday);
 			sb.append("\n");
@@ -343,69 +371,39 @@ public class Contact {
 			sb.append(mail);
 			sb.append("\n");
 		}
+		
 		if (htmlMail) sb.append("X-MOZILLA-HTML:TRUE\n");
 		
 		for (Url url:urls){
 			sb.append(url);
 			sb.append("\n");
 		}
-		for (String note:notes){
-			sb.append("NOTE:"+note+"\n");	
+		
+		if (shorter){
+			for (String note:notes){
+				sb.append("NOTE:"+((note.length()>30)?(note.substring(0,28)+"..."):note)+"\n");	
+			}
+		} else {
+			for (String note:notes){
+				sb.append("NOTE:"+note+"\n");	
+			}
 		}
 		
-		for (String photo:photos) sb.append(photo+"\n");
-		sb.append("END:VCARD\n");
-		return sb.toString();
-	}
 
-	public String toString(boolean shorter) {
-		StringBuffer sb=new StringBuffer();
-		sb.append("BEGIN:VCARD\n");
-
-		if (uid!=null) sb.append("UID:"+uid+"\n");
-		
-		sb.append("FN:"); if (formattedName!=null) sb.append(formattedName); // required for Version 3
-		sb.append("\n");
-		
-		sb.append(name);// required for Version 3
-		sb.append("\n");
-		
-		for (String title:titles){
-			sb.append("TITLE:"+title+"\n");
-		}
-		for (Organization org:orgs){
-			sb.append(org);
-			sb.append("\n");
-		}
-		if (role!=null) sb.append("ROLE:"+role+"\n");
-		if (birthday!=null) sb.append(birthday);
-		
-		for (Adress adress:adresses){
-			sb.append(adress);
-			sb.append("\n");
-		}
-		for(Phone phone:phones){
-			sb.append(phone);
-			sb.append("\n");			
-		}
-		for(Email mail:mails){
-			sb.append(mail);
-			sb.append("\n");
-		}
-		if (htmlMail) sb.append("X-MOZILLA-HTML:TRUE\n");
-		
-		for (Url url:urls){
-			sb.append(url);
-			sb.append("\n");
-		}
-		for (String note:notes){
-			sb.append("NOTE:"+((note.length()>30)?(note.substring(0,28)+"..."):note)+"\n");	
-		}
-		for (String photo:photos) {
-			sb.append(photo.substring(0,30)+"...\n");
+		if (shorter){
+			for (String photo:photos) {
+				sb.append(photo.substring(0,30)+"...\n");
+			}
+		} else {		
+			for (String photo:photos) {
+				sb.append(photo+"\n");
+			}
 		}
 
 		sb.append("END:VCARD\n");
+		if (!shorter){
+			return sb.toString();
+		}
 		return sb.toString().replace("\\,",",");
 	}
 	private String newRevision() {
