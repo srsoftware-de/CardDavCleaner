@@ -51,7 +51,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		serverField = createInputField(mainPanel,"Server + Path to addressbook:",false);
 		userField = createInputField(mainPanel,"User:",false);
 		passwordField = createInputField(mainPanel,"Password:",true);
-		thunderbirdBox = new JCheckBox("I use Thunderbird with this address book");
+		thunderbirdBox = new JCheckBox("<html>I use Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)");
 		mainPanel.add(thunderbirdBox);
 		JButton startButton = new JButton("start");
 		startButton.addActionListener(this);
@@ -150,6 +150,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		Vector<Contact> contacts = new Vector<Contact>();
 		int total = contactNamess.size();
 		int counter = 0;
+		
+		// Next: read all contacts, remember contacts that contain nothing but a name
 		for (String contactName : contactNamess) {
 			System.out.println("reading contact "+(++counter) + "/" + total+": "+contactName);
 			Contact contact = new Contact(host,contactName);
@@ -160,6 +162,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				contacts.add(contact);
 		}
 		
+		// next: find and merge related contacts
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
 		TreeMap<String, TreeSet<Contact>> nameMap; // one name may map to multiple contacts, as multiple persons may have the same name
 		TreeMap<String, TreeSet<Contact>> numberMap; // on number can be used by multiple persons, as people living together may share a landline number
@@ -316,6 +319,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			} // for
 		} while (restart);
 		
+		// next: display changes to be made, ask for confirmation		
 		if (!(writeList.isEmpty() && deleteList.isEmpty())){ 
 			if (confirmLists(writeList,deleteList)){
 				putMergedContacts(host,writeList);
@@ -325,7 +329,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				JOptionPane.showMessageDialog(null, "<html>Merging and cleaning aborted! Goodbye!");
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "<html>Nothing to do. You adress book is either empty or well sorted!!");
+			JOptionPane.showMessageDialog(null, "<html>Nothing to do. Your adress book is either empty or well sorted!!");
 
 		}
 		setVisible(false);
@@ -391,8 +395,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws IOException
 	 */
 	private void putMergedContacts(String host,TreeSet<Contact> writeList) throws IOException {
-		for (Contact c:writeList) {
-			
+		for (Contact c:writeList) {			
 			
 			System.out.println("Uploading "+c.vcfName());
 			
