@@ -98,11 +98,14 @@ public class Name {
 		return first;
 	}
 
+	private String ascii(String s) {
+		return s.replace("Ä", "Ae").replace("ä", "ae").replace("Ö", "Oe").replace("ö", "oe").replace("Ü", "Ue").replace("ü", "ue").replace("ß", "ss").replace("é", "e");
+	}
 
 	public String canonical() {
 		TreeSet<String> parts=new TreeSet<String>(ObjectComparator.get());
-		if (first!=null) parts.add(first);
-		if (last!=null) parts.add(last);	
+		if (first!=null) parts.add(ascii(first).toLowerCase());
+		if (last!=null) parts.add(ascii(last).toLowerCase());	
 		
 		return parts.toString().replace("[", "").replace("]", ""); // sorted set of name parts
 	}
