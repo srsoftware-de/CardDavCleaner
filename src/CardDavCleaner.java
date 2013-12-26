@@ -48,12 +48,12 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 		VerticalPanel mainPanel = new VerticalPanel("Server settings");
 
-		serverField = createInputField(mainPanel,"Server + Path to addressbook:",false);
-		userField = createInputField(mainPanel,"User:",false);
-		passwordField = createInputField(mainPanel,"Password:",true);
-		thunderbirdBox = new JCheckBox("<html>I use Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)");
+		serverField = createInputField(mainPanel,"Server + Pfad zum Adressbuch:",false);
+		userField = createInputField(mainPanel,"Benutzer:",false);
+		passwordField = createInputField(mainPanel,"Passwort:",true);
+		thunderbirdBox = new JCheckBox("<html>Ich benutze Thunderbird mit diesem Adressbuch.<br>(Wichtig,da Thunderbird nur eine begrenzte Zahl von Telefonnummern, Emailadressen, etc. erlaubt)");
 		mainPanel.add(thunderbirdBox);
-		JButton startButton = new JButton("start");
+		JButton startButton = new JButton("Start");
 		startButton.addActionListener(this);
 		mainPanel.add(startButton);
 
@@ -117,7 +117,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		try {
 			scanContacts(host, contacts);
 		} catch (ToMuchEntriesForThunderbirdException e) {
-			JOptionPane.showMessageDialog(this, "<html>"+e.getMessage()+"<br>Will abort operation now.");
+			JOptionPane.showMessageDialog(this, "<html>"+e.getMessage()+"<br>Aktion wird nun abgebrochen.");
 			System.exit(-1);
 		}
 	}
@@ -142,16 +142,16 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 		// Next: read all contacts, remember contacts that contain nothing but a name
 		for (String contactName : contactNamess) {
-			System.out.println("reading contact "+(++counter) + "/" + total+": "+contactName);
+			System.out.println("lese Kontact "+(++counter) + "/" + total+": "+contactName);
 			try {
 				Contact contact = new Contact(host,contactName);
 				if (contact.isEmpty()) {
 					deleteList.add(contact);
-					System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
+					System.out.println("Warnung: überspringe leeren Kontakt " + contactName+ " (Enthält nichts außer dem Namen)");
 				} else
 					contacts.add(contact);
 			} catch (InvalidFormatException ife){
-				int d=JOptionPane.showConfirmDialog(null, ife.getMessage()+". Skip?", "Invalid format in "+contactName,JOptionPane.YES_NO_OPTION);
+				int d=JOptionPane.showConfirmDialog(null, ife.getMessage()+"- Überspringen?", "Ungültiges Format in "+contactName,JOptionPane.YES_NO_OPTION);
 				if (d!=0)	throw ife;
 			}
 		}
@@ -188,7 +188,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 							if (blacklist != null && blacklist.contains(existingContact)) continue;
 
 							// if this contact pair is not blacklisted:
-							if (askForMege("name", canonicalName, contact, existingContact)) {
+							if (askForMege("Name", canonicalName, contact, existingContact)) {
 								contact.merge(existingContact,thunderbirdBox.isSelected());
 								writeList.add(contact);
 								writeList.remove(existingContact);
@@ -224,7 +224,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 							if (blacklist != null && blacklist.contains(existingContact)) continue;
 
 							// if this contact pair is not blacklisted:
-							if (askForMege("phone number", number, contact, existingContact)) {
+							if (askForMege("Telefonnummer", number, contact, existingContact)) {
 								contact.merge(existingContact,thunderbirdBox.isSelected());
 								writeList.add(contact);
 								writeList.remove(existingContact);
@@ -290,7 +290,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 						if (blacklist != null && blacklist.contains(existingMessenger)) continue;
 
 							// if this contact pair is not blacklisted:
-						if (askForMege("messenger", messenger, contact, existingMessenger)) {
+						if (askForMege("Messenger", messenger, contact, existingMessenger)) {
 							contact.merge(existingMessenger,thunderbirdBox.isSelected());
 							contacts.remove(existingMessenger);
 							writeList.add(contact);
@@ -318,12 +318,12 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			if (confirmLists(writeList,deleteList)){
 				putMergedContacts(host,writeList);
 				deleteUselessContacts(host,deleteList);
-				JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!");
+				JOptionPane.showMessageDialog(null, "<html>Einlesen, zusammenführen and Bereinigen <i>erfolgreich</i> durchgeführt! Auf wiedersehen!");
 			} else {
-				JOptionPane.showMessageDialog(null, "<html>Merging and cleaning aborted! Goodbye!");
+				JOptionPane.showMessageDialog(null, "<html>Zusammenführen und Aufräumen abgebrochen! Auf wiedersehen!");
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "<html>Nothing to do. Your adress book is either empty or well sorted!!");
+			JOptionPane.showMessageDialog(null, "<html>Nix zu machen. Ihr Adressbuch ist entweder leer, oder gut aufgeräumt!");
 
 		}
 		setVisible(false);
@@ -343,7 +343,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		HorizontalPanel listsPanel=new HorizontalPanel();
 		
 		VerticalPanel deleteListPanel=new VerticalPanel();
-		deleteListPanel.add(new JLabel("<html>The following contacts will be <b>deleted</b>:"));
+		deleteListPanel.add(new JLabel("<html>Die folgenden Kontakte werden <b>entfernt</b>:"));
 		
 		VerticalPanel delList=new VerticalPanel();
 		for (Contact c:deleteList) delList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
@@ -359,7 +359,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 		
 		VerticalPanel writeListPanel=new VerticalPanel();
-		writeListPanel.add(new JLabel("<html>The following <b>merged contacts</b> will be written to the server:"));
+		writeListPanel.add(new JLabel("<html>Die folgenden <b>zusammengeführten Kontakte</b> werden zum Server übertragen:"));
 		
 		VerticalPanel wrList=new VerticalPanel();
 		for (Contact c:writeList) wrList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
@@ -376,9 +376,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		listsPanel.scale();
 		
 		vp.add(listsPanel);
-		vp.add(new JLabel("<html>No data has been modified on the server <b>until now</b>. Continue?"));
+		vp.add(new JLabel("<html><b>Bis jetzt</b> wurden auf dem Server keine Daten verändert. Weiter?"));
 		vp.scale();
-		int decision=JOptionPane.showConfirmDialog(null, vp, "Please confirm", JOptionPane.YES_NO_OPTION);
+		int decision=JOptionPane.showConfirmDialog(null, vp, "Bitte bestätigen", JOptionPane.YES_NO_OPTION);
 		return decision==JOptionPane.YES_OPTION;
 	}
 
@@ -411,7 +411,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	    
 
 	    if (response<200 || response>299){
-	    	System.out.println("...not successful ("+response+" / "+conn.getResponseMessage()+"). Trying to remove first...");
+	    	System.out.println("...nicht erfolgreich ("+response+" / "+conn.getResponseMessage()+"). Versuche zuerst zu entfernen...");
 	    	
 				/* the next two lines have been added to circumvent the problem, that on some caldav servers, entries can not simply be overwritten */
 				deleteContact(new URL(host+"/"+c.vcfName()));
@@ -434,11 +434,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		    conn.disconnect();
 		    if (response<200 || response>299){
 		    	File f=c.writeToFile();
-		    	JOptionPane.showMessageDialog(this, "<html>Sorry! Unfortunateley, i was not able to write a file to the WebDAV server.<br>But don't worry, i created a <b>Backup</b> of the file at "+f.getAbsolutePath());
-		    	throw new UnexpectedException("Server responded with CODE "+response);
+		    	JOptionPane.showMessageDialog(this, "<html>Tut mir leid! Leider kann ich nicht zum WebDAV-Server schreiben.<br>Keine Angst, ich habe eine <b>Sicherungskopie</b> der Datei unter "+f.getAbsolutePath()+" gespeichert.");
+		    	throw new UnexpectedException("Server hat mit CODE "+response+" geantwortet.");
 		    }
 	    }
-	    System.out.println("...success!");
+	    System.out.println("...erfolgreich!");
 		}
 	}
 
@@ -450,7 +450,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 */
 	private void deleteUselessContacts(String host,TreeSet<Contact> deleteList) throws IOException {	
 		for (Contact c:deleteList) {
-			System.out.println("Deleting "+c.vcfName());
+			System.out.println("Lösche "+c.vcfName());
 			deleteContact(new URL(host+"/"+c.vcfName()));
 		}
 	}
@@ -468,7 +468,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
     int response=conn.getResponseCode();
     conn.disconnect();
     if (response!=204){
-    	throw new UnexpectedException("Server responded with CODE "+response);
+    	throw new UnexpectedException("Server hat mit CODE "+response+" geantwortet.");
     }
 	}
 
@@ -484,15 +484,15 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
 		if (!contact.conflictsWith(contact2)) return true;
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new JLabel("<html>The " + identifier + " \"<b>" + name + "</b>\" is used by both following contacts:"));
+		vp.add(new JLabel("<html>" + identifier + " \"<b>" + name + "</b>\" wird von den folgenden Kontakten benutzt:"));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
 		hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));
 		hp.scale();
 		vp.add(hp);
-		vp.add(new JLabel("<html><br>Shall those contacts be <i>merged</i>?"));
+		vp.add(new JLabel("<html><br>Sollen diese Kontakte <i>zusammengeführt</i> werden?"));
 		vp.scale();
-		int decision = JOptionPane.showConfirmDialog(null, vp, "Please decide!", JOptionPane.YES_NO_CANCEL_OPTION);
+		int decision = JOptionPane.showConfirmDialog(null, vp, "Bitte entscheiden!", JOptionPane.YES_NO_CANCEL_OPTION);
 		if (decision == JOptionPane.CANCEL_OPTION) System.exit(0);
 		return decision == JOptionPane.YES_OPTION;
 	}

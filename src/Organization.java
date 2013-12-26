@@ -9,7 +9,7 @@ public class Organization {
 	String sub1=null;
 		
 	public Organization(String content) throws UnknownObjectException, InvalidFormatException {		
-		if (!content.startsWith("ORG:")) throw new InvalidFormatException("Organization does not start with \"ORG:\"");
+		if (!content.startsWith("ORG:")) throw new InvalidFormatException("Organisation fängt nicht mit \"ORG:\" an");
 		String line=content.substring(4);
 		if (line.contains(";")){
 			String[] parts = line.split(";");
@@ -21,7 +21,7 @@ public class Organization {
 				case 1: if (!part.isEmpty()) sub1=part;
 				break;
 				default:
-						System.err.println("Organization with several parts found: "+line+" => "+part);
+						System.err.println("Organisation mit mehreren Teilen gefunden: "+line+" => "+part);
 						throw new NotImplementedException();				
 				}
 			}

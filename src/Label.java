@@ -26,7 +26,7 @@ public class Label {
 			}
 			label=parts[1];			
 		}
-		if (!this.toString().equals(line)) throw new InvalidFormatException("original: "+line+"\ncoded: "+this);
+		if (!this.toString().equals(line)) throw new InvalidFormatException("Original: "+line+"\nCodiert: "+this);
 	}
 	
 	@Override

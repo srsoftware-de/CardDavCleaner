@@ -27,7 +27,7 @@ public class Phone {
 	}
 
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
-		if (!content.startsWith("TEL;")) throw new InvalidFormatException("Phone does not start with \"TEL;\"");
+		if (!content.startsWith("TEL;")) throw new InvalidFormatException("Telefoneintrag fängt nicht mit \"TEL;\" an");
 		String line=content.substring(4);
 		while(!line.startsWith(":")){
 			String upper=line.toUpperCase();
@@ -94,7 +94,7 @@ public class Phone {
 	}
 
 	public void merge(Phone phone) throws InvalidAssignmentException {
-		if (!number.equals(phone.number)) throw new InvalidAssignmentException("Trying to unite two phone number entries with different numbers!");
+		if (!number.equals(phone.number)) throw new InvalidAssignmentException("Versuche zwei Telefoneinträge mit verschiedenen Nummern zu mischen!");
 		if (phone.home) home=true;
 		if (phone.work) work=true;
 		if (phone.cell)cell= true;

@@ -206,18 +206,18 @@ public class Contact {
 		}
 		for (Email email:overloadedCategoryNumbers){
 			if (!work) {
-				System.out.println("Using "+email.address()+" as home mail address, as '"+email.category()+"' is already used by another number.");
+				System.out.println("Benutze "+email.address()+" als Heim-Adresse, da '"+email.category()+"' schon von einer anderen Nummer verwendet wird.");
 				email.setWork();
 				work=true;
 				continue;
 			}
 			if (!home) {
-				System.out.println("Using "+email.address()+" as home mail address, as '"+email.category()+"' is already used by another number.");
+				System.out.println("Benutze "+email.address()+" als Heim-Adresse, da '"+email.category()+"' schon von einer anderen Nummer verwendet wird.");
 				email.setHome();
 				home=true;
 				continue;
 			}
-			throw new ToMuchEntriesForThunderbirdException("There is no thunderbird slot left for the following email entry: "+email);			
+			throw new ToMuchEntriesForThunderbirdException("Es gibt keine weitere Thunderbird-Spalte für die folgende Emailadresse: "+email);			
 		}
 		return mails;
 	}
@@ -257,47 +257,47 @@ public class Contact {
 		}
 		for (Phone phone:overloadedCategoryNumbers){
 			if (!home) {
-				System.out.println("Using "+phone.simpleNumber()+" as home phone number, as '"+phone.category()+"' is already used by another number.");
+				System.out.println("Beutze "+phone.simpleNumber()+" als Heim-Nummer, da '"+phone.category()+"' schon von einer anderen Nummer verwendet wird.");
 				phone.setHome();
 				home=true;
 				continue;
 			}
 			if (!cell) {
-				System.out.println("Using "+phone.simpleNumber()+" as cell phone number, as '"+phone.category()+"' is already used by another number.");
+				System.out.println("Benutze "+phone.simpleNumber()+" als Mobil-Nummer, da '"+phone.category()+"' schon von einer anderen Nummer verwendet wird.");
 				phone.setCell();
 				cell=true;
 				continue;
 			}
 			if (!work) {
-				System.out.println("Using "+phone.simpleNumber()+" as home work number, as '"+phone.category()+"' is already used by another number.");
+				System.out.println("Benutze "+phone.simpleNumber()+" als Heim-Nummer, da '"+phone.category()+"' schon von einer anderen Nummer verwendet wird.");
 				phone.setWork();
 				work=true;
 				continue;
 			}
 			if (!fax) {
-				System.out.println("Using "+phone.simpleNumber()+" as home fax number, as '"+phone.category()+"' is already used by another number.");
+				System.out.println("Benutze "+phone.simpleNumber()+" als Heim-Faxnummer, da '"+phone.category()+"' schon von einer anderen Nummer verwendet wird.");
 				phone.setFax();
 				fax=true;
 				continue;
 			}
-			throw new ToMuchEntriesForThunderbirdException("There is no thunderbird slot left for the following number entry: "+phone);
+			throw new ToMuchEntriesForThunderbirdException("Es ist keine weiter Thunderbird-Spalte frei für die folgende Nummer: "+phone);
 		}
 		return phones;
 	}
 
 	private Object selectOneOf(String title, Object o1, Object o2, Contact contact2) {
 		VerticalPanel vp=new VerticalPanel();
-		vp.add(new JLabel("<html>Merging the following two contacts:<br>&nbsp;"));
+		vp.add(new JLabel("<html>die folgenden Kontakte werden zusammengeführt:<br>&nbsp;"));
 		HorizontalPanel hp=new HorizontalPanel();
 		hp.add(new JLabel("<html>"+this.toString(true).replace("\n", "&nbsp;<br>")));
 		hp.add(new JLabel("<html>"+contact2.toString(true).replace("\n", "<br>")));
 		hp.scale();
 		vp.add(hp);
-		vp.add(new JLabel("<html><br>Which "+title+" shall be used?"));
+		vp.add(new JLabel("<html><br>Welcher "+title+" soll verwendet werden?"));
 		vp.scale();
 		UIManager.put("OptionPane.yesButtonText", o1.toString().replace("\\,",","));
 		UIManager.put("OptionPane.noButtonText", o2.toString().replace("\\,",","));
-		int decision = JOptionPane.showConfirmDialog(null, vp, "Please select", JOptionPane.YES_NO_CANCEL_OPTION);
+		int decision = JOptionPane.showConfirmDialog(null, vp, "Bitte wählen", JOptionPane.YES_NO_CANCEL_OPTION);
 		UIManager.put("OptionPane.yesButtonText","Yes");
 		UIManager.put("OptionPane.noButtonText", "No");
 		switch (decision){
@@ -472,7 +472,7 @@ public class Contact {
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
 
 			if (!known) {
-				throw new UnknownObjectException("unknown entry/instruction found in vcard "+vcfName+": '" + line+"'");
+				throw new UnknownObjectException("unbekannter Eintrag/Anweisung in vcard "+vcfName+" gefunden: '" + line+"'");
 			}
 		}
 	}
@@ -540,7 +540,7 @@ public class Contact {
 	}
 	
 	private void readRole(String line) throws AlreadyBoundException {
-		if (role!=null) throw new AlreadyBoundException("Trying to assign role, although it is already assigned");
+		if (role!=null) throw new AlreadyBoundException("Versuche Rolle zuzuweisen, obwohl schon eine Rolle zugewiesen wurde.");
 
 		if (line.isEmpty()) return;
 		role = line.replace("\\n", "\n");

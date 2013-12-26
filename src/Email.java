@@ -49,7 +49,7 @@ public class Email {
 		} else if (content.startsWith("EMAIL:")){
 			if (content.contains(";")) throw new InvalidFormatException("content");
 			adress=content.substring(6);
-		} else throw new InvalidFormatException("Mail adress does not start with \"EMAIL;\" or \"EMAIL:\"");
+		} else throw new InvalidFormatException("Mailadresse fängt nicht mit \"EMAIL;\" oder \"EMAIL:\" an");
 	}
 
 	private void readAddr(String line) {
@@ -66,7 +66,7 @@ public class Email {
 	}
 
 	public void merge(Email mail) throws InvalidAssignmentException {
-		if (!adress.equals(mail.adress)) throw new InvalidAssignmentException("Trying to merge two mails with different adresses!");
+		if (!adress.equals(mail.adress)) throw new InvalidAssignmentException("Versuche Mails mit verschiedenen Adressen zusammenzuführen!");
 		if (mail.home) home=true;
 		if (mail.work) work=true;
 		if (mail.internet) internet=true;

@@ -43,7 +43,7 @@ public class Adress {
 	}
 
 	public Adress(String content) throws UnknownObjectException, InvalidFormatException {
-		if (!content.startsWith("ADR;")) throw new InvalidFormatException("Adress does not start with \"ADR;\"");
+		if (!content.startsWith("ADR;")) throw new InvalidFormatException("Adresse fängt nicht mit \"ADR;\" an.");
 		String line = content.substring(4);
 		while (!line.startsWith(":")) {
 			String upper = line.toUpperCase();
@@ -94,7 +94,7 @@ public class Adress {
 					country = part;
 					break;
 				default:
-					System.err.println("found " + part + " @" + index + " in " + line);
+					System.err.println(part + " @" + index + " in " + line+" gefunden");
 					throw new NotImplementedException();
 				}
 			}

@@ -18,7 +18,7 @@ public class Url {
 	}
 
 	public Url(String content) throws UnknownObjectException, InvalidFormatException {
-		if (!content.startsWith("URL")) throw new InvalidFormatException("Url does not start with \"URL\"");
+		if (!content.startsWith("URL")) throw new InvalidFormatException("Url beginnt nicht mit \"URL\"");
 		String line = content.substring(3);
 		while(!line.startsWith(":")){
 			if (line.startsWith(";")){

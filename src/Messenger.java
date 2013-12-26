@@ -24,7 +24,7 @@ public class Messenger {
 	}
 
 	public Messenger(String content) throws InvalidFormatException, UnknownObjectException {
-		if (!content.startsWith("IMPP:")) throw new InvalidFormatException("Messenger adress does not start with \"IMPP:\"");
+		if (!content.startsWith("IMPP:")) throw new InvalidFormatException("Messenger-ID fängt nicht mit \"IMPP:\" an");
 		String line = content.substring(5);
 		while(!line.startsWith(":")){
 			String upper = line.toUpperCase();
@@ -73,7 +73,7 @@ public class Messenger {
 	}
 
 	public void merge(Messenger m) throws InvalidAssignmentException {
-		if (!nick.equals(m.nick)) throw new InvalidAssignmentException("Trying to merge two messenger accounts with different ids!");
+		if (!nick.equals(m.nick)) throw new InvalidAssignmentException("Versuche zwei Messenger-Accounts mit verschiedenen IDs zusammenzuführen!");
 		if (m.aim) aim=true;
 		if (m.icq) icq=true;
 		if (m.skype) skype=true;
@@ -87,6 +87,6 @@ public class Messenger {
 		if (skype) return "skype:"+nick;
 		if (msn) return "msn:"+nick;
 		if (facebook) return "facebook"+nick;
-		throw new UnknownObjectException("Messenger \""+nick+"\" has no known type!");
+		throw new UnknownObjectException("Messenger \""+nick+"\" hat unbekannten Typ!");
   }
 }

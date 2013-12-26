@@ -31,7 +31,7 @@ public class Name {
 	}
 	
 	public Name(String line) throws UnknownObjectException, InvalidFormatException {		
-		if (!line.startsWith("N:")) throw new InvalidFormatException("Name does not start with \"N:\"");
+		if (!line.startsWith("N:")) throw new InvalidFormatException("Name fängt nicht mit \"N:\" an");
 		line=line.substring(2).trim();
 		if (line.contains(";")){
 			String[] parts = line.split(";");
@@ -40,7 +40,7 @@ public class Name {
 			if (parts.length>2) setMiddle(parts[2].trim());
 			if (parts.length>3) setPrefix(parts[3].trim());
 			if (parts.length>4){
-				System.err.println("Name with more than 4 parts found:");
+				System.err.println("Name mit mehr als 4 Teilen gefunden:");
 				System.err.println(line);
 				for (String p:parts){
 					System.err.println(p);
