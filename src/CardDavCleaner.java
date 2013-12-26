@@ -143,12 +143,17 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		// Next: read all contacts, remember contacts that contain nothing but a name
 		for (String contactName : contactNamess) {
 			System.out.println("reading contact "+(++counter) + "/" + total+": "+contactName);
-			Contact contact = new Contact(host,contactName);
-			if (contact.isEmpty()) {
-				deleteList.add(contact);
-				System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
-			} else
-				contacts.add(contact);
+			try {
+				Contact contact = new Contact(host,contactName);
+				if (contact.isEmpty()) {
+					deleteList.add(contact);
+					System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
+				} else
+					contacts.add(contact);
+			} catch (InvalidFormatException ife){
+				int d=JOptionPane.showConfirmDialog(null, ife.getMessage()+". Skip?", "Invalid format in "+contactName,JOptionPane.YES_NO_OPTION);
+				if (d!=0)	throw ife;
+			}
 		}
 		
 		// next: find and merge related contacts
