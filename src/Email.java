@@ -20,32 +20,36 @@ public class Email {
 	}
 
 	public Email(String content) throws UnknownObjectException, InvalidFormatException {
-		if (!content.startsWith("EMAIL;")) throw new InvalidFormatException("Mail adress does not start with \"EMAIL;\"");
-		String line = content.substring(6);
-		while(!line.startsWith(":")){
-			String upper = line.toUpperCase();
-			if (upper.startsWith("TYPE=WORK")){
-				work=true;
-				line=line.substring(9);
-				continue;
+		if (content.startsWith("EMAIL;")){
+			String line = content.substring(6);
+			while(!line.startsWith(":")){
+				String upper = line.toUpperCase();
+				if (upper.startsWith("TYPE=WORK")){
+					work=true;
+					line=line.substring(9);
+					continue;
+				}
+				if (upper.startsWith("TYPE=HOME")){
+					home=true;
+					line=line.substring(9);
+					continue;
+				} 
+				if (upper.startsWith("TYPE=INTERNET")){
+					internet=true;
+					line=line.substring(13);
+					continue;
+				} 
+				if (line.startsWith(";")){
+					line=line.substring(1);
+					continue;
+				}
+				throw new UnknownObjectException(line+" in "+content);
 			}
-			if (upper.startsWith("TYPE=HOME")){
-				home=true;
-				line=line.substring(9);
-				continue;
-			} 
-			if (upper.startsWith("TYPE=INTERNET")){
-				internet=true;
-				line=line.substring(13);
-				continue;
-			} 
-			if (line.startsWith(";")){
-				line=line.substring(1);
-				continue;
-			}
-			throw new UnknownObjectException(line+" in "+content);
-		}
-		readAddr(line.substring(1));		
+			readAddr(line.substring(1));
+		} else if (content.startsWith("EMAIL:")){
+			if (content.contains(";")) throw new InvalidFormatException("content");
+			adress=content.substring(6);
+		} else throw new InvalidFormatException("Mail adress does not start with \"EMAIL;\" or \"EMAIL:\"");
 	}
 
 	private void readAddr(String line) {
