@@ -41,8 +41,8 @@ public class Label {
 		if (encoding!=null){
 			result+="ENCODING="+encoding;	
 		}
-		result+=":"+label;
-		return result;
+		result+=":";
+		return result.replace(";:", ":")+label;
 	}
 }
 
