@@ -5,9 +5,11 @@ public class Label {
 	String encoding=null;
 	String label;
 	
-	public Label(String data) throws InvalidFormatException {
-		System.out.println(data);
-		if (data.startsWith("LABEL;")) data=data.substring(6);
+	public Label(String line) throws InvalidFormatException {
+		String data=null;
+		if (line.startsWith("LABEL")) {
+			data=line.substring(5);
+		} else throw new InvalidFormatException(line);
 		String[] parts=null;
 		if (data.contains("ENCODING=")) {
 			parts = data.split("ENCODING=");
@@ -24,12 +26,7 @@ public class Label {
 			}
 			label=parts[1];			
 		}
-		System.out.println(this);
-	}
-	
-	public static void main(String[] args) throws InvalidFormatException {
-		Label label=new Label("LABEL;HOME=;ENCODING=QUOTED-PRINTABLE:Willy-Brandt-Platz 6=0D=0AErfurt 99084");
-		System.out.println(label);
+		if (!this.toString().equals(line)) throw new InvalidFormatException("original: "+line+"\ncoded: "+this);
 	}
 	
 	@Override
@@ -45,6 +42,3 @@ public class Label {
 		return result.replace(";:", ":")+label;
 	}
 }
-
-
-// LABEL;HOME=;ENCODING=QUOTED-PRINTABLE:Willy-Brandt-Platz 6=0D=0AErfurt 99084
