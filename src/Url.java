@@ -18,9 +18,13 @@ public class Url {
 	}
 
 	public Url(String content) throws UnknownObjectException, InvalidFormatException {
-		if (!content.startsWith("URL;")) throw new InvalidFormatException("Url does not start with \"URL;\"");
-		String line = content.substring(4);
+		if (!content.startsWith("URL")) throw new InvalidFormatException("Url does not start with \"URL\"");
+		String line = content.substring(3);
 		while(!line.startsWith(":")){
+			if (line.startsWith(";")){
+				line=line.substring(1);
+				continue;
+			}
 			if (line.toUpperCase().startsWith("TYPE=HOME")){
 				home=true;
 				line=line.substring(9);
@@ -31,10 +35,6 @@ public class Url {
 				line=line.substring(9);
 				continue;
 			} 
-			if (line.startsWith(";")){
-				line=line.substring(1);
-				continue;
-			}
 			throw new UnknownObjectException(line+" in "+content);
 		}
 		readUrl(line.substring(1));		

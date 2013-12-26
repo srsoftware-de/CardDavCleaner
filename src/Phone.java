@@ -75,16 +75,13 @@ public class Phone {
 		readPhone(line.substring(1));		
 	}
 
-	private void readPhone(String line) {
-		if (line.isEmpty())return;
-		line=line.replace(" ", "").replace("/", "").replace("-", "");
-		for (char c:line.toCharArray()){
-			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') {
-				System.err.println(line);
-				throw new NotImplementedException();				
-			}
+	private void readPhone(String line) throws InvalidFormatException {
+		if (line.isEmpty()) return;
+		String phone=line.replace(" ", "").replace("/", "").replace("-", "");
+		for (char c:phone.toCharArray()){
+			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') throw new InvalidFormatException("TEL:"+line);				
 		}
-		number = line;
+		number = phone;
 		numbers.add(number);
 	}
 
