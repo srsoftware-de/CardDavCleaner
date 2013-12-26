@@ -34,6 +34,7 @@ public class Contact {
 	private TreeSet<String> titles=new TreeSet<String>(ObjectComparator.get());
 	private String role; // TODO: eine vcard kann auch mehrere haben!
 	private Birthday birthday;	
+	private Label label;
 	private boolean htmlMail;
 	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
 	private String uid;
@@ -456,6 +457,7 @@ public class Contact {
 			if (line.startsWith("X-SKYPE:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
 			if (line.startsWith("REV:")) known = true;// readRevision(line.substring(4));
 			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
+			if (line.startsWith("LABEL;") && (known = true)) readLabel(line);
 			if (line.startsWith("BDAY") && (known = true)) readBirthday(line.substring(4));
 			if (line.startsWith("ROLE:") && (known = true)) readRole(line.substring(5));
 			if (line.startsWith("URL;") && (known = true)) readUrl(line);
@@ -482,6 +484,10 @@ public class Contact {
 
 	private void readBirthday(String bday) {
 		birthday=new Birthday(bday);
+	}
+	
+	private void readLabel(String line) throws InvalidFormatException {
+		label=new Label(line);
 	}
 
 	private void readPhoto(String line) {
@@ -563,7 +569,7 @@ public class Contact {
 		Adress adress = new Adress(line);
 		if (!adress.isEmpty()) adresses.add(adress);
 	}
-
+	
 	private void readMail(String line) throws UnknownObjectException, InvalidFormatException {
 		Email mail = new Email(line);
 		if (!mail.isEmpty()) mails.add(mail);
