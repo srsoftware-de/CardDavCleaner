@@ -1,11 +1,26 @@
+import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 
 
 public class Url {
 	
 	private boolean home=false;
 	private boolean work=false;
+	private boolean invalid=false;
 	private String url;
+	
+	public VerticalPanel editForm() {
+		VerticalPanel form=new VerticalPanel("Web Adress");
+		if (invalid) form.setBackground(Color.red);
+		form.add(new InputField("URL",url));
+		form.add(new JCheckBox("Home",home));
+		form.add(new JCheckBox("Work",work));
+		form.scale();
+		return form;
+	}
 	
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
@@ -48,4 +63,6 @@ public class Url {
 	public boolean isEmpty() {
 		return url==null;
 	}
+
+
 }

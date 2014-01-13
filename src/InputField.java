@@ -22,8 +22,10 @@ public class InputField extends HorizontalPanel {
 	}
 
 	public InputField(String caption,String defaultValue) {
-		this(caption);
-		result.setText(defaultValue);
+		add(new JLabel(caption + " "));		
+		result = (defaultValue==null || defaultValue.isEmpty())?new JTextField(20):new JTextField(defaultValue);		
+		add(result);
+		scale();	
 	}
 
 	public InputField(String caption) {

@@ -1,4 +1,8 @@
+import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 
 
 public class Email {
@@ -6,8 +10,20 @@ public class Email {
 	private boolean work=false;
 	private boolean home=false;
 	private boolean internet=false;
-	private boolean invalid=false;
 	private String adress=null;
+
+	private boolean invalid=false;
+	
+	public VerticalPanel editForm() {
+		VerticalPanel form=new VerticalPanel("Email");
+		if (invalid) form.setBackground(Color.red);
+		form.add(new InputField("Adress",adress));
+		form.add(new JCheckBox("Home",home));
+		form.add(new JCheckBox("Work",work));
+		form.add(new JCheckBox("Internet",internet));
+		form.scale();
+		return form;
+	}
 	
 	public String toString() {
 		StringBuffer sb=new StringBuffer();

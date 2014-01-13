@@ -1,4 +1,8 @@
+import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 
 
 public class Messenger {
@@ -10,6 +14,19 @@ public class Messenger {
 	private boolean facebook=false;
 	private boolean invalid;
 	private String nick=null;
+	
+	public VerticalPanel editForm() {
+		VerticalPanel form=new VerticalPanel("Messenger");
+		if (invalid) form.setBackground(Color.red);
+		form.add(new InputField("Nickname",nick));
+		form.add(new JCheckBox("AIM",aim));
+		form.add(new JCheckBox("ICQ",icq));
+		form.add(new JCheckBox("Skype",skype));
+		form.add(new JCheckBox("MSN",msn));
+		form.add(new JCheckBox("Facebook",facebook));
+		form.scale();
+		return form;
+	}
 	
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
@@ -94,4 +111,5 @@ public class Messenger {
 	public boolean isInvalid() {
 		return invalid;
 	}
+
 }

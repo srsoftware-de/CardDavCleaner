@@ -1,4 +1,8 @@
+import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -9,6 +13,15 @@ public class Organization {
 	String sub1=null;
 	private boolean invalid=false;
 	
+
+	public VerticalPanel editForm() {
+		VerticalPanel form=new VerticalPanel("Organization");
+		if (invalid) form.setBackground(Color.red);
+		form.add(new InputField("Name",name));
+		form.add(new InputField("Extended",sub1));
+		form.scale();
+		return form;
+	}
 	public Organization(String content) throws UnknownObjectException, InvalidFormatException {		
 		if (!content.startsWith("ORG:")) throw new InvalidFormatException("Organization does not start with \"ORG:\"");
 		String line=content.substring(4);
@@ -48,5 +61,6 @@ public class Organization {
 	public boolean isInvalid() {
 		return invalid;
 	}
+
 
 }

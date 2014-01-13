@@ -28,12 +28,12 @@ public class Contact {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	//private String revision;
 	//private String productId;
-	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
-	private Collection<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
-	private Collection<Email> mails = new TreeSet<Email>(ObjectComparator.get());
 	private Name name;
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
 	private TreeSet<String> titles=new TreeSet<String>(ObjectComparator.get());
+	private Collection<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
+	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
+	private Collection<Email> mails = new TreeSet<Email>(ObjectComparator.get());
 	private String role; // TODO: eine vcard kann auch mehrere haben!
 	private Birthday birthday;	
 	private Label label;
@@ -49,11 +49,47 @@ public class Contact {
 	
 	private VerticalPanel editForm() {
 		VerticalPanel form=new VerticalPanel();
-		for (Adress a:adresses){
-			form.add(a.editForm());
+		form.add(name.editForm());		
+		form.add(new InputField("Formatted name",formattedName));
+		if (!titles.isEmpty()){
+			VerticalPanel titleForm = new VerticalPanel();
+			for (String t:titles){
+				titleForm.add(new InputField("Title", t));
+			}
+			titleForm.scale();
+			form.add(titleForm);
+		}
+		if (role!=null){
+			form.add(new InputField("Role",role));
+		}
+		if (birthday!=null){
+			form.add(birthday.editForm());
 		}
 		for (Phone p:phones){
 			form.add(p.editForm());
+		}
+		for (Adress a:adresses){
+			form.add(a.editForm());
+		}		
+		for (Email m:mails){
+			form.add(m.editForm());
+		}
+		for (Url u:urls){
+			form.add(u.editForm());
+		}
+		for (Organization o: orgs){
+			form.add(o.editForm());
+		}
+		for (Messenger m:messengers){
+			form.add(m.editForm());
+		}
+		if (categories!=null && !categories.isEmpty()){
+			HorizontalPanel cats=new HorizontalPanel();
+			for (String c:categories){
+				cats.add(new InputField("Category", c));
+			}
+			cats.scale();
+			form.add(cats);
 		}
 		form.scale();
 		return form;
@@ -71,7 +107,7 @@ public class Contact {
 		}
 		if (name.isInvalid()) return true;
 		if (birthday!=null && birthday.isInvalid()) return true;
-		if (label.isInvalid()) return true;
+		if (label!=null && label.isInvalid()) return true;
 		for (Organization o:orgs){
 			if (o.isInvalid()) return true;	
 		}

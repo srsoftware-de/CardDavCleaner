@@ -1,5 +1,9 @@
+import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -11,6 +15,18 @@ public class Name {
 	private String prefix;
 	private String middle;
 	private boolean invalid=false;
+	
+	public HorizontalPanel editForm() {
+		HorizontalPanel form=new HorizontalPanel("Name");
+		if (invalid) form.setBackground(Color.red);
+		form.add(new InputField("Prefix",prefix));
+		form.add(new InputField("First Name",first));
+		form.add(new InputField("Middle Name",middle));
+		form.add(new InputField("Family Name",family));
+		form.scale();
+		return form;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuffer sb=new StringBuffer();

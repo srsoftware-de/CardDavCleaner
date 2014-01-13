@@ -1,3 +1,7 @@
+import java.awt.Color;
+
+import javax.swing.JComponent;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Birthday {
@@ -5,6 +9,16 @@ public class Birthday {
 	private String time;
 	private String birtdate;
 	private boolean invalid=false;
+	
+	public HorizontalPanel editForm() {
+		HorizontalPanel form=new HorizontalPanel("Birthday");
+		if (invalid) form.setBackground(Color.red);
+		form.add(new InputField("Time",time));
+		form.add(new InputField("Birthdate",birtdate));
+		form.scale();
+		return form;
+	}
+	
 	public boolean equals(Birthday b2){
 		return birtdate.equals(b2.birtdate);
 	}
@@ -52,5 +66,4 @@ public class Birthday {
 	public boolean isInvalid() {
 		return invalid;
 	}
-
 }
