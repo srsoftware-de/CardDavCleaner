@@ -8,6 +8,7 @@ public class Messenger {
 	private boolean skype=false;
 	private boolean msn=false;
 	private boolean facebook=false;
+	private boolean invalid;
 	private String nick=null;
 	
 	public String toString() {
@@ -89,4 +90,8 @@ public class Messenger {
 		if (facebook) return "facebook"+nick;
 		throw new UnknownObjectException("Messenger \""+nick+"\" has no known type!");
   }
+
+	public boolean isInvalid() {
+		return invalid;
+	}
 }

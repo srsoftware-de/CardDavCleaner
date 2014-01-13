@@ -6,6 +6,7 @@ public class Email {
 	private boolean work=false;
 	private boolean home=false;
 	private boolean internet=false;
+	private boolean invalid=false;
 	private String adress=null;
 	
 	public String toString() {
@@ -94,5 +95,9 @@ public class Email {
 		if (work) return "work";
 		if (home) return "home";
 		return "no category";
+	}
+
+	public boolean isInvalid() {
+		return invalid;
 	}
 }

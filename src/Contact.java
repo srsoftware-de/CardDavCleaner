@@ -22,6 +22,8 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
+import com.sun.jndi.cosnaming.IiopUrl.Address;
+
 public class Contact {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	//private String revision;
@@ -45,6 +47,37 @@ public class Contact {
 	private TreeSet<Messenger> messengers=new TreeSet<Messenger>(ObjectComparator.get());
 	private TreeSet<String> categories;
 	
+	private VerticalPanel editForm() {
+		VerticalPanel form=new VerticalPanel();
+		for (Adress a:adresses){
+			form.add(a.editForm());
+		}
+		form.scale();
+		return form;
+	}
+
+	public boolean isInvalid() {
+		for (Adress a:adresses){
+			if (a.isInvalid()) return true;
+		}
+		for (Phone p:phones){
+			if (p.isInvalid()) return true;
+		}
+		for (Email m:mails){
+			if (m.isInvalid()) return true;
+		}
+		if (name.isInvalid()) return true;
+		if (birthday!=null && birthday.isInvalid()) return true;
+		if (label.isInvalid()) return true;
+		for (Organization o:orgs){
+			if (o.isInvalid()) return true;	
+		}
+		for (Messenger m: messengers){
+			if (m.isInvalid()) return true;
+		}
+		return false;
+	}
+
 	public boolean conflictsWith(Contact c2){
 		if (name!=null && c2.name!=null && !name.canonical().equals(c2.name.canonical())) return true;
 		if (birthday!=null && c2.birthday!=null && !birthday.equals(c2.birthday)) return true;
@@ -631,4 +664,9 @@ public class Contact {
 		}
 		return messengers;
 	}
+
+	public void edit() {
+		JOptionPane.showConfirmDialog(null, editForm(), "Edit contact", JOptionPane.OK_CANCEL_OPTION);
+	}
+
 }

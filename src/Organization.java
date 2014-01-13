@@ -7,7 +7,8 @@ public class Organization {
 	
 	String name=null;
 	String sub1=null;
-		
+	private boolean invalid=false;
+	
 	public Organization(String content) throws UnknownObjectException, InvalidFormatException {		
 		if (!content.startsWith("ORG:")) throw new InvalidFormatException("Organization does not start with \"ORG:\"");
 		String line=content.substring(4);
@@ -42,6 +43,10 @@ public class Organization {
 
 	public boolean isEmpty() {
 		return (name==null) && (sub1==null);
+	}
+
+	public boolean isInvalid() {
+		return invalid;
 	}
 
 }

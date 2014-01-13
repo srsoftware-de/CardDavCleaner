@@ -1,4 +1,8 @@
+import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -6,6 +10,7 @@ public class Adress {
 
 	private boolean home = false;
 	private boolean work = false;
+	private boolean invalid = false;
 	private String streetAdress;
 	private String city;
 	private String zip;
@@ -13,6 +18,22 @@ public class Adress {
 	private String region;
 	private String extendedAdress;
 	private String postOfficeBox;
+
+	public VerticalPanel editForm() {
+		VerticalPanel form=new VerticalPanel("Adress");
+		if (invalid) form.setBackground(Color.red);
+		form.add(new InputField("Street Adress",streetAdress));
+		form.add(new InputField("Extended Adress",extendedAdress));
+		form.add(new InputField("Zip",zip));
+		form.add(new InputField("City",city));
+		form.add(new InputField("Region",region));
+		form.add(new InputField("Country",country));
+		form.add(new InputField("Post Office Box",postOfficeBox));
+		form.add(new JCheckBox("Home Adress",home));
+		form.add(new JCheckBox("Work Adress",work));
+		form.scale();
+		return form;
+	}
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
@@ -104,6 +125,11 @@ public class Adress {
 	public boolean isEmpty() {
 		return ((postOfficeBox==null)&&(extendedAdress==null)&&(streetAdress==null)&&(city==null)&&(region==null)&&(zip==null)&&(country==null));
 	}
+
+	public boolean isInvalid() {
+		return invalid;
+	}
+
 
 
 }

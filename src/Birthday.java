@@ -4,7 +4,7 @@ public class Birthday {
 
 	private String time;
 	private String birtdate;
-	
+	private boolean invalid=false;
 	public boolean equals(Birthday b2){
 		return birtdate.equals(b2.birtdate);
 	}
@@ -47,6 +47,10 @@ public class Birthday {
 				throw new NotImplementedException();
 			}
 		}
+	}
+
+	public boolean isInvalid() {
+		return invalid;
 	}
 
 }

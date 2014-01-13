@@ -1,8 +1,6 @@
 import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 
 public class Phone {
 	
@@ -11,6 +9,7 @@ public class Phone {
 	private boolean cell=false;
 	private boolean work=false;
 	private String number;
+	private boolean invalid = false;
 	
 	static TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
 	
@@ -79,7 +78,7 @@ public class Phone {
 		if (line.isEmpty()) return;
 		String phone=line.replace(" ", "").replace("/", "").replace("-", "");
 		for (char c:phone.toCharArray()){
-			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') throw new InvalidFormatException("TEL:"+line);				
+			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') invalid=true;				
 		}
 		number = phone;
 		numbers.add(number);
@@ -158,5 +157,9 @@ public class Phone {
 		if (fax) return "fax";
 		if (cell) return "cell";
 		return "empty category";
+	}
+
+	public boolean isInvalid() {
+		return invalid ;
 	}
 }

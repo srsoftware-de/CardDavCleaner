@@ -10,7 +10,7 @@ public class Name {
 	private String first;
 	private String prefix;
 	private String middle;
-	
+	private boolean invalid=false;
 	@Override
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
@@ -120,5 +120,9 @@ public class Name {
 		if (family!=null) parts.add(ascii(family).toLowerCase());	
 		
 		return parts.toString().replace("[", "").replace("]", ""); // sorted set of name parts
+	}
+
+	public boolean isInvalid() {
+		return invalid;
 	}
 }

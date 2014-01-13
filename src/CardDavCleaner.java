@@ -31,7 +31,7 @@ import javax.swing.JTextField;
 
 public class CardDavCleaner extends JFrame implements ActionListener {
 
-	private JTextField serverField, userField, passwordField;
+	InputField serverField,userField, passwordField;
 	private JCheckBox thunderbirdBox;
   private static final long serialVersionUID = -2875331857455588061L;
 
@@ -48,9 +48,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 		VerticalPanel mainPanel = new VerticalPanel("Server settings");
 
-		serverField = createInputField(mainPanel,"Server + Path to addressbook:",false);
-		userField = createInputField(mainPanel,"User:",false);
-		passwordField = createInputField(mainPanel,"Password:",true);
+		mainPanel.add(serverField = new InputField("Server + Path to addressbook:",false));
+		mainPanel.add(userField = new InputField("User:",false));
+		mainPanel.add(passwordField = new InputField("Password:",true));
 		thunderbirdBox = new JCheckBox("<html>I use Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)");
 		mainPanel.add(thunderbirdBox);
 		JButton startButton = new JButton("start");
@@ -143,19 +143,28 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		// Next: read all contacts, remember contacts that contain nothing but a name
 		for (String contactName : contactNamess) {
 			System.out.println("reading contact "+(++counter) + "/" + total+": "+contactName);
-			try {
-				Contact contact = new Contact(host,contactName);
-				if (contact.isEmpty()) {
-					deleteList.add(contact);
-					System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
-				} else
-					contacts.add(contact);
-			} catch (InvalidFormatException ife){
-				int d=JOptionPane.showConfirmDialog(null, ife.getMessage()+". Skip?", "Invalid format in "+contactName,JOptionPane.YES_NO_OPTION);
-				if (d!=0)	throw ife;
+			Contact contact = new Contact(host,contactName);
+				
+			if (contact.isInvalid()){
+				String [] options={"Edit manually","Skip","Abort program"};
+				int opt=JOptionPane.showOptionDialog(null, contactName+" has an invalid format", "Invalid Contact", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+				switch (opt) {
+					case 0:
+						contact.edit();
+						break;
+					case 1:
+						continue;
+					default:
+						System.exit(-1);
+				}
 			}
+			if (contact.isEmpty()) {
+				deleteList.add(contact);
+				System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
+			} else
+				contacts.add(contact);
 		}
-		
+	
 		// next: find and merge related contacts
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
 		TreeMap<String, TreeSet<Contact>> nameMap; // one name may map to multiple contacts, as multiple persons may have the same name
