@@ -1,5 +1,9 @@
+import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 
 
 public class Phone {
@@ -12,6 +16,18 @@ public class Phone {
 	private boolean invalid = false;
 	
 	static TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
+	
+	public VerticalPanel editForm() {
+		VerticalPanel form=new VerticalPanel("Phone");
+		if (invalid) form.setBackground(Color.red);
+		form.add(new InputField("Number",number));
+		form.add(new JCheckBox("Home Phone",home));
+		form.add(new JCheckBox("Work Phone",work));
+		form.add(new JCheckBox("Cell Phone",cell));
+		form.add(new JCheckBox("Fax",fax));
+		form.scale();
+		return form;
+	}
 	
 	public String toString() {
 		StringBuffer sb=new StringBuffer();

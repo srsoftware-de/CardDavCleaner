@@ -52,6 +52,9 @@ public class Contact {
 		for (Adress a:adresses){
 			form.add(a.editForm());
 		}
+		for (Phone p:phones){
+			form.add(p.editForm());
+		}
 		form.scale();
 		return form;
 	}
