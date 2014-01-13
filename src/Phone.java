@@ -3,10 +3,11 @@ import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
 
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 
-public class Phone {
+public class Phone implements DocumentListener {
 	
 	private boolean fax=false;
 	private boolean home=false;
@@ -15,12 +16,16 @@ public class Phone {
 	private String number;
 	private boolean invalid = false;
 	
+	private InputField numField;
+	VerticalPanel form;
+	
 	static TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
 	
 	public VerticalPanel editForm() {
-		VerticalPanel form=new VerticalPanel("Phone");
+		form=new VerticalPanel("Phone");
 		if (invalid) form.setBackground(Color.red);
-		form.add(new InputField("Number",number));
+		form.add(numField=new InputField("Number",number));
+		numField.addChangeListener(this);
 		form.add(new JCheckBox("Home Phone",home));
 		form.add(new JCheckBox("Work Phone",work));
 		form.add(new JCheckBox("Cell Phone",cell));
@@ -90,7 +95,7 @@ public class Phone {
 		readPhone(line.substring(1));		
 	}
 
-	private void readPhone(String line) throws InvalidFormatException {
+	private void readPhone(String line) {
 		if (line.isEmpty()) return;
 		String phone=line.replace(" ", "").replace("/", "").replace("-", "");
 		for (char c:phone.toCharArray()){
@@ -178,4 +183,24 @@ public class Phone {
 	public boolean isInvalid() {
 		return invalid ;
 	}
+
+	public void changedUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	private void update() {
+		invalid=false;
+		readPhone(numField.getText());
+		form.setBackground(invalid?Color.red:Color.green);
+	}
+
+	public void insertUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public void removeUpdate(DocumentEvent arg0) {
+		update();
+	}
+	
+	
 }

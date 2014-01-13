@@ -151,6 +151,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				switch (opt) {
 					case 0:
 						contact.edit();
+						System.out.println(contact);
 						break;
 					case 1:
 						continue;

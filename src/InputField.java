@@ -1,6 +1,7 @@
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentListener;
 
 
 public class InputField extends HorizontalPanel {
@@ -35,5 +36,9 @@ public class InputField extends HorizontalPanel {
 	public String getText() {
 		// TODO Auto-generated method stub
 		return result.getText();
+	}
+
+	public void addChangeListener(DocumentListener listener) {
+		result.getDocument().addDocumentListener(listener);
 	}
 }
