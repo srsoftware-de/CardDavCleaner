@@ -64,18 +64,18 @@ public class Adress {
 	}
 
 	public Adress(String content) throws UnknownObjectException, InvalidFormatException {
-		if (!content.startsWith("ADR;")) throw new InvalidFormatException("Adress does not start with \"ADR;\"");
-		String line = content.substring(4);
+		if (!content.startsWith("ADR")) throw new InvalidFormatException("Adress does not start with \"ADR;\": "+content);
+		String line = content.substring(3);
 		while (!line.startsWith(":")) {
 			String upper = line.toUpperCase();
-			if (upper.startsWith("TYPE=HOME")) {
+			if (upper.startsWith(";TYPE=HOME")) {
 				home = true;
-				line = line.substring(9);
+				line = line.substring(10);
 				continue;
 			}
-			if (upper.startsWith("TYPE=WORK")) {
+			if (upper.startsWith(";TYPE=WORK")) {
 				work = true;
-				line = line.substring(9);
+				line = line.substring(10);
 				continue;
 			}
 			if (line.startsWith(";")) {

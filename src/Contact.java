@@ -22,8 +22,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import com.sun.jndi.cosnaming.IiopUrl.Address;
-
 public class Contact {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	//private String revision;
@@ -518,7 +516,7 @@ public class Contact {
 			if (line.equals("BEGIN:VCARD")) known = true;
 			if (line.equals("END:VCARD")) known = true;
 			if (line.startsWith("VERSION:")) known = true;
-			if (line.startsWith("ADR;") && (known = true)) readAdress(line);
+			if (line.startsWith("ADR") && (known = true)) readAdress(line);
 			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
 			if (line.startsWith("TEL;") && (known = true)) readPhone(line);
 			if (line.startsWith("TEL:") && (known = true)) readPhone(line.replace(":", ";TYPE=home:"));
