@@ -306,7 +306,7 @@ public class Contact {
 					overloadedCategoryNumbers.add(phone);
 				} else work=true;
 			}
-			if (phone.isHomePhone()){
+			if (phone.isHomePhone() || phone.isVoice()){
 				phone.setHome();
 				if (home) {
 					overloadedCategoryNumbers.add(phone);

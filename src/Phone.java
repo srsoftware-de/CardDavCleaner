@@ -13,6 +13,7 @@ public class Phone implements DocumentListener {
 	private boolean home=false;
 	private boolean cell=false;
 	private boolean work=false;
+	private boolean voice=false;
 	private String number;
 	private boolean invalid = false;
 	
@@ -27,6 +28,7 @@ public class Phone implements DocumentListener {
 		form.add(numField=new InputField("Number",number));
 		numField.addChangeListener(this);
 		form.add(new JCheckBox("Home Phone",home));
+		form.add(new JCheckBox("Voice Phone",voice));
 		form.add(new JCheckBox("Work Phone",work));
 		form.add(new JCheckBox("Cell Phone",cell));
 		form.add(new JCheckBox("Fax",fax));
@@ -41,6 +43,7 @@ public class Phone implements DocumentListener {
 		if (home) sb.append(";TYPE=HOME");
 		if (cell) sb.append(";TYPE=CELL");
 		if (work) sb.append(";TYPE=WORK");
+		if (voice) sb.append(";TYPE=VOICE");
 		sb.append(':');
 		sb.append(number);
 		return sb.toString();
@@ -86,6 +89,16 @@ public class Phone implements DocumentListener {
 				line=line.substring(6);
 				continue;
 			}
+			if (upper.startsWith("TYPE=VOICE")){
+				voice=true;
+				line=line.substring(9);
+				continue;
+			}
+			if (upper.startsWith("\\,VOICE")){
+				voice=true;
+				line=line.substring(6);
+				continue;
+			}
 			if (line.startsWith(";")){
 				line=line.substring(1);
 				continue;
@@ -119,6 +132,7 @@ public class Phone implements DocumentListener {
 		if (phone.work) work=true;
 		if (phone.cell)cell= true;
 		if (phone.fax) fax=true;
+		if (phone.voice)voice=true; 
 	}
 
 	public String simpleNumber() {
@@ -143,12 +157,17 @@ public class Phone implements DocumentListener {
 	public boolean isFax() {
 		return fax;
 	}
+	
+	public boolean isVoice(){
+		return voice;
+	}
 
 	public void setHome() {
 		home=true;
 		work=false;
 		fax=false;
 		cell=false;
+		voice=false;
 	}
 
 	public void setCell() {
@@ -156,6 +175,7 @@ public class Phone implements DocumentListener {
 		work=false;
 		fax=false;
 		cell=true;
+		voice=false;
 	}
 
 	public void setWork() {
@@ -163,6 +183,7 @@ public class Phone implements DocumentListener {
 		work=true;
 		fax=false;
 		cell=false;
+		voice=false;
 	}
 
 	public void setFax() {
@@ -170,6 +191,15 @@ public class Phone implements DocumentListener {
 		work=false;
 		fax=true;
 		cell=false;
+		voice=false;
+	}
+	
+	public void setVoice() {
+		home=false;
+		work=false;
+		fax=false;
+		cell=false;
+		voice=true;
 	}
 
 	public String category() {
@@ -177,6 +207,7 @@ public class Phone implements DocumentListener {
 		if (work) return "work";
 		if (fax) return "fax";
 		if (cell) return "cell";
+		if (voice) return "voice";
 		return "empty category";
 	}
 
