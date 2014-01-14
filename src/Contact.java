@@ -438,6 +438,11 @@ public class Contact {
 		sb.append(name);// required for Version 3
 		sb.append("\n");
 		
+		for (Nickname nick:nicks){
+			sb.append(nick);
+			sb.append("\n");
+		}
+		
 		if (categories!=null){
 			sb.append("CATEGORIES:");
 			for (Iterator<String> it = categories.iterator(); it.hasNext();){
