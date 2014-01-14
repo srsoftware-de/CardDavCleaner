@@ -79,7 +79,7 @@ public class Nickname {
 		return nick==null;
 	}
 
-	public String address() {
+	public String text() {
 		return nick;
 	}
 

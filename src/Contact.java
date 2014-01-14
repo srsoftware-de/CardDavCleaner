@@ -44,7 +44,7 @@ public class Contact {
 	private String vcfName;
 	private TreeSet<Messenger> messengers=new TreeSet<Messenger>(ObjectComparator.get());
 	private TreeSet<String> categories;
-	private TreeSet<Nickname> nicks=new TreeSet<Nickname>(ObjectComparator.get());
+	private Collection<Nickname> nicks=new TreeSet<Nickname>(ObjectComparator.get());
 	
 	private VerticalPanel editForm() {
 		VerticalPanel form=new VerticalPanel();
@@ -107,6 +107,9 @@ public class Contact {
 		for (Email m:mails){
 			if (m.isInvalid()) return true;
 		}
+		for (Nickname n:nicks){
+			if (n.isInvalid()) return true;
+		}
 		if (name.isInvalid()) return true;
 		if (birthday!=null && birthday.isInvalid()) return true;
 		if (label!=null && label.isInvalid()) return true;
@@ -128,7 +131,7 @@ public class Contact {
 		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) return true;
 		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) return true;
 		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls))	return true;
-		
+		if (!nicks.isEmpty() && !c2.nicks.isEmpty() && !nicks.equals(c2.nicks)) return true;
 		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes))return true;
 		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) return true;
 		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos))	return true;		
@@ -166,7 +169,8 @@ public class Contact {
 					urls.isEmpty() &&
 					notes.isEmpty() &&
 					photos.isEmpty() &&
-					orgs.isEmpty();
+					orgs.isEmpty() &&
+					nicks.isEmpty();
 	}
 	
 	public void merge(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
@@ -218,6 +222,24 @@ public class Contact {
 			mails=thunderbirdMergeMail(mailMap.values());
 		} else mails=mailMap.values();
 		
+		TreeMap<String, Nickname> nickMap=new TreeMap<String, Nickname>(ObjectComparator.get());
+		
+		for (Nickname nick:nicks){
+			Nickname existingNick=nickMap.get(nick.text());
+			if (existingNick!=null){
+				existingNick.merge(nick);
+			} else nickMap.put(nick.text(), nick);
+		}
+
+		for (Nickname nick:contact.nicks){
+			Nickname existingNick=nickMap.get(nick.text());
+			if (existingNick!=null){
+				existingNick.merge(nick);
+			} else nickMap.put(nick.text(), nick);
+		}
+		
+		nicks=nickMap.values();
+
 		if (name!=null){
 			if (contact.name!=null && !contact.name.equals(name)){
 				name=(Name) selectOneOf("name",name,contact.name,contact);
