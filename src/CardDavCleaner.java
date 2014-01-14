@@ -143,14 +143,18 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		// Next: read all contacts, remember contacts that contain nothing but a name
 		for (String contactName : contactNamess) {
 			System.out.println("reading contact "+(++counter) + "/" + total+": "+contactName);
-			Contact contact = new Contact(host,contactName);
-				
-			if (skipInvalidContact(contact,contactName)) continue;
-			if (contact.isEmpty()) {
-				deleteList.add(contact);
-				System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
-			} else
-				contacts.add(contact);
+			try {
+				Contact contact = new Contact(host,contactName);
+				if (skipInvalidContact(contact,contactName)) continue;
+				if (contact.isEmpty()) {
+					deleteList.add(contact);
+					System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
+				} else
+					contacts.add(contact);
+			} catch (UnknownObjectException uoe){
+				uoe.printStackTrace();
+				JOptionPane.showMessageDialog(null, uoe.getMessage());
+			}
 		}
 	
 		// next: find and merge related contacts

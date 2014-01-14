@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 
 
 public class Url {
@@ -46,8 +45,13 @@ public class Url {
 				continue;
 			} 
 			if (line.toUpperCase().startsWith("TYPE=WORK")){
-				home=true;
+				work=true;
 				line=line.substring(9);
+				continue;
+			} 
+			if (line.toUpperCase().startsWith("WORK=")){
+				work=true;
+				line=line.substring(5);
 				continue;
 			} 
 			throw new UnknownObjectException(line+" in "+content);

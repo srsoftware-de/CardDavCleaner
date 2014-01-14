@@ -2,9 +2,6 @@ import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
@@ -13,6 +10,7 @@ public class Name {
 	private String family;
 	private String first;
 	private String prefix;
+	private String suffix;
 	private String middle;
 	private boolean invalid=false;
 	
@@ -23,6 +21,7 @@ public class Name {
 		form.add(new InputField("First Name",first));
 		form.add(new InputField("Middle Name",middle));
 		form.add(new InputField("Family Name",family));
+		form.add(new InputField("Suffix",suffix));
 		form.scale();
 		return form;
 	}
@@ -39,11 +38,12 @@ public class Name {
 		sb.append(";");
 		if (prefix!=null) sb.append(prefix);
 		sb.append(";");
+		if (suffix!=null) sb.append(suffix);
 		return sb.toString();
 	}
 	
 	public String full(){
-		return prefix+" "+first+" "+middle+" "+family;
+		return prefix+" "+first+" "+middle+" "+family+" "+suffix;
 	}
 	
 	public Name(String line) throws UnknownObjectException, InvalidFormatException {		
@@ -55,8 +55,9 @@ public class Name {
 			if (parts.length>1) setFirst(parts[1].trim());
 			if (parts.length>2) setMiddle(parts[2].trim());
 			if (parts.length>3) setPrefix(parts[3].trim());
-			if (parts.length>4){
-				System.err.println("Name with more than 4 parts found:");
+			if (parts.length>4) setSuffix(parts[4].trim());
+			if (parts.length>5){
+				System.err.println("Name with more than 5 parts found:");
 				System.err.println(line);
 				for (String p:parts){
 					System.err.println(p);
@@ -67,6 +68,11 @@ public class Name {
 		
 	}
 	
+	private void setSuffix(String string) {
+		if (string.isEmpty()) return;
+		suffix=string;
+	}
+
 	private void setPrefix(String string) {
 		if (string.isEmpty()) return;
 		prefix=string;
@@ -110,6 +116,11 @@ public class Name {
 			if (!name.prefix.equals(prefix)) return false;
 		} else if (name.prefix!=null) return false;
 
+		if (suffix!=null){
+			if (name.suffix==null) return false;
+			if (!name.suffix.equals(suffix)) return false;
+		} else if (name.suffix!=null) return false;
+
 		return true;
 	}
 
@@ -123,6 +134,14 @@ public class Name {
 
 	public String first() {
 		return first;
+	}
+	
+	public String prefix(){
+		return prefix;
+	}
+	
+	public String suffix(){
+		return suffix;
 	}
 
 	private String ascii(String s) {
