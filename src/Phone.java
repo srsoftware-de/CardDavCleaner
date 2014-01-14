@@ -91,12 +91,12 @@ public class Phone implements DocumentListener {
 			}
 			if (upper.startsWith("TYPE=VOICE")){
 				voice=true;
-				line=line.substring(9);
+				line=line.substring(10);
 				continue;
 			}
 			if (upper.startsWith("\\,VOICE")){
 				voice=true;
-				line=line.substring(6);
+				line=line.substring(7);
 				continue;
 			}
 			if (line.startsWith(";")){

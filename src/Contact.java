@@ -44,6 +44,7 @@ public class Contact {
 	private String vcfName;
 	private TreeSet<Messenger> messengers=new TreeSet<Messenger>(ObjectComparator.get());
 	private TreeSet<String> categories;
+	private TreeSet<Nickname> nicks=new TreeSet<Nickname>(ObjectComparator.get());
 	
 	private VerticalPanel editForm() {
 		VerticalPanel form=new VerticalPanel();
@@ -56,6 +57,9 @@ public class Contact {
 			}
 			titleForm.scale();
 			form.add(titleForm);
+		}
+		for (Nickname nick:nicks){
+			form.add(nick.editForm());
 		}
 		if (role!=null){
 			form.add(new InputField("Role",role));
@@ -521,6 +525,7 @@ public class Contact {
 			if (line.startsWith("TEL;") && (known = true)) readPhone(line);
 			if (line.startsWith("TEL:") && (known = true)) readPhone(line.replace(":", ";TYPE=home:"));
 			if (line.startsWith("EMAIL") && (known = true)) readMail(line);
+			if (line.startsWith("NICKNAME") && (known = true)) readNick(line);
 			if (line.startsWith("IMPP:") && (known = true)) readIMPP(line);
 			if (line.startsWith("X-ICQ:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
 			if (line.startsWith("X-AIM:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
@@ -645,6 +650,11 @@ public class Contact {
 		if (!mail.isEmpty()) mails.add(mail);
 	}
 
+	private void readNick(String line) throws UnknownObjectException, InvalidFormatException {
+		Nickname nick = new Nickname(line);
+		if (!nick.isEmpty()) nicks.add(nick);
+	}
+	
 	public Name name() {
 		return name;
 	}
