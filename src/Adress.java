@@ -2,7 +2,6 @@ import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 

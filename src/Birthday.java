@@ -1,7 +1,5 @@
 import java.awt.Color;
 
-import javax.swing.JComponent;
-
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Birthday {

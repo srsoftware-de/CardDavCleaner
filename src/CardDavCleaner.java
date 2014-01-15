@@ -315,7 +315,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private boolean skipInvalidContact(Contact contact,String contactName) {
 		while (contact.isInvalid()){
-			boolean skip=false;
 			String [] options={"Edit manually","Skip","Abort program"};
 			int opt=JOptionPane.showOptionDialog(null, contactName+" has an invalid format", "Invalid Contact", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 			switch (opt) {
