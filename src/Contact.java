@@ -27,8 +27,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
-public class Contact implements ActionListener {
+public class Contact implements ActionListener, DocumentListener {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	//private String revision;
 	//private String productId;
@@ -54,6 +56,8 @@ public class Contact implements ActionListener {
 	private JButton newPhoneButton;
 	private VerticalPanel form;
 	private JScrollPane scroll;
+	private InputField formattedField;
+	private JButton newMailButton;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -63,7 +67,8 @@ public class Contact implements ActionListener {
 		scroll.setPreferredSize(dim);
 		scroll.setSize(scroll.getPreferredSize());
 		form.add(name.editForm());		
-		form.add(new InputField("Formatted name",formattedName));
+		form.add(formattedField=new InputField("Formatted name",formattedName));
+		formattedField.addChangeListener(this);
 		if (!titles.isEmpty()){
 			VerticalPanel titleForm = new VerticalPanel();
 			for (String t:titles){
@@ -93,6 +98,9 @@ public class Contact implements ActionListener {
 		for (Email m:mails){
 			form.add(m.editForm());
 		}
+		newMailButton=new JButton("Add Email");
+		newMailButton.addActionListener(this);
+		form.add(newMailButton);
 		for (Url u:urls){
 			form.add(u.editForm());
 		}
@@ -778,11 +786,8 @@ public class Contact implements ActionListener {
 		Object source = evt.getSource();
 		if (source==newPhoneButton){
 			try {
-				System.out.println("adding new phone:");
 				Phone newPhone=new Phone("TEL;:");
-				System.out.println("phone object created");
 				VerticalPanel newPhoneForm = newPhone.editForm();
-				System.out.println("form created");
 				form.insertCompoundBefore(newPhoneButton,newPhoneForm);
 				phones.add(newPhone);
 			} catch (UnknownObjectException e) {
@@ -791,6 +796,35 @@ public class Contact implements ActionListener {
 				e.printStackTrace();
 			}
 		}
+		if (source==newMailButton){
+			try {
+				Email newMail=new Email("EMAIL:");
+				VerticalPanel newMailForm = newMail.editForm();
+				form.insertCompoundBefore(newMailButton,newMailForm);
+				mails.add(newMail);
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
+	public void changedUpdate(DocumentEvent e) {
+		update();
+	}
+
+	public void insertUpdate(DocumentEvent e) {
+		update();
+	}
+
+	public void removeUpdate(DocumentEvent e) {
+		update();
+	}
+
+	private void update() {
+		formattedName=formattedField.getText();
+	}
+
+	
 }

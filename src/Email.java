@@ -2,9 +2,13 @@ import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 
 import javax.swing.JCheckBox;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 
-public class Email {
+public class Email implements DocumentListener, ChangeListener {
 	
 	private boolean work=false;
 	private boolean home=false;
@@ -12,14 +16,23 @@ public class Email {
 	private String adress=null;
 
 	private boolean invalid=false;
+	private InputField adressBox;
+	private JCheckBox homeBox;
+	private JCheckBox workBox;
+	private JCheckBox internetBox;
+	private VerticalPanel form;
 	
 	public VerticalPanel editForm() {
-		VerticalPanel form=new VerticalPanel("Email");
+		form=new VerticalPanel("Email");
 		if (invalid) form.setBackground(Color.red);
-		form.add(new InputField("Adress",adress));
-		form.add(new JCheckBox("Home",home));
-		form.add(new JCheckBox("Work",work));
-		form.add(new JCheckBox("Internet",internet));
+		form.add(adressBox=new InputField("Adress",adress));
+		adressBox.addChangeListener(this);
+		form.add(homeBox=new JCheckBox("Home",home));
+		homeBox.addChangeListener(this);
+		form.add(workBox=new JCheckBox("Work",work));
+		workBox.addChangeListener(this);
+		form.add(internetBox=new JCheckBox("Internet",internet));
+		internetBox.addChangeListener(this);
 		form.scale();
 		return form;
 	}
@@ -69,7 +82,10 @@ public class Email {
 	}
 
 	private void readAddr(String line) {
-		if (line.isEmpty()) return;
+		if (line.isEmpty()) {
+			adress=null;
+			return;
+		}
 		adress = line.toLowerCase();
 	}
 	
@@ -126,5 +142,34 @@ public class Email {
 
 	public boolean isInvalid() {
 		return invalid;
+	}
+
+	public void stateChanged(ChangeEvent arg0) {
+		update();
+	}
+
+	public void changedUpdate(DocumentEvent e) {
+		update();		
+	}
+
+	public void insertUpdate(DocumentEvent e) {
+		update();		
+	}
+
+	public void removeUpdate(DocumentEvent e) {
+		update();		
+	}
+
+	private void update() {
+		invalid=false;
+		readAddr(adressBox.getText());
+		home=homeBox.isSelected();
+		work=workBox.isSelected();
+		internet=internetBox.isSelected();
+		if (isEmpty()) {
+			form.setBackground(Color.yellow);
+		} else {
+			form.setBackground(invalid?Color.red:Color.green);
+		}
 	}
 }

@@ -120,7 +120,10 @@ public class Phone implements DocumentListener, ChangeListener {
 	}
 
 	private void readPhone(String line) {
-		if (line.isEmpty()) return;
+		if (line.isEmpty()){
+			number=null;
+			return;
+		}
 		String phone=line.replace(" ", "").replace("/", "").replace("-", "");
 		for (char c:phone.toCharArray()){
 			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') invalid=true;				
@@ -230,6 +233,18 @@ public class Phone implements DocumentListener, ChangeListener {
 		update();
 	}
 
+	public void insertUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public void removeUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public void stateChanged(ChangeEvent arg0) {
+		update();
+	}	
+
 	private void update() {
 		invalid=false;
 		readPhone(numField.getText());
@@ -244,16 +259,4 @@ public class Phone implements DocumentListener, ChangeListener {
 			form.setBackground(invalid?Color.red:Color.green);
 		}
 	}
-
-	public void insertUpdate(DocumentEvent arg0) {
-		update();
-	}
-
-	public void removeUpdate(DocumentEvent arg0) {
-		update();
-	}
-
-	public void stateChanged(ChangeEvent arg0) {
-		update();
-	}	
 }

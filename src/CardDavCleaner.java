@@ -25,9 +25,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 
 public class CardDavCleaner extends JFrame implements ActionListener {
 
@@ -61,24 +59,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		add(mainPanel);
 		pack();
 		setVisible(true);
-	}
-
-	/**
-	 * used to create non-password input fields for the server login form
-	 * @param owner the panel, to which the component shall be added 
-	 * @param text the label for the field
-	 * @param password if set to ture, a password field will be created
-	 * @return the input field component
-	 */
-	private JTextField createInputField(VerticalPanel owner, String text,boolean password) {
-		HorizontalPanel hp = new HorizontalPanel();
-		hp.add(new JLabel(text + " "));
-		JTextField result = password?(new JPasswordField(50)):(new JTextField(50));
-		
-		hp.add(result);
-		hp.scale();
-		owner.add(hp);
-		return result;
 	}
 
 	/**

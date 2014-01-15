@@ -2,10 +2,13 @@ import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
-public class Name {	
+public class Name implements DocumentListener {	
 	
 	private String family;
 	private String first;
@@ -13,16 +16,23 @@ public class Name {
 	private String suffix;
 	private String middle;
 	private boolean invalid=false;
+	
 	private InputField prefBox,firstBox,middleBox,familyBox,sufBox;
+	private HorizontalPanel form;
 	
 	public HorizontalPanel editForm() {
-		HorizontalPanel form=new HorizontalPanel("Name");
+		form=new HorizontalPanel("Name");
 		if (invalid) form.setBackground(Color.red);
 		form.add(prefBox=new InputField("Prefix",prefix));
+		prefBox.addChangeListener(this);
 		form.add(firstBox=new InputField("First Name",first));
-		form.add(middleB	ox=new InputField("Middle Name",middle));
+		firstBox.addChangeListener(this);
+		form.add(middleBox=new InputField("Middle Name",middle));
+		middleBox.addChangeListener(this);
 		form.add(familyBox=new InputField("Family Name",family));
+		familyBox.addChangeListener(this);
 		form.add(sufBox=new InputField("Suffix",suffix));
+		sufBox.addChangeListener(this);
 		form.scale();
 		return form;
 	}
@@ -160,5 +170,31 @@ public class Name {
 
 	public boolean isInvalid() {
 		return invalid;
+	}
+
+	public void changedUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	private void update() {
+		invalid=false;
+		prefix=prefBox.getText();
+		first=firstBox.getText();
+		middle=middleBox.getText();
+		family=familyBox.getText();
+		suffix=sufBox.getText();		
+		if (isEmpty()) {
+			form.setBackground(Color.yellow);
+		} else {
+			form.setBackground(invalid?Color.red:Color.green);
+		}
+	}
+
+	public void insertUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public void removeUpdate(DocumentEvent arg0) {
+		update();
 	}
 }
