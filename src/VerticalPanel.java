@@ -1,4 +1,5 @@
 
+import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
@@ -28,6 +29,8 @@ public class VerticalPanel extends JPanel {
 	}
 
 	private void init() {
+		width=0;
+		height=offset;
 		this.setLayout(null);
 	}
 	
@@ -41,5 +44,23 @@ public class VerticalPanel extends JPanel {
 	
 	public void scale(){
 		setPreferredSize(new Dimension(width+offset+offset,height+offset));
+	}
+
+	public void insertCompoundBefore(JComponent givenComponent, JComponent newComponent) {
+		Component[] oldComps = super.getComponents();
+		System.out.println("old form components: "+oldComps);
+		super.removeAll();
+		init();
+		for (Component c:oldComps){
+			if (c==givenComponent) {
+				add(newComponent);
+				System.out.println("added new form");
+			}
+			add((JComponent)c);
+		}
+		System.out.println("recreation done");
+		scale();
+		System.out.println("rescaled");
+		this.repaint();
 	}
 }

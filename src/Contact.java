@@ -1,3 +1,6 @@
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,11 +21,14 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 
-public class Contact {
+public class Contact implements ActionListener {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	//private String revision;
 	//private String productId;
@@ -45,9 +51,17 @@ public class Contact {
 	private TreeSet<Messenger> messengers=new TreeSet<Messenger>(ObjectComparator.get());
 	private TreeSet<String> categories;
 	private Collection<Nickname> nicks=new TreeSet<Nickname>(ObjectComparator.get());
+	private JButton newPhoneButton;
+	private VerticalPanel form;
+	private JScrollPane scroll;
 	
-	private VerticalPanel editForm() {
-		VerticalPanel form=new VerticalPanel();
+	private JComponent editForm() {
+		form=new VerticalPanel();
+		scroll=new JScrollPane(form);
+		Dimension dim=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		dim.setSize(dim.getWidth()-100, dim.getHeight()-100);
+		scroll.setPreferredSize(dim);
+		scroll.setSize(scroll.getPreferredSize());
 		form.add(name.editForm());		
 		form.add(new InputField("Formatted name",formattedName));
 		if (!titles.isEmpty()){
@@ -70,6 +84,9 @@ public class Contact {
 		for (Phone p:phones){
 			form.add(p.editForm());
 		}
+		newPhoneButton = new JButton("Add Phone");
+		newPhoneButton.addActionListener(this);
+		form.add(newPhoneButton);
 		for (Adress a:adresses){
 			form.add(a.editForm());
 		}		
@@ -94,7 +111,7 @@ public class Contact {
 			form.add(cats);
 		}
 		form.scale();
-		return form;
+		return scroll;
 	}
 
 	public boolean isInvalid() {
@@ -577,6 +594,7 @@ public class Contact {
 				throw new UnknownObjectException("unknown entry/instruction found in vcard "+vcfName+": '" + line+"'");
 			}
 		}
+		changed();
 	}
 
 	private void readIMPP(String line) throws UnknownObjectException, InvalidFormatException {
@@ -694,7 +712,7 @@ public class Contact {
 	
 	public TreeSet<String> simpleNumbers(){
 		TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
-		for (Phone p:phones)	numbers.add(p.simpleNumber());
+		for (Phone p:phones) numbers.add(p.simpleNumber());
 		return numbers;
 	}
 
@@ -740,7 +758,39 @@ public class Contact {
 	}
 
 	public void edit() {
+		System.out.println(this);
 		JOptionPane.showConfirmDialog(null, editForm(), "Edit contact", JOptionPane.OK_CANCEL_OPTION);
+		changed();
+		System.out.println(this);
+	}
+
+	private void changed() {
+		for (Phone p:phones){
+			if (p.isEmpty()) {				
+				phones.remove(p);
+				changed();
+				break;
+			}
+		}
+	}
+
+	public void actionPerformed(ActionEvent evt) {
+		Object source = evt.getSource();
+		if (source==newPhoneButton){
+			try {
+				System.out.println("adding new phone:");
+				Phone newPhone=new Phone("TEL;:");
+				System.out.println("phone object created");
+				VerticalPanel newPhoneForm = newPhone.editForm();
+				System.out.println("form created");
+				form.insertCompoundBefore(newPhoneButton,newPhoneForm);
+				phones.add(newPhone);
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

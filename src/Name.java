@@ -13,15 +13,16 @@ public class Name {
 	private String suffix;
 	private String middle;
 	private boolean invalid=false;
+	private InputField prefBox,firstBox,middleBox,familyBox,sufBox;
 	
 	public HorizontalPanel editForm() {
 		HorizontalPanel form=new HorizontalPanel("Name");
 		if (invalid) form.setBackground(Color.red);
-		form.add(new InputField("Prefix",prefix));
-		form.add(new InputField("First Name",first));
-		form.add(new InputField("Middle Name",middle));
-		form.add(new InputField("Family Name",family));
-		form.add(new InputField("Suffix",suffix));
+		form.add(prefBox=new InputField("Prefix",prefix));
+		form.add(firstBox=new InputField("First Name",first));
+		form.add(middleB	ox=new InputField("Middle Name",middle));
+		form.add(familyBox=new InputField("Family Name",family));
+		form.add(sufBox=new InputField("Suffix",suffix));
 		form.scale();
 		return form;
 	}

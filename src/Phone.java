@@ -3,11 +3,13 @@ import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
 
 import javax.swing.JCheckBox;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
-public class Phone implements DocumentListener {
+public class Phone implements DocumentListener, ChangeListener {
 	
 	private boolean fax=false;
 	private boolean home=false;
@@ -19,19 +21,28 @@ public class Phone implements DocumentListener {
 	
 	private InputField numField;
 	VerticalPanel form;
+	private JCheckBox homeBox,voiceBox,workBox,cellBox,faxBox;
 	
 	static TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
 	
 	public VerticalPanel editForm() {
 		form=new VerticalPanel("Phone");
 		if (invalid) form.setBackground(Color.red);
+		if (isEmpty()) form.setBackground(Color.yellow);
+		
 		form.add(numField=new InputField("Number",number));
 		numField.addChangeListener(this);
-		form.add(new JCheckBox("Home Phone",home));
-		form.add(new JCheckBox("Voice Phone",voice));
-		form.add(new JCheckBox("Work Phone",work));
-		form.add(new JCheckBox("Cell Phone",cell));
-		form.add(new JCheckBox("Fax",fax));
+		
+		form.add(homeBox=new JCheckBox("Home Phone",home));
+		homeBox.addChangeListener(this);
+		form.add(voiceBox=new JCheckBox("Voice Phone",voice));
+		voiceBox.addChangeListener(this);
+		form.add(workBox=new JCheckBox("Work Phone",work));
+		workBox.addChangeListener(this);
+		form.add(cellBox=new JCheckBox("Cell Phone",cell));
+		cellBox.addChangeListener(this);
+		form.add(faxBox=new JCheckBox("Fax",fax));
+		faxBox.addChangeListener(this);
 		form.scale();
 		return form;
 	}
@@ -116,10 +127,6 @@ public class Phone implements DocumentListener {
 		}
 		number = phone;
 		numbers.add(number);
-	}
-
-	public boolean isEmpty() {
-		return (number==null);
 	}
 
 	public String number() {
@@ -210,6 +217,10 @@ public class Phone implements DocumentListener {
 		if (voice) return "voice";
 		return "empty category";
 	}
+	
+	public boolean isEmpty(){
+		return number==null || number.trim().isEmpty();
+	}
 
 	public boolean isInvalid() {
 		return invalid ;
@@ -222,7 +233,16 @@ public class Phone implements DocumentListener {
 	private void update() {
 		invalid=false;
 		readPhone(numField.getText());
-		form.setBackground(invalid?Color.red:Color.green);
+		home=homeBox.isSelected();
+		work=workBox.isSelected();
+		voice=voiceBox.isSelected();
+		cell=cellBox.isSelected();
+		fax=faxBox.isSelected();
+		if (isEmpty()) {
+			form.setBackground(Color.yellow);
+		} else {
+			form.setBackground(invalid?Color.red:Color.green);
+		}
 	}
 
 	public void insertUpdate(DocumentEvent arg0) {
@@ -232,6 +252,8 @@ public class Phone implements DocumentListener {
 	public void removeUpdate(DocumentEvent arg0) {
 		update();
 	}
-	
-	
+
+	public void stateChanged(ChangeEvent arg0) {
+		update();
+	}	
 }
