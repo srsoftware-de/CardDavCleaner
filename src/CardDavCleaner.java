@@ -316,9 +316,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		// next: display changes to be made, ask for confirmation		
 		if (!(writeList.isEmpty() && deleteList.isEmpty())){ 
 			if (confirmLists(writeList,deleteList)){
-				putMergedContacts(host,writeList);
-				deleteUselessContacts(host,deleteList);
-				JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!");
+				JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning demonstrated! Goodbye!");
 			} else {
 				JOptionPane.showMessageDialog(null, "<html>Merging and cleaning aborted! Goodbye!");
 			}
@@ -343,7 +341,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		HorizontalPanel listsPanel=new HorizontalPanel();
 		
 		VerticalPanel deleteListPanel=new VerticalPanel();
-		deleteListPanel.add(new JLabel("<html>The following contacts will be <b>deleted</b>:"));
+		deleteListPanel.add(new JLabel("<html>The following contacts would be <b>deleted</b> by the full version:"));
 		
 		VerticalPanel delList=new VerticalPanel();
 		for (Contact c:deleteList) delList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
@@ -359,7 +357,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 		
 		VerticalPanel writeListPanel=new VerticalPanel();
-		writeListPanel.add(new JLabel("<html>The following <b>merged contacts</b> will be written to the server:"));
+		writeListPanel.add(new JLabel("<html>The following <b>merged contacts</b> would be written to the server by the full version:"));
 		
 		VerticalPanel wrList=new VerticalPanel();
 		for (Contact c:writeList) wrList.add(new JLabel("<html><br>"+c.toString(true).replace("\n","<br>")));
