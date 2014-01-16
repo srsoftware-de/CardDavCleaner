@@ -2,10 +2,13 @@ import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 
 import javax.swing.JCheckBox;
-import javax.swing.JOptionPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 
-public class Nickname {
+public class Nickname implements DocumentListener, ChangeListener {
 	
 	private boolean work=false;
 	private boolean home=false;
@@ -13,14 +16,24 @@ public class Nickname {
 	private String nick=null;
 
 	private boolean invalid=false;
+	private InputField nickField;
+	private JCheckBox homeBox,workBox,internetBox;
+	private VerticalPanel form;
 	
 	public VerticalPanel editForm() {
-		VerticalPanel form=new VerticalPanel("Nickname");
+		form=new VerticalPanel("Nickname");
 		if (invalid) form.setBackground(Color.red);
-		form.add(new InputField("Adress",nick));
-		form.add(new JCheckBox("Home",home));
-		form.add(new JCheckBox("Work",work));
-		form.add(new JCheckBox("Internet",internet));
+		if (isEmpty()) form.setBackground(Color.yellow);
+		
+		form.add(nickField=new InputField("Nickname",nick));
+		nickField.addChangeListener(this);
+		
+		form.add(homeBox=new JCheckBox("Home",home));
+		homeBox.addChangeListener(this);
+		form.add(workBox=new JCheckBox("Work",work));
+		workBox.addChangeListener(this);
+		form.add(internetBox=new JCheckBox("Internet",internet));
+		internetBox.addChangeListener(this);
 		form.scale();
 		return form;
 	}
@@ -62,21 +75,24 @@ public class Nickname {
 				}
 				throw new UnknownObjectException(line+" in "+content);
 			}
-			readAddr(line.substring(1));
+			readNick(line.substring(1));
 		} else if (content.startsWith("NICKNAME:")){
 			if (content.contains(";")) throw new InvalidFormatException("content");
 			nick=content.substring(9);
 		} else throw new InvalidFormatException("Nickname adress does not start with \"NICKNAME;\" or \"NICKNAME:\"");
-		JOptionPane.showMessageDialog(null, this);
 	}
 
-	private void readAddr(String line) {
-		if (line.isEmpty()) return;
-		nick = line.toLowerCase();
+	private void readNick(String line) {
+		line=line.trim();
+		if (line.isEmpty()) {
+			nick=null;
+		} else {
+			nick = line;
+		}
 	}
 	
 	public boolean isEmpty() {
-		return nick==null;
+		return nick==null || nick.trim().isEmpty();
 	}
 
 	public String text() {
@@ -130,4 +146,35 @@ public class Nickname {
 	public boolean isInvalid() {
 		return invalid;
 	}
+
+	public void changedUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public void insertUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public void removeUpdate(DocumentEvent arg0) {
+		update();		
+	}
+
+	public void stateChanged(ChangeEvent arg0) {
+		update();
+	}
+	
+	private void update() {
+		invalid=false;
+		readNick(nickField.getText());
+		home=homeBox.isSelected();
+		work=workBox.isSelected();
+		internet=internetBox.isSelected();
+		if (isEmpty()) {
+			form.setBackground(Color.yellow);
+		} else {
+			form.setBackground(invalid?Color.red:Color.green);
+		}
+		System.out.println(nick);
+	}
+
 }

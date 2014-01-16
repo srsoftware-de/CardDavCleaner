@@ -55,6 +55,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private TreeSet<Messenger> messengers=new TreeSet<Messenger>(ObjectComparator.get());
 	private TreeSet<String> categories;
 	private Collection<Nickname> nicks=new TreeSet<Nickname>(ObjectComparator.get());
+	
+	/* form elements */
 	private JButton newPhoneButton;
 	private VerticalPanel form;
 	private JScrollPane scroll;
@@ -63,12 +65,14 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private JButton titleButton;
 	private TreeSet<TitleField> titleFields;
 	private VerticalPanel titleForm;
+	private VerticalPanel nickForm;
+	private JButton nickButton;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
 		scroll=new JScrollPane(form);
 		Dimension dim=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		dim.setSize(dim.getWidth()-100, dim.getHeight()-100);
+		dim.setSize(dim.getWidth()/2-100, dim.getHeight()/2-100);
 		scroll.setPreferredSize(dim);
 		scroll.setSize(scroll.getPreferredSize());
 		
@@ -93,9 +97,16 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		titleForm.scale();		
 		form.add(titleForm);
 		
+		/* Nicknames */
+		nickForm=new VerticalPanel();
 		for (Nickname nick:nicks){
-			form.add(nick.editForm());
+			nickForm.add(nick.editForm());
 		}
+		nickForm.add(nickButton=new JButton("add nickname"));
+		nickButton.addActionListener(this);
+		nickForm.scale();
+		form.add(nickForm);
+		
 		if (role!=null){
 			form.add(new InputField("Role",role));
 		}
@@ -789,6 +800,14 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 
 	private void changed() {
+		for (Nickname n:nicks){
+			System.out.println(n);
+			if (n.isEmpty()){
+				nicks.remove(n);
+				changed();
+				break;
+			}
+		}
 		for (Phone p:phones){
 			if (p.isEmpty()) {				
 				phones.remove(p);
@@ -800,7 +819,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 	public void actionPerformed(ActionEvent evt) {
 		Object source = evt.getSource();
-		System.out.println("actionPerformed");
 		if (source==titleButton){
 			TitleField titleField=new TitleField("Title");
 			titleField.addEditListener(this);
@@ -808,6 +826,25 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			titleForm.insertCompoundBefore(titleButton, titleField);
 			form.rescale();
 			System.out.println("inserted title field");
+		}
+		
+		if (source==nickButton){
+			try {
+				Nickname newNick=new Nickname("NICKNAME:");
+				VerticalPanel newNickForm = newNick.editForm();
+				nickForm.insertCompoundBefore(nickButton, newNickForm);
+				nicks.add(newNick);
+				for (Nickname n: nicks){
+					System.out.println(n);
+				}
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		if (source==newPhoneButton){
 			try {

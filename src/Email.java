@@ -24,9 +24,13 @@ public class Email implements DocumentListener, ChangeListener {
 	
 	public VerticalPanel editForm() {
 		form=new VerticalPanel("Email");
+		
 		if (invalid) form.setBackground(Color.red);
+		if (isEmpty()) form.setBackground(Color.yellow);
+		
 		form.add(adressBox=new InputField("Adress",adress));
 		adressBox.addChangeListener(this);
+		
 		form.add(homeBox=new JCheckBox("Home",home));
 		homeBox.addChangeListener(this);
 		form.add(workBox=new JCheckBox("Work",work));
@@ -90,7 +94,7 @@ public class Email implements DocumentListener, ChangeListener {
 	}
 	
 	public boolean isEmpty() {
-		return adress==null;
+		return adress==null || adress.trim().isEmpty();
 	}
 
 	public String address() {
