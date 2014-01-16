@@ -676,7 +676,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			if (!messenger.isEmpty()) messengers.add(messenger);
 		}
 
-	private void readBirthday(String bday) {
+	private void readBirthday(String bday) throws InvalidFormatException {
 		birthday=new Birthday(bday);
 	}
 	

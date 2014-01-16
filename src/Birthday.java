@@ -1,8 +1,10 @@
 import java.awt.Color;
+import java.util.Calendar;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-public class Birthday {
+public class Birthday implements ChangeListener {
 
 	private String year;
 	private String month;
@@ -11,16 +13,23 @@ public class Birthday {
 	private String minute;
 	private String second;
 	private boolean invalid=false;
+	private InputField yearField,monthField,dayField,hourField,minuteField,secondField;
 	
 	public HorizontalPanel editForm() {
 		HorizontalPanel form=new HorizontalPanel("Birthday");
 		if (invalid) form.setBackground(Color.red);
-		form.add(new InputField("Year of birth",year));
-		form.add(new InputField("Month of birth",month));
-		form.add(new InputField("Day of birth",day));
-		form.add(new InputField("Hour",hour));
-		form.add(new InputField("Minute",minute));
-		form.add(new InputField("Second",second));
+		form.add(yearField=new InputField("Year of birth",year));
+		yearField.addEditListener(this);
+		form.add(monthField=new InputField("Month of birth",month));
+		monthField.addEditListener(this);
+		form.add(dayField=new InputField("Day of birth",day));
+		dayField.addEditListener(this);
+		form.add(hourField=new InputField("Hour",hour));
+		hourField.addEditListener(this);
+		form.add(minuteField=new InputField("Minute",minute));
+		minuteField.addEditListener(this);
+		form.add(secondField=new InputField("Second",second));
+		secondField.addEditListener(this);
 		form.scale();
 		return form;
 	}
@@ -145,7 +154,86 @@ public class Birthday {
 		}
 	}
 
-	public boolean isInvalid() {
+	public boolean isInvalid() {		
 		return invalid;
+	}
+
+	public void stateChanged(ChangeEvent evt) {
+		Object source = evt.getSource();
+		if (source==yearField){
+			year=yearField.getText();
+			yearField.setBackground(Color.red);				
+			try {
+				int y=Integer.parseInt(year);
+				if (y<= Calendar.getInstance().get(Calendar.YEAR)){
+					if (y<100) year="19"+y;
+					if (y<10) year="190"+y;
+					yearField.setBackground(Color.green);
+				}
+			} catch (NumberFormatException nfe){}
+			if (year.isEmpty()) yearField.setBackground(Color.yellow);
+		}
+		if (source==monthField){
+			month=monthField.getText();
+			monthField.setBackground(Color.red);				
+			try {
+				int m=Integer.parseInt(month);
+				if (m<13) {
+					if (m<10) month="0"+m;
+					monthField.setBackground(Color.green);
+				}
+			} catch (NumberFormatException nfe){}
+			if (month.isEmpty()) monthField.setBackground(Color.yellow);
+		}
+		if (source==dayField){
+			day=dayField.getText();
+			dayField.setBackground(Color.red);				
+			try {
+				int d=Integer.parseInt(day);
+				if (d<32){
+					if (d<10) day="0"+d;
+					dayField.setBackground(Color.green);
+				}
+			} catch (NumberFormatException nfe){}
+			if (day.isEmpty()) dayField.setBackground(Color.yellow);
+		}
+		if (source==hourField){
+			hour=hourField.getText();
+			hourField.setBackground(Color.red);				
+			try {
+				int h=Integer.parseInt(hour);
+				if (h<24){
+					if (h<10) hour="0"+h;
+					hourField.setBackground(Color.green);
+				}
+			} catch (NumberFormatException nfe){}
+			if (hour.isEmpty()) hourField.setBackground(Color.yellow);
+		}
+		if (source==minuteField){
+			minute=minuteField.getText();
+			minuteField.setBackground(Color.red);				
+			try {
+				int m=Integer.parseInt(minute);
+				if (m<60){
+					if (m<10) minute="0"+m;
+					minuteField.setBackground(Color.green);
+				}
+			} catch (NumberFormatException nfe){
+			}
+			if (minute.isEmpty()) minuteField.setBackground(Color.yellow);
+		}
+		if (source==secondField){
+			second=secondField.getText();
+			secondField.setBackground(Color.red);				
+			try {
+				int m=Integer.parseInt(second);
+				if (m<60){
+					if (m<10) second="0"+m;
+					secondField.setBackground(Color.green);
+				}
+			} catch (NumberFormatException nfe){
+			}
+			if (second.isEmpty()) secondField.setBackground(Color.yellow);
+		}
 	}
 }
