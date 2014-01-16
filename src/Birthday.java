@@ -263,21 +263,27 @@ public class Birthday implements ChangeListener {
 		Object source = evt.getSource();
 		if (source == yearField) {
 			year = yearField.getText().trim();
+			if (year.isEmpty()) year=null;
 		}
 		if (source == monthField) {
 			month = monthField.getText().trim();
+			if (month.isEmpty()) month=null;
 		}
 		if (source == dayField) {
 			day = dayField.getText().trim();
+			if (day.isEmpty()) day=null;
 		}
 		if (source == hourField) {
 			hour = hourField.getText().trim();
+			if (hour.isEmpty()) hour=null;
 		}
 		if (source == minuteField) {
 			minute = minuteField.getText().trim();
+			if (minute.isEmpty()) minute=null;
 		}
 		if (source == secondField) {
 			second = secondField.getText().trim();
+			if (second.isEmpty()) second=null;
 		}
 		checkInvalidity();
 	}

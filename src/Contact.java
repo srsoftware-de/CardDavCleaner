@@ -14,6 +14,7 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.activation.UnknownObjectException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -70,6 +71,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private JButton newNickButton;
 	private JButton newRoleButton;
 	private TreeSet<RoleField> roleFields;
+	private JButton birthdayButton;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -87,7 +89,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		formattedField.addChangeListener(this);
 		
 		/* Titles */
-		titleForm = new VerticalPanel();
+		titleForm = new VerticalPanel("Titles");
 		titleFields=new TreeSet<TitleField>(ObjectComparator.get());
 		for (String t:titles){			
 			TitleField titleField=new TitleField("Title", t);
@@ -111,7 +113,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		form.add(nickForm);
 		
 		/* Roles */
-		roleForm = new VerticalPanel();
+		roleForm = new VerticalPanel("Roles");
 		roleFields=new TreeSet<RoleField>(ObjectComparator.get());
 		for (String t:roles){			
 			RoleField roleField=new RoleField("Role", t);
@@ -127,6 +129,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		/* Birthday */
 		if (birthday!=null){
 			form.add(birthday.editForm());
+		} else {
+			form.add(birthdayButton=new JButton("add Birthday"));
+			birthdayButton.addActionListener(this);
 		}
 		// TODO: add/remove
 		
@@ -556,7 +561,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			sb.append("ROLE:"+role+"\n");
 		}
 		
-		if (birthday!=null) {
+		if (birthday!=null &&	!birthday.toString().equals("BDAY:")) {			
 			sb.append(birthday);
 			sb.append("\n");
 		}
@@ -893,6 +898,14 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			roleForm.insertCompoundBefore(newRoleButton, roleField);
 			form.rescale();
 			System.out.println("inserted role field");
+		}
+		if (source==birthdayButton){
+			try {
+				birthday=new Birthday(":"+Calendar.getInstance().get(Calendar.YEAR));
+				form.replace(birthdayButton,birthday.editForm());
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
 		}
 		if (source==newPhoneButton){
 			try {

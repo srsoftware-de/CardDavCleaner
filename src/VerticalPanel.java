@@ -3,6 +3,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
@@ -59,6 +60,21 @@ public class VerticalPanel extends JPanel {
 				add(newComponent);
 			}
 			add((JComponent)c);
+		}
+		scale();
+		this.repaint();
+	}
+
+	public void replace(JComponent old, JComponent replacement) {
+		Component[] oldComps = super.getComponents();
+		super.removeAll();
+		init();
+		for (Component c:oldComps){
+			if (c==old) {
+				add(replacement);
+			} else {
+				add((JComponent)c);
+			}
 		}
 		scale();
 		this.repaint();
