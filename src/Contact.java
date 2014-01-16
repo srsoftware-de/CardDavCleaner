@@ -42,7 +42,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private Collection<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
 	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
 	private Collection<Email> mails = new TreeSet<Email>(ObjectComparator.get());
-	private String role; // TODO: eine vcard kann auch mehrere haben!
+	private TreeSet<String> roles=new TreeSet<String>(ObjectComparator.get());
 	private Birthday birthday;	
 	private Label label;
 	private boolean htmlMail;
@@ -57,16 +57,19 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private Collection<Nickname> nicks=new TreeSet<Nickname>(ObjectComparator.get());
 	
 	/* form elements */
-	private JButton newPhoneButton;
-	private VerticalPanel form;
 	private JScrollPane scroll;
 	private InputField formattedField;
-	private JButton newMailButton;
-	private JButton titleButton;
 	private TreeSet<TitleField> titleFields;
+	private VerticalPanel form;
 	private VerticalPanel titleForm;
 	private VerticalPanel nickForm;
-	private JButton nickButton;
+	private VerticalPanel roleForm;
+	private JButton newMailButton;
+	private JButton newPhoneButton;
+	private JButton newTitleButton;
+	private JButton newNickButton;
+	private JButton newRoleButton;
+	private TreeSet<RoleField> roleFields;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -92,26 +95,34 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			titleForm.add(titleField);
 			titleFields.add(titleField);
 		}
-		titleForm.add(titleButton=new JButton("add title"));
-		titleButton.addActionListener(this);		
+		titleForm.add(newTitleButton=new JButton("add title"));
+		newTitleButton.addActionListener(this);		
 		titleForm.scale();		
 		form.add(titleForm);
 		
 		/* Nicknames */
-		nickForm=new VerticalPanel();
+		nickForm=new VerticalPanel("Nicknames");
 		for (Nickname nick:nicks){
 			nickForm.add(nick.editForm());
 		}
-		nickForm.add(nickButton=new JButton("add nickname"));
-		nickButton.addActionListener(this);
+		nickForm.add(newNickButton=new JButton("add nickname"));
+		newNickButton.addActionListener(this);
 		nickForm.scale();
 		form.add(nickForm);
 		
 		/* Roles */
-		if (role!=null){
-			form.add(new InputField("Role",role));
+		roleForm = new VerticalPanel();
+		roleFields=new TreeSet<RoleField>(ObjectComparator.get());
+		for (String t:roles){			
+			RoleField roleField=new RoleField("Role", t);
+			roleField.addEditListener(this);
+			roleForm.add(roleField);
+			roleFields.add(roleField);
 		}
-		//TODO: add/remove 
+		roleForm.add(newRoleButton=new JButton("add role"));
+		newRoleButton.addActionListener(this);		
+		roleForm.scale();		
+		form.add(roleForm);
 	
 		/* Birthday */
 		if (birthday!=null){
@@ -209,7 +220,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (name!=null && c2.name!=null && !name.canonical().equals(c2.name.canonical())) return true;
 		if (birthday!=null && c2.birthday!=null && !birthday.equals(c2.birthday)) return true;
 		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) return true;
-		if (role!=null && c2.role!=null && !role.equals(c2.role)) return true;
+		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) return true;		
 		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getPhoneNumbers().equals(c2.getPhoneNumbers())) return true;
 		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) return true;
 		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) return true;
@@ -246,7 +257,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 					phones.isEmpty() &&
 					mails.isEmpty() && 
 					titles.isEmpty() &&
-					role==null && 
+					roles.isEmpty() && 
 					birthday==null &&
 					categories==null &&
 					urls.isEmpty() &&
@@ -336,12 +347,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		} else formattedName=contact.formattedName;
 		
 		titles.addAll(contact.titles);
-		
-		if (role!=null){
-			if (contact.role!=null && !contact.role.equals(role)){
-				role=(String)selectOneOf("role", role, contact.role,contact);
-			}
-		} else role=contact.role;
+		roles.addAll(contact.roles);
 		
 		if (categories!=null){
 			if (contact.categories!=null){
@@ -546,7 +552,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			sb.append("\n");
 		}
 		
-		if (role!=null) sb.append("ROLE:"+role+"\n");
+		for (String role:roles){
+			sb.append("ROLE:"+role+"\n");
+		}
 		
 		if (birthday!=null) {
 			sb.append(birthday);
@@ -688,7 +696,12 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (line.isEmpty()) return;
 		titles.add(line);
 	}
-
+	
+	private void readRole(String line) throws AlreadyBoundException {
+		if (line.isEmpty()) return;
+		roles.add(line.replace("\\n", "\n"));
+	}
+	
 	private void readOrg(String line) throws InvalidFormatException, UnknownObjectException, AlreadyBoundException {
 		Organization org = new Organization(line);		
 		if (!org.isEmpty()) orgs.add(org);
@@ -724,13 +737,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (line.isEmpty()) return;
 		notes.add(line);
 	}
-	
-	private void readRole(String line) throws AlreadyBoundException {
-		if (role!=null) throw new AlreadyBoundException("Trying to assign role, although it is already assigned");
 
-		if (line.isEmpty()) return;
-		role = line.replace("\\n", "\n");
-	}
 	
 	private void readCategories(String line) throws AlreadyBoundException {
 		if (line.isEmpty()) return;
@@ -829,53 +836,63 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		changed();
 		System.out.println(this);
 	}
+	
+	private void updateNicks(){
+		TreeSet<Nickname> newNicks = new TreeSet<Nickname>(ObjectComparator.get());
+		for (Nickname n:nicks){
+			if (!n.isEmpty()){
+				newNicks.add(n);
+			}
+		}
+		nicks=newNicks;
+	}
+	
+	private void updatePhones(){
+		TreeSet<Phone> newPhones=new TreeSet<Phone>(ObjectComparator.get());
+		for (Phone p:phones){
+			if (!p.isEmpty()) {
+				newPhones.add(p);
+			}
+		}
+		phones=newPhones;
+	}
 
 	private void changed() {
-		for (Nickname n:nicks){
-			System.out.println(n);
-			if (n.isEmpty()){
-				nicks.remove(n);
-				changed();
-				break;
-			}
-		}
-		for (Phone p:phones){
-			if (p.isEmpty()) {				
-				phones.remove(p);
-				changed();
-				break;
-			}
-		}
+		updateNicks();
+		updatePhones();
 	}
 
 	public void actionPerformed(ActionEvent evt) {
 		Object source = evt.getSource();
-		if (source==titleButton){
+		if (source==newTitleButton){
 			TitleField titleField=new TitleField("Title");
 			titleField.addEditListener(this);
 			titleFields.add(titleField);
-			titleForm.insertCompoundBefore(titleButton, titleField);
+			titleForm.insertCompoundBefore(newTitleButton, titleField);
 			form.rescale();
 			System.out.println("inserted title field");
 		}
 		
-		if (source==nickButton){
+		if (source==newNickButton){
 			try {
 				Nickname newNick=new Nickname("NICKNAME:");
 				VerticalPanel newNickForm = newNick.editForm();
-				nickForm.insertCompoundBefore(nickButton, newNickForm);
+				nickForm.insertCompoundBefore(newNickButton, newNickForm);
 				nicks.add(newNick);
-				for (Nickname n: nicks){
-					System.out.println(n);
-				}
 				form.rescale();
 			} catch (UnknownObjectException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidFormatException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+		if (source==newRoleButton){
+			RoleField roleField=new RoleField("Role");
+			roleField.addEditListener(this);
+			roleFields.add(roleField);
+			roleForm.insertCompoundBefore(newRoleButton, roleField);
+			form.rescale();
+			System.out.println("inserted role field");
 		}
 		if (source==newPhoneButton){
 			try {
@@ -883,6 +900,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newPhoneForm = newPhone.editForm();
 				form.insertCompoundBefore(newPhoneButton,newPhoneForm);
 				phones.add(newPhone);
+				form.rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
 			} catch (InvalidFormatException e) {
@@ -921,20 +939,28 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 	private void update(Object source) {
 		if (source instanceof TitleField)	updateTitles();
+		if (source instanceof RoleField) updateRoles();
 		System.out.println(this);
 	}
 
 	private void updateTitles() {
 		titles.clear();
-		System.out.println(titles);
 		for (TitleField tf:titleFields){
-			System.out.println(tf);
 			String title=tf.getText();
 			if (title!=null && !title.trim().isEmpty()){
 				titles.add(title.trim());
 			}
 		}		
-		System.out.println(titles);
+	}
+	
+	private void updateRoles() {
+		roles.clear();
+		for (RoleField tf:roleFields){
+			String role=tf.getText();
+			if (role!=null && !role.trim().isEmpty()){
+				roles.add(role.trim());
+			}
+		}		
 	}
 
 	private void update() {
