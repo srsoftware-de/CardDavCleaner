@@ -1,10 +1,15 @@
+import java.util.TreeSet;
+
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
-public class InputField extends HorizontalPanel {
+public class InputField extends HorizontalPanel implements DocumentListener {
 	/**
 	 * used to create non-password input fields for the server login form
 	 * @param owner the panel, to which the component shall be added 
@@ -14,6 +19,7 @@ public class InputField extends HorizontalPanel {
 	 */
 	
 	JTextField result;
+	private TreeSet<ChangeListener> editListeners;
 	
 	public InputField(String caption,boolean password) {
 		add(new JLabel(caption + " "));
@@ -34,11 +40,38 @@ public class InputField extends HorizontalPanel {
 	}
 
 	public String getText() {
-		// TODO Auto-generated method stub
 		return result.getText();
 	}
 
 	public void addChangeListener(DocumentListener listener) {
 		result.getDocument().addDocumentListener(listener);
+	}
+	
+	public void addEditListener(ChangeListener listener){
+		if (editListeners==null){
+			editListeners=new TreeSet<ChangeListener>(ObjectComparator.get());
+			result.getDocument().addDocumentListener(this);
+		}
+		editListeners.add(listener);
+	}
+
+	public void changedUpdate(DocumentEvent arg0) {
+		edit();
+	}
+
+	public void insertUpdate(DocumentEvent arg0) {
+		edit();
+	}
+
+	public void removeUpdate(DocumentEvent arg0) {
+		edit();
+	}
+
+	private void edit() {
+		if (editListeners!=null){
+			for (ChangeListener cl:editListeners){
+				cl.stateChanged(new ChangeEvent(this));
+			}
+		}
 	}
 }

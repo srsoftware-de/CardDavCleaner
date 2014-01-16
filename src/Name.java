@@ -23,16 +23,22 @@ public class Name implements DocumentListener {
 	public HorizontalPanel editForm() {
 		form=new HorizontalPanel("Name");
 		if (invalid) form.setBackground(Color.red);
+		
 		form.add(prefBox=new InputField("Prefix",prefix));
 		prefBox.addChangeListener(this);
+		
 		form.add(firstBox=new InputField("First Name",first));
 		firstBox.addChangeListener(this);
+		
 		form.add(middleBox=new InputField("Middle Name",middle));
 		middleBox.addChangeListener(this);
+		
 		form.add(familyBox=new InputField("Family Name",family));
 		familyBox.addChangeListener(this);
+		
 		form.add(sufBox=new InputField("Suffix",suffix));
 		sufBox.addChangeListener(this);
+		
 		form.scale();
 		return form;
 	}

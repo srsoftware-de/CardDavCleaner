@@ -27,10 +27,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class Contact implements ActionListener, DocumentListener {
+public class Contact implements ActionListener, DocumentListener, ChangeListener {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	//private String revision;
 	//private String productId;
@@ -58,6 +60,9 @@ public class Contact implements ActionListener, DocumentListener {
 	private JScrollPane scroll;
 	private InputField formattedField;
 	private JButton newMailButton;
+	private JButton titleButton;
+	private TreeSet<TitleField> titleFields;
+	private VerticalPanel titleForm;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -66,17 +71,28 @@ public class Contact implements ActionListener, DocumentListener {
 		dim.setSize(dim.getWidth()-100, dim.getHeight()-100);
 		scroll.setPreferredSize(dim);
 		scroll.setSize(scroll.getPreferredSize());
-		form.add(name.editForm());		
+		
+		/* Name */
+		form.add(name.editForm());
+		
+		/* Formatted Name */
 		form.add(formattedField=new InputField("Formatted name",formattedName));
 		formattedField.addChangeListener(this);
-		if (!titles.isEmpty()){
-			VerticalPanel titleForm = new VerticalPanel();
-			for (String t:titles){
-				titleForm.add(new InputField("Title", t));
-			}
-			titleForm.scale();
-			form.add(titleForm);
+		
+		/* Titles */
+		titleForm = new VerticalPanel();
+		titleFields=new TreeSet<TitleField>(ObjectComparator.get());
+		for (String t:titles){			
+			TitleField titleField=new TitleField("Title", t);
+			titleField.addEditListener(this);
+			titleForm.add(titleField);
+			titleFields.add(titleField);
 		}
+		titleForm.add(titleButton=new JButton("add title"));
+		titleButton.addActionListener(this);		
+		titleForm.scale();		
+		form.add(titleForm);
+		
 		for (Nickname nick:nicks){
 			form.add(nick.editForm());
 		}
@@ -784,6 +800,15 @@ public class Contact implements ActionListener, DocumentListener {
 
 	public void actionPerformed(ActionEvent evt) {
 		Object source = evt.getSource();
+		System.out.println("actionPerformed");
+		if (source==titleButton){
+			TitleField titleField=new TitleField("Title");
+			titleField.addEditListener(this);
+			titleFields.add(titleField);
+			titleForm.insertCompoundBefore(titleButton, titleField);
+			form.rescale();
+			System.out.println("inserted title field");
+		}
 		if (source==newPhoneButton){
 			try {
 				Phone newPhone=new Phone("TEL;:");
@@ -821,10 +846,30 @@ public class Contact implements ActionListener, DocumentListener {
 	public void removeUpdate(DocumentEvent e) {
 		update();
 	}
+	
+	public void stateChanged(ChangeEvent e) {
+		update(e.getSource());
+	}
+
+	private void update(Object source) {
+		if (source instanceof TitleField)	updateTitles();
+		System.out.println(this);
+	}
+
+	private void updateTitles() {
+		titles.clear();
+		System.out.println(titles);
+		for (TitleField tf:titleFields){
+			System.out.println(tf);
+			String title=tf.getText();
+			if (title!=null && !title.trim().isEmpty()){
+				titles.add(title.trim());
+			}
+		}		
+		System.out.println(titles);
+	}
 
 	private void update() {
 		formattedName=formattedField.getText();
-	}
-
-	
+	}	
 }
