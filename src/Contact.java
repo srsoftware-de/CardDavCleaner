@@ -72,7 +72,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private JButton newRoleButton;
 	private TreeSet<RoleField> roleFields;
 	private JButton birthdayButton;
-	private VerticalPanel phoneForm;
+	private HorizontalPanel phoneForm;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -137,7 +137,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		// TODO: add/remove
 		
 		/* Phones */
-		phoneForm=new VerticalPanel("Phones");
+		phoneForm=new HorizontalPanel("Phones");
 		for (Phone p:phones){
 			phoneForm.add(p.editForm());
 		}
