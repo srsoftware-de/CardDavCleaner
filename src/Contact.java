@@ -107,36 +107,61 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		nickForm.scale();
 		form.add(nickForm);
 		
+		/* Roles */
 		if (role!=null){
 			form.add(new InputField("Role",role));
 		}
+		//TODO: add/remove 
+	
+		/* Birthday */
 		if (birthday!=null){
 			form.add(birthday.editForm());
 		}
+		// TODO: add/remove
+		
+		/* Phones */
 		for (Phone p:phones){
 			form.add(p.editForm());
 		}
 		newPhoneButton = new JButton("Add Phone");
 		newPhoneButton.addActionListener(this);
 		form.add(newPhoneButton);
+		// TODO: add/remove
+		
+		/* Adresses */
 		for (Adress a:adresses){
 			form.add(a.editForm());
-		}		
+		}	
+		// TODO: add/remove
+
+		/* Emails */
 		for (Email m:mails){
 			form.add(m.editForm());
 		}
 		newMailButton=new JButton("Add Email");
 		newMailButton.addActionListener(this);
 		form.add(newMailButton);
+		// TODO: add/remove
+		
+		/* URLs */
 		for (Url u:urls){
 			form.add(u.editForm());
 		}
+		// TODO: add/remove
+		
+		/* Organizations */
 		for (Organization o: orgs){
 			form.add(o.editForm());
 		}
+		// TODO: add/remove
+		
+		/* Messengers */
 		for (Messenger m:messengers){
 			form.add(m.editForm());
 		}
+		// TODO: add/remove
+		
+		/* Categories */
 		if (categories!=null && !categories.isEmpty()){
 			HorizontalPanel cats=new HorizontalPanel();
 			for (String c:categories){
@@ -145,6 +170,12 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			cats.scale();
 			form.add(cats);
 		}
+		// TODO: add/remove
+		
+		/* Notes */
+		// TODO: Notes
+		
+		
 		form.scale();
 		return scroll;
 	}
