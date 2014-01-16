@@ -72,6 +72,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private JButton newRoleButton;
 	private TreeSet<RoleField> roleFields;
 	private JButton birthdayButton;
+	private VerticalPanel phoneForm;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -136,12 +137,14 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		// TODO: add/remove
 		
 		/* Phones */
+		phoneForm=new VerticalPanel("Phones");
 		for (Phone p:phones){
-			form.add(p.editForm());
+			phoneForm.add(p.editForm());
 		}
-		newPhoneButton = new JButton("Add Phone");
+		phoneForm.add(newPhoneButton = new JButton("Add Phone"));
 		newPhoneButton.addActionListener(this);
-		form.add(newPhoneButton);
+		phoneForm.scale();
+		form.add(phoneForm);
 		// TODO: add/remove
 		
 		/* Adresses */
@@ -911,7 +914,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			try {
 				Phone newPhone=new Phone("TEL;:");
 				VerticalPanel newPhoneForm = newPhone.editForm();
-				form.insertCompoundBefore(newPhoneButton,newPhoneForm);
+				phoneForm.insertCompoundBefore(newPhoneButton,newPhoneForm);
 				phones.add(newPhone);
 				form.rescale();
 			} catch (UnknownObjectException e) {
