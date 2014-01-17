@@ -73,6 +73,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private TreeSet<RoleField> roleFields;
 	private JButton birthdayButton;
 	private HorizontalPanel phoneForm;
+	private HorizontalPanel adressForm;
+	private JButton newAdressButton;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -134,7 +136,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			form.add(birthdayButton=new JButton("add Birthday"));
 			birthdayButton.addActionListener(this);
 		}
-		// TODO: add/remove
 		
 		/* Phones */
 		phoneForm=new HorizontalPanel("Phones");
@@ -145,12 +146,16 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		newPhoneButton.addActionListener(this);
 		phoneForm.scale();
 		form.add(phoneForm);
-		// TODO: add/remove
 		
 		/* Adresses */
+		adressForm=new HorizontalPanel("Adresses");
 		for (Adress a:adresses){
-			form.add(a.editForm());
-		}	
+			adressForm.add(a.editForm());
+		}
+		adressForm.add(newAdressButton=new JButton("Add Address"));
+		newAdressButton.addActionListener(this);
+		adressForm.scale();
+		form.add(adressForm);
 		// TODO: add/remove
 
 		/* Emails */
@@ -840,7 +845,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 	public void edit() {
 		System.out.println(this);
-		JOptionPane.showConfirmDialog(null, editForm(), "Edit contact", JOptionPane.OK_CANCEL_OPTION);
+		//JOptionPane.showMessageDialog(null, editForm(), "Edit contact");
+		JOptionPane.showMessageDialog(null, editForm(), "Edit contact", JOptionPane.DEFAULT_OPTION);
 		changed();
 		System.out.println(this);
 	}
@@ -864,10 +870,21 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		}
 		phones=newPhones;
 	}
+	
+	private void updateAdresses(){
+		TreeSet<Adress> newAdresses=new TreeSet<Adress>(ObjectComparator.get());
+		for (Adress p:adresses){
+			if (!p.isEmpty()) {
+				newAdresses.add(p);
+			}
+		}
+		adresses=newAdresses;
+	}
 
 	private void changed() {
 		updateNicks();
 		updatePhones();
+		updateAdresses();
 	}
 
 	public void actionPerformed(ActionEvent evt) {
@@ -916,6 +933,19 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newPhoneForm = newPhone.editForm();
 				phoneForm.insertCompoundBefore(newPhoneButton,newPhoneForm);
 				phones.add(newPhone);
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newAdressButton){
+			try {
+				Adress newAdress=new Adress("ADR;:");
+				VerticalPanel newAdressForm = newAdress.editForm();
+				adressForm.insertCompoundBefore(newAdressButton,newAdressForm);
+				adresses.add(newAdress);
 				form.rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
