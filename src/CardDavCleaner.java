@@ -44,7 +44,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 */
 	private void createComponents() {
 		
-		VerticalPanel mainPanel = new VerticalPanel("Server settings");
+		VerticalPanel mainPanel = new VerticalPanel("Servereinstellungen");
 
 		mainPanel.add(serverField = new InputField("Server + Pfad zum Adressbuch:",false));
 		mainPanel.add(userField = new InputField("Benutzer:",false));
@@ -315,8 +315,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private boolean skipInvalidContact(Contact contact,String contactName, TreeSet<Contact> writeList) {
 		while (contact.isInvalid()){
-			String [] options={"Edit manually","Skip","Abort program"};
-			int opt=JOptionPane.showOptionDialog(null, contactName+" has an invalid format", "Invalid Contact", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+			String [] options={"manuell bearbeiten","überspringen","Programm abbrechen"};
+			int opt=JOptionPane.showOptionDialog(null, contactName+" hat ein ungültiges Format", "Ungültiger Kontakt", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 			switch (opt) {
 				case 0:
 					if (contact.edit()){
@@ -391,7 +391,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private void putMergedContacts(String host,TreeSet<Contact> writeList) throws IOException {
 		for (Contact c:writeList) {			
 			
-			System.out.println("Uploading "+c.vcfName());
+			System.out.println("Lade "+c.vcfName()+" hoch...");
 			
 			byte[] data=c.getBytes();
 			URL putUrl=new URL(host+"/"+c.vcfName());
