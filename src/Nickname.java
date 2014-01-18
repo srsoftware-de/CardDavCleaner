@@ -21,16 +21,16 @@ public class Nickname implements DocumentListener, ChangeListener {
 	private VerticalPanel form;
 	
 	public VerticalPanel editForm() {
-		form=new VerticalPanel("Nickname");
+		form=new VerticalPanel("Rufname/Nickname");
 		if (invalid) form.setBackground(Color.red);
 		if (isEmpty()) form.setBackground(Color.yellow);
 		
-		form.add(nickField=new InputField("Nickname",nick));
+		form.add(nickField=new InputField("Rufname",nick));
 		nickField.addChangeListener(this);
 		
-		form.add(homeBox=new JCheckBox("Home",home));
+		form.add(homeBox=new JCheckBox("Zuhause",home));
 		homeBox.addChangeListener(this);
-		form.add(workBox=new JCheckBox("Work",work));
+		form.add(workBox=new JCheckBox("Arbeit",work));
 		workBox.addChangeListener(this);
 		form.add(internetBox=new JCheckBox("Internet",internet));
 		internetBox.addChangeListener(this);
@@ -79,7 +79,7 @@ public class Nickname implements DocumentListener, ChangeListener {
 		} else if (content.startsWith("NICKNAME:")){
 			if (content.contains(";")) throw new InvalidFormatException("content");
 			nick=content.substring(9);
-		} else throw new InvalidFormatException("Nickname adress does not start with \"NICKNAME;\" or \"NICKNAME:\"");
+		} else throw new InvalidFormatException("Rufnamen-Eintrag beginnt nicht mit \"NICKNAME;\" or \"NICKNAME:\"");
 	}
 
 	private void readNick(String line) {
@@ -100,7 +100,7 @@ public class Nickname implements DocumentListener, ChangeListener {
 	}
 
 	public void merge(Nickname nick) throws InvalidAssignmentException {
-		if (!nick.equals(nick)) throw new InvalidAssignmentException("Trying to merge two nicknames with strings!");
+		if (!nick.equals(nick)) throw new InvalidAssignmentException("Versuche zwei verschiedene Rufnamen zu mischen!");
 		if (nick.home) home=true;
 		if (nick.work) work=true;
 		if (nick.internet) internet=true;
