@@ -22,7 +22,7 @@ public class Name implements DocumentListener {
 	
 	public HorizontalPanel editForm() {
 		form=new HorizontalPanel("Name");
-		if (invalid) form.setBackground(Color.red);
+		if (isInvalid()) form.setBackground(Color.red);
 		
 		form.add(prefBox=new InputField("Prefix",prefix));
 		prefBox.addChangeListener(this);
@@ -183,7 +183,6 @@ public class Name implements DocumentListener {
 	}
 
 	private void update() {
-		invalid=false;
 		prefix=prefBox.getText();
 		first=firstBox.getText();
 		middle=middleBox.getText();
