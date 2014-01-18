@@ -80,6 +80,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private JButton newUrlButton;
 	private HorizontalPanel orgForm;
 	private JButton newOrgButton;
+	private HorizontalPanel messengerForm;
+	private JButton newMessengerButton;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -187,16 +189,20 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		for (Organization o: orgs){
 			orgForm.add(o.editForm());
 		}
-		orgForm.add(newOrgButton=new JButton("new Organization"));
+		orgForm.add(newOrgButton=new JButton("Add Organization"));
 		newOrgButton.addActionListener(this);
 		orgForm.scale();
 		form.add(orgForm);
-		// TODO: add/remove
 		
 		/* Messengers */
+		messengerForm=new HorizontalPanel("Messengers");
 		for (Messenger m:messengers){
-			form.add(m.editForm());
+			messengerForm.add(m.editForm());
 		}
+		messengerForm.add(newMessengerButton=new JButton("Add Messenger"));
+		newMessengerButton.addActionListener(this);
+		messengerForm.scale();
+		form.add(messengerForm);
 		// TODO: add/remove
 		
 		/* Categories */
@@ -579,6 +585,11 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			sb.append("\n");
 		}
 		
+		for (Messenger messenger:messengers){
+			sb.append(messenger);
+			sb.append("\n");
+		}
+		
 		for (String role:roles){
 			sb.append("ROLE:"+role+"\n");
 		}
@@ -924,6 +935,16 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		}
 		mails=newMails;
 	}
+	
+	private void updateMessengers(){
+		TreeSet<Messenger> newMessengers=new TreeSet<Messenger>(ObjectComparator.get());
+		for (Messenger m:messengers){
+			if (!m.isEmpty()) {
+				newMessengers.add(m);
+			}
+		}
+		messengers=newMessengers;
+	}
 
 	private void changed() {
 		updateNicks();
@@ -932,6 +953,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		updateEmails();
 		updateUrls();
 		updateOrgs();
+		updateMessengers();
 	}
 
 	public void actionPerformed(ActionEvent evt) {
@@ -1032,6 +1054,19 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newOrgForm = newOrg.editForm();
 				orgForm.insertCompoundBefore(newOrgButton,newOrgForm);
 				orgs.add(newOrg);
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newMessengerButton){
+			try {
+				Messenger newMessenger=new Messenger("IMPP::");
+				VerticalPanel newMessengerForm = newMessenger.editForm();
+				messengerForm.insertCompoundBefore(newMessengerButton,newMessengerForm);
+				messengers.add(newMessenger);
 				form.rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
