@@ -20,14 +20,14 @@ public class Url implements ChangeListener {
 	private Pattern ptr = Pattern.compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
 
 	public VerticalPanel editForm() {
-		form=new VerticalPanel("Web Adress");
+		form=new VerticalPanel("Internetadresse");
 		if (invalid) form.setBackground(Color.red);
 		if (isEmpty()) form.setBackground(Color.yellow);
 		form.add(urlField=new InputField("URL",url));
 		urlField.addEditListener(this);
-		form.add(homeBox=new JCheckBox("Home",home));
+		form.add(homeBox=new JCheckBox("Zuhause",home));
 		homeBox.addChangeListener(this);
-		form.add(workBox=new JCheckBox("Work",work));
+		form.add(workBox=new JCheckBox("Arbeit",work));
 		workBox.addChangeListener(this);
 		form.scale();
 		return form;
