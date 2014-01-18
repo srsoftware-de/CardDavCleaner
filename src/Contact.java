@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -85,6 +86,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private VerticalPanel categoryForm;
 	private JButton newCategoryButton;
 	private TreeSet<CategoryField> categoryFields;
+	private VerticalPanel noteForm;
+	private TreeSet<NoteField> noteFields;
+	private JButton newNoteButton;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -222,7 +226,18 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		form.add(categoryForm);
 		
 		/* Notes */
-		// TODO: Notes		
+		noteForm = new VerticalPanel("Notes");
+		noteFields=new TreeSet<NoteField>(ObjectComparator.get());
+		for (String n:notes){			
+			NoteField noteField=new NoteField("Note", n);
+			noteField.addEditListener(this);
+			noteForm.add(noteField);
+			noteFields.add(noteField);
+		}
+		noteForm.add(newNoteButton=new JButton("add note"));
+		newNoteButton.addActionListener(this);		
+		noteForm.scale();		
+		form.add(noteForm);	
 		
 		form.scale();
 		return scroll;
@@ -968,7 +983,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			titleFields.add(titleField);
 			titleForm.insertCompoundBefore(newTitleButton, titleField);
 			form.rescale();
-			System.out.println("inserted title field");
 		}
 		
 		if (source==newNickButton){
@@ -990,7 +1004,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			roleFields.add(roleField);
 			roleForm.insertCompoundBefore(newRoleButton, roleField);
 			form.rescale();
-			System.out.println("inserted role field");
 		}
 		if (source==birthdayButton){
 			try {
@@ -1084,7 +1097,13 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			categoryFields.add(categoryField);
 			categoryForm.insertCompoundBefore(newCategoryButton, categoryField);
 			form.rescale();
-			System.out.println("inserted category field");
+		}
+		if (source==newNoteButton){
+			NoteField newNoteField=new NoteField("Note");
+			newNoteField.addEditListener(this);
+			noteFields.add(newNoteField);
+			noteForm.insertCompoundBefore(newNoteButton, newNoteField);
+			form.rescale();
 		}
 	}
 
@@ -1108,16 +1127,32 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (source instanceof TitleField)	updateTitles();
 		if (source instanceof RoleField) updateRoles();
 		if (source instanceof CategoryField) updateCategories();
+		if (source instanceof NoteField) updateNotefields();
 		System.out.println(this);
+	}
+
+	private void updateNotefields() {
+		notes.clear();
+		for (NoteField nf:noteFields){
+			String note=nf.getText().trim();
+			if (note!=null && !note.isEmpty()){
+				notes.add(note);
+				nf.setBackground(Color.green);
+			} else {
+				nf.setBackground(Color.yellow);
+			}
+		}		
 	}
 
 	private void updateCategories() {
 		categories.clear();
 		for (CategoryField cf:categoryFields){
-			String cat=cf.getText();
-			if (cat!=null && !cat.trim().isEmpty()){
-				System.out.println(cat);
-				categories.add(cat.trim());
+			String cat=cf.getText().trim();
+			if (cat!=null && !cat.isEmpty()){
+				categories.add(cat);
+				cf.setBackground(Color.green);
+			} else {
+				cf.setBackground(Color.yellow);
 			}
 		}		
 	}
@@ -1125,19 +1160,25 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private void updateTitles() {
 		titles.clear();
 		for (TitleField tf:titleFields){
-			String title=tf.getText();
-			if (title!=null && !title.trim().isEmpty()){
-				titles.add(title.trim());
-			}
+			String title=tf.getText().trim();
+			if (title!=null && !title.isEmpty()){
+				titles.add(title);
+				tf.setBackground(Color.green);
+			} else {
+				tf.setBackground(Color.yellow);
+			}		
 		}		
 	}
 	
 	private void updateRoles() {
 		roles.clear();
-		for (RoleField tf:roleFields){
-			String role=tf.getText();
-			if (role!=null && !role.trim().isEmpty()){
-				roles.add(role.trim());
+		for (RoleField rf:roleFields){
+			String role=rf.getText().trim();
+			if (role!=null && !role.isEmpty()){
+				roles.add(role);
+				rf.setBackground(Color.green);
+			} else {
+				rf.setBackground(Color.yellow);
 			}
 		}		
 	}
