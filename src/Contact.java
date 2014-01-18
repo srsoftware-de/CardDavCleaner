@@ -78,6 +78,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private HorizontalPanel mailForm;
 	private VerticalPanel urlForm;
 	private JButton newUrlButton;
+	private HorizontalPanel orgForm;
+	private JButton newOrgButton;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -179,12 +181,16 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		newUrlButton.addActionListener(this);
 		urlForm.scale();
 		form.add(urlForm);		
-		// TODO: add/remove
 		
 		/* Organizations */
+		orgForm=new HorizontalPanel("Organizations");
 		for (Organization o: orgs){
-			form.add(o.editForm());
+			orgForm.add(o.editForm());
 		}
+		orgForm.add(newOrgButton=new JButton("new Organization"));
+		newOrgButton.addActionListener(this);
+		orgForm.scale();
+		form.add(orgForm);
 		// TODO: add/remove
 		
 		/* Messengers */
@@ -889,6 +895,16 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		urls=newUrls;
 	}
 	
+	private void updateOrgs(){
+		TreeSet<Organization> newOrgs=new TreeSet<Organization>(ObjectComparator.get());
+		for (Organization p:orgs){
+			if (!p.isEmpty()) {
+				newOrgs.add(p);
+			}
+		}
+		orgs=newOrgs;
+	}
+	
 	private void updateAdresses(){
 		TreeSet<Adress> newAdresses=new TreeSet<Adress>(ObjectComparator.get());
 		for (Adress p:adresses){
@@ -915,6 +931,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		updateAdresses();
 		updateEmails();
 		updateUrls();
+		updateOrgs();
 	}
 
 	public void actionPerformed(ActionEvent evt) {
@@ -1002,6 +1019,19 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newUrlForm = newUrl.editForm();
 				urlForm.insertCompoundBefore(newUrlButton,newUrlForm);
 				urls.add(newUrl);
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newOrgButton){
+			try {
+				Organization newOrg=new Organization("ORG:");
+				VerticalPanel newOrgForm = newOrg.editForm();
+				orgForm.insertCompoundBefore(newOrgButton,newOrgForm);
+				orgs.add(newOrg);
 				form.rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
