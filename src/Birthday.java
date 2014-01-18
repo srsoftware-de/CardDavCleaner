@@ -119,13 +119,18 @@ public class Birthday implements ChangeListener {
 				if (!bday.startsWith("-")) {
 					month = bday.substring(0, 2);
 					bday = bday.substring(2);
+
+					if (bday.startsWith("-")) {
+						bday = bday.substring(1);
+					}
 				} else {
 					bday = bday.substring(1);
 				}
 			}
-			if (!bday.isEmpty()) {
+			if (!bday.isEmpty()) {				
 				day = bday.substring(0, 2);
 				bday = bday.substring(2);
+				
 			}
 		}
 		if (!bday.isEmpty()) {

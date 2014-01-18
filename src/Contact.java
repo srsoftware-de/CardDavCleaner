@@ -99,7 +99,14 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		scroll.setSize(scroll.getPreferredSize());
 		
 		/* Name */
-		form.add(name.editForm());
+		if (name==null) try {
+			name=new Name("N:;;;;");
+			form.add(name.editForm());
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		}
 		
 		/* Formatted Name */
 		form.add(formattedField=new InputField("Formatted name",formattedName));
@@ -256,7 +263,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		for (Nickname n:nicks){
 			if (n.isInvalid()) return true;
 		}
-		if (name.isInvalid()) return true;
+		if (name!=null && name.isInvalid()) return true;
 		if (birthday!=null && birthday.isInvalid()) return true;
 		if (label!=null && label.isInvalid()) return true;
 		for (Organization o:orgs){
