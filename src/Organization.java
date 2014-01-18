@@ -16,11 +16,11 @@ public class Organization implements ChangeListener {
 	
 
 	public VerticalPanel editForm() {
-		form=new VerticalPanel("Organization");
+		form=new VerticalPanel("Unternehmen");
 		if (invalid) form.setBackground(Color.red);
 		form.add(nameField=new InputField("Name",name));
 		nameField.addEditListener(this);
-		form.add(extField=new InputField("Extended",extended));
+		form.add(extField=new InputField("Erweitert",extended));
 		extField.addEditListener(this);
 		form.scale();
 		return form;
