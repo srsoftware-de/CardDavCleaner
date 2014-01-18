@@ -26,20 +26,20 @@ public class Phone implements DocumentListener, ChangeListener {
 	static TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
 	
 	public VerticalPanel editForm() {
-		form=new VerticalPanel("Phone");
+		form=new VerticalPanel("Telefon");
 		if (invalid) form.setBackground(Color.red);
 		if (isEmpty()) form.setBackground(Color.yellow);
 		
-		form.add(numField=new InputField("Number",number));
+		form.add(numField=new InputField("Nummer",number));
 		numField.addChangeListener(this);
 		
-		form.add(homeBox=new JCheckBox("Home Phone",home));
+		form.add(homeBox=new JCheckBox("Zuhause",home));
 		homeBox.addChangeListener(this);
-		form.add(voiceBox=new JCheckBox("Voice Phone",voice));
+		form.add(voiceBox=new JCheckBox("anderes Telefon",voice));
 		voiceBox.addChangeListener(this);
-		form.add(workBox=new JCheckBox("Work Phone",work));
+		form.add(workBox=new JCheckBox("Arbeit",work));
 		workBox.addChangeListener(this);
-		form.add(cellBox=new JCheckBox("Cell Phone",cell));
+		form.add(cellBox=new JCheckBox("Mobiltelefon",cell));
 		cellBox.addChangeListener(this);
 		form.add(faxBox=new JCheckBox("Fax",fax));
 		faxBox.addChangeListener(this);
