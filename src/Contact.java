@@ -76,6 +76,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private HorizontalPanel adressForm;
 	private JButton newAdressButton;
 	private HorizontalPanel mailForm;
+	private VerticalPanel urlForm;
+	private JButton newUrlButton;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -157,7 +159,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		newAdressButton.addActionListener(this);
 		adressForm.scale();
 		form.add(adressForm);
-		// TODO: add/remove
 
 		/* Emails */
 		mailForm=new HorizontalPanel("Email Adresses");
@@ -168,12 +169,16 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		newMailButton.addActionListener(this);
 		mailForm.scale();
 		form.add(mailForm);
-		// TODO: add/remove
 		
 		/* URLs */
+		urlForm=new VerticalPanel("Websites");
 		for (Url u:urls){
-			form.add(u.editForm());
+			urlForm.add(u.editForm());
 		}
+		urlForm.add(newUrlButton=new JButton("Add URL"));
+		newUrlButton.addActionListener(this);
+		urlForm.scale();
+		form.add(urlForm);		
 		// TODO: add/remove
 		
 		/* Organizations */
@@ -874,6 +879,16 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		phones=newPhones;
 	}
 	
+	private void updateUrls(){
+		TreeSet<Url> newUrls=new TreeSet<Url>(ObjectComparator.get());
+		for (Url p:urls){
+			if (!p.isEmpty()) {
+				newUrls.add(p);
+			}
+		}
+		urls=newUrls;
+	}
+	
 	private void updateAdresses(){
 		TreeSet<Adress> newAdresses=new TreeSet<Adress>(ObjectComparator.get());
 		for (Adress p:adresses){
@@ -899,6 +914,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		updatePhones();
 		updateAdresses();
 		updateEmails();
+		updateUrls();
 	}
 
 	public void actionPerformed(ActionEvent evt) {
@@ -973,6 +989,19 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newMailForm = newMail.editForm();
 				mailForm.insertCompoundBefore(newMailButton,newMailForm);
 				mails.add(newMail);
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newUrlButton){
+			try {
+				Url newUrl=new Url("URL:");
+				VerticalPanel newUrlForm = newUrl.editForm();
+				urlForm.insertCompoundBefore(newUrlButton,newUrlForm);
+				urls.add(newUrl);
 				form.rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();

@@ -87,6 +87,7 @@ public class Email implements DocumentListener, ChangeListener {
 
 	private void readAddr(String line) {
 		invalid=false;
+		line=line.trim();
 		if (line.isEmpty()) {
 			adress=null;
 			return;
@@ -167,7 +168,6 @@ public class Email implements DocumentListener, ChangeListener {
 	}
 
 	private void update() {
-		invalid=false;
 		readAddr(adressBox.getText());
 		home=homeBox.isSelected();
 		work=workBox.isSelected();
