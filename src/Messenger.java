@@ -26,7 +26,7 @@ public class Messenger implements ChangeListener {
 	public VerticalPanel editForm() {
 		form=new VerticalPanel("Messenger");
 		if (invalid) form.setBackground(Color.red);
-		form.add(nickField=new InputField("Nickname",nick));
+		form.add(nickField=new InputField("Nickname/ID",nick));
 		nickField.addEditListener(this);
 		form.add(aimBox=new JCheckBox("AIM",aim));
 		aimBox.addChangeListener(this);
