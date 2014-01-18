@@ -86,11 +86,13 @@ public class Email implements DocumentListener, ChangeListener {
 	}
 
 	private void readAddr(String line) {
+		invalid=false;
 		if (line.isEmpty()) {
 			adress=null;
 			return;
 		}
 		adress = line.toLowerCase();
+		invalid=!adress.contains("@");
 	}
 	
 	public boolean isEmpty() {
@@ -144,7 +146,7 @@ public class Email implements DocumentListener, ChangeListener {
 		return "no category";
 	}
 
-	public boolean isInvalid() {
+	public boolean isInvalid() {		
 		return invalid;
 	}
 

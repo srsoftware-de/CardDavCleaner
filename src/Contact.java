@@ -75,12 +75,13 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private HorizontalPanel phoneForm;
 	private HorizontalPanel adressForm;
 	private JButton newAdressButton;
+	private HorizontalPanel mailForm;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
 		scroll=new JScrollPane(form);
 		Dimension dim=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		dim.setSize(dim.getWidth()/2-100, dim.getHeight()/2-100);
+		dim.setSize(dim.getWidth()-100, dim.getHeight()-100);
 		scroll.setPreferredSize(dim);
 		scroll.setSize(scroll.getPreferredSize());
 		
@@ -159,12 +160,14 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		// TODO: add/remove
 
 		/* Emails */
+		mailForm=new HorizontalPanel("Email Adresses");
 		for (Email m:mails){
-			form.add(m.editForm());
+			mailForm.add(m.editForm());
 		}
-		newMailButton=new JButton("Add Email");
+		mailForm.add(newMailButton=new JButton("Add Email"));
 		newMailButton.addActionListener(this);
-		form.add(newMailButton);
+		mailForm.scale();
+		form.add(mailForm);
 		// TODO: add/remove
 		
 		/* URLs */
@@ -880,11 +883,22 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		}
 		adresses=newAdresses;
 	}
+	
+	private void updateEmails(){
+		TreeSet<Email> newMails=new TreeSet<Email>(ObjectComparator.get());
+		for (Email e:mails){
+			if (!e.isEmpty()) {
+				newMails.add(e);
+			}
+		}
+		mails=newMails;
+	}
 
 	private void changed() {
 		updateNicks();
 		updatePhones();
 		updateAdresses();
+		updateEmails();
 	}
 
 	public void actionPerformed(ActionEvent evt) {
@@ -957,8 +971,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			try {
 				Email newMail=new Email("EMAIL:");
 				VerticalPanel newMailForm = newMail.editForm();
-				form.insertCompoundBefore(newMailButton,newMailForm);
+				mailForm.insertCompoundBefore(newMailButton,newMailForm);
 				mails.add(newMail);
+				form.rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
 			} catch (InvalidFormatException e) {
