@@ -30,7 +30,7 @@ public class Organization implements ChangeListener {
 		String line=content.substring(4);
 		if (line.contains(";")){
 			String[] parts = line.split(";",0);
-			if (!parts[0].isEmpty()) name=parts[0];
+			if (parts.length>0 && !parts[0].isEmpty()) name=parts[0];
 			if (parts.length>1 && !parts[1].isEmpty()) extended=parts[1];
 		} else name=line; 
 		
