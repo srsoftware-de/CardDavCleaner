@@ -54,7 +54,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
 	private String vcfName;
 	private TreeSet<Messenger> messengers=new TreeSet<Messenger>(ObjectComparator.get());
-	private TreeSet<String> categories;
+	private TreeSet<String> categories=new TreeSet<String>(ObjectComparator.get());
 	private Collection<Nickname> nicks=new TreeSet<Nickname>(ObjectComparator.get());
 	
 	/* form elements */
@@ -82,6 +82,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private JButton newOrgButton;
 	private HorizontalPanel messengerForm;
 	private JButton newMessengerButton;
+	private VerticalPanel categoryForm;
+	private JButton newCategoryButton;
+	private TreeSet<CategoryField> categoryFields;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -203,22 +206,23 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		newMessengerButton.addActionListener(this);
 		messengerForm.scale();
 		form.add(messengerForm);
-		// TODO: add/remove
 		
 		/* Categories */
-		if (categories!=null && !categories.isEmpty()){
-			HorizontalPanel cats=new HorizontalPanel();
-			for (String c:categories){
-				cats.add(new InputField("Category", c));
-			}
-			cats.scale();
-			form.add(cats);
+		categoryForm = new VerticalPanel("Categories");
+		categoryFields=new TreeSet<CategoryField>(ObjectComparator.get());
+		for (String c:categories){			
+			CategoryField categoryField=new CategoryField("Category", c);
+			categoryField.addEditListener(this);
+			categoryForm.add(categoryField);
+			categoryFields.add(categoryField);
 		}
-		// TODO: add/remove
+		categoryForm.add(newCategoryButton=new JButton("add category"));
+		newCategoryButton.addActionListener(this);		
+		categoryForm.scale();		
+		form.add(categoryForm);
 		
 		/* Notes */
-		// TODO: Notes
-		
+		// TODO: Notes		
 		
 		form.scale();
 		return scroll;
@@ -565,7 +569,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			sb.append("\n");
 		}
 		
-		if (categories!=null){
+		if (categories!=null && !categories.isEmpty()){
 			sb.append("CATEGORIES:");
 			for (Iterator<String> it = categories.iterator(); it.hasNext();){
 				sb.append(it.next());
@@ -1074,6 +1078,14 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				e.printStackTrace();
 			}
 		}
+		if (source==newCategoryButton){
+			CategoryField categoryField=new CategoryField("Category");
+			categoryField.addEditListener(this);
+			categoryFields.add(categoryField);
+			categoryForm.insertCompoundBefore(newCategoryButton, categoryField);
+			form.rescale();
+			System.out.println("inserted category field");
+		}
 	}
 
 	public void changedUpdate(DocumentEvent e) {
@@ -1095,7 +1107,19 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private void update(Object source) {
 		if (source instanceof TitleField)	updateTitles();
 		if (source instanceof RoleField) updateRoles();
+		if (source instanceof CategoryField) updateCategories();
 		System.out.println(this);
+	}
+
+	private void updateCategories() {
+		categories.clear();
+		for (CategoryField cf:categoryFields){
+			String cat=cf.getText();
+			if (cat!=null && !cat.trim().isEmpty()){
+				System.out.println(cat);
+				categories.add(cat.trim());
+			}
+		}		
 	}
 
 	private void updateTitles() {
