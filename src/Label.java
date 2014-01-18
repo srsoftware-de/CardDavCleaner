@@ -4,6 +4,7 @@ public class Label {
 	TreeSet<String> types=new TreeSet<String>(ObjectComparator.get());
 	String encoding=null;
 	String label;
+	private boolean invalid;
 	
 	public Label(String line) throws InvalidFormatException {
 		String data=null;
@@ -40,5 +41,9 @@ public class Label {
 		}
 		result+=":";
 		return result.replace(";:", ":")+label;
+	}
+
+	public boolean isInvalid() {
+		return invalid;
 	}
 }

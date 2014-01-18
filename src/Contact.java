@@ -1,3 +1,7 @@
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,6 +15,7 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.activation.UnknownObjectException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -18,21 +23,28 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
-public class Contact {
+public class Contact implements ActionListener, DocumentListener, ChangeListener {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	//private String revision;
 	//private String productId;
-	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
-	private Collection<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
-	private Collection<Email> mails = new TreeSet<Email>(ObjectComparator.get());
 	private Name name;
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
 	private TreeSet<String> titles=new TreeSet<String>(ObjectComparator.get());
-	private String role; // TODO: eine vcard kann auch mehrere haben!
+	private Collection<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
+	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
+	private Collection<Email> mails = new TreeSet<Email>(ObjectComparator.get());
+	private TreeSet<String> roles=new TreeSet<String>(ObjectComparator.get());
 	private Birthday birthday;	
 	private Label label;
 	private boolean htmlMail;
@@ -43,18 +55,229 @@ public class Contact {
 	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
 	private String vcfName;
 	private TreeSet<Messenger> messengers=new TreeSet<Messenger>(ObjectComparator.get());
-	private TreeSet<String> categories;
+	private TreeSet<String> categories=new TreeSet<String>(ObjectComparator.get());
+	private Collection<Nickname> nicks=new TreeSet<Nickname>(ObjectComparator.get());
 	
+	/* form elements */
+	private JScrollPane scroll;
+	private InputField formattedField;
+	private TreeSet<TitleField> titleFields;
+	private VerticalPanel form;
+	private VerticalPanel titleForm;
+	private VerticalPanel nickForm;
+	private VerticalPanel roleForm;
+	private JButton newMailButton;
+	private JButton newPhoneButton;
+	private JButton newTitleButton;
+	private JButton newNickButton;
+	private JButton newRoleButton;
+	private TreeSet<RoleField> roleFields;
+	private JButton birthdayButton;
+	private HorizontalPanel phoneForm;
+	private HorizontalPanel adressForm;
+	private JButton newAdressButton;
+	private HorizontalPanel mailForm;
+	private VerticalPanel urlForm;
+	private JButton newUrlButton;
+	private HorizontalPanel orgForm;
+	private JButton newOrgButton;
+	private HorizontalPanel messengerForm;
+	private JButton newMessengerButton;
+	private VerticalPanel categoryForm;
+	private JButton newCategoryButton;
+	private TreeSet<CategoryField> categoryFields;
+	private VerticalPanel noteForm;
+	private TreeSet<NoteField> noteFields;
+	private JButton newNoteButton;
+	
+	private JComponent editForm() {
+		form=new VerticalPanel();
+		scroll=new JScrollPane(form);
+		Dimension dim=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		dim.setSize(dim.getWidth()-100, dim.getHeight()-100);
+		scroll.setPreferredSize(dim);
+		scroll.setSize(scroll.getPreferredSize());
+		
+		/* Name */
+		form.add(name.editForm());
+		
+		/* Formatted Name */
+		form.add(formattedField=new InputField("Formatted name",formattedName));
+		formattedField.addChangeListener(this);
+		
+		/* Titles */
+		titleForm = new VerticalPanel("Titles");
+		titleFields=new TreeSet<TitleField>(ObjectComparator.get());
+		for (String t:titles){			
+			TitleField titleField=new TitleField("Title", t);
+			titleField.addEditListener(this);
+			titleForm.add(titleField);
+			titleFields.add(titleField);
+		}
+		titleForm.add(newTitleButton=new JButton("add title"));
+		newTitleButton.addActionListener(this);		
+		titleForm.scale();		
+		form.add(titleForm);
+		
+		/* Nicknames */
+		nickForm=new VerticalPanel("Nicknames");
+		for (Nickname nick:nicks){
+			nickForm.add(nick.editForm());
+		}
+		nickForm.add(newNickButton=new JButton("add nickname"));
+		newNickButton.addActionListener(this);
+		nickForm.scale();
+		form.add(nickForm);
+		
+		/* Roles */
+		roleForm = new VerticalPanel("Roles");
+		roleFields=new TreeSet<RoleField>(ObjectComparator.get());
+		for (String t:roles){			
+			RoleField roleField=new RoleField("Role", t);
+			roleField.addEditListener(this);
+			roleForm.add(roleField);
+			roleFields.add(roleField);
+		}
+		roleForm.add(newRoleButton=new JButton("add role"));
+		newRoleButton.addActionListener(this);		
+		roleForm.scale();		
+		form.add(roleForm);
+	
+		/* Birthday */
+		if (birthday!=null){
+			form.add(birthday.editForm());
+		} else {
+			form.add(birthdayButton=new JButton("add Birthday"));
+			birthdayButton.addActionListener(this);
+		}
+		
+		/* Phones */
+		phoneForm=new HorizontalPanel("Phones");
+		for (Phone p:phones){
+			phoneForm.add(p.editForm());
+		}
+		phoneForm.add(newPhoneButton = new JButton("Add Phone"));
+		newPhoneButton.addActionListener(this);
+		phoneForm.scale();
+		form.add(phoneForm);
+		
+		/* Adresses */
+		adressForm=new HorizontalPanel("Adresses");
+		for (Adress a:adresses){
+			adressForm.add(a.editForm());
+		}
+		adressForm.add(newAdressButton=new JButton("Add Address"));
+		newAdressButton.addActionListener(this);
+		adressForm.scale();
+		form.add(adressForm);
+
+		/* Emails */
+		mailForm=new HorizontalPanel("Email Adresses");
+		for (Email m:mails){
+			mailForm.add(m.editForm());
+		}
+		mailForm.add(newMailButton=new JButton("Add Email"));
+		newMailButton.addActionListener(this);
+		mailForm.scale();
+		form.add(mailForm);
+		
+		/* URLs */
+		urlForm=new VerticalPanel("Websites");
+		for (Url u:urls){
+			urlForm.add(u.editForm());
+		}
+		urlForm.add(newUrlButton=new JButton("Add URL"));
+		newUrlButton.addActionListener(this);
+		urlForm.scale();
+		form.add(urlForm);		
+		
+		/* Organizations */
+		orgForm=new HorizontalPanel("Organizations");
+		for (Organization o: orgs){
+			orgForm.add(o.editForm());
+		}
+		orgForm.add(newOrgButton=new JButton("Add Organization"));
+		newOrgButton.addActionListener(this);
+		orgForm.scale();
+		form.add(orgForm);
+		
+		/* Messengers */
+		messengerForm=new HorizontalPanel("Messengers");
+		for (Messenger m:messengers){
+			messengerForm.add(m.editForm());
+		}
+		messengerForm.add(newMessengerButton=new JButton("Add Messenger"));
+		newMessengerButton.addActionListener(this);
+		messengerForm.scale();
+		form.add(messengerForm);
+		
+		/* Categories */
+		categoryForm = new VerticalPanel("Categories");
+		categoryFields=new TreeSet<CategoryField>(ObjectComparator.get());
+		for (String c:categories){			
+			CategoryField categoryField=new CategoryField("Category", c);
+			categoryField.addEditListener(this);
+			categoryForm.add(categoryField);
+			categoryFields.add(categoryField);
+		}
+		categoryForm.add(newCategoryButton=new JButton("add category"));
+		newCategoryButton.addActionListener(this);		
+		categoryForm.scale();		
+		form.add(categoryForm);
+		
+		/* Notes */
+		noteForm = new VerticalPanel("Notes");
+		noteFields=new TreeSet<NoteField>(ObjectComparator.get());
+		for (String n:notes){			
+			NoteField noteField=new NoteField("Note", n);
+			noteField.addEditListener(this);
+			noteForm.add(noteField);
+			noteFields.add(noteField);
+		}
+		noteForm.add(newNoteButton=new JButton("add note"));
+		newNoteButton.addActionListener(this);		
+		noteForm.scale();		
+		form.add(noteForm);	
+		
+		form.scale();
+		return scroll;
+	}
+
+	public boolean isInvalid() {
+		for (Adress a:adresses){
+			if (a.isInvalid()) return true;
+		}
+		for (Phone p:phones){
+			if (p.isInvalid()) return true;
+		}
+		for (Email m:mails){
+			if (m.isInvalid()) return true;
+		}
+		for (Nickname n:nicks){
+			if (n.isInvalid()) return true;
+		}
+		if (name.isInvalid()) return true;
+		if (birthday!=null && birthday.isInvalid()) return true;
+		if (label!=null && label.isInvalid()) return true;
+		for (Organization o:orgs){
+			if (o.isInvalid()) return true;	
+		}
+		for (Messenger m: messengers){
+			if (m.isInvalid()) return true;
+		}
+		return false;
+	}
+
 	public boolean conflictsWith(Contact c2){
 		if (name!=null && c2.name!=null && !name.canonical().equals(c2.name.canonical())) return true;
 		if (birthday!=null && c2.birthday!=null && !birthday.equals(c2.birthday)) return true;
 		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) return true;
-		if (role!=null && c2.role!=null && !role.equals(c2.role)) return true;
+		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) return true;		
 		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getPhoneNumbers().equals(c2.getPhoneNumbers())) return true;
 		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) return true;
 		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) return true;
 		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls))	return true;
-		
+		if (!nicks.isEmpty() && !c2.nicks.isEmpty() && !nicks.equals(c2.nicks)) return true;
 		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes))return true;
 		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) return true;
 		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos))	return true;		
@@ -86,13 +309,14 @@ public class Contact {
 					phones.isEmpty() &&
 					mails.isEmpty() && 
 					titles.isEmpty() &&
-					role==null && 
+					roles.isEmpty() && 
 					birthday==null &&
 					categories==null &&
 					urls.isEmpty() &&
 					notes.isEmpty() &&
 					photos.isEmpty() &&
-					orgs.isEmpty();
+					orgs.isEmpty() &&
+					nicks.isEmpty();
 	}
 	
 	public void merge(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
@@ -144,6 +368,24 @@ public class Contact {
 			mails=thunderbirdMergeMail(mailMap.values());
 		} else mails=mailMap.values();
 		
+		TreeMap<String, Nickname> nickMap=new TreeMap<String, Nickname>(ObjectComparator.get());
+		
+		for (Nickname nick:nicks){
+			Nickname existingNick=nickMap.get(nick.text());
+			if (existingNick!=null){
+				existingNick.merge(nick);
+			} else nickMap.put(nick.text(), nick);
+		}
+
+		for (Nickname nick:contact.nicks){
+			Nickname existingNick=nickMap.get(nick.text());
+			if (existingNick!=null){
+				existingNick.merge(nick);
+			} else nickMap.put(nick.text(), nick);
+		}
+		
+		nicks=nickMap.values();
+
 		if (name!=null){
 			if (contact.name!=null && !contact.name.equals(name)){
 				name=(Name) selectOneOf("name",name,contact.name,contact);
@@ -157,12 +399,7 @@ public class Contact {
 		} else formattedName=contact.formattedName;
 		
 		titles.addAll(contact.titles);
-		
-		if (role!=null){
-			if (contact.role!=null && !contact.role.equals(role)){
-				role=(String)selectOneOf("role", role, contact.role,contact);
-			}
-		} else role=contact.role;
+		roles.addAll(contact.roles);
 		
 		if (categories!=null){
 			if (contact.categories!=null){
@@ -236,7 +473,7 @@ public class Contact {
 					overloadedCategoryNumbers.add(phone);
 				} else work=true;
 			}
-			if (phone.isHomePhone()){
+			if (phone.isHomePhone() || phone.isVoice()){
 				phone.setHome();
 				if (home) {
 					overloadedCategoryNumbers.add(phone);
@@ -342,7 +579,12 @@ public class Contact {
 		sb.append(name);// required for Version 3
 		sb.append("\n");
 		
-		if (categories!=null){
+		for (Nickname nick:nicks){
+			sb.append(nick);
+			sb.append("\n");
+		}
+		
+		if (categories!=null && !categories.isEmpty()){
 			sb.append("CATEGORIES:");
 			for (Iterator<String> it = categories.iterator(); it.hasNext();){
 				sb.append(it.next());
@@ -362,9 +604,16 @@ public class Contact {
 			sb.append("\n");
 		}
 		
-		if (role!=null) sb.append("ROLE:"+role+"\n");
+		for (Messenger messenger:messengers){
+			sb.append(messenger);
+			sb.append("\n");
+		}
 		
-		if (birthday!=null) {
+		for (String role:roles){
+			sb.append("ROLE:"+role+"\n");
+		}
+		
+		if (birthday!=null &&	!birthday.toString().equals("BDAY:")) {			
 			sb.append(birthday);
 			sb.append("\n");
 		}
@@ -446,11 +695,12 @@ public class Contact {
 			if (line.equals("BEGIN:VCARD")) known = true;
 			if (line.equals("END:VCARD")) known = true;
 			if (line.startsWith("VERSION:")) known = true;
-			if (line.startsWith("ADR;") && (known = true)) readAdress(line);
+			if (line.startsWith("ADR") && (known = true)) readAdress(line);
 			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
 			if (line.startsWith("TEL;") && (known = true)) readPhone(line);
 			if (line.startsWith("TEL:") && (known = true)) readPhone(line.replace(":", ";TYPE=home:"));
 			if (line.startsWith("EMAIL") && (known = true)) readMail(line);
+			if (line.startsWith("NICKNAME") && (known = true)) readNick(line);
 			if (line.startsWith("IMPP:") && (known = true)) readIMPP(line);
 			if (line.startsWith("X-ICQ:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
 			if (line.startsWith("X-AIM:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
@@ -475,6 +725,7 @@ public class Contact {
 				throw new UnknownObjectException("unbekannter Eintrag/Anweisung in vcard "+vcfName+" gefunden: '" + line+"'");
 			}
 		}
+		changed();
 	}
 
 	private void readIMPP(String line) throws UnknownObjectException, InvalidFormatException {
@@ -482,7 +733,7 @@ public class Contact {
 			if (!messenger.isEmpty()) messengers.add(messenger);
 		}
 
-	private void readBirthday(String bday) {
+	private void readBirthday(String bday) throws InvalidFormatException {
 		birthday=new Birthday(bday);
 	}
 	
@@ -502,7 +753,12 @@ public class Contact {
 		if (line.isEmpty()) return;
 		titles.add(line);
 	}
-
+	
+	private void readRole(String line) throws AlreadyBoundException {
+		if (line.isEmpty()) return;
+		roles.add(line.replace("\\n", "\n"));
+	}
+	
 	private void readOrg(String line) throws InvalidFormatException, UnknownObjectException, AlreadyBoundException {
 		Organization org = new Organization(line);		
 		if (!org.isEmpty()) orgs.add(org);
@@ -539,13 +795,6 @@ public class Contact {
 		notes.add(line);
 	}
 	
-	private void readRole(String line) throws AlreadyBoundException {
-		if (role!=null) throw new AlreadyBoundException("Versuche Rolle zuzuweisen, obwohl schon eine Rolle zugewiesen wurde.");
-
-		if (line.isEmpty()) return;
-		role = line.replace("\\n", "\n");
-	}
-	
 	private void readCategories(String line) throws AlreadyBoundException {
 		if (line.isEmpty()) return;
 		if (categories==null) categories=new TreeSet<String>(ObjectComparator.get());
@@ -575,6 +824,11 @@ public class Contact {
 		if (!mail.isEmpty()) mails.add(mail);
 	}
 
+	private void readNick(String line) throws UnknownObjectException, InvalidFormatException {
+		Nickname nick = new Nickname(line);
+		if (!nick.isEmpty()) nicks.add(nick);
+	}
+	
 	public Name name() {
 		return name;
 	}
@@ -587,7 +841,7 @@ public class Contact {
 	
 	public TreeSet<String> simpleNumbers(){
 		TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
-		for (Phone p:phones)	numbers.add(p.simpleNumber());
+		for (Phone p:phones) numbers.add(p.simpleNumber());
 		return numbers;
 	}
 
@@ -610,7 +864,6 @@ public class Contact {
 	public void generateName() {
 		try {
 			vcfName=(new MD5Hash(this))+".vcf";
-			System.out.println(vcfName);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
@@ -631,4 +884,303 @@ public class Contact {
 		}
 		return messengers;
 	}
+
+	public boolean edit() {
+		String before=this.toString();
+		//JOptionPane.showMessageDialog(null, editForm(), "Edit contact");
+		JOptionPane.showMessageDialog(null, editForm(), "Edit contact", JOptionPane.DEFAULT_OPTION);
+		changed();
+		return !this.equals(before);
+	}
+	
+	private void updateNicks(){
+		TreeSet<Nickname> newNicks = new TreeSet<Nickname>(ObjectComparator.get());
+		for (Nickname n:nicks){
+			if (!n.isEmpty()){
+				newNicks.add(n);
+			}
+		}
+		nicks=newNicks;
+	}
+	
+	private void updatePhones(){
+		TreeSet<Phone> newPhones=new TreeSet<Phone>(ObjectComparator.get());
+		for (Phone p:phones){
+			if (!p.isEmpty()) {
+				newPhones.add(p);
+			}
+		}
+		phones=newPhones;
+	}
+	
+	private void updateUrls(){
+		TreeSet<Url> newUrls=new TreeSet<Url>(ObjectComparator.get());
+		for (Url p:urls){
+			if (!p.isEmpty()) {
+				newUrls.add(p);
+			}
+		}
+		urls=newUrls;
+	}
+	
+	private void updateOrgs(){
+		TreeSet<Organization> newOrgs=new TreeSet<Organization>(ObjectComparator.get());
+		for (Organization p:orgs){
+			if (!p.isEmpty()) {
+				newOrgs.add(p);
+			}
+		}
+		orgs=newOrgs;
+	}
+	
+	private void updateAdresses(){
+		TreeSet<Adress> newAdresses=new TreeSet<Adress>(ObjectComparator.get());
+		for (Adress p:adresses){
+			if (!p.isEmpty()) {
+				newAdresses.add(p);
+			}
+		}
+		adresses=newAdresses;
+	}
+	
+	private void updateEmails(){
+		TreeSet<Email> newMails=new TreeSet<Email>(ObjectComparator.get());
+		for (Email e:mails){
+			if (!e.isEmpty()) {
+				newMails.add(e);
+			}
+		}
+		mails=newMails;
+	}
+	
+	private void updateMessengers(){
+		TreeSet<Messenger> newMessengers=new TreeSet<Messenger>(ObjectComparator.get());
+		for (Messenger m:messengers){
+			if (!m.isEmpty()) {
+				newMessengers.add(m);
+			}
+		}
+		messengers=newMessengers;
+	}
+
+	private void changed() {
+		updateNicks();
+		updatePhones();
+		updateAdresses();
+		updateEmails();
+		updateUrls();
+		updateOrgs();
+		updateMessengers();
+	}
+
+	public void actionPerformed(ActionEvent evt) {
+		Object source = evt.getSource();
+		if (source==newTitleButton){
+			TitleField titleField=new TitleField("Title");
+			titleField.addEditListener(this);
+			titleFields.add(titleField);
+			titleForm.insertCompoundBefore(newTitleButton, titleField);
+			form.rescale();
+		}
+		
+		if (source==newNickButton){
+			try {
+				Nickname newNick=new Nickname("NICKNAME:");
+				VerticalPanel newNickForm = newNick.editForm();
+				nickForm.insertCompoundBefore(newNickButton, newNickForm);
+				nicks.add(newNick);
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newRoleButton){
+			RoleField roleField=new RoleField("Role");
+			roleField.addEditListener(this);
+			roleFields.add(roleField);
+			roleForm.insertCompoundBefore(newRoleButton, roleField);
+			form.rescale();
+		}
+		if (source==birthdayButton){
+			try {
+				birthday=new Birthday(":"+Calendar.getInstance().get(Calendar.YEAR));
+				form.replace(birthdayButton,birthday.editForm());
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newPhoneButton){
+			try {
+				Phone newPhone=new Phone("TEL;:");
+				VerticalPanel newPhoneForm = newPhone.editForm();
+				phoneForm.insertCompoundBefore(newPhoneButton,newPhoneForm);
+				phones.add(newPhone);
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newAdressButton){
+			try {
+				Adress newAdress=new Adress("ADR;:");
+				VerticalPanel newAdressForm = newAdress.editForm();
+				adressForm.insertCompoundBefore(newAdressButton,newAdressForm);
+				adresses.add(newAdress);
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newMailButton){
+			try {
+				Email newMail=new Email("EMAIL:");
+				VerticalPanel newMailForm = newMail.editForm();
+				mailForm.insertCompoundBefore(newMailButton,newMailForm);
+				mails.add(newMail);
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newUrlButton){
+			try {
+				Url newUrl=new Url("URL:");
+				VerticalPanel newUrlForm = newUrl.editForm();
+				urlForm.insertCompoundBefore(newUrlButton,newUrlForm);
+				urls.add(newUrl);
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newOrgButton){
+			try {
+				Organization newOrg=new Organization("ORG:");
+				VerticalPanel newOrgForm = newOrg.editForm();
+				orgForm.insertCompoundBefore(newOrgButton,newOrgForm);
+				orgs.add(newOrg);
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newMessengerButton){
+			try {
+				Messenger newMessenger=new Messenger("IMPP::");
+				VerticalPanel newMessengerForm = newMessenger.editForm();
+				messengerForm.insertCompoundBefore(newMessengerButton,newMessengerForm);
+				messengers.add(newMessenger);
+				form.rescale();
+			} catch (UnknownObjectException e) {
+				e.printStackTrace();
+			} catch (InvalidFormatException e) {
+				e.printStackTrace();
+			}
+		}
+		if (source==newCategoryButton){
+			CategoryField categoryField=new CategoryField("Category");
+			categoryField.addEditListener(this);
+			categoryFields.add(categoryField);
+			categoryForm.insertCompoundBefore(newCategoryButton, categoryField);
+			form.rescale();
+		}
+		if (source==newNoteButton){
+			NoteField newNoteField=new NoteField("Note");
+			newNoteField.addEditListener(this);
+			noteFields.add(newNoteField);
+			noteForm.insertCompoundBefore(newNoteButton, newNoteField);
+			form.rescale();
+		}
+	}
+
+	public void changedUpdate(DocumentEvent e) {
+		update();
+	}
+
+	public void insertUpdate(DocumentEvent e) {
+		update();
+	}
+
+	public void removeUpdate(DocumentEvent e) {
+		update();
+	}
+	
+	public void stateChanged(ChangeEvent e) {
+		update(e.getSource());
+	}
+
+	private void update(Object source) {
+		if (source instanceof TitleField)	updateTitles();
+		if (source instanceof RoleField) updateRoles();
+		if (source instanceof CategoryField) updateCategories();
+		if (source instanceof NoteField) updateNotefields();
+	}
+
+	private void updateNotefields() {
+		notes.clear();
+		for (NoteField nf:noteFields){
+			String note=nf.getText().trim();
+			if (note!=null && !note.isEmpty()){
+				notes.add(note);
+				nf.setBackground(Color.green);
+			} else {
+				nf.setBackground(Color.yellow);
+			}
+		}		
+	}
+
+	private void updateCategories() {
+		categories.clear();
+		for (CategoryField cf:categoryFields){
+			String cat=cf.getText().trim();
+			if (cat!=null && !cat.isEmpty()){
+				categories.add(cat);
+				cf.setBackground(Color.green);
+			} else {
+				cf.setBackground(Color.yellow);
+			}
+		}		
+	}
+
+	private void updateTitles() {
+		titles.clear();
+		for (TitleField tf:titleFields){
+			String title=tf.getText().trim();
+			if (title!=null && !title.isEmpty()){
+				titles.add(title);
+				tf.setBackground(Color.green);
+			} else {
+				tf.setBackground(Color.yellow);
+			}		
+		}		
+	}
+	
+	private void updateRoles() {
+		roles.clear();
+		for (RoleField rf:roleFields){
+			String role=rf.getText().trim();
+			if (role!=null && !role.isEmpty()){
+				roles.add(role);
+				rf.setBackground(Color.green);
+			} else {
+				rf.setBackground(Color.yellow);
+			}
+		}		
+	}
+
+	private void update() {
+		formattedName=formattedField.getText();
+	}	
 }

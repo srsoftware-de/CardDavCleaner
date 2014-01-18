@@ -1,18 +1,51 @@
+import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import javax.swing.JCheckBox;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 
-public class Phone {
+public class Phone implements DocumentListener, ChangeListener {
 	
 	private boolean fax=false;
 	private boolean home=false;
 	private boolean cell=false;
 	private boolean work=false;
+	private boolean voice=false;
 	private String number;
+	private boolean invalid = false;
+	
+	private InputField numField;
+	VerticalPanel form;
+	private JCheckBox homeBox,voiceBox,workBox,cellBox,faxBox;
 	
 	static TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
+	
+	public VerticalPanel editForm() {
+		form=new VerticalPanel("Phone");
+		if (invalid) form.setBackground(Color.red);
+		if (isEmpty()) form.setBackground(Color.yellow);
+		
+		form.add(numField=new InputField("Number",number));
+		numField.addChangeListener(this);
+		
+		form.add(homeBox=new JCheckBox("Home Phone",home));
+		homeBox.addChangeListener(this);
+		form.add(voiceBox=new JCheckBox("Voice Phone",voice));
+		voiceBox.addChangeListener(this);
+		form.add(workBox=new JCheckBox("Work Phone",work));
+		workBox.addChangeListener(this);
+		form.add(cellBox=new JCheckBox("Cell Phone",cell));
+		cellBox.addChangeListener(this);
+		form.add(faxBox=new JCheckBox("Fax",fax));
+		faxBox.addChangeListener(this);
+		form.scale();
+		return form;
+	}
 	
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
@@ -21,6 +54,7 @@ public class Phone {
 		if (home) sb.append(";TYPE=HOME");
 		if (cell) sb.append(";TYPE=CELL");
 		if (work) sb.append(";TYPE=WORK");
+		if (voice) sb.append(";TYPE=VOICE");
 		sb.append(':');
 		sb.append(number);
 		return sb.toString();
@@ -66,6 +100,16 @@ public class Phone {
 				line=line.substring(6);
 				continue;
 			}
+			if (upper.startsWith("TYPE=VOICE")){
+				voice=true;
+				line=line.substring(10);
+				continue;
+			}
+			if (upper.startsWith("\\,VOICE")){
+				voice=true;
+				line=line.substring(7);
+				continue;
+			}
 			if (line.startsWith(";")){
 				line=line.substring(1);
 				continue;
@@ -75,18 +119,17 @@ public class Phone {
 		readPhone(line.substring(1));		
 	}
 
-	private void readPhone(String line) throws InvalidFormatException {
-		if (line.isEmpty()) return;
+	private void readPhone(String line) {
+		if (line.isEmpty()){
+			number=null;
+			return;
+		}
 		String phone=line.replace(" ", "").replace("/", "").replace("-", "");
 		for (char c:phone.toCharArray()){
-			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') throw new InvalidFormatException("TEL:"+line);				
+			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') invalid=true;				
 		}
 		number = phone;
 		numbers.add(number);
-	}
-
-	public boolean isEmpty() {
-		return (number==null);
 	}
 
 	public String number() {
@@ -99,6 +142,7 @@ public class Phone {
 		if (phone.work) work=true;
 		if (phone.cell)cell= true;
 		if (phone.fax) fax=true;
+		if (phone.voice)voice=true; 
 	}
 
 	public String simpleNumber() {
@@ -123,12 +167,17 @@ public class Phone {
 	public boolean isFax() {
 		return fax;
 	}
+	
+	public boolean isVoice(){
+		return voice;
+	}
 
 	public void setHome() {
 		home=true;
 		work=false;
 		fax=false;
 		cell=false;
+		voice=false;
 	}
 
 	public void setCell() {
@@ -136,6 +185,7 @@ public class Phone {
 		work=false;
 		fax=false;
 		cell=true;
+		voice=false;
 	}
 
 	public void setWork() {
@@ -143,6 +193,7 @@ public class Phone {
 		work=true;
 		fax=false;
 		cell=false;
+		voice=false;
 	}
 
 	public void setFax() {
@@ -150,6 +201,15 @@ public class Phone {
 		work=false;
 		fax=true;
 		cell=false;
+		voice=false;
+	}
+	
+	public void setVoice() {
+		home=false;
+		work=false;
+		fax=false;
+		cell=false;
+		voice=true;
 	}
 
 	public String category() {
@@ -157,6 +217,46 @@ public class Phone {
 		if (work) return "work";
 		if (fax) return "fax";
 		if (cell) return "cell";
+		if (voice) return "voice";
 		return "empty category";
+	}
+	
+	public boolean isEmpty(){
+		return number==null || number.trim().isEmpty();
+	}
+
+	public boolean isInvalid() {
+		return invalid ;
+	}
+
+	public void changedUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public void insertUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public void removeUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public void stateChanged(ChangeEvent arg0) {
+		update();
+	}	
+
+	private void update() {
+		invalid=false;
+		readPhone(numField.getText());
+		home=homeBox.isSelected();
+		work=workBox.isSelected();
+		voice=voiceBox.isSelected();
+		cell=cellBox.isSelected();
+		fax=faxBox.isSelected();
+		if (isEmpty()) {
+			form.setBackground(Color.yellow);
+		} else {
+			form.setBackground(invalid?Color.red:Color.green);
+		}
 	}
 }

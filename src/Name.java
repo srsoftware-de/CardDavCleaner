@@ -1,15 +1,47 @@
+import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
+
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
-public class Name {	
+public class Name implements DocumentListener {	
 	
 	private String family;
 	private String first;
 	private String prefix;
+	private String suffix;
 	private String middle;
+	private boolean invalid=false;
+	
+	private InputField prefBox,firstBox,middleBox,familyBox,sufBox;
+	private HorizontalPanel form;
+	
+	public HorizontalPanel editForm() {
+		form=new HorizontalPanel("Name");
+		if (invalid) form.setBackground(Color.red);
+		
+		form.add(prefBox=new InputField("Prefix",prefix));
+		prefBox.addChangeListener(this);
+		
+		form.add(firstBox=new InputField("First Name",first));
+		firstBox.addChangeListener(this);
+		
+		form.add(middleBox=new InputField("Middle Name",middle));
+		middleBox.addChangeListener(this);
+		
+		form.add(familyBox=new InputField("Family Name",family));
+		familyBox.addChangeListener(this);
+		
+		form.add(sufBox=new InputField("Suffix",suffix));
+		sufBox.addChangeListener(this);
+		
+		form.scale();
+		return form;
+	}
 	
 	@Override
 	public String toString() {
@@ -23,11 +55,12 @@ public class Name {
 		sb.append(";");
 		if (prefix!=null) sb.append(prefix);
 		sb.append(";");
+		if (suffix!=null) sb.append(suffix);
 		return sb.toString();
 	}
 	
 	public String full(){
-		return prefix+" "+first+" "+middle+" "+family;
+		return prefix+" "+first+" "+middle+" "+family+" "+suffix;
 	}
 	
 	public Name(String line) throws UnknownObjectException, InvalidFormatException {		
@@ -39,8 +72,9 @@ public class Name {
 			if (parts.length>1) setFirst(parts[1].trim());
 			if (parts.length>2) setMiddle(parts[2].trim());
 			if (parts.length>3) setPrefix(parts[3].trim());
-			if (parts.length>4){
-				System.err.println("Name mit mehr als 4 Teilen gefunden:");
+			if (parts.length>4) setSuffix(parts[4].trim());
+			if (parts.length>5){
+				System.err.println("Name mit mehr als 5 Teilen gefunden:");
 				System.err.println(line);
 				for (String p:parts){
 					System.err.println(p);
@@ -51,6 +85,11 @@ public class Name {
 		
 	}
 	
+	private void setSuffix(String string) {
+		if (string.isEmpty()) return;
+		suffix=string;
+	}
+
 	private void setPrefix(String string) {
 		if (string.isEmpty()) return;
 		prefix=string;
@@ -94,6 +133,11 @@ public class Name {
 			if (!name.prefix.equals(prefix)) return false;
 		} else if (name.prefix!=null) return false;
 
+		if (suffix!=null){
+			if (name.suffix==null) return false;
+			if (!name.suffix.equals(suffix)) return false;
+		} else if (name.suffix!=null) return false;
+
 		return true;
 	}
 
@@ -108,6 +152,14 @@ public class Name {
 	public String first() {
 		return first;
 	}
+	
+	public String prefix(){
+		return prefix;
+	}
+	
+	public String suffix(){
+		return suffix;
+	}
 
 	private String ascii(String s) {
 		return s.replace("Ä", "Ae").replace("ä", "ae").replace("Ö", "Oe").replace("ö", "oe").replace("Ü", "Ue").replace("ü", "ue").replace("ß", "ss").replace("é", "e");
@@ -120,5 +172,35 @@ public class Name {
 		if (family!=null) parts.add(ascii(family).toLowerCase());	
 		
 		return parts.toString().replace("[", "").replace("]", ""); // sorted set of name parts
+	}
+
+	public boolean isInvalid() {
+		return invalid;
+	}
+
+	public void changedUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	private void update() {
+		invalid=false;
+		prefix=prefBox.getText();
+		first=firstBox.getText();
+		middle=middleBox.getText();
+		family=familyBox.getText();
+		suffix=sufBox.getText();		
+		if (isEmpty()) {
+			form.setBackground(Color.yellow);
+		} else {
+			form.setBackground(invalid?Color.red:Color.green);
+		}
+	}
+
+	public void insertUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public void removeUpdate(DocumentEvent arg0) {
+		update();
 	}
 }

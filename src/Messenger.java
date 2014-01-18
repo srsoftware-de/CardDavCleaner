@@ -1,14 +1,46 @@
+import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 
+import javax.swing.JCheckBox;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-public class Messenger {
+
+public class Messenger implements ChangeListener {
 	
 	private boolean aim=false;
 	private boolean icq=false;
 	private boolean skype=false;
 	private boolean msn=false;
 	private boolean facebook=false;
+	private boolean invalid;
 	private String nick=null;
+	private InputField nickField;
+	private JCheckBox aimBox;
+	private JCheckBox icqBox;
+	private JCheckBox msnBox;
+	private JCheckBox skypeBox;
+	private JCheckBox facebookBox;
+	private VerticalPanel form;
+	
+	public VerticalPanel editForm() {
+		form=new VerticalPanel("Messenger");
+		if (invalid) form.setBackground(Color.red);
+		form.add(nickField=new InputField("Nickname",nick));
+		nickField.addEditListener(this);
+		form.add(aimBox=new JCheckBox("AIM",aim));
+		aimBox.addChangeListener(this);
+		form.add(icqBox=new JCheckBox("ICQ",icq));
+		icqBox.addChangeListener(this);
+		form.add(skypeBox=new JCheckBox("Skype",skype));
+		skypeBox.addChangeListener(this);
+		form.add(msnBox=new JCheckBox("MSN",msn));
+		msnBox.addChangeListener(this);
+		form.add(facebookBox=new JCheckBox("Facebook",facebook));
+		facebookBox.addChangeListener(this);
+		form.scale();
+		return form;
+	}
 	
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
@@ -65,7 +97,7 @@ public class Messenger {
 	}
 	
 	public boolean isEmpty() {
-		return nick==null;
+		return nick==null || nick.isEmpty();
 	}
 
 	public String nick() {
@@ -89,4 +121,26 @@ public class Messenger {
 		if (facebook) return "facebook"+nick;
 		throw new UnknownObjectException("Messenger \""+nick+"\" hat unbekannten Typ!");
   }
+
+	public boolean isInvalid() {
+		return invalid;
+	}
+
+	public void stateChanged(ChangeEvent ce) {
+		Object source = ce.getSource();
+		if (source==nickField){
+			nick=nickField.getText().trim();
+		}
+		aim=aimBox.isSelected();
+		icq=icqBox.isSelected();
+		skype=skypeBox.isSelected();
+		msn=msnBox.isSelected();
+		facebook=facebookBox.isSelected();
+		if (isEmpty()) {
+			form.setBackground(Color.yellow);
+		} else {
+			form.setBackground(invalid?Color.red:Color.green);
+		}
+	}
+
 }
