@@ -125,7 +125,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			System.out.println("reading contact "+(++counter) + "/" + total+": "+contactName);
 			try {
 				Contact contact = new Contact(host,contactName);
-				if (skipInvalidContact(contact,contactName)) continue;
+				if (skipInvalidContact(contact,contactName,writeList)) continue;
 				if (contact.isEmpty()) {
 					deleteList.add(contact);
 					System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
@@ -313,13 +313,15 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 	}
 
-	private boolean skipInvalidContact(Contact contact,String contactName) {
+	private boolean skipInvalidContact(Contact contact,String contactName, TreeSet<Contact> writeList) {
 		while (contact.isInvalid()){
 			String [] options={"Edit manually","Skip","Abort program"};
 			int opt=JOptionPane.showOptionDialog(null, contactName+" has an invalid format", "Invalid Contact", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 			switch (opt) {
 				case 0:
-					contact.edit();
+					if (contact.edit()){
+						writeList.add(contact);
+					}
 					break;
 				case 1:
 					return true;

@@ -865,7 +865,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	public void generateName() {
 		try {
 			vcfName=(new MD5Hash(this))+".vcf";
-			System.out.println(vcfName);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
@@ -887,12 +886,12 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		return messengers;
 	}
 
-	public void edit() {
-		System.out.println(this);
+	public boolean edit() {
+		String before=this.toString();
 		//JOptionPane.showMessageDialog(null, editForm(), "Edit contact");
 		JOptionPane.showMessageDialog(null, editForm(), "Edit contact", JOptionPane.DEFAULT_OPTION);
 		changed();
-		System.out.println(this);
+		return !this.equals(before);
 	}
 	
 	private void updateNicks(){
@@ -1128,7 +1127,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (source instanceof RoleField) updateRoles();
 		if (source instanceof CategoryField) updateCategories();
 		if (source instanceof NoteField) updateNotefields();
-		System.out.println(this);
 	}
 
 	private void updateNotefields() {
