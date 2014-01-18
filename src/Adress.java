@@ -179,8 +179,5 @@ public class Adress implements DocumentListener, ChangeListener {
 		} else {
 			form.setBackground(invalid?Color.red:Color.green);
 		}
-		System.out.println(this);
-		System.out.println(postOfficeBox);
-		System.out.println(country);
 	}
 }

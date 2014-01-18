@@ -174,7 +174,6 @@ public class Nickname implements DocumentListener, ChangeListener {
 		} else {
 			form.setBackground(invalid?Color.red:Color.green);
 		}
-		System.out.println(nick);
 	}
 
 }
