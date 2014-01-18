@@ -16,19 +16,19 @@ public class Birthday implements ChangeListener {
 	private InputField yearField, monthField, dayField, hourField, minuteField, secondField;
 
 	public HorizontalPanel editForm() {
-		HorizontalPanel form = new HorizontalPanel("Birthday");
+		HorizontalPanel form = new HorizontalPanel("Geburtstag");
 		if (invalid) form.setBackground(Color.red);
-		form.add(yearField = new InputField("Year of birth", year));
+		form.add(yearField = new InputField("Geburtsjahr", year));
 		yearField.addEditListener(this);
-		form.add(monthField = new InputField("Month of birth", month));
+		form.add(monthField = new InputField("Geburtsmonat", month));
 		monthField.addEditListener(this);
-		form.add(dayField = new InputField("Day of birth", day));
+		form.add(dayField = new InputField("Tag", day));
 		dayField.addEditListener(this);
-		form.add(hourField = new InputField("Hour", hour));
+		form.add(hourField = new InputField("Stunde", hour));
 		hourField.addEditListener(this);
 		form.add(minuteField = new InputField("Minute", minute));
 		minuteField.addEditListener(this);
-		form.add(secondField = new InputField("Second", second));
+		form.add(secondField = new InputField("Sekunde", second));
 		secondField.addEditListener(this);
 		form.scale();
 		return form;
@@ -98,7 +98,7 @@ public class Birthday implements ChangeListener {
 			bday = bday.substring(16);
 		}
 		if (!bday.startsWith(":")) {
-			throw new InvalidFormatException("BDAY format invalid: BDAY" + birthday);
+			throw new InvalidFormatException("Format des BDAY-Eintrags ungültig: BDAY" + birthday);
 		}
 		bday = bday.substring(1); // remove ':'
 
@@ -130,7 +130,7 @@ public class Birthday implements ChangeListener {
 		}
 		if (!bday.isEmpty()) {
 			if (!bday.startsWith("T")) {
-				throw new InvalidFormatException("BDAY format invalid: BDAY" + birthday);
+				throw new InvalidFormatException("Format des BDAY-Eintrags ungültig: BDAY" + birthday);
 			} else {
 				bday = bday.substring(1);
 				if (!bday.startsWith("-")) {
