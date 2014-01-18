@@ -31,12 +31,12 @@ public class Email implements DocumentListener, ChangeListener {
 		if (invalid) form.setBackground(Color.red);
 		if (isEmpty()) form.setBackground(Color.yellow);
 		
-		form.add(adressBox=new InputField("Adress",adress));
+		form.add(adressBox=new InputField("Adresse",adress));
 		adressBox.addChangeListener(this);
 		
-		form.add(homeBox=new JCheckBox("Home",home));
+		form.add(homeBox=new JCheckBox("Zuhause",home));
 		homeBox.addChangeListener(this);
-		form.add(workBox=new JCheckBox("Work",work));
+		form.add(workBox=new JCheckBox("Arbeit",work));
 		workBox.addChangeListener(this);
 		form.add(internetBox=new JCheckBox("Internet",internet));
 		internetBox.addChangeListener(this);
