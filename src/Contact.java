@@ -102,43 +102,43 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		form.add(name.editForm());
 		
 		/* Formatted Name */
-		form.add(formattedField=new InputField("Formatted name",formattedName));
+		form.add(formattedField=new InputField("formatierter Name",formattedName));
 		formattedField.addChangeListener(this);
 		
 		/* Titles */
-		titleForm = new VerticalPanel("Titles");
+		titleForm = new VerticalPanel("Titel");
 		titleFields=new TreeSet<TitleField>(ObjectComparator.get());
 		for (String t:titles){			
-			TitleField titleField=new TitleField("Title", t);
+			TitleField titleField=new TitleField("Titel", t);
 			titleField.addEditListener(this);
 			titleForm.add(titleField);
 			titleFields.add(titleField);
 		}
-		titleForm.add(newTitleButton=new JButton("add title"));
+		titleForm.add(newTitleButton=new JButton("Titel hinzufügen"));
 		newTitleButton.addActionListener(this);		
 		titleForm.scale();		
 		form.add(titleForm);
 		
 		/* Nicknames */
-		nickForm=new VerticalPanel("Nicknames");
+		nickForm=new VerticalPanel("Rufnamen");
 		for (Nickname nick:nicks){
 			nickForm.add(nick.editForm());
 		}
-		nickForm.add(newNickButton=new JButton("add nickname"));
+		nickForm.add(newNickButton=new JButton("Rufname hinzufügen"));
 		newNickButton.addActionListener(this);
 		nickForm.scale();
 		form.add(nickForm);
 		
 		/* Roles */
-		roleForm = new VerticalPanel("Roles");
+		roleForm = new VerticalPanel("Rollen/Positionen");
 		roleFields=new TreeSet<RoleField>(ObjectComparator.get());
 		for (String t:roles){			
-			RoleField roleField=new RoleField("Role", t);
+			RoleField roleField=new RoleField("Rolle", t);
 			roleField.addEditListener(this);
 			roleForm.add(roleField);
 			roleFields.add(roleField);
 		}
-		roleForm.add(newRoleButton=new JButton("add role"));
+		roleForm.add(newRoleButton=new JButton("Rolle hinzufügen"));
 		newRoleButton.addActionListener(this);		
 		roleForm.scale();		
 		form.add(roleForm);
@@ -147,94 +147,94 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (birthday!=null){
 			form.add(birthday.editForm());
 		} else {
-			form.add(birthdayButton=new JButton("add Birthday"));
+			form.add(birthdayButton=new JButton("Geburtstag hinzufügen"));
 			birthdayButton.addActionListener(this);
 		}
 		
 		/* Phones */
-		phoneForm=new HorizontalPanel("Phones");
+		phoneForm=new HorizontalPanel("Telefonnummern");
 		for (Phone p:phones){
 			phoneForm.add(p.editForm());
 		}
-		phoneForm.add(newPhoneButton = new JButton("Add Phone"));
+		phoneForm.add(newPhoneButton = new JButton("Telefonnummer hinzufügen"));
 		newPhoneButton.addActionListener(this);
 		phoneForm.scale();
 		form.add(phoneForm);
 		
 		/* Adresses */
-		adressForm=new HorizontalPanel("Adresses");
+		adressForm=new HorizontalPanel("Adressen");
 		for (Adress a:adresses){
 			adressForm.add(a.editForm());
 		}
-		adressForm.add(newAdressButton=new JButton("Add Address"));
+		adressForm.add(newAdressButton=new JButton("Addresse hinzufügen"));
 		newAdressButton.addActionListener(this);
 		adressForm.scale();
 		form.add(adressForm);
 
 		/* Emails */
-		mailForm=new HorizontalPanel("Email Adresses");
+		mailForm=new HorizontalPanel("Email-Adressen");
 		for (Email m:mails){
 			mailForm.add(m.editForm());
 		}
-		mailForm.add(newMailButton=new JButton("Add Email"));
+		mailForm.add(newMailButton=new JButton("Email hinzufügen"));
 		newMailButton.addActionListener(this);
 		mailForm.scale();
 		form.add(mailForm);
 		
 		/* URLs */
-		urlForm=new VerticalPanel("Websites");
+		urlForm=new VerticalPanel("Websiten");
 		for (Url u:urls){
 			urlForm.add(u.editForm());
 		}
-		urlForm.add(newUrlButton=new JButton("Add URL"));
+		urlForm.add(newUrlButton=new JButton("URL hinzufügen"));
 		newUrlButton.addActionListener(this);
 		urlForm.scale();
 		form.add(urlForm);		
 		
 		/* Organizations */
-		orgForm=new HorizontalPanel("Organizations");
+		orgForm=new HorizontalPanel("Unternehmen");
 		for (Organization o: orgs){
 			orgForm.add(o.editForm());
 		}
-		orgForm.add(newOrgButton=new JButton("Add Organization"));
+		orgForm.add(newOrgButton=new JButton("Unternehmen hinzufügen"));
 		newOrgButton.addActionListener(this);
 		orgForm.scale();
 		form.add(orgForm);
 		
 		/* Messengers */
-		messengerForm=new HorizontalPanel("Messengers");
+		messengerForm=new HorizontalPanel("Messenger/Chats");
 		for (Messenger m:messengers){
 			messengerForm.add(m.editForm());
 		}
-		messengerForm.add(newMessengerButton=new JButton("Add Messenger"));
+		messengerForm.add(newMessengerButton=new JButton("Messenger hinzufügen"));
 		newMessengerButton.addActionListener(this);
 		messengerForm.scale();
 		form.add(messengerForm);
 		
 		/* Categories */
-		categoryForm = new VerticalPanel("Categories");
+		categoryForm = new VerticalPanel("Kategorien");
 		categoryFields=new TreeSet<CategoryField>(ObjectComparator.get());
 		for (String c:categories){			
-			CategoryField categoryField=new CategoryField("Category", c);
+			CategoryField categoryField=new CategoryField("Kategorie", c);
 			categoryField.addEditListener(this);
 			categoryForm.add(categoryField);
 			categoryFields.add(categoryField);
 		}
-		categoryForm.add(newCategoryButton=new JButton("add category"));
+		categoryForm.add(newCategoryButton=new JButton("Kategorie hinzufügen"));
 		newCategoryButton.addActionListener(this);		
 		categoryForm.scale();		
 		form.add(categoryForm);
 		
 		/* Notes */
-		noteForm = new VerticalPanel("Notes");
+		noteForm = new VerticalPanel("Notizen/Anmerkungen");
 		noteFields=new TreeSet<NoteField>(ObjectComparator.get());
 		for (String n:notes){			
-			NoteField noteField=new NoteField("Note", n);
+			NoteField noteField=new NoteField("Notiz", n);
 			noteField.addEditListener(this);
 			noteForm.add(noteField);
 			noteFields.add(noteField);
 		}
-		noteForm.add(newNoteButton=new JButton("add note"));
+		noteForm.add(newNoteButton=new JButton("Notiz hinzufügen"));
 		newNoteButton.addActionListener(this);		
 		noteForm.scale();		
 		form.add(noteForm);	
@@ -388,13 +388,13 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 		if (name!=null){
 			if (contact.name!=null && !contact.name.equals(name)){
-				name=(Name) selectOneOf("name",name,contact.name,contact);
+				name=(Name) selectOneOf("Name",name,contact.name,contact);
 			}
 		} else name=contact.name;
 		
 		if (formattedName!=null){
 			if (contact.formattedName!=null && !contact.formattedName.equals(formattedName)){
-				formattedName=(String) selectOneOf("formated name", formattedName, contact.formattedName,contact);
+				formattedName=(String) selectOneOf("formatierter Name", formattedName, contact.formattedName,contact);
 			}
 		} else formattedName=contact.formattedName;
 		
@@ -409,7 +409,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		
 		if (birthday!=null){
 			if (contact.birthday!=null && !contact.birthday.equals(birthday)){
-				birthday= (Birthday) selectOneOf("birtday", birthday, contact.birthday,contact);
+				birthday= (Birthday) selectOneOf("Geburtstag", birthday, contact.birthday,contact);
 			}
 		} else birthday=contact.birthday;
 		
@@ -888,7 +888,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	public boolean edit() {
 		String before=this.toString();
 		//JOptionPane.showMessageDialog(null, editForm(), "Edit contact");
-		JOptionPane.showMessageDialog(null, editForm(), "Edit contact", JOptionPane.DEFAULT_OPTION);
+		JOptionPane.showMessageDialog(null, editForm(), "Kontakt bearbeiten", JOptionPane.DEFAULT_OPTION);
 		changed();
 		return !this.equals(before);
 	}
@@ -976,7 +976,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	public void actionPerformed(ActionEvent evt) {
 		Object source = evt.getSource();
 		if (source==newTitleButton){
-			TitleField titleField=new TitleField("Title");
+			TitleField titleField=new TitleField("Titel");
 			titleField.addEditListener(this);
 			titleFields.add(titleField);
 			titleForm.insertCompoundBefore(newTitleButton, titleField);
@@ -997,7 +997,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			}
 		}
 		if (source==newRoleButton){
-			RoleField roleField=new RoleField("Role");
+			RoleField roleField=new RoleField("Rolle");
 			roleField.addEditListener(this);
 			roleFields.add(roleField);
 			roleForm.insertCompoundBefore(newRoleButton, roleField);
@@ -1090,14 +1090,14 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			}
 		}
 		if (source==newCategoryButton){
-			CategoryField categoryField=new CategoryField("Category");
+			CategoryField categoryField=new CategoryField("Kategorie");
 			categoryField.addEditListener(this);
 			categoryFields.add(categoryField);
 			categoryForm.insertCompoundBefore(newCategoryButton, categoryField);
 			form.rescale();
 		}
 		if (source==newNoteButton){
-			NoteField newNoteField=new NoteField("Note");
+			NoteField newNoteField=new NoteField("Notiz");
 			newNoteField.addEditListener(this);
 			noteFields.add(newNoteField);
 			noteForm.insertCompoundBefore(newNoteButton, newNoteField);
