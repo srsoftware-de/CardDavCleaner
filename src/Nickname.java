@@ -100,7 +100,7 @@ public class Nickname implements DocumentListener, ChangeListener {
 	}
 
 	public void merge(Nickname nick) throws InvalidAssignmentException {
-		if (!nick.equals(nick)) throw new InvalidAssignmentException("Trying to merge two nicknames with strings!");
+		if (!nick.equals(nick)) throw new InvalidAssignmentException("Trying to merge two nicknames with different strings!");
 		if (nick.home) home=true;
 		if (nick.work) work=true;
 		if (nick.internet) internet=true;
