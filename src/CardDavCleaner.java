@@ -134,6 +134,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			} catch (UnknownObjectException uoe){
 				uoe.printStackTrace();
 				JOptionPane.showMessageDialog(null, uoe.getMessage());
+			} catch (InvalidFormatException ife){
+				ife.printStackTrace();
+				JOptionPane.showMessageDialog(null, ife.getMessage());
 			}
 		}
 	
