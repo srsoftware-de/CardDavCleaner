@@ -22,6 +22,7 @@ public class Url implements ChangeListener {
 	public VerticalPanel editForm() {
 		form=new VerticalPanel("Web Adress");
 		if (invalid) form.setBackground(Color.red);
+		if (isEmpty()) form.setBackground(Color.yellow);
 		form.add(urlField=new InputField("URL",url));
 		urlField.addEditListener(this);
 		form.add(homeBox=new JCheckBox("Home",home));
@@ -73,8 +74,7 @@ public class Url implements ChangeListener {
 	private void readUrl(String line) {
 		line=line.trim();
 		if (line.isEmpty()) {
-			url=null;
-			return;
+			line=null;
 		}
 		url = line;
 		checkValidity();
@@ -90,7 +90,6 @@ public class Url implements ChangeListener {
 		return url==null || url.isEmpty();
 	}
 
-	@Override
 	public void stateChanged(ChangeEvent arg0) {
 		update();
 	}

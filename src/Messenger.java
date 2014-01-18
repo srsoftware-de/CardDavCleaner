@@ -126,7 +126,6 @@ public class Messenger implements ChangeListener {
 		return invalid;
 	}
 
-	@Override
 	public void stateChanged(ChangeEvent ce) {
 		Object source = ce.getSource();
 		if (source==nickField){

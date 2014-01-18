@@ -54,7 +54,7 @@ public class Organization implements ChangeListener {
 	public boolean isInvalid() {
 		return invalid;
 	}
-	@Override
+
 	public void stateChanged(ChangeEvent arg0) {
 		Object source = arg0.getSource();
 		if (source==nameField){
