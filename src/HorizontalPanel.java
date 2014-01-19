@@ -1,4 +1,5 @@
 
+import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
@@ -19,7 +20,7 @@ public class HorizontalPanel extends JPanel {
 	private static int offset=5; // der Absatnd zwischen den Elementen
 	private int width=0; // die Breite des Panels, anfänglich null
 	private int height=0; // die Höhe des Panels, anfänglich null
-	
+	private boolean caption=false;
 	/**
 	 * erzeugt ein neues, leeres Panel
 	 */
@@ -34,8 +35,8 @@ public class HorizontalPanel extends JPanel {
 	 */
 	public HorizontalPanel(String string) {
 		super(); // leeres Panel erzuegen
+		caption=true;
 		init(); // Java-internes automatisches Layout abschalten
-		height+=15; // höhe initialisieren
 		setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),string)); // Rahmen um Feld Erzeugen
 	}
 
@@ -44,6 +45,8 @@ public class HorizontalPanel extends JPanel {
 	 */
 	private void init() {
 		this.setLayout(null);
+		width=0;
+		height=caption?15:0;
 	}
 	
 	/**
@@ -63,5 +66,38 @@ public class HorizontalPanel extends JPanel {
 	 */
 	public void scale(){
 		setPreferredSize(new Dimension(width+offset+offset,height+offset));
+	}
+
+	public void insertCompoundBefore(JComponent givenComponent, JComponent newComponent) {
+		Component[] oldComps = super.getComponents();
+		super.removeAll();
+		init();
+		for (Component c:oldComps){
+			if (c==givenComponent) {
+				add(newComponent);
+			}
+			add((JComponent)c);
+		}
+		scale();
+		this.repaint();
+	}
+
+	public void replace(JComponent old, JComponent replacement) {
+		Component[] oldComps = super.getComponents();
+		super.removeAll();
+		init();
+		for (Component c:oldComps){
+			if (c==old) {
+				add(replacement);
+			} else {
+				add((JComponent)c);
+			}
+		}
+		scale();
+		this.repaint();
+	}
+	
+	public void rescale(){
+		insertCompoundBefore(null, null);
 	}
 }

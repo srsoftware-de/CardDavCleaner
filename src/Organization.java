@@ -1,30 +1,37 @@
+import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 
-public class Organization {
+public class Organization implements ChangeListener {
 	
 	String name=null;
-	String sub1=null;
-		
+	String extended=null;
+	private boolean invalid=false;
+	private InputField nameField;
+	private InputField extField;
+	private VerticalPanel form;
+	
+
+	public VerticalPanel editForm() {
+		form=new VerticalPanel("Organization");
+		if (invalid) form.setBackground(Color.red);
+		form.add(nameField=new InputField("Name",name));
+		nameField.addEditListener(this);
+		form.add(extField=new InputField("Extended",extended));
+		extField.addEditListener(this);
+		form.scale();
+		return form;
+	}
 	public Organization(String content) throws UnknownObjectException, InvalidFormatException {		
 		if (!content.startsWith("ORG:")) throw new InvalidFormatException("Organization does not start with \"ORG:\"");
 		String line=content.substring(4);
 		if (line.contains(";")){
-			String[] parts = line.split(";");
-			for (int index=0; index<parts.length; index++){
-				String part=parts[index];
-				switch (index){
-				case 0: if (!part.isEmpty()) name=part;
-				break;
-				case 1: if (!part.isEmpty()) sub1=part;
-				break;
-				default:
-						System.err.println("Organization with several parts found: "+line+" => "+part);
-						throw new NotImplementedException();				
-				}
-			}
+			String[] parts = line.split(";",0);
+			if (parts.length>0 && !parts[0].isEmpty()) name=parts[0];
+			if (parts.length>1 && !parts[1].isEmpty()) extended=parts[1];
 		} else name=line; 
 		
 	}
@@ -34,14 +41,34 @@ public class Organization {
 		sb.append("ORG:");
 		if (name!=null) sb.append(name);
 		sb.append(';');
-		if (sub1!=null)sb.append(sub1);
+		if (extended!=null)sb.append(extended);
 		sb.append(';');
 		return sb.toString();
 	}
 
 
 	public boolean isEmpty() {
-		return (name==null) && (sub1==null);
+		return (name==null || name.isEmpty()) && (extended==null || extended.isEmpty());
 	}
+
+	public boolean isInvalid() {
+		return invalid;
+	}
+
+	public void stateChanged(ChangeEvent arg0) {
+		Object source = arg0.getSource();
+		if (source==nameField){
+			name=nameField.getText().trim();
+		}
+		if (source==extField){
+			extended=extField.getText().trim();
+		}
+		if (isEmpty()) {
+			form.setBackground(Color.yellow);
+		} else {
+			form.setBackground(invalid?Color.red:Color.green);
+		}	
+	}
+
 
 }

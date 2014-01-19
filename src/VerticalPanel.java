@@ -1,4 +1,5 @@
 
+import java.awt.Component;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
@@ -28,6 +29,8 @@ public class VerticalPanel extends JPanel {
 	}
 
 	private void init() {
+		width=0;
+		height=offset;
 		this.setLayout(null);
 	}
 	
@@ -41,5 +44,38 @@ public class VerticalPanel extends JPanel {
 	
 	public void scale(){
 		setPreferredSize(new Dimension(width+offset+offset,height+offset));
+	}
+	
+	public void rescale(){
+		insertCompoundBefore(null, null);
+	}
+
+	public void insertCompoundBefore(JComponent givenComponent, JComponent newComponent) {
+		Component[] oldComps = super.getComponents();
+		super.removeAll();
+		init();
+		for (Component c:oldComps){
+			if (c==givenComponent) {
+				add(newComponent);
+			}
+			add((JComponent)c);
+		}
+		scale();
+		this.repaint();
+	}
+
+	public void replace(JComponent old, JComponent replacement) {
+		Component[] oldComps = super.getComponents();
+		super.removeAll();
+		init();
+		for (Component c:oldComps){
+			if (c==old) {
+				add(replacement);
+			} else {
+				add((JComponent)c);
+			}
+		}
+		scale();
+		this.repaint();
 	}
 }
