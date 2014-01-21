@@ -34,8 +34,8 @@
   <Program_Info>
     <Program_Name>CardDavCleaner</Program_Name>
     <Program_Version>1.2</Program_Version>
-    <Program_Release_Month>21</Program_Release_Month>
-    <Program_Release_Day>01</Program_Release_Day>
+    <Program_Release_Month>01</Program_Release_Month>
+    <Program_Release_Day>21</Program_Release_Day>
     <Program_Release_Year>2014</Program_Release_Year>
     <Program_Cost_Dollars>1</Program_Cost_Dollars>
     <Program_Cost_Other_Code />
@@ -67,7 +67,7 @@
   </Program_Info>
   <Program_Descriptions>
     <German>
-      <Keywords>CardDAV, vcard, aufräumen, Adressbuch, WebDAV</Keywords>
+      <Keywords>CardDAV, vcard, aufräumen, Adressbuch, WebDAV, Dubletten</Keywords>
       <Char_Desc_45>Werkzeug, um WebDAV-basierte Adressbücher aufzuräumen</Char_Desc_45>
       <Char_Desc_80>Mit diesem Programm können WebDAV-basierte Adressbücher, wie z.B. owncloud aufgeräumt werden</Char_Desc_80>
       <Char_Desc_250>Dieses Programm meldet Sich an ihrem WebDAV-Server an und vergleicht alle Ihre Kontakte miteinander. Werden dabei Kontakte mit übereinstimmenden Namen, Nummern, Adressen, etc. entdeckt, haben Sie die Option, diese Kontakte zusammenzuführen.</Char_Desc_250>
