@@ -49,7 +49,7 @@
     <Program_Specific_Category>Utilities</Program_Specific_Category>
     <Program_Category_Class>Business::PIMS &amp; Calendars</Program_Category_Class>
     <Program_Categories />
-    <Program_System_Requirements>Java</Program_System_Requirements>
+    <Program_System_Requirements>Java Runtime Environment</Program_System_Requirements>
     <File_Info>
       <File_Size_Bytes />
       <File_Size_K />
