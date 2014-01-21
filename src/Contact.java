@@ -318,12 +318,27 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 					titles.isEmpty() &&
 					roles.isEmpty() && 
 					birthday==null &&
-					categories==null &&
+					(categories==null || categories.isEmpty()) &&
 					urls.isEmpty() &&
 					notes.isEmpty() &&
 					photos.isEmpty() &&
 					orgs.isEmpty() &&
 					nicks.isEmpty();
+	}
+	
+	private void clearFields() {
+		adresses.clear();
+		phones.clear();
+		mails.clear();
+		titles.clear();
+		roles.clear();
+		birthday=null;
+		categories.clear();
+		urls.clear();
+		notes.clear();
+		photos.clear();
+		orgs.clear();
+		nicks.clear();
 	}
 	
 	public void merge(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
@@ -895,12 +910,18 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 	public boolean edit() {
 		String before=this.toString();
-		//JOptionPane.showMessageDialog(null, editForm(), "Edit contact");
-		JOptionPane.showMessageDialog(null, editForm(), "Edit contact", JOptionPane.DEFAULT_OPTION);
-		changed();
+		String [] options={"Ok", "Delete this contact"};
+		int choice=JOptionPane.showOptionDialog(null, editForm(),													 "Edit contact"		, JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,null, options, options[0]);
+		switch (choice){
+		case 1:
+				clearFields();
+				break;
+			default:
+				changed();
+		}
 		return !this.equals(before);
 	}
-	
+
 	private void updateNicks(){
 		TreeSet<Nickname> newNicks = new TreeSet<Nickname>(ObjectComparator.get());
 		for (Nickname n:nicks){
