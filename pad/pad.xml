@@ -67,12 +67,12 @@
   </Program_Info>
   <Program_Descriptions>
     <German>
-      <Keywords>CardDAV, vcard, aufräumen, Adressbuch, WebDAV, Dubletten</Keywords>
+      <Keywords>CardDAV,vcard,aufräumen,Adressbuch,WebDAV,Dubletten</Keywords>
       <Char_Desc_250>Dieses Programm meldet Sich an ihrem WebDAV-Server an und vergleicht alle Ihre Kontakte miteinander. Werden dabei Kontakte mit übereinstimmenden Namen, Nummern, Adressen, etc. entdeckt, haben Sie die Option, diese Kontakte zusammenzuführen. Außerdem wird das Format der Kontakte überprüft: Kontakte deren Formatierung nicht der Norm entspricht können Sie mit einem Assistenten korrigieren.</Char_Desc_450>
       <Char_Desc_450>Dieses Programm meldet Sich an ihrem WebDAV-Server an und vergleicht alle Ihre Kontakte miteinander. Werden dabei Kontakte mit übereinstimmenden Namen, Nummern, Adressen, etc. entdeckt, haben Sie die Option, diese Kontakte zusammenzuführen. Außerdem wird das Format der Kontakte überprüft: Kontakte deren Formatierung nicht der Norm entspricht können Sie mit einem Assistenten korrigieren.</Char_Desc_450>
       </German>
     <English>
-      <Keywords>CardDAV, vcard, clean up, adress book, WebDAV, duplicates</Keywords>
+      <Keywords>CardDAV,vcard,clean up,adress book,WebDAV,duplicates</Keywords>
       <Char_Desc_250>This program logs in to your webdav server and compares details of your contacts with each other. If it finds several contacts with common propperties like email, phone numbers or names, you will have the option to merge those. Furthermore, the format of the vcards is checked: if the program finds vcard not fitting the format standard, you have the option to correct those.</Char_Desc_450>
       <Char_Desc_450>This program logs in to your webdav server and compares details of your contacts with each other. If it finds several contacts with common propperties like email, phone numbers or names, you will have the option to merge those. Furthermore, the format of the vcards is checked: if the program finds vcard not fitting the format standard, you have the option to correct those.</Char_Desc_450>
       </English>
