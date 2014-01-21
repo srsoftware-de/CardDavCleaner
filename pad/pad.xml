@@ -87,7 +87,7 @@
       <Application_Order_URL>http://srsoftware.de/CardDAVCleaner</Application_Order_URL>
       <Application_Screenshot_URL>https://raw2.github.com/SRSoftware/CardDavCleaner/master/pad/screenshot.jpg</Application_Screenshot_URL>
       <Application_Icon_URL />
-      <Application_XML_File_URL />
+      <Application_XML_File_URL>https://raw2.github.com/SRSoftware/CardDavCleaner/master/pad/pad.xml</Application_XML_File_URL>
     </Application_URLs>
     <Download_URLs>
       <Primary_Download_URL>https://github.com/SRSoftware/CardDavCleaner/raw/master/jar/CardDavCleaner-demo.jar</Primary_Download_URL>
