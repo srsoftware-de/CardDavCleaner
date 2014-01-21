@@ -67,7 +67,7 @@
   </Program_Info>
   <Program_Descriptions>
     <German>
-      <Keywords>CardDAV;vcard;aufräumen;Adressbuch;WebDAV;Dubletten</Keywords>
+      <Keywords>CardDAV,vcard,aufräumen,Adressbuch,WebDAV,Dubletten,doppelte Einträge,zusammenführen</Keywords>
       <Char_Desc_250>Dieses Programm meldet Sich an ihrem WebDAV-Server an und vergleicht alle Ihre Kontakte miteinander. Werden dabei Kontakte mit übereinstimmenden Namen, Nummern, Adressen, etc. entdeckt, haben Sie die Option, diese Kontakte zusammenzuführen. Außerdem wird das Format der Kontakte überprüft: Kontakte deren Formatierung nicht der Norm entspricht können Sie mit einem Assistenten korrigieren.</Char_Desc_450>
       </German>
     <English>
