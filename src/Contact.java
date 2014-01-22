@@ -101,12 +101,12 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		/* Name */
 		if (name==null) try {
 			name=new Name("N:;;;;");
-			form.add(name.editForm());
 		} catch (UnknownObjectException e) {
 			e.printStackTrace();
 		} catch (InvalidFormatException e) {
 			e.printStackTrace();
 		}
+		form.add(name.editForm());
 		
 		/* Formatted Name */
 		form.add(formattedField=new InputField("Formatted name",formattedName));
