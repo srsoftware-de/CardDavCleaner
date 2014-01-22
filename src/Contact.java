@@ -394,17 +394,17 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		TreeMap<String, Nickname> nickMap=new TreeMap<String, Nickname>();
 		
 		for (Nickname nick:nicks){
-			Nickname existingNick=nickMap.get(nick.text());
+			Nickname existingNick=nickMap.get(nick.name());
 			if (existingNick!=null){
 				existingNick.merge(nick);
-			} else nickMap.put(nick.text(), nick);
+			} else nickMap.put(nick.name(), nick);
 		}
 
 		for (Nickname nick:contact.nicks){
-			Nickname existingNick=nickMap.get(nick.text());
+			Nickname existingNick=nickMap.get(nick.name());
 			if (existingNick!=null){
 				existingNick.merge(nick);
-			} else nickMap.put(nick.text(), nick);
+			} else nickMap.put(nick.name(), nick);
 		}
 		
 		nicks=nickMap.values();
@@ -1233,5 +1233,15 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 	public boolean shallBeRewritten() {
 		return rewrite && !shallBeDeleted(); // only rewrite if it is not marked for deletion
-	}	
+	}
+
+	public String nicknames() {
+		TreeSet<String> result=new TreeSet<String>();
+		for (Nickname nick:nicks){
+			if (nick!=null && !nick.isEmpty()){
+				result.add(nick.name());
+			}
+		}
+		return result;
+	}
 }

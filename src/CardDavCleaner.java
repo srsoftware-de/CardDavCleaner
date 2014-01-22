@@ -131,27 +131,28 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private void cleanByName(Vector<Contact> contacts, TreeMap<Contact, TreeSet<Contact>> blackLists) throws InterruptedException, InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-		TreeMap<String, TreeSet<Contact>> nameMap= new TreeMap<String, TreeSet<Contact>>();
+		TreeMap<String, TreeSet<Contact>> phoneMap= new TreeMap<String, TreeSet<Contact>>();
 		boolean restart=false;
 		do {
 			restart=false;
 			for (Contact contact:contacts){
 				TreeSet<Contact> blacklistForContact = blackLists.get(contact);
-				Name name = contact.name();
-				if (name!=null){
-					String canonicalName=name.canonical();
-					TreeSet<Contact> contactsForName = nameMap.get(canonicalName);
+				TreeSet<String> names = new TreeSet<String>();
+				names.add(contact.name().canonical());
+				names.add(contact.nicknames());
+				for (String name : names) {
+					TreeSet<Contact> contactsForName = phoneMap.get(name);
 					if (contactsForName == null) {
 						contactsForName=new TreeSet<Contact>();
 						contactsForName.add(contact);
-						nameMap.put(canonicalName, contactsForName);
+						phoneMap.put(name, contactsForName);
 					} else { // we already have one or more contact with this mail address
 						for (Contact existingContact:contactsForName){
 							if (blacklistForContact != null && blacklistForContact.contains(existingContact)) {
 								continue;// this contact pair is blacklisted, go on to next contact
 							}
 							// if this contact pair is not blacklisted:
-							if (askForMege("name", canonicalName, contact, existingContact)) {
+							if (askForMege("name", name, contact, existingContact)) {
 								contact.mergeWith(existingContact, thunderbirdBox.isSelected());
 								contacts.remove(existingContact);
 								existingContact.markForDeletion();
@@ -165,8 +166,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 								blacklistForContact.add(existingContact);
 							}
 						}
+						if (restart){
+							break; // intermediate for loop
+						}
 					}
-				}				
+				}
 				if (restart) {
 					break; // outer for loop
 				}
