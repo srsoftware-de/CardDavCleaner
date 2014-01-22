@@ -280,7 +280,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		TreeSet<Contact> writeList = getWriteList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())) {
 			if (confirmLists(writeList, deleteList)) {
-				JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!");
+				JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning demonstrated!<br/>Actually updating your adress book is only supported in the full version. Goodbye!");
 			} else {
 				JOptionPane.showMessageDialog(null, "<html>Merging and cleaning aborted! Goodbye!");
 			}
