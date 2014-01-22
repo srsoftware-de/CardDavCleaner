@@ -9,7 +9,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
-public class Phone implements DocumentListener, ChangeListener {
+public class Phone implements DocumentListener, ChangeListener, Comparable<Phone> {
 	
 	private boolean fax=false;
 	private boolean home=false;
@@ -23,7 +23,7 @@ public class Phone implements DocumentListener, ChangeListener {
 	VerticalPanel form;
 	private JCheckBox homeBox,voiceBox,workBox,cellBox,faxBox;
 	
-	static TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
+	static TreeSet<String> numbers=new TreeSet<String>();
 	
 	public VerticalPanel editForm() {
 		form=new VerticalPanel("Phone");
@@ -258,5 +258,9 @@ public class Phone implements DocumentListener, ChangeListener {
 		} else {
 			form.setBackground(invalid?Color.red:Color.green);
 		}
+	}
+
+	public int compareTo(Phone otherPhone) {
+		return this.toString().compareTo(otherPhone.toString());
 	}
 }

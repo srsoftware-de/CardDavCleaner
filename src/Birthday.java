@@ -4,7 +4,7 @@ import java.util.Calendar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class Birthday implements ChangeListener {
+public class Birthday implements ChangeListener, Comparable<Birthday> {
 
 	private String year;
 	private String month;
@@ -35,6 +35,7 @@ public class Birthday implements ChangeListener {
 	}
 
 	public boolean equals(Birthday b2) {
+		if (b2==null) return false;
 		return (year.equals(b2.year) && month.equals(b2.month) && day.equals(b2.day));
 	}
 
@@ -291,5 +292,9 @@ public class Birthday implements ChangeListener {
 			if (second.isEmpty()) second=null;
 		}
 		checkInvalidity();
+	}
+
+	public int compareTo(Birthday otherBday) {
+		return this.toString().compareTo(otherBday.toString());
 	}
 }

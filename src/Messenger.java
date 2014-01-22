@@ -6,7 +6,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 
-public class Messenger implements ChangeListener {
+public class Messenger implements ChangeListener, Comparable<Messenger> {
 	
 	private boolean aim=false;
 	private boolean icq=false;
@@ -138,9 +138,15 @@ public class Messenger implements ChangeListener {
 		facebook=facebookBox.isSelected();
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
+			invalid=false;
 		} else {
+			invalid=(aim==false&&icq==false&&skype==false&&msn==false&&facebook==false); 
 			form.setBackground(invalid?Color.red:Color.green);
 		}
+	}
+
+	public int compareTo(Messenger otherMessenger) {
+		return this.toString().compareTo(otherMessenger.toString());
 	}
 
 }

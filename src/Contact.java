@@ -34,34 +34,34 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class Contact implements ActionListener, DocumentListener, ChangeListener {
+public class Contact implements ActionListener, DocumentListener, ChangeListener, Comparable<Contact> {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	//private String revision;
 	//private String productId;
 	private Name name;
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
-	private TreeSet<String> titles=new TreeSet<String>(ObjectComparator.get());
-	private Collection<Phone> phones = new TreeSet<Phone>(ObjectComparator.get());
-	private TreeSet<Adress> adresses = new TreeSet<Adress>(ObjectComparator.get());
-	private Collection<Email> mails = new TreeSet<Email>(ObjectComparator.get());
-	private TreeSet<String> roles=new TreeSet<String>(ObjectComparator.get());
+	private TreeSet<String> titles=new TreeSet<String>();
+	private Collection<Phone> phones = new TreeSet<Phone>();
+	private TreeSet<Adress> adresses = new TreeSet<Adress>();
+	private Collection<Email> mails = new TreeSet<Email>();
+	private TreeSet<String> roles=new TreeSet<String>();
 	private Birthday birthday;	
 	private Label label;
 	private boolean htmlMail;
-	private TreeSet<Url> urls = new TreeSet<Url>(ObjectComparator.get());
+	private boolean rewrite=false;
+	private TreeSet<Url> urls = new TreeSet<Url>();
 	private String uid;
-	private TreeSet<String> notes=new TreeSet<String>(ObjectComparator.get());
-	private TreeSet<String> photos=new TreeSet<String>(ObjectComparator.get());
-	private TreeSet<Organization> orgs=new TreeSet<Organization>(ObjectComparator.get());
+	private TreeSet<String> notes=new TreeSet<String>();
+	private TreeSet<String> photos=new TreeSet<String>();
+	private TreeSet<Organization> orgs=new TreeSet<Organization>();
 	private String vcfName;
-	private TreeSet<Messenger> messengers=new TreeSet<Messenger>(ObjectComparator.get());
-	private TreeSet<String> categories=new TreeSet<String>(ObjectComparator.get());
-	private Collection<Nickname> nicks=new TreeSet<Nickname>(ObjectComparator.get());
+	private TreeSet<Messenger> messengers=new TreeSet<Messenger>();
+	private TreeSet<String> categories=new TreeSet<String>();
+	private Collection<Nickname> nicks=new TreeSet<Nickname>();
 	
 	/* form elements */
 	private JScrollPane scroll;
 	private InputField formattedField;
-	private TreeSet<TitleField> titleFields;
 	private VerticalPanel form;
 	private VerticalPanel titleForm;
 	private VerticalPanel nickForm;
@@ -71,7 +71,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private JButton newTitleButton;
 	private JButton newNickButton;
 	private JButton newRoleButton;
-	private TreeSet<RoleField> roleFields;
 	private JButton birthdayButton;
 	private HorizontalPanel phoneForm;
 	private HorizontalPanel adressForm;
@@ -85,9 +84,11 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private JButton newMessengerButton;
 	private VerticalPanel categoryForm;
 	private JButton newCategoryButton;
-	private TreeSet<CategoryField> categoryFields;
+	private Vector<TitleField> titleFields;
+	private Vector<CategoryField> categoryFields;
+	private Vector<RoleField> roleFields;
+	private Vector<NoteField> noteFields;
 	private VerticalPanel noteForm;
-	private TreeSet<NoteField> noteFields;
 	private JButton newNoteButton;
 	
 	private JComponent editForm() {
@@ -101,12 +102,12 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		/* Name */
 		if (name==null) try {
 			name=new Name("N:;;;;");
-			form.add(name.editForm());
 		} catch (UnknownObjectException e) {
 			e.printStackTrace();
 		} catch (InvalidFormatException e) {
 			e.printStackTrace();
 		}
+		form.add(name.editForm());
 		
 		/* Formatted Name */
 		form.add(formattedField=new InputField("Formatted name",formattedName));
@@ -114,7 +115,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		
 		/* Titles */
 		titleForm = new VerticalPanel("Titles");
-		titleFields=new TreeSet<TitleField>(ObjectComparator.get());
+		titleFields=new Vector<TitleField>();
 		for (String t:titles){			
 			TitleField titleField=new TitleField("Title", t);
 			titleField.addEditListener(this);
@@ -138,7 +139,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		
 		/* Roles */
 		roleForm = new VerticalPanel("Roles");
-		roleFields=new TreeSet<RoleField>(ObjectComparator.get());
+		roleFields=new Vector<RoleField>();
 		for (String t:roles){			
 			RoleField roleField=new RoleField("Role", t);
 			roleField.addEditListener(this);
@@ -220,7 +221,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		
 		/* Categories */
 		categoryForm = new VerticalPanel("Categories");
-		categoryFields=new TreeSet<CategoryField>(ObjectComparator.get());
+		categoryFields=new Vector<CategoryField>();
 		for (String c:categories){			
 			CategoryField categoryField=new CategoryField("Category", c);
 			categoryField.addEditListener(this);
@@ -234,7 +235,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		
 		/* Notes */
 		noteForm = new VerticalPanel("Notes");
-		noteFields=new TreeSet<NoteField>(ObjectComparator.get());
+		noteFields=new Vector<NoteField>();
 		for (String n:notes){			
 			NoteField noteField=new NoteField("Note", n);
 			noteField.addEditListener(this);
@@ -292,19 +293,19 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 
 	private TreeSet<String> getMailAdresses() {
-		TreeSet<String> result=new TreeSet<String>(ObjectComparator.get());
+		TreeSet<String> result=new TreeSet<String>();
 		for (Email mail:mails) result.add(mail.address());
 		return result;
 	}
 
 	private TreeSet<String> getPhoneNumbers() {
-		TreeSet<String> result=new TreeSet<String>(ObjectComparator.get());
+		TreeSet<String> result=new TreeSet<String>();
 		for (Phone phone:phones) result.add(phone.number());
 		return result;
 	}
 
 	private TreeSet<String> getAdressData() {
-		TreeSet<String> result=new TreeSet<String>(ObjectComparator.get());
+		TreeSet<String> result=new TreeSet<String>();
 		for (Adress adress:adresses) result.add(adress.canonical());
 		return result;
 	}
@@ -341,11 +342,11 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		nicks.clear();
 	}
 	
-	public void merge(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
+	public void mergeWith(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
 		adresses.addAll(contact.adresses);
 		
 		/* merging phones by numbers */
-		TreeMap<String,Phone> phoneMap=new TreeMap<String, Phone>(ObjectComparator.get());
+		TreeMap<String,Phone> phoneMap=new TreeMap<String, Phone>();
 		
 		/** phones **/
 		/* add the current phones to the phone map */
@@ -370,7 +371,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		/** endof phones **/
 
 		/** email adresses **/
-		TreeMap<String,Email> mailMap=new TreeMap<String,Email>(ObjectComparator.get());
+		TreeMap<String,Email> mailMap=new TreeMap<String,Email>();
 		
 		for (Email mail:mails){
 			Email existingMail=mailMap.get(mail.address());
@@ -390,20 +391,20 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			mails=thunderbirdMergeMail(mailMap.values());
 		} else mails=mailMap.values();
 		
-		TreeMap<String, Nickname> nickMap=new TreeMap<String, Nickname>(ObjectComparator.get());
+		TreeMap<String, Nickname> nickMap=new TreeMap<String, Nickname>();
 		
 		for (Nickname nick:nicks){
-			Nickname existingNick=nickMap.get(nick.text());
+			Nickname existingNick=nickMap.get(nick.name());
 			if (existingNick!=null){
 				existingNick.merge(nick);
-			} else nickMap.put(nick.text(), nick);
+			} else nickMap.put(nick.name(), nick);
 		}
 
 		for (Nickname nick:contact.nicks){
-			Nickname existingNick=nickMap.get(nick.text());
+			Nickname existingNick=nickMap.get(nick.name());
 			if (existingNick!=null){
 				existingNick.merge(nick);
-			} else nickMap.put(nick.text(), nick);
+			} else nickMap.put(nick.name(), nick);
 		}
 		
 		nicks=nickMap.values();
@@ -440,11 +441,12 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (uid==null) uid=contact.uid;
 		notes.addAll(contact.notes);
 		photos.addAll(contact.photos);
-		orgs.addAll(contact.orgs);		
+		orgs.addAll(contact.orgs);	
+		markForRewrite();
 	}
 	
 	private Collection<Email> thunderbirdMergeMail(Collection<Email> mails) throws ToMuchEntriesForThunderbirdException {
-		TreeSet<Email> overloadedCategoryNumbers=new TreeSet<Email>(ObjectComparator.get());
+		TreeSet<Email> overloadedCategoryNumbers=new TreeSet<Email>();
 		boolean home=false;
 		boolean work=false;	
 
@@ -482,7 +484,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 
 	private Collection<Phone> thunderbirdMergePhone(Collection<Phone> phones) throws ToMuchEntriesForThunderbirdException {
-		TreeSet<Phone> overloadedCategoryNumbers=new TreeSet<Phone>(ObjectComparator.get());
+		TreeSet<Phone> overloadedCategoryNumbers=new TreeSet<Phone>();
 		boolean fax=false;
 		boolean home=false;
 		boolean cell=false;
@@ -820,7 +822,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	
 	private void readCategories(String line) throws AlreadyBoundException {
 		if (line.isEmpty()) return;
-		if (categories==null) categories=new TreeSet<String>(ObjectComparator.get());
+		if (categories==null) categories=new TreeSet<String>();
 		String[] cats = line.split(",");
 		for (String category:cats){
 			categories.add(category.trim());
@@ -857,19 +859,19 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 
 	public TreeSet<String> phoneNumbers() {
-		TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
+		TreeSet<String> numbers=new TreeSet<String>();
 		for (Phone p:phones)	numbers.add(p.number());
 		return numbers;
 	}
 	
 	public TreeSet<String> simpleNumbers(){
-		TreeSet<String> numbers=new TreeSet<String>(ObjectComparator.get());
+		TreeSet<String> numbers=new TreeSet<String>();
 		for (Phone p:phones) numbers.add(p.simpleNumber());
 		return numbers;
 	}
 
 	public TreeSet<String> mailAdresses() {
-		TreeSet<String> mails=new TreeSet<String>(ObjectComparator.get());
+		TreeSet<String> mails=new TreeSet<String>();
 		for (Email e:this.mails){
 			mails.add(e.address());
 		}
@@ -900,15 +902,15 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		return f;
 	}
 
-	public TreeSet<String> messengers() throws UnknownObjectException {
-		TreeSet<String> messengers=new TreeSet<String>(ObjectComparator.get());
+	public TreeSet<String> messengerNicks() throws UnknownObjectException {
+		TreeSet<String> ids=new TreeSet<String>();
 		for (Messenger m:this.messengers){
-			messengers.add(m.id());
+			ids.add(m.nick());
 		}
-		return messengers;
+		return ids;
 	}
 
-	public boolean edit() {
+	public boolean edited() {
 		String before=this.toString();
 		String [] options={"Ok", "Delete this contact"};
 		int choice=JOptionPane.showOptionDialog(null, editForm(),													 "Edit contact"		, JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,null, options, options[0]);
@@ -923,7 +925,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 
 	private void updateNicks(){
-		TreeSet<Nickname> newNicks = new TreeSet<Nickname>(ObjectComparator.get());
+		TreeSet<Nickname> newNicks = new TreeSet<Nickname>();
 		for (Nickname n:nicks){
 			if (!n.isEmpty()){
 				newNicks.add(n);
@@ -933,7 +935,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 	
 	private void updatePhones(){
-		TreeSet<Phone> newPhones=new TreeSet<Phone>(ObjectComparator.get());
+		TreeSet<Phone> newPhones=new TreeSet<Phone>();
 		for (Phone p:phones){
 			if (!p.isEmpty()) {
 				newPhones.add(p);
@@ -943,7 +945,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 	
 	private void updateUrls(){
-		TreeSet<Url> newUrls=new TreeSet<Url>(ObjectComparator.get());
+		TreeSet<Url> newUrls=new TreeSet<Url>();
 		for (Url p:urls){
 			if (!p.isEmpty()) {
 				newUrls.add(p);
@@ -953,7 +955,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 	
 	private void updateOrgs(){
-		TreeSet<Organization> newOrgs=new TreeSet<Organization>(ObjectComparator.get());
+		TreeSet<Organization> newOrgs=new TreeSet<Organization>();
 		for (Organization p:orgs){
 			if (!p.isEmpty()) {
 				newOrgs.add(p);
@@ -963,7 +965,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 	
 	private void updateAdresses(){
-		TreeSet<Adress> newAdresses=new TreeSet<Adress>(ObjectComparator.get());
+		TreeSet<Adress> newAdresses=new TreeSet<Adress>();
 		for (Adress p:adresses){
 			if (!p.isEmpty()) {
 				newAdresses.add(p);
@@ -973,7 +975,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 	
 	private void updateEmails(){
-		TreeSet<Email> newMails=new TreeSet<Email>(ObjectComparator.get());
+		TreeSet<Email> newMails=new TreeSet<Email>();
 		for (Email e:mails){
 			if (!e.isEmpty()) {
 				newMails.add(e);
@@ -983,7 +985,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 	
 	private void updateMessengers(){
-		TreeSet<Messenger> newMessengers=new TreeSet<Messenger>(ObjectComparator.get());
+		TreeSet<Messenger> newMessengers=new TreeSet<Messenger>();
 		for (Messenger m:messengers){
 			if (!m.isEmpty()) {
 				newMessengers.add(m);
@@ -1211,5 +1213,39 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 	private void update() {
 		formattedName=formattedField.getText();
-	}	
+	}
+
+	public int compareTo(Contact o) {
+		return vcfName().compareTo(o.vcfName());
+	}
+
+	public void markForDeletion() {
+		clearFields();
+	}
+
+	public boolean shallBeDeleted() {
+		return isEmpty();
+	}
+
+	public void markForRewrite() {
+		rewrite=true;
+	}
+
+	public boolean shallBeRewritten() {
+		return rewrite && !shallBeDeleted(); // only rewrite if it is not marked for deletion
+	}
+
+	public TreeSet<String> nicknames() {
+		TreeSet<String> result=new TreeSet<String>();
+		for (Nickname nick:nicks){
+			if (nick!=null && !nick.isEmpty()){
+				result.add(nick.name());
+			}
+		}
+		return result;
+	}
+
+	public Birthday birthday() {
+		return birthday;
+	}
 }

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XML_DIZ_INFO>
+  <MASTER_PAD_VERSION_INFO>
+    <MASTER_PAD_VERSION>3.10</MASTER_PAD_VERSION>
+    <MASTER_PAD_INFO>Portable Application Description, or PAD for short, is a data set that is used by shareware authors to disseminate information to anyone interested in their software products. To find out more go to http://www.asp-shareware.org/pad</MASTER_PAD_INFO>
+  </MASTER_PAD_VERSION_INFO>
+  <Company_Info>
+    <Company_Name>SRSoftware GbR</Company_Name>
+    <Address_1>Keplerstraße 21</Address_1>
+    <Address_2 />
+    <City_Town>Gera</City_Town>
+    <State_Province>Thüringen</State_Province>
+    <Zip_Postal_Code>07549</Zip_Postal_Code>
+    <Country>Germany</Country>
+    <Company_WebSite_URL />
+    <Contact_Info>
+      <Author_First_Name>Stephan</Author_First_Name>
+      <Author_Last_Name>Richter</Author_Last_Name>
+      <Author_Email>s.richter@srsoftware.de</Author_Email>
+      <Contact_First_Name>Stephan</Contact_First_Name>
+      <Contact_Last_Name>Richter</Contact_Last_Name>
+      <Contact_Email>s.richter@srsoftware.de</Contact_Email>
+    </Contact_Info>
+    <Support_Info>
+      <Sales_Email>info@srsoftware.de</Sales_Email>
+      <Support_Email>carddavcleaner@srsoftware.de</Support_Email>
+      <General_Email>info@srsoftware.de</General_Email>
+      <Sales_Phone />
+      <Support_Phone />
+      <General_Phone />
+      <Fax_Phone />
+    </Support_Info>
+  </Company_Info>
+  <Program_Info>
+    <Program_Name>CardDavCleaner</Program_Name>
+    <Program_Version>1.2</Program_Version>
+    <Program_Release_Month>01</Program_Release_Month>
+    <Program_Release_Day>21</Program_Release_Day>
+    <Program_Release_Year>2014</Program_Release_Year>
+    <Program_Cost_Dollars />
+    <Program_Cost_Other_Code>EUR (Vollversion)</Program_Cost_Other_Code>
+    <Program_Cost_Other>Kostenlos / 10</Program_Cost_Other>
+    <Program_Type>Open Source</Program_Type>
+    <Program_Release_Status>Minor Update</Program_Release_Status>
+    <Program_Install_Support />
+    <Program_OS_Support>Java</Program_OS_Support>
+    <Program_Language>English,German</Program_Language>
+    <Program_Change_Info>Fehlerkorrekturen</Program_Change_Info>
+    <Program_Specific_Category>Utilities</Program_Specific_Category>
+    <Program_Category_Class>Business::PIMS &amp; Calendars</Program_Category_Class>
+    <Program_Categories />
+    <Program_System_Requirements>Java Runtime Environment</Program_System_Requirements>
+    <File_Info>
+      <File_Size_Bytes />
+      <File_Size_K>60</File_Size_K>
+      <File_Size_MB />
+    </File_Info>
+    <Expire_Info>
+      <Has_Expire_Info>N</Has_Expire_Info>
+      <Expire_Count />
+      <Expire_Based_On />
+      <Expire_Other_Info />
+      <Expire_Month />
+      <Expire_Day />
+      <Expire_Year />
+    </Expire_Info>
+  </Program_Info>
+  <Program_Descriptions>
+    <German>
+      <Keywords>CardDAV,vcard,aufräumen,Adressbuch,WebDAV,Dubletten,doppelte Einträge,zusammenführen</Keywords>
+      <Char_Desc_250>Dieses Programm meldet Sich an ihrem WebDAV-Server an und vergleicht alle Ihre Kontakte miteinander. Werden dabei Kontakte mit übereinstimmenden Namen, Nummern, Adressen, etc. entdeckt, haben Sie die Option, diese Kontakte zusammenzuführen. Außerdem wird das Format der Kontakte überprüft: Kontakte deren Formatierung nicht der Norm entspricht können Sie mit einem Assistenten korrigieren.</Char_Desc_450>
+      </German>
+    <English>
+      <Keywords>CardDAV,vcard,clean up,adress book,WebDAV,duplicates</Keywords>
+      <Char_Desc_250>This program logs in to your webdav server and compares details of your contacts with each other. If it finds several contacts with common propperties like email, phone numbers or names, you will have the option to merge those. Furthermore, the format of the vcards is checked: if the program finds vcard not fitting the format standard, you have the option to correct those.</Char_Desc_450>
+      </English>
+    </Program_Descriptions>
+  <Web_Info>
+    <Application_URLs>
+      <Application_Info_URL>http://srsoftware.de/CardDAVCleaner</Application_Info_URL>
+      <Application_Order_URL>http://srsoftware.de/CardDAVCleaner</Application_Order_URL>
+      <Application_Screenshot_URL>https://raw2.github.com/SRSoftware/CardDavCleaner/master/pad/screenshot.jpg</Application_Screenshot_URL>
+      <Application_Icon_URL />
+      <Application_XML_File_URL>https://raw2.github.com/SRSoftware/CardDavCleaner/master/pad/pad.xml</Application_XML_File_URL>
+    </Application_URLs>
+    <Download_URLs>
+      <Primary_Download_URL>https://github.com/SRSoftware/CardDavCleaner/raw/master/jar/CardDavCleaner-demo.jar</Primary_Download_URL>
+      <Secondary_Download_URL>https://github.com/SRSoftware/CardDavCleaner/raw/master/jar/CardDavCleaner-german-demo.jar</Secondary_Download_URL>
+      <Additional_Download_URL_1 />
+      <Additional_Download_URL_2 />
+    </Download_URLs>
+  </Web_Info>
+  <Permissions>
+    <Distribution_Permissions>Das Programm ist OpenSource und kann über GitHub bezogen werden. Bei den verlinkten jar-Dateien handelt es sich um Demo-Versionen. Falls Sie eine Vollversion wollen können Sie diese über eine Anfrage an SRSoftware.de kaufen oder den Quellcode der Vollversion selbst compilieren.</Distribution_Permissions>
+    <EULA />
+  </Permissions>
+</XML_DIZ_INFO>
