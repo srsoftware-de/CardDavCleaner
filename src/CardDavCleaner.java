@@ -96,7 +96,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		connection.disconnect();
 
 		try {
-			scanContacts(host, contacts);
+			cleanContacts(host, contacts);
 		} catch (ToMuchEntriesForThunderbirdException e) {
 			JOptionPane.showMessageDialog(this, "<html>" + e.getMessage() + "<br>Will abort operation now.");
 			System.exit(-1);
@@ -115,7 +115,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws InvalidAssignmentException
 	 * @throws ToMuchEntriesForThunderbirdException
 	 */
-	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
+	private void cleanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
 		
 		Vector<Contact> contacts = readContacts(host, contactNamess);
 
