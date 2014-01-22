@@ -351,6 +351,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		/** phones **/
 		/* add the current phones to the phone map */
 		for (Phone phone:phones){
+			if (phone.isEmpty()) continue;
 			Phone existingPhone = phoneMap.get(phone.number());
 			if (existingPhone!=null){
 				existingPhone.merge(phone);
@@ -359,6 +360,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		
 		/* add the phone numbers of the second contact to the phone map */
 		for (Phone phone:contact.phones){
+			if (phone.isEmpty()) continue;
 			Phone existingPhone = phoneMap.get(phone.number());
 			if (existingPhone!=null){
 				existingPhone.merge(phone);
@@ -374,6 +376,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		TreeMap<String,Email> mailMap=new TreeMap<String,Email>();
 		
 		for (Email mail:mails){
+			if (mail.isEmpty()) continue;
 			Email existingMail=mailMap.get(mail.address());
 			if (existingMail!=null){
 				existingMail.merge(mail);
@@ -381,6 +384,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		}
 		
 		for (Email mail:contact.mails){
+			if (mail.isEmpty()) continue;
 			Email existingMail=mailMap.get(mail.address());
 			if (existingMail!=null){
 				existingMail.merge(mail);
@@ -455,14 +459,18 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				mail.setWork(); // if address is tagged both, home and work, then set to work only
 				if (work) {
 					overloadedCategoryNumbers.add(mail);
-				} else work=true;
+				} else {
+					work=true;
+				}
 			}
 			
 			if (mail.isHomeMail()){
 				mail.setHome();
 				if (home) {
 					overloadedCategoryNumbers.add(mail);
-				} else home=true;
+				} else {
+					home=true;
+				}
 			}
 		}
 		for (Email email:overloadedCategoryNumbers){
@@ -491,29 +499,37 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		boolean work=false;	
 
 		for (Phone phone:phones){
+			if (phone.isCellPhone()){
+				phone.setCell();
+				if (cell) {
+					overloadedCategoryNumbers.add(phone);
+				} else {
+					cell=true;
+				}
+			}
 			if (phone.isWorkPhone()){
 				phone.setWork();
 				if (work) {
 					overloadedCategoryNumbers.add(phone);
-				} else work=true;
+				} else {
+					work=true;
+				}
 			}
 			if (phone.isHomePhone() || phone.isVoice()){
 				phone.setHome();
 				if (home) {
 					overloadedCategoryNumbers.add(phone);
-				} else home=true;
-			}
-			if (phone.isCellPhone()){
-				phone.setCell();
-				if (cell) {
-					overloadedCategoryNumbers.add(phone);
-				} else cell=true;
+				} else {
+					home=true;
+				}
 			}
 			if (phone.isFax()){
 				phone.setFax();
 				if (fax) {
 					overloadedCategoryNumbers.add(phone);
-				} else fax=true;
+				} else {
+					fax=true;
+				}
 			}
 		}
 		for (Phone phone:overloadedCategoryNumbers){
