@@ -1244,4 +1244,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		}
 		return result;
 	}
+
+	public Birthday birthday() {
+		return birthday;
+	}
 }

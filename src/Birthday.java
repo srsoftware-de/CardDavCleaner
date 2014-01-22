@@ -35,6 +35,7 @@ public class Birthday implements ChangeListener, Comparable<Birthday> {
 	}
 
 	public boolean equals(Birthday b2) {
+		if (b2==null) return false;
 		return (year.equals(b2.year) && month.equals(b2.month) && day.equals(b2.day));
 	}
 

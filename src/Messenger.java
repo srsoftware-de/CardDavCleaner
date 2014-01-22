@@ -138,7 +138,9 @@ public class Messenger implements ChangeListener, Comparable<Messenger> {
 		facebook=facebookBox.isSelected();
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
+			invalid=false;
 		} else {
+			invalid=(aim==false&&icq==false&&skype==false&&msn==false&&facebook==false); 
 			form.setBackground(invalid?Color.red:Color.green);
 		}
 	}
