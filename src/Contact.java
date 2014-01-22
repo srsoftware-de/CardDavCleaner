@@ -48,6 +48,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private Birthday birthday;	
 	private Label label;
 	private boolean htmlMail;
+	private boolean rewrite=false;
 	private TreeSet<Url> urls = new TreeSet<Url>();
 	private String uid;
 	private TreeSet<String> notes=new TreeSet<String>();
@@ -341,7 +342,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		nicks.clear();
 	}
 	
-	public void merge(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
+	public void mergeWith(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
 		adresses.addAll(contact.adresses);
 		
 		/* merging phones by numbers */
@@ -440,7 +441,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (uid==null) uid=contact.uid;
 		notes.addAll(contact.notes);
 		photos.addAll(contact.photos);
-		orgs.addAll(contact.orgs);		
+		orgs.addAll(contact.orgs);	
+		markForRewrite();
 	}
 	
 	private Collection<Email> thunderbirdMergeMail(Collection<Email> mails) throws ToMuchEntriesForThunderbirdException {
@@ -908,7 +910,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		return messengers;
 	}
 
-	public boolean edit() {
+	public boolean edited() {
 		String before=this.toString();
 		String [] options={"Ok", "Delete this contact"};
 		int choice=JOptionPane.showOptionDialog(null, editForm(),													 "Edit contact"		, JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,null, options, options[0]);
@@ -1223,5 +1225,13 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 	public boolean shallBeDeleted() {
 		return isEmpty();
+	}
+
+	public void markForRewrite() {
+		rewrite=true;
+	}
+
+	public boolean shallBeRewritten() {
+		return rewrite && !shallBeDeleted(); // only rewrite if it is not marked for deletion
 	}	
 }

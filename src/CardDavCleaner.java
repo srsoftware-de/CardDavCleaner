@@ -114,7 +114,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws ToMuchEntriesForThunderbirdException 
 	 */
 	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
-		TreeSet<Contact> writeList=new TreeSet<Contact>();
 		Vector<Contact> contacts = new Vector<Contact>();
 		int total = contactNamess.size();
 		int counter = 0;
@@ -124,7 +123,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			System.out.println("reading contact "+(++counter) + "/" + total+": "+contactName);
 			try {
 				Contact contact = new Contact(host,contactName);				
-				if (skipInvalidContact(contact,contactName,writeList)) continue;
+				if (skipInvalidContact(contact,contactName)) continue;
 				if (contact.isEmpty()) {
 					contact.markForDeletion();
 					System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
@@ -173,9 +172,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 							// if this contact pair is not blacklisted:
 							if (askForMege("name", canonicalName, contact, existingContact)) {
-								contact.merge(existingContact,thunderbirdBox.isSelected());
-								writeList.add(contact);
-								writeList.remove(existingContact);
+								contact.mergeWith(existingContact,thunderbirdBox.isSelected());
 								contactsForName.remove(existingContact);
 								existingContact.markForDeletion();
 								restart = true;
@@ -208,9 +205,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 							// if this contact pair is not blacklisted:
 							if (askForMege("phone number", number, contact, existingContact)) {
-								contact.merge(existingContact,thunderbirdBox.isSelected());
-								writeList.add(contact);
-								writeList.remove(existingContact);
+								contact.mergeWith(existingContact,thunderbirdBox.isSelected());
 								contactsForNumber.remove(existingContact);
 								existingContact.markForDeletion();								
 								restart = true;
@@ -241,10 +236,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 							// if this contact pair is not blacklisted:
 						if (askForMege("e-mail", mail, contact, existingContact)) {
-							contact.merge(existingContact,thunderbirdBox.isSelected());
+							contact.mergeWith(existingContact,thunderbirdBox.isSelected());
 							contacts.remove(existingContact);
-							writeList.add(contact);
-							writeList.remove(existingContact);
 							existingContact.markForDeletion();
 							restart = true;
 							break; // this has to be done, as contactsForName changed
@@ -264,20 +257,18 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				/************* messenger *****************/
 				TreeSet<String> messsengers = contact.messengers();
 				for (String messenger:messsengers){
-					Contact contactWithExistingMessenger = messengerMap.get(messenger);
-					if (contactWithExistingMessenger==null){
-						contactWithExistingMessenger=contact;
+					Contact existingContact = messengerMap.get(messenger);
+					if (existingContact==null){
+						existingContact=contact;
 						mailMap.put(messenger, contact);
 					} else {
-						if (blacklist != null && blacklist.contains(contactWithExistingMessenger)) continue;
+						if (blacklist != null && blacklist.contains(existingContact)) continue;
 
 							// if this contact pair is not blacklisted:
-						if (askForMege("messenger", messenger, contact, contactWithExistingMessenger)) {
-							contact.merge(contactWithExistingMessenger,thunderbirdBox.isSelected());
-							contacts.remove(contactWithExistingMessenger);
-							writeList.add(contact);
-							writeList.remove(contactWithExistingMessenger);
-							contactWithExistingMessenger.markForDeletion();
+						if (askForMege("messenger", messenger, contact, existingContact)) {
+							contact.mergeWith(existingContact,thunderbirdBox.isSelected());
+							contacts.remove(existingContact);
+							existingContact.markForDeletion();
 							restart = true;
 							break;
 						} else { // if merging was denied: add contact pair to blacklist
@@ -285,7 +276,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 								blacklist = new TreeSet<Contact>();
 								blackLists.put(contact, blacklist);
 							}
-							blacklist.add(contactWithExistingMessenger);							
+							blacklist.add(existingContact);							
 						}
 						if (restart) break;
 					}
@@ -298,6 +289,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		// next: display changes to be made, ask for confirmation		
 		
 		TreeSet<Contact> deleteList=getDeletionList(contacts);
+		TreeSet<Contact> writeList=getWriteList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())){ 
 			if (confirmLists(writeList,deleteList)){
 				putMergedContacts(host,writeList);
@@ -316,22 +308,34 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 	}
 
-	private TreeSet<Contact> getDeletionList(Collection<Contact> contacts) {
+	private TreeSet<Contact> getWriteList(Vector<Contact> contacts) {
 		TreeSet<Contact> result=new TreeSet<Contact>();
 		for (Contact contact:contacts){
-			if (contact.shallBeDeleted()) result.add(contact);
+			if (contact.shallBeRewritten()){
+				result.add(contact);
+			}
 		}
 		return result;
 	}
 
-	private boolean skipInvalidContact(Contact contact,String contactName, TreeSet<Contact> writeList) {
+	private TreeSet<Contact> getDeletionList(Collection<Contact> contacts) {
+		TreeSet<Contact> result=new TreeSet<Contact>();
+		for (Contact contact:contacts){
+			if (contact.shallBeDeleted()) {
+				result.add(contact);
+			}
+		}
+		return result;
+	}
+
+	private boolean skipInvalidContact(Contact contact,String contactName) {
 		while (contact.isInvalid()){
 			String [] options={"Edit manually","Skip","Abort program"};
 			int opt=JOptionPane.showOptionDialog(null, contactName+" has an invalid format", "Invalid Contact", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 			switch (opt) {
 				case 0:
-					if (contact.edit()){
-						writeList.add(contact);
+					if (contact.edited()){
+						contact.markForRewrite();
 					}
 					break;
 				case 1:
