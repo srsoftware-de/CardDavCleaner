@@ -245,7 +245,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			TreeMap<String, TreeSet<Contact>> messengerMap = new TreeMap<String, TreeSet<Contact>>();
 			for (Contact contact : contacts) {
 				TreeSet<Contact> blacklistForContact = blackLists.get(contact);
-				TreeSet<String> mIDs = contact.messengerIDs();
+				TreeSet<String> mIDs = contact.messengerNicks();
 				for (String messengerID : mIDs) {
 					TreeSet<Contact> contactsForMessengerID = messengerMap.get(messengerID);
 					if (contactsForMessengerID == null) {
