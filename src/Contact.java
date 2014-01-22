@@ -48,6 +48,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private Birthday birthday;	
 	private Label label;
 	private boolean htmlMail;
+	private boolean rewrite=false;
 	private TreeSet<Url> urls = new TreeSet<Url>();
 	private String uid;
 	private TreeSet<String> notes=new TreeSet<String>();
@@ -101,12 +102,12 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		/* Name */
 		if (name==null) try {
 			name=new Name("N:;;;;");
-			form.add(name.editForm());
 		} catch (UnknownObjectException e) {
 			e.printStackTrace();
 		} catch (InvalidFormatException e) {
 			e.printStackTrace();
 		}
+		form.add(name.editForm());
 		
 		/* Formatted Name */
 		form.add(formattedField=new InputField("formatierter Name",formattedName));
@@ -343,7 +344,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		nicks.clear();
 	}
 	
-	public void merge(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
+	public void mergeWith(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
 		adresses.addAll(contact.adresses);
 		
 		/* merging phones by numbers */
@@ -395,17 +396,17 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		TreeMap<String, Nickname> nickMap=new TreeMap<String, Nickname>();
 		
 		for (Nickname nick:nicks){
-			Nickname existingNick=nickMap.get(nick.text());
+			Nickname existingNick=nickMap.get(nick.name());
 			if (existingNick!=null){
 				existingNick.merge(nick);
-			} else nickMap.put(nick.text(), nick);
+			} else nickMap.put(nick.name(), nick);
 		}
 
 		for (Nickname nick:contact.nicks){
-			Nickname existingNick=nickMap.get(nick.text());
+			Nickname existingNick=nickMap.get(nick.name());
 			if (existingNick!=null){
 				existingNick.merge(nick);
-			} else nickMap.put(nick.text(), nick);
+			} else nickMap.put(nick.name(), nick);
 		}
 		
 		nicks=nickMap.values();
@@ -442,7 +443,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (uid==null) uid=contact.uid;
 		notes.addAll(contact.notes);
 		photos.addAll(contact.photos);
-		orgs.addAll(contact.orgs);		
+		orgs.addAll(contact.orgs);	
+		markForRewrite();
 	}
 	
 	private Collection<Email> thunderbirdMergeMail(Collection<Email> mails) throws ToMuchEntriesForThunderbirdException {
@@ -901,15 +903,15 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		return f;
 	}
 
-	public TreeSet<String> messengers() throws UnknownObjectException {
-		TreeSet<String> messengers=new TreeSet<String>();
+	public TreeSet<String> messengerNicks() throws UnknownObjectException {
+		TreeSet<String> ids=new TreeSet<String>();
 		for (Messenger m:this.messengers){
-			messengers.add(m.id());
+			ids.add(m.nick());
 		}
-		return messengers;
+		return ids;
 	}
 
-	public boolean edit() {
+	public boolean edited() {
 		String before=this.toString();
 		String [] options={"Ok", "Delete this contact"};
 		int choice=JOptionPane.showOptionDialog(null, editForm(),	"Kontakt bearbeiten", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,null, options, options[0]);
@@ -1216,5 +1218,35 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 	public int compareTo(Contact o) {
 		return vcfName().compareTo(o.vcfName());
-	}	
+	}
+
+	public void markForDeletion() {
+		clearFields();
+	}
+
+	public boolean shallBeDeleted() {
+		return isEmpty();
+	}
+
+	public void markForRewrite() {
+		rewrite=true;
+	}
+
+	public boolean shallBeRewritten() {
+		return rewrite && !shallBeDeleted(); // only rewrite if it is not marked for deletion
+	}
+
+	public TreeSet<String> nicknames() {
+		TreeSet<String> result=new TreeSet<String>();
+		for (Nickname nick:nicks){
+			if (nick!=null && !nick.isEmpty()){
+				result.add(nick.name());
+			}
+		}
+		return result;
+	}
+
+	public Birthday birthday() {
+		return birthday;
+	}
 }

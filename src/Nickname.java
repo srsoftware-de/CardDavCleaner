@@ -95,7 +95,7 @@ public class Nickname implements DocumentListener, ChangeListener, Comparable<Ni
 		return nick==null || nick.trim().isEmpty();
 	}
 
-	public String text() {
+	public String name() {
 		return nick;
 	}
 
