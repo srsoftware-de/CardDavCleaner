@@ -49,7 +49,7 @@ public class InputField extends HorizontalPanel implements DocumentListener {
 	
 	public void addEditListener(ChangeListener listener){
 		if (editListeners==null){
-			editListeners=new TreeSet<ChangeListener>(ObjectComparator.get());
+			editListeners=new TreeSet<ChangeListener>();
 			result.getDocument().addDocumentListener(this);
 		}
 		editListeners.add(listener);

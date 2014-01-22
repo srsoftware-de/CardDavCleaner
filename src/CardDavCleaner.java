@@ -85,7 +85,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
 		String line;
-		TreeSet<String> contacts = new TreeSet<String>(ObjectComparator.get());
+		TreeSet<String> contacts = new TreeSet<String>();
 		while ((line = in.readLine()) != null) {
 			if (line.contains(".vcf")) contacts.add(extractContactName(line));
 		}
@@ -151,8 +151,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			restart = false;
 			nameMap = new TreeMap<String, TreeSet<Contact>>();
 			numberMap = new TreeMap<String, TreeSet<Contact>>();
-			mailMap = new TreeMap<String, Contact>(ObjectComparator.get());
-			messengerMap = new TreeMap<String, Contact>(ObjectComparator.get());
+			mailMap = new TreeMap<String, Contact>();
+			messengerMap = new TreeMap<String, Contact>();
 			total = contacts.size();
 			for (Contact contact : contacts) {
 				TreeSet<Contact> blacklist = blackLists.get(contact);

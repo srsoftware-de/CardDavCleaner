@@ -6,7 +6,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 
-public class Messenger implements ChangeListener {
+public class Messenger implements ChangeListener, Comparable<Messenger> {
 	
 	private boolean aim=false;
 	private boolean icq=false;
@@ -141,6 +141,10 @@ public class Messenger implements ChangeListener {
 		} else {
 			form.setBackground(invalid?Color.red:Color.green);
 		}
+	}
+
+	public int compareTo(Messenger otherMessenger) {
+		return this.toString().compareTo(otherMessenger.toString());
 	}
 
 }

@@ -1,7 +1,7 @@
 import java.util.TreeSet;
 
 public class Label {
-	TreeSet<String> types=new TreeSet<String>(ObjectComparator.get());
+	TreeSet<String> types=new TreeSet<String>();
 	String encoding=null;
 	String label;
 	private boolean invalid;
