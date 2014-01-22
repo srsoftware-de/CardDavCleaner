@@ -9,7 +9,7 @@ import javax.swing.event.DocumentListener;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class Adress implements DocumentListener, ChangeListener {
+public class Adress implements DocumentListener, ChangeListener,Comparable<Adress> {
 
 	private boolean home = false;
 	private boolean work = false;
@@ -179,5 +179,9 @@ public class Adress implements DocumentListener, ChangeListener {
 		} else {
 			form.setBackground(invalid?Color.red:Color.green);
 		}
+	}
+
+	public int compareTo(Adress otherAdress) {
+	return this.toString().compareTo(otherAdress.toString());
 	}
 }

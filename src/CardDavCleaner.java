@@ -79,14 +79,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			}
 		});
 		
-		//putTestFile(host);
 		if (!host.endsWith("/")) host += "/";
 		URL url = new URL(host);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
 		String line;
-		TreeSet<String> contacts = new TreeSet<String>(ObjectComparator.get());
+		TreeSet<String> contacts = new TreeSet<String>();
 		while ((line = in.readLine()) != null) {
 			if (line.contains(".vcf")) contacts.add(extractContactName(line));
 		}
@@ -114,8 +113,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws ToMuchEntriesForThunderbirdException 
 	 */
 	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
-		TreeSet<Contact> writeList=new TreeSet<Contact>(ObjectComparator.get());
-		TreeSet<Contact> deleteList=new TreeSet<Contact>(ObjectComparator.get());
+		TreeSet<Contact> writeList=new TreeSet<Contact>();
+		TreeSet<Contact> deleteList=new TreeSet<Contact>();
 		Vector<Contact> contacts = new Vector<Contact>();
 		int total = contactNamess.size();
 		int counter = 0;
@@ -124,13 +123,14 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		for (String contactName : contactNamess) {
 			System.out.println("lese Kontact "+(++counter) + "/" + total+": "+contactName);
 			try {
-				Contact contact = new Contact(host,contactName);
+				Contact contact = new Contact(host,contactName);				
 				if (skipInvalidContact(contact,contactName,writeList)) continue;
 				if (contact.isEmpty()) {
 					deleteList.add(contact);
 					System.out.println("Warnung: überspringe leeren Kontakt " + contactName+ " (Enthält nichts außer dem Namen)");
-				} else
+				} else {
 					contacts.add(contact);
+				}
 			} catch (UnknownObjectException uoe){
 				uoe.printStackTrace();
 				JOptionPane.showMessageDialog(null, uoe.getMessage());
@@ -141,7 +141,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 	
 		// next: find and merge related contacts
-		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>(ObjectComparator.get());
+		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
 		TreeMap<String, TreeSet<Contact>> nameMap; // one name may map to multiple contacts, as multiple persons may have the same name
 		TreeMap<String, TreeSet<Contact>> numberMap; // on number can be used by multiple persons, as people living together may share a landline number
 		TreeMap<String, Contact> mailMap;
@@ -149,10 +149,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		boolean restart;
 		do {
 			restart = false;
-			nameMap = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
-			numberMap = new TreeMap<String, TreeSet<Contact>>(ObjectComparator.get());
-			mailMap = new TreeMap<String, Contact>(ObjectComparator.get());
-			messengerMap = new TreeMap<String, Contact>(ObjectComparator.get());
+			nameMap = new TreeMap<String, TreeSet<Contact>>();
+			numberMap = new TreeMap<String, TreeSet<Contact>>();
+			mailMap = new TreeMap<String, Contact>();
+			messengerMap = new TreeMap<String, Contact>();
 			total = contacts.size();
 			for (Contact contact : contacts) {
 				TreeSet<Contact> blacklist = blackLists.get(contact);
@@ -164,7 +164,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					TreeSet<Contact> contactsForName = nameMap.get(canonicalName);
 
 					if (contactsForName == null) { // if we didn't have contacts with this name before, we can't compare.
-						contactsForName = new TreeSet<Contact>(ObjectComparator.get());
+						contactsForName = new TreeSet<Contact>();
 						contactsForName.add(contact); // add a mapping for this contacts name
 						nameMap.put(canonicalName, contactsForName);
 					} else { // this name appeared before:
@@ -183,7 +183,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 								break; // this has to be done, as contactsForName changed
 							} else { // if merging was denied: add contact pair to blacklist
 								if (blacklist == null) {
-									blacklist = new TreeSet<Contact>(ObjectComparator.get());
+									blacklist = new TreeSet<Contact>();
 									blackLists.put(contact, blacklist);
 								}
 								blacklist.add(existingContact);
@@ -200,7 +200,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				for (String number:numbers){
 					TreeSet<Contact> contactsForNumber = numberMap.get(number);
 					if (contactsForNumber==null){
-						contactsForNumber=new TreeSet<Contact>(ObjectComparator.get());
+						contactsForNumber=new TreeSet<Contact>();
 						contactsForNumber.add(contact);						
 						numberMap.put(number, contactsForNumber);
 					} else {
@@ -219,7 +219,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 								break; // this has to be done, as contactsForName changed
 							} else { // if merging was denied: add contact pair to blacklist
 								if (blacklist == null) {
-									blacklist = new TreeSet<Contact>(ObjectComparator.get());
+									blacklist = new TreeSet<Contact>();
 									blackLists.put(contact, blacklist);
 								}
 								blacklist.add(existingContact);
@@ -252,7 +252,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 							break; // this has to be done, as contactsForName changed
 						} else { // if merging was denied: add contact pair to blacklist
 							if (blacklist == null) {
-								blacklist = new TreeSet<Contact>(ObjectComparator.get());
+								blacklist = new TreeSet<Contact>();
 								blackLists.put(contact, blacklist);
 							}
 							blacklist.add(existingContact);							
@@ -284,7 +284,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 							break;
 						} else { // if merging was denied: add contact pair to blacklist
 							if (blacklist == null) {
-								blacklist = new TreeSet<Contact>(ObjectComparator.get());
+								blacklist = new TreeSet<Contact>();
 								blackLists.put(contact, blacklist);
 							}
 							blacklist.add(existingMessenger);							

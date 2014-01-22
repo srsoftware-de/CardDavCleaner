@@ -5,7 +5,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 
-public class Organization implements ChangeListener {
+public class Organization implements ChangeListener, Comparable<Organization> {
 	
 	String name=null;
 	String extended=null;
@@ -68,6 +68,9 @@ public class Organization implements ChangeListener {
 		} else {
 			form.setBackground(invalid?Color.red:Color.green);
 		}	
+	}
+	public int compareTo(Organization otherOrg) {
+		return this.toString().compareTo(otherOrg.toString());
 	}
 
 

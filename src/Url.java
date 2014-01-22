@@ -7,7 +7,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 
-public class Url implements ChangeListener {
+public class Url implements ChangeListener, Comparable<Url> {
 	
 	private boolean home=false;
 	private boolean work=false;
@@ -103,6 +103,10 @@ public class Url implements ChangeListener {
 		} else {
 			form.setBackground(invalid?Color.red:Color.green);
 		}	
+	}
+
+	public int compareTo(Url otherUrl) {
+		return this.toString().compareTo(otherUrl.toString());
 	}
 
 }

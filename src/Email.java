@@ -9,7 +9,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
-public class Email implements DocumentListener, ChangeListener {
+public class Email implements DocumentListener, ChangeListener, Comparable<Email> {
 	
 	private boolean work=false;
 	private boolean home=false;
@@ -186,5 +186,9 @@ public class Email implements DocumentListener, ChangeListener {
 		} else {
 			form.setBackground(invalid?Color.red:Color.green);
 		}
+	}
+
+	public int compareTo(Email otherEmail) {
+		return this.toString().compareTo(otherEmail.toString());
 	}
 }
