@@ -267,6 +267,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		} while (restart);
 
 		// next: display changes to be made, ask for confirmation
+		writeContacts(host,contacts);
+	}
+
+	private void writeContacts(String host, Vector<Contact> contacts) throws IOException {
 		TreeSet<Contact> deleteList = getDeletionList(contacts);
 		TreeSet<Contact> writeList = getWriteList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())) {
@@ -279,11 +283,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			}
 		} else {
 			JOptionPane.showMessageDialog(null, "<html>Nothing to do. Your adress book is either empty or well sorted!!");
-
-		}
-		setVisible(false);
-		System.exit(0);
-
+		}		
 	}
 
 	private Vector<Contact> readContacts(String host, Set<String> contactNamess) throws IOException, AlreadyBoundException {
@@ -546,8 +546,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()));
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.exit(0);
 		}
+		setVisible(false);
+		System.exit(0);
 	}
 
 	public static void main(String[] args) {
