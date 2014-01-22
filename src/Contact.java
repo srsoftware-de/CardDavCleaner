@@ -902,12 +902,12 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		return f;
 	}
 
-	public TreeSet<String> messengers() throws UnknownObjectException {
-		TreeSet<String> messengers=new TreeSet<String>();
+	public TreeSet<String> messengerIDs() throws UnknownObjectException {
+		TreeSet<String> ids=new TreeSet<String>();
 		for (Messenger m:this.messengers){
-			messengers.add(m.id());
+			ids.add(m.id());
 		}
-		return messengers;
+		return ids;
 	}
 
 	public boolean edited() {
