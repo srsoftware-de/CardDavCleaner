@@ -299,7 +299,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		Vector<Contact> contacts = new Vector<Contact>();
 		// Next: read all contacts, remember contacts that contain nothing but a name
 		for (String contactName : contactNamess) {
-			if (counter==200) break;
 			System.out.println("reading contact " + (++counter) + "/" + total + ": " + contactName);
 			try {
 				Contact contact = new Contact(host, contactName);
@@ -524,7 +523,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		hp.scale();
 		vp.add(hp);
 		vp.add(new JLabel("<html><br>Shall those contacts be <i>merged</i>?"));
-		if (contact.birthday()!=null && contact2.birthday()!=null && contact.birthday().equals(contact2.birthday())){
+		if (contact.birthday()!=null && contact2.birthday()!=null && !contact.birthday().equals(contact2.birthday())){
 			vp.add(new JLabel("<html><font color=\"red\">Warning! Those contacts contain unequal birth dates!"));
 		}
 		vp.scale();
