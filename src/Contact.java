@@ -34,7 +34,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class Contact implements ActionListener, DocumentListener, ChangeListener {
+public class Contact implements ActionListener, DocumentListener, ChangeListener, Comparable<Contact> {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	//private String revision;
 	//private String productId;
@@ -1211,5 +1211,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 	private void update() {
 		formattedName=formattedField.getText();
+	}
+
+	public int compareTo(Contact o) {
+		return vcfName().compareTo(o.vcfName());
 	}	
 }
