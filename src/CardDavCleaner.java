@@ -152,7 +152,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			numberMap = new TreeMap<String, TreeSet<Contact>>();
 			mailMap = new TreeMap<String, Contact>();
 			messengerMap = new TreeMap<String, Contact>();
-			total = contacts.size();
+			total = contacts.size();			
+			
 			for (Contact contact : contacts) {
 				TreeSet<Contact> blacklist = blackLists.get(contact);
 
@@ -173,10 +174,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 							// if this contact pair is not blacklisted:
 							if (askForMege("name", canonicalName, contact, existingContact)) {
 								contact.mergeWith(existingContact,thunderbirdBox.isSelected());
-								contactsForName.remove(existingContact);
+								contacts.remove(existingContact);
 								existingContact.markForDeletion();
 								restart = true;
-								break; // this has to be done, as contactsForName changed
+								break; // this has to be done, as contacts changed
 							} else { // if merging was denied: add contact pair to blacklist
 								if (blacklist == null) {
 									blacklist = new TreeSet<Contact>();
@@ -206,10 +207,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 							// if this contact pair is not blacklisted:
 							if (askForMege("phone number", number, contact, existingContact)) {
 								contact.mergeWith(existingContact,thunderbirdBox.isSelected());
-								contactsForNumber.remove(existingContact);
+								contacts.remove(existingContact);
 								existingContact.markForDeletion();								
 								restart = true;
-								break; // this has to be done, as contactsForName changed
+								break; // this has to be done, as contacts changed
 							} else { // if merging was denied: add contact pair to blacklist
 								if (blacklist == null) {
 									blacklist = new TreeSet<Contact>();
