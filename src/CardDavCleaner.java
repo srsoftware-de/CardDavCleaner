@@ -131,7 +131,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		for (Contact contact : contacts) {
 			TreeSet<Contact> blacklistForContact = blackLists.get(contact);
 			TreeSet<String> names = new TreeSet<String>();
-			names.add(contact.name().canonical());
+			if (contact.name()!=null){
+				names.add(contact.name().canonical());
+			}
 			names.addAll(contact.nicknames());
 			for (String name : names) {
 				TreeSet<Contact> contactsForName = phoneMap.get(name);
