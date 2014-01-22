@@ -118,65 +118,60 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private void cleanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
 		
 		Vector<Contact> contacts = readContacts(host, contactNamess);
-
-		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
 		
 		// next: find and merge related contacts
-		TreeMap<String, TreeSet<Contact>> nameMap; // one name may map to multiple contacts, as multiple persons may have the same name
-		TreeMap<String, TreeSet<Contact>> numberMap; // on number can be used by multiple persons, as people living together may share a landline number
-		TreeMap<String, Contact> mailMap;
-		boolean restart;
-		do {
-			restart = false;
-			nameMap = new TreeMap<String, TreeSet<Contact>>();
-			numberMap = new TreeMap<String, TreeSet<Contact>>();
-			mailMap = new TreeMap<String, Contact>();
-			
-			for (Contact contact : contacts) {
-				TreeSet<Contact> blacklist = blackLists.get(contact);
-
-				/************* name *****************/
-				Name name = contact.name();
-				if (name != null) { // we can only do name comparison for contacts with name...
-					String canonicalName = name.canonical();
-					TreeSet<Contact> contactsForName = nameMap.get(canonicalName);
-
-					if (contactsForName == null) { // if we didn't have contacts with this name before, we can't compare.
-						contactsForName = new TreeSet<Contact>();
-						contactsForName.add(contact); // add a mapping for this contacts name
-						nameMap.put(canonicalName, contactsForName);
-					} else { // this name appeared before:
-						for (Contact existingContact : contactsForName) {
-							if (blacklist != null && blacklist.contains(existingContact)) continue;
-
-							// if this contact pair is not blacklisted:
-							if (askForMege("name", canonicalName, contact, existingContact)) {
-								contact.mergeWith(existingContact, thunderbirdBox.isSelected());
-								contacts.remove(existingContact);
-								existingContact.markForDeletion();
-								restart = true;
-								break; // this has to be done, as contacts changed
-							} else { // if merging was denied: add contact pair to blacklist
-								if (blacklist == null) {
-									blacklist = new TreeSet<Contact>();
-									blackLists.put(contact, blacklist);
-								}
-								blacklist.add(existingContact);
-							}
-						} // ---> for (Contact existingContact : contactsForName)
-						if (restart) break; // this has to be done, as contacts changed
-
-					}
-				} // ---> if (name != null)
-				/************* name *****************/
-			} // for
-		} while (restart);
+		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
+		cleanByName(contacts,blackLists);
 		cleanByPhone(contacts,blackLists);
 		cleanByEmail(contacts,blackLists);
 		cleanByMessenger(contacts,blackLists);
 
 		// next: display changes to be made, ask for confirmation
 		writeContacts(host,contacts);
+	}
+
+	private void cleanByName(Vector<Contact> contacts, TreeMap<Contact, TreeSet<Contact>> blackLists) throws InterruptedException, InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
+		TreeMap<String, TreeSet<Contact>> nameMap= new TreeMap<String, TreeSet<Contact>>();
+		boolean restart=false;
+		do {
+			restart=false;
+			for (Contact contact:contacts){
+				TreeSet<Contact> blacklistForContact = blackLists.get(contact);
+				Name name = contact.name();
+				if (name!=null){
+					String canonicalName=name.canonical();
+					TreeSet<Contact> contactsForName = nameMap.get(canonicalName);
+					if (contactsForName == null) {
+						contactsForName=new TreeSet<Contact>();
+						contactsForName.add(contact);
+						nameMap.put(canonicalName, contactsForName);
+					} else { // we already have one or more contact with this mail address
+						for (Contact existingContact:contactsForName){
+							if (blacklistForContact != null && blacklistForContact.contains(existingContact)) {
+								continue;// this contact pair is blacklisted, go on to next contact
+							}
+							// if this contact pair is not blacklisted:
+							if (askForMege("name", canonicalName, contact, existingContact)) {
+								contact.mergeWith(existingContact, thunderbirdBox.isSelected());
+								contacts.remove(existingContact);
+								existingContact.markForDeletion();
+								restart=true;
+								break; // inner for loop
+							} else { // if merging was denied: add contact pair to blacklist
+								if (blacklistForContact == null) {
+									blacklistForContact = new TreeSet<Contact>();
+									blackLists.put(contact, blacklistForContact);
+								}
+								blacklistForContact.add(existingContact);
+							}
+						}
+					}
+				}				
+				if (restart) {
+					break; // outer for loop
+				}
+			}
+		} while (restart);		
 	}
 
 	private void cleanByPhone(Vector<Contact> contacts, TreeMap<Contact, TreeSet<Contact>> blackLists) throws InterruptedException, InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
