@@ -1,6 +1,6 @@
 import java.util.TreeSet;
 
-public class Label {
+public class Label implements Comparable<Label>{
 	TreeSet<String> types=new TreeSet<String>();
 	String encoding=null;
 	String label;
@@ -45,5 +45,9 @@ public class Label {
 
 	public boolean isInvalid() {
 		return invalid;
+	}
+
+	public int compareTo(Label o) {
+		return this.toString().compareTo(o.toString());
 	}
 }

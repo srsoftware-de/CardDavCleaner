@@ -8,7 +8,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
-public class Nickname implements DocumentListener, ChangeListener {
+public class Nickname implements DocumentListener, ChangeListener, Comparable<Nickname> {
 	
 	private boolean work=false;
 	private boolean home=false;
@@ -174,6 +174,10 @@ public class Nickname implements DocumentListener, ChangeListener {
 		} else {
 			form.setBackground(invalid?Color.red:Color.green);
 		}
+	}
+
+	public int compareTo(Nickname o) {
+		return this.toString().compareTo(o.toString());
 	}
 
 }

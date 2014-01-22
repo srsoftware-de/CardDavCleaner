@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
  * @author Stephan Richter
  *
  */
-public class MD5Hash {
+public class MD5Hash implements Comparable<MD5Hash>{
 	String hashtext;
 	/**
 	 * create new hash value for given object
@@ -32,6 +32,9 @@ public class MD5Hash {
 	 */
 	public String toString(){
 		return hashtext;
+	}
+	public int compareTo(MD5Hash o) {
+		return hashtext.compareTo(o.hashtext);
 	}
 	
 }

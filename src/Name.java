@@ -8,7 +8,7 @@ import javax.swing.event.DocumentListener;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
-public class Name implements DocumentListener {	
+public class Name implements DocumentListener, Comparable<Name> {	
 	
 	private String family;
 	private String first;
@@ -201,5 +201,9 @@ public class Name implements DocumentListener {
 
 	public void removeUpdate(DocumentEvent arg0) {
 		update();
+	}
+
+	public int compareTo(Name o) {
+		return canonical().compareTo(o.canonical());
 	}
 }
