@@ -1235,7 +1235,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		return rewrite && !shallBeDeleted(); // only rewrite if it is not marked for deletion
 	}
 
-	public String nicknames() {
+	public TreeSet<String> nicknames() {
 		TreeSet<String> result=new TreeSet<String>();
 		for (Nickname nick:nicks){
 			if (nick!=null && !nick.isEmpty()){
