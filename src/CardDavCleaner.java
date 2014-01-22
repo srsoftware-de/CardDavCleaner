@@ -282,8 +282,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		TreeSet<Contact> writeList = getWriteList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())) {
 			if (confirmLists(writeList, deleteList)) {
-				putMergedContacts(host, writeList);
-				deleteUselessContacts(host, deleteList);
 				JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!");
 			} else {
 				JOptionPane.showMessageDialog(null, "<html>Merging and cleaning aborted! Goodbye!");
