@@ -15,6 +15,7 @@ import java.net.URL;
 import java.rmi.AlreadyBoundException;
 import java.rmi.UnexpectedException;
 import java.rmi.activation.UnknownObjectException;
+import java.util.Collection;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -114,7 +115,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 */
 	private void scanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
 		TreeSet<Contact> writeList=new TreeSet<Contact>();
-		TreeSet<Contact> deleteList=new TreeSet<Contact>();
 		Vector<Contact> contacts = new Vector<Contact>();
 		int total = contactNamess.size();
 		int counter = 0;
@@ -126,7 +126,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				Contact contact = new Contact(host,contactName);				
 				if (skipInvalidContact(contact,contactName,writeList)) continue;
 				if (contact.isEmpty()) {
-					deleteList.add(contact);
+					contact.markForDeletion();
 					System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
 				} else {
 					contacts.add(contact);
@@ -177,8 +177,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 								writeList.add(contact);
 								writeList.remove(existingContact);
 								contactsForName.remove(existingContact);
-								deleteList.add(existingContact);
-								contacts.remove(existingContact);
+								existingContact.markForDeletion();
 								restart = true;
 								break; // this has to be done, as contactsForName changed
 							} else { // if merging was denied: add contact pair to blacklist
@@ -213,8 +212,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 								writeList.add(contact);
 								writeList.remove(existingContact);
 								contactsForNumber.remove(existingContact);
-								deleteList.add(existingContact);
-								contacts.remove(existingContact);
+								existingContact.markForDeletion();								
 								restart = true;
 								break; // this has to be done, as contactsForName changed
 							} else { // if merging was denied: add contact pair to blacklist
@@ -247,7 +245,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 							contacts.remove(existingContact);
 							writeList.add(contact);
 							writeList.remove(existingContact);
-							deleteList.add(existingContact);
+							existingContact.markForDeletion();
 							restart = true;
 							break; // this has to be done, as contactsForName changed
 						} else { // if merging was denied: add contact pair to blacklist
@@ -266,20 +264,20 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				/************* messenger *****************/
 				TreeSet<String> messsengers = contact.messengers();
 				for (String messenger:messsengers){
-					Contact existingMessenger = messengerMap.get(messenger);
-					if (existingMessenger==null){
-						existingMessenger=contact;
+					Contact contactWithExistingMessenger = messengerMap.get(messenger);
+					if (contactWithExistingMessenger==null){
+						contactWithExistingMessenger=contact;
 						mailMap.put(messenger, contact);
 					} else {
-						if (blacklist != null && blacklist.contains(existingMessenger)) continue;
+						if (blacklist != null && blacklist.contains(contactWithExistingMessenger)) continue;
 
 							// if this contact pair is not blacklisted:
-						if (askForMege("messenger", messenger, contact, existingMessenger)) {
-							contact.merge(existingMessenger,thunderbirdBox.isSelected());
-							contacts.remove(existingMessenger);
+						if (askForMege("messenger", messenger, contact, contactWithExistingMessenger)) {
+							contact.merge(contactWithExistingMessenger,thunderbirdBox.isSelected());
+							contacts.remove(contactWithExistingMessenger);
 							writeList.add(contact);
-							writeList.remove(existingMessenger);
-							deleteList.add(existingMessenger);
+							writeList.remove(contactWithExistingMessenger);
+							contactWithExistingMessenger.markForDeletion();
 							restart = true;
 							break;
 						} else { // if merging was denied: add contact pair to blacklist
@@ -287,7 +285,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 								blacklist = new TreeSet<Contact>();
 								blackLists.put(contact, blacklist);
 							}
-							blacklist.add(existingMessenger);							
+							blacklist.add(contactWithExistingMessenger);							
 						}
 						if (restart) break;
 					}
@@ -298,6 +296,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		} while (restart);
 		
 		// next: display changes to be made, ask for confirmation		
+		
+		TreeSet<Contact> deleteList=getDeletionList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())){ 
 			if (confirmLists(writeList,deleteList)){
 				putMergedContacts(host,writeList);
@@ -314,6 +314,14 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		System.exit(0);
 		
 		
+	}
+
+	private TreeSet<Contact> getDeletionList(Collection<Contact> contacts) {
+		TreeSet<Contact> result=new TreeSet<Contact>();
+		for (Contact contact:contacts){
+			if (contact.shallBeDeleted()) result.add(contact);
+		}
+		return result;
 	}
 
 	private boolean skipInvalidContact(Contact contact,String contactName, TreeSet<Contact> writeList) {

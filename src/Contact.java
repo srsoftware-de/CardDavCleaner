@@ -1215,5 +1215,13 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 	public int compareTo(Contact o) {
 		return vcfName().compareTo(o.vcfName());
+	}
+
+	public void markForDeletion() {
+		clearFields();
+	}
+
+	public boolean shallBeDeleted() {
+		return isEmpty();
 	}	
 }
