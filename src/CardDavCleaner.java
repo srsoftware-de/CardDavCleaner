@@ -79,7 +79,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			}
 		});
 		
-		//putTestFile(host);
 		if (!host.endsWith("/")) host += "/";
 		URL url = new URL(host);
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -124,13 +123,14 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		for (String contactName : contactNamess) {
 			System.out.println("reading contact "+(++counter) + "/" + total+": "+contactName);
 			try {
-				Contact contact = new Contact(host,contactName);
+				Contact contact = new Contact(host,contactName);				
 				if (skipInvalidContact(contact,contactName,writeList)) continue;
 				if (contact.isEmpty()) {
 					deleteList.add(contact);
 					System.out.println("Warning: skipping empty contact " + contactName+ " (Contains nothing but a name)");
-				} else
+				} else {
 					contacts.add(contact);
+				}
 			} catch (UnknownObjectException uoe){
 				uoe.printStackTrace();
 				JOptionPane.showMessageDialog(null, uoe.getMessage());
