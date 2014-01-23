@@ -15,6 +15,7 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.activation.UnknownObjectException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -92,12 +93,33 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private JButton newNoteButton;
 	private VerticalPanel nameForm;
 	private HorizontalPanel outerForm;
+	private JButton cloneButton;
 	
 	private JComponent editForm() {
 		outerForm=new HorizontalPanel();
 		
-		form=new VerticalPanel();
-	
+		outerForm.add(form=baseForm());		
+		outerForm.add(cloneButton= new JButton(">> clone this contact >>"));
+		cloneButton.addActionListener(this);
+		
+		outerForm.scale();
+		System.out.println("Form:"+form.getPreferredSize());
+		System.out.println("Outer:"+outerForm.getPreferredSize());
+		
+		Dimension screenDim=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+
+		screenDim.setSize(screenDim.getWidth()-100,screenDim.getHeight()-100);
+		scroll=new JScrollPane(outerForm);
+
+		scroll.setPreferredSize(screenDim);
+		scroll.setSize(scroll.getPreferredSize());
+
+		return scroll;
+	}
+
+	private VerticalPanel baseForm() {
+		VerticalPanel form=new VerticalPanel();
+		
 		/* Name */
 		nameForm=new VerticalPanel("Name");
 		if (name==null) try {
@@ -250,20 +272,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		form.add(noteForm);	
 		
 		form.scale();
-		outerForm.add(form);
-		outerForm.scale();
-		System.out.println("Form:"+form.getPreferredSize());
-		System.out.println("Outer:"+outerForm.getPreferredSize());
-		
-		Dimension screenDim=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-
-		screenDim.setSize(screenDim.getWidth()-100,screenDim.getHeight()-100);
-		scroll=new JScrollPane(outerForm);
-
-		scroll.setPreferredSize(screenDim);
-		scroll.setSize(scroll.getPreferredSize());
-
-		return scroll;
+		return form;
 	}
 
 	public boolean isInvalid() {
@@ -605,6 +614,10 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		parse(new URL(directory+name));
 	}
 	
+	public Contact(String data) throws UnknownObjectException, InvalidFormatException, AlreadyBoundException {
+		parse(data);
+	}
+	
 	public String toString() {
 		return toString(false);
 	}
@@ -725,21 +738,15 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		String date=formatter.format(new Date()).replace('#','T');
 		return "REV:"+date;
 	}
-
-	private void parse(URL url) throws IOException, UnknownObjectException, AlreadyBoundException, InvalidFormatException {
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		InputStream content = (InputStream) connection.getInputStream();
-		BufferedReader in = new BufferedReader(new InputStreamReader(content));
-		Vector<String> lines=new Vector<String>();
-		String line;
-		while ((line = in.readLine()) != null) {
-			lines.add(line);
-		}
-		in.close();
-		content.close();
-		connection.disconnect();
+	
+	private void parse(String data) throws UnknownObjectException, InvalidFormatException, AlreadyBoundException{
+		String[] lineArray=data.split("\n");
+		parse(new Vector<String>(Arrays.asList(lineArray)));
+	}
+	
+	private void parse(Vector<String> lines) throws UnknownObjectException, InvalidFormatException, AlreadyBoundException{		
 		for (int index = 0; index < lines.size(); index++) {
-			line = lines.elementAt(index);
+			String line = lines.elementAt(index);
 			while (index + 1 < lines.size() && (lines.elementAt(index + 1).startsWith(" ") || lines.elementAt(index + 1).startsWith("\\n"))) {
 				index++;
 				String dummy=lines.elementAt(index);
@@ -781,6 +788,21 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			}
 		}
 		changed();
+	}
+
+	private void parse(URL url) throws IOException, UnknownObjectException, AlreadyBoundException, InvalidFormatException {
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		InputStream content = (InputStream) connection.getInputStream();
+		BufferedReader in = new BufferedReader(new InputStreamReader(content));
+		Vector<String> lines=new Vector<String>();
+		String line;
+		while ((line = in.readLine()) != null) {
+			lines.add(line);
+		}
+		in.close();
+		content.close();
+		connection.disconnect();
+		parse(lines);
 	}
 
 	private void readIMPP(String line) throws UnknownObjectException, InvalidFormatException {
@@ -1165,6 +1187,28 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			noteForm.insertCompoundBefore(newNoteButton, newNoteField);
 			rescale();
 		}
+		if (source==cloneButton){
+			Contact clonedContact=clone();
+			if (clonedContact!=null){
+				outerForm.replace(cloneButton, clonedContact.baseForm());
+			}
+		}
+	}
+	
+	protected Contact clone() {
+		try {
+			return new Contact(toString());
+		} catch (UnknownObjectException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AlreadyBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	private void rescale() {
