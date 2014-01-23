@@ -17,7 +17,7 @@ public class HorizontalPanel extends JPanel {
    * 
    */
   private static final long serialVersionUID = -3763921236213613770L;
-	private static int offset=5; // der Absatnd zwischen den Elementen
+	private int offset=5; // der Absatnd zwischen den Elementen
 	private int width=0; // die Breite des Panels, anfänglich null
 	private int height=0; // die Höhe des Panels, anfänglich null
 	private boolean caption=false;
@@ -45,8 +45,12 @@ public class HorizontalPanel extends JPanel {
 	 */
 	private void init() {
 		this.setLayout(null);
-		width=0;
-		height=caption?15:0;
+		width=5;
+		offset=5;
+		if (caption){
+			System.out.println("setting offset to "+(offset+25));
+			offset+=15;
+		}
 	}
 	
 	/**
@@ -55,7 +59,7 @@ public class HorizontalPanel extends JPanel {
 	 */
 	public void add(JComponent c){
 		c.setSize(c.getPreferredSize()); // skaliert die zuzufügende Komponente auf ihre bevorzugte Größe		
-		c.setLocation(width, offset/2); // ordnet die Komponente an
+		c.setLocation(width, offset); // ordnet die Komponente an
 		width+=c.getWidth(); // speichert die aktuelle Position, bis zu der Komponenten gehen, damit auch die nächste Komponente angeordnert werden kann
 		height=Math.max(height, c.getHeight()); // bestimmt die minimalgröße des Panels nach Addition der grafischen Komponente
 		super.add(c); // fügt die grafische Komponente dem Panel hinzu
@@ -65,7 +69,7 @@ public class HorizontalPanel extends JPanel {
 	 * skaliert das gesamte Panel so, dass alle hinzugefügten Komponenten sichtbar bleiben
 	 */
 	public void scale(){
-		setPreferredSize(new Dimension(width+offset+offset,height+offset));
+		setPreferredSize(new Dimension(width+offset+offset,height+offset+5));
 	}
 
 	public void insertCompoundBefore(JComponent givenComponent, JComponent newComponent) {

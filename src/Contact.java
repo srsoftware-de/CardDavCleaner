@@ -90,6 +90,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private Vector<NoteField> noteFields;
 	private VerticalPanel noteForm;
 	private JButton newNoteButton;
+	private VerticalPanel nameForm;
 	
 	private JComponent editForm() {
 		form=new VerticalPanel();
@@ -100,6 +101,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		scroll.setSize(scroll.getPreferredSize());
 		
 		/* Name */
+		nameForm=new VerticalPanel("Name");
 		if (name==null) try {
 			name=new Name("N:;;;;");
 		} catch (UnknownObjectException e) {
@@ -107,11 +109,13 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		} catch (InvalidFormatException e) {
 			e.printStackTrace();
 		}
-		form.add(name.editForm());
+		nameForm.add(name.editForm(null));
 		
 		/* Formatted Name */
-		form.add(formattedField=new InputField("Formatted name",formattedName));
+		nameForm.add(formattedField=new InputField("Formatted name",formattedName));
 		formattedField.addChangeListener(this);
+		nameForm.scale();
+		form.add(nameForm);
 		
 		/* Titles */
 		titleForm = new VerticalPanel("Titles");
@@ -929,7 +933,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	public boolean edited() {
 		String before=this.toString();
 		String [] options={"Ok", "Delete this contact"};
-		int choice=JOptionPane.showOptionDialog(null, editForm(),													 "Edit contact"		, JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,null, options, options[0]);
+		int choice=JOptionPane.showOptionDialog(null, editForm(), "Edit contact"		, JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE,null, options, options[0]);
 		switch (choice){
 		case 1:
 				clearFields();

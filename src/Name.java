@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
 
+import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -18,10 +19,10 @@ public class Name implements DocumentListener, Comparable<Name> {
 	private boolean invalid=false;
 	
 	private InputField prefBox,firstBox,middleBox,familyBox,sufBox;
-	private HorizontalPanel form;
+	private VerticalPanel form;
 	
-	public HorizontalPanel editForm() {
-		form=new HorizontalPanel("Name");
+	public JPanel editForm(String title) {
+		form=new VerticalPanel(title);
 		if (isInvalid()) form.setBackground(Color.red);
 		
 		form.add(prefBox=new InputField("Prefix",prefix));
