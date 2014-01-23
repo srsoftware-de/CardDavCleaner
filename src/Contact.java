@@ -817,15 +817,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 	}
 
-	private void mergeCategories(Contact contact) {
-		if (categories != null) {
-			if (contact.categories != null) {
-				categories.addAll(contact.categories);
-			}
-		} else categories = contact.categories;
-	}
-
-	private void mergeNames(Contact contact) {
+		private void mergeNames(Contact contact) {
 		if (name==null){
 			name=contact.name;
 		} else if (name.isCompatibleWith(contact.name)){
@@ -859,13 +851,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	private void mergePhotos(Contact contact) {
 		photos.addAll(contact.photos);
-	}
-
-	private void mergeRoles(Contact contact) {
-		
-	}
-
-	private void mergeTitles(Contact contact) {
 	}
 
 	private void mergeUrls(Contact contact) {
