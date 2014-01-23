@@ -60,6 +60,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private TreeSet<String> categories=new TreeSet<String>();
 	private Collection<Nickname> nicks=new TreeSet<Nickname>();
 	
+	private Contact clonedContact;
+
 	/* form elements */
 	private JScrollPane scroll;
 	private InputField formattedField;
@@ -94,6 +96,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private VerticalPanel nameForm;
 	private HorizontalPanel outerForm;
 	private JButton cloneButton;
+	private JButton resetCloneButton;
+	private HorizontalPanel clonePanel;
 	
 	private JComponent editForm() {
 		outerForm=new HorizontalPanel();
@@ -1188,10 +1192,20 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			rescale();
 		}
 		if (source==cloneButton){
-			Contact clonedContact=clone();
+			clonedContact=clone();
 			if (clonedContact!=null){
-				outerForm.replace(cloneButton, clonedContact.baseForm());
+				clonePanel=new HorizontalPanel("cloned contact");
+				clonePanel.add(resetCloneButton=new JButton("drop clone"));
+				resetCloneButton.addActionListener(this);
+				clonePanel.add(clonedContact.baseForm());
+				clonePanel.scale();
+				outerForm.replace(cloneButton, clonePanel);
 			}
+		}
+		if (source==resetCloneButton){
+			clonedContact.clearFields();
+			outerForm.replace(clonePanel, cloneButton);
+			clonedContact=null;
 		}
 	}
 	
