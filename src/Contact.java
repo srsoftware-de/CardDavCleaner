@@ -107,8 +107,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		cloneButton.addActionListener(this);
 		
 		outerForm.scale();
-		System.out.println("Form:"+form.getPreferredSize());
-		System.out.println("Outer:"+outerForm.getPreferredSize());
 		
 		Dimension screenDim=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -936,6 +934,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 	
 	public String vcfName(){
+		if (vcfName==null || vcfName.isEmpty()){
+			generateName();
+		}
 		return vcfName;
 	}
 
@@ -1342,5 +1343,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 
 	public Birthday birthday() {
 		return birthday;
+	}
+
+	public Contact getClonedContactIfExists() {
+		return clonedContact;
 	}
 }
