@@ -7,15 +7,15 @@ import java.util.TreeSet;
 
 public class MergableList<Type extends Mergable<Type>> implements SortedSet<Type> {
 
-	private TreeSet<Type> adresses=new TreeSet<Type>();
+	private TreeSet<Type> set=new TreeSet<Type>();
 	@Override
-	public boolean add(Type newAdr) {
-		for (Type adr:adresses){
-			if (adr.isCompatibleWith(newAdr)){
-				return adr.mergeWith(newAdr);				 
+	public boolean add(Type newElment) {
+		for (Type element:set){
+			if (element.isCompatibleWith(newElment)){
+				return element.mergeWith(newElment);				 
 			}
 		}
-		return adresses.add(newAdr);
+		return set.add(newElment);
 	}
 
 	@Override
@@ -29,86 +29,90 @@ public class MergableList<Type extends Mergable<Type>> implements SortedSet<Type
 
 	@Override
   public void clear() {
-		adresses.clear();
+		set.clear();
   }
 
 	@Override
   public Comparator<? super Type> comparator() {
-	  return adresses.comparator();
+	  return set.comparator();
   }
 
 	@Override
   public boolean contains(Object o) {
-	  return adresses.contains(o);
+	  return set.contains(o);
   }
 
 	@Override
   public boolean containsAll(Collection<?> c) {
-		return adresses.containsAll(c);
+		return set.containsAll(c);
   }
 
 	@Override
   public Type first() {
-	  return adresses.first();
+	  return set.first();
   }
 
 	@Override
   public SortedSet<Type> headSet(Type toElement) {
-	  return adresses.headSet(toElement);
+	  return set.headSet(toElement);
   }
 
 	@Override
   public boolean isEmpty() {
-	  return adresses.isEmpty();
+	  return set.isEmpty();
   }
 
 	@Override
   public Iterator<Type> iterator() {
-	  return adresses.iterator();
+	  return set.iterator();
   }
 
 	@Override
   public Type last() {
-	  return adresses.last();
+	  return set.last();
   }
 
 	@Override
   public boolean remove(Object o) {
-	  return adresses.remove(o);
+	  return set.remove(o);
   }
 
 	@Override
   public boolean removeAll(Collection<?> c) {
-	  return adresses.removeAll(c);
+	  return set.removeAll(c);
   }
 
 	@Override
   public boolean retainAll(Collection<?> c) {
-	  return adresses.retainAll(c);
+	  return set.retainAll(c);
   }
 
 	@Override
   public int size() {
-	  return adresses.size();
+	  return set.size();
   }
 
 	@Override
   public SortedSet<Type> subSet(Type fromElement, Type toElement) {
-	  return adresses.subSet(fromElement, toElement);
+	  return set.subSet(fromElement, toElement);
   }
 
 	@Override
   public SortedSet<Type> tailSet(Type fromElement) {
-	  return adresses.tailSet(fromElement);
+	  return set.tailSet(fromElement);
   }
 
 	@Override
   public Object[] toArray() {
-		return adresses.toArray();
+		return set.toArray();
   }
 
 	@Override
   public <T> T[] toArray(T[] a) {
-		return adresses.toArray(a);
+		return set.toArray(a);
   }
+	
+	public String toString(){
+		return set.toString();
+	}
 }
