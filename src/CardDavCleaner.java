@@ -305,7 +305,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			try {
 				Contact contact = new Contact(host, contactName);
 				do {
-					if (skipInvalidContact(contact)) continue;
+					if (skipInvalidContact(contact)) break;;
 					if (contact.isEmpty()) {
 						contact.markForDeletion();
 						System.out.println("Warning: skipping empty contact " + contact.vcfName() + " (Contains nothing but a name)");
