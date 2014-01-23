@@ -21,69 +21,6 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 	private InputField prefBox,firstBox,middleBox,familyBox,sufBox;
 	private VerticalPanel form;
 	
-	@Override
-  public boolean mergeWith(Name otherName) {
-		family=merge(family,otherName.family);
-		first=merge(first,otherName.first);
-		prefix=merge(prefix,otherName.prefix);
-		suffix=merge(suffix,otherName.suffix);
-		middle=merge(middle,otherName.middle);
-	  return true;
-  }
-
-	@Override
-  public boolean isCompatibleWith(Name otherName) {
-		if (different(first,otherName.first)) return false;
-		if (different(family,otherName.family)) return false;
-		if (different(prefix,otherName.prefix)) return false;
-		if (different(suffix, otherName.suffix)) return false;
-		if (different(middle,otherName.middle)) return false;
-	  return true;
-  }
-
-	
-	public JPanel editForm(String title) {
-		form=new VerticalPanel(title);
-		
-		form.add(prefBox=new InputField("Prefix",prefix));
-		prefBox.addChangeListener(this);
-		
-		form.add(firstBox=new InputField("First Name",first));
-		firstBox.addChangeListener(this);
-		
-		form.add(middleBox=new InputField("Middle Name",middle));
-		middleBox.addChangeListener(this);
-		
-		form.add(familyBox=new InputField("Family Name",family));
-		familyBox.addChangeListener(this);
-		
-		form.add(sufBox=new InputField("Suffix",suffix));
-		sufBox.addChangeListener(this);
-		
-		form.scale();
-		return form;
-	}
-	
-	@Override
-	public String toString() {
-		StringBuffer sb=new StringBuffer();
-		sb.append("N:");
-		if (family!=null) sb.append(family);
-		sb.append(';');
-		if (first!=null) sb.append(first);
-		sb.append(';');
-		if (middle!=null) sb.append(middle);
-		sb.append(";");
-		if (prefix!=null) sb.append(prefix);
-		sb.append(";");
-		if (suffix!=null) sb.append(suffix);
-		return sb.toString();
-	}
-	
-	public String full(){
-		return prefix+" "+first+" "+middle+" "+family+" "+suffix;
-	}
-	
 	public Name(String line) throws UnknownObjectException, InvalidFormatException {		
 		if (!line.startsWith("N:")) throw new InvalidFormatException("Name does not start with \"N:\"");
 		line=line.substring(2).trim();
@@ -105,32 +42,45 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 		} else family=line.substring(2); 
 		
 	}
-	
-	private void setSuffix(String string) {
-		if (string.isEmpty()) return;
-		suffix=string;
+
+	public String canonical() {
+		TreeSet<String> parts=new TreeSet<String>();
+		if (first!=null) parts.add(ascii(first).toLowerCase());
+		if (middle!=null) parts.add(ascii(middle).toLowerCase());
+		if (family!=null) parts.add(ascii(family).toLowerCase());	
+		
+		return parts.toString().replace("[", "").replace("]", ""); // sorted set of name parts
 	}
 
-	private void setPrefix(String string) {
-		if (string.isEmpty()) return;
-		prefix=string;
-	}
-
-	private void setFamily(String string) {
-		if (string.isEmpty()) return;
-		family=string;		
-	}
-	private void setFirst(String string) {
-		if (string.isEmpty()) return;
-		first=string;		
-	}
-	private void setMiddle(String string) {
-		if (string.isEmpty()) return;
-		middle=string;		
+	
+	public void changedUpdate(DocumentEvent arg0) {
+		update();
 	}
 	
-	public boolean isEmpty() {
-		return ((family==null) && (first==null));	
+	public int compareTo(Name o) {
+		return canonical().compareTo(o.canonical());
+	}
+	
+	public JPanel editForm(String title) {
+		form=new VerticalPanel(title);
+		
+		form.add(prefBox=new InputField("Prefix",prefix));
+		prefBox.addChangeListener(this);
+		
+		form.add(firstBox=new InputField("First Name",first));
+		firstBox.addChangeListener(this);
+		
+		form.add(middleBox=new InputField("Middle Name",middle));
+		middleBox.addChangeListener(this);
+		
+		form.add(familyBox=new InputField("Family Name",family));
+		familyBox.addChangeListener(this);
+		
+		form.add(sufBox=new InputField("Suffix",suffix));
+		sufBox.addChangeListener(this);
+		
+		form.scale();
+		return form;
 	}
 	
 	public boolean equals(Name name){		
@@ -161,42 +111,104 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 
 		return true;
 	}
-
-	public String title(){
-		return prefix;
-	}
-
-	public String last() {
-		return family;
-	}
-
+	
 	public String first() {
 		return first;
 	}
+
+	public String full(){
+		return prefix+" "+first+" "+middle+" "+family+" "+suffix;
+	}
+
+	public void insertUpdate(DocumentEvent arg0) {
+		update();
+	}
+	@Override
+  public boolean isCompatibleWith(Name otherName) {
+		if (different(first,otherName.first)) return false;
+		if (different(family,otherName.family)) return false;
+		if (different(prefix,otherName.prefix)) return false;
+		if (different(suffix, otherName.suffix)) return false;
+		if (different(middle,otherName.middle)) return false;
+	  return true;
+  }
+	public boolean isEmpty() {
+		return ((family==null) && (first==null));	
+	}
 	
+	public String last() {
+		return family;
+	}
+	
+	@Override
+  public boolean mergeWith(Name otherName) {
+		family=merge(family,otherName.family);
+		first=merge(first,otherName.first);
+		prefix=merge(prefix,otherName.prefix);
+		suffix=merge(suffix,otherName.suffix);
+		middle=merge(middle,otherName.middle);
+	  return true;
+  }
+
 	public String prefix(){
 		return prefix;
 	}
-	
+
+	public void removeUpdate(DocumentEvent arg0) {
+		update();
+	}
+
 	public String suffix(){
 		return suffix;
+	}
+	
+	public String title(){
+		return prefix;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sb=new StringBuffer();
+		sb.append("N:");
+		if (family!=null) sb.append(family);
+		sb.append(';');
+		if (first!=null) sb.append(first);
+		sb.append(';');
+		if (middle!=null) sb.append(middle);
+		sb.append(";");
+		if (prefix!=null) sb.append(prefix);
+		sb.append(";");
+		if (suffix!=null) sb.append(suffix);
+		return sb.toString();
 	}
 
 	private String ascii(String s) {
 		return s.replace("Ä", "Ae").replace("ä", "ae").replace("Ö", "Oe").replace("ö", "oe").replace("Ü", "Ue").replace("ü", "ue").replace("ß", "ss").replace("é", "e");
 	}
 
-	public String canonical() {
-		TreeSet<String> parts=new TreeSet<String>();
-		if (first!=null) parts.add(ascii(first).toLowerCase());
-		if (middle!=null) parts.add(ascii(middle).toLowerCase());
-		if (family!=null) parts.add(ascii(family).toLowerCase());	
-		
-		return parts.toString().replace("[", "").replace("]", ""); // sorted set of name parts
+	private void setFamily(String string) {
+		if (string.isEmpty()) return;
+		family=string;		
 	}
 
-	public void changedUpdate(DocumentEvent arg0) {
-		update();
+	private void setFirst(String string) {
+		if (string.isEmpty()) return;
+		first=string;		
+	}
+
+	private void setMiddle(String string) {
+		if (string.isEmpty()) return;
+		middle=string;		
+	}
+
+	private void setPrefix(String string) {
+		if (string.isEmpty()) return;
+		prefix=string;
+	}
+
+	private void setSuffix(String string) {
+		if (string.isEmpty()) return;
+		suffix=string;
 	}
 
 	private void update() {
@@ -210,17 +222,5 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 		} else {
 			form.setBackground(Color.green);
 		}
-	}
-
-	public void insertUpdate(DocumentEvent arg0) {
-		update();
-	}
-
-	public void removeUpdate(DocumentEvent arg0) {
-		update();
-	}
-
-	public int compareTo(Name o) {
-		return canonical().compareTo(o.canonical());
 	}
 }
