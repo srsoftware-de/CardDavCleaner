@@ -55,7 +55,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private MergableList<Adress> adresses = new MergableList<Adress>();
 	private MergableList<Email> mails = new MergableList<Email>();
 	private MergableList<Url> urls = new MergableList<Url>();
-	private TreeSet<Organization> orgs = new TreeSet<Organization>();
+	private MergableList<Organization> orgs = new MergableList<Organization>();
 	private TreeSet<Messenger> messengers = new TreeSet<Messenger>();
 	private MergableList<Nickname> nicks = new MergableList<Nickname>();
 
@@ -345,9 +345,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		if (birthday != null && birthday.isInvalid()) return true;
 		if (label != null && label.isInvalid()) return true;
-		for (Organization o : orgs) {
-			if (o.isInvalid()) return true;
-		}
 		for (Messenger m : messengers) {
 			if (m.isInvalid()) return true;
 		}
@@ -397,8 +394,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		urls.addAll(contact.urls);
 		notes.addAll(contact.notes);
 		photos.addAll(contact.photos);
-
-		mergeOrgs(contact);
+		orgs.addAll(contact.orgs);
 		markForRewrite();
 
 		if (contact.htmlMail) htmlMail = true;
@@ -833,10 +829,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 	}
 
-	private void mergeOrgs(Contact contact) {
-		orgs.addAll(contact.orgs);
-	}
-
 	/*
 	 * private void readRevision(String line) { if (line.isEmpty()) return; revision = line; }
 	 */
@@ -1207,12 +1199,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void updateOrgs() {
-		TreeSet<Organization> newOrgs = new TreeSet<Organization>();
-		for (Organization p : orgs) {
-			if (!p.isEmpty()) {
-				newOrgs.add(p);
-			}
-		}
+		MergableList<Organization> newOrgs = new MergableList<Organization>();
+		newOrgs.addAll(orgs);
 		orgs = newOrgs;
 	}
 
