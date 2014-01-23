@@ -10,7 +10,7 @@ import javax.swing.event.DocumentListener;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class Adress implements DocumentListener, ChangeListener,Comparable<Adress> {
+public class Adress implements Mergable<Adress>,DocumentListener, ChangeListener,Comparable<Adress> {
 
 	private boolean home = false;
 	private boolean work = false;
@@ -26,45 +26,56 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 	private InputField zipField,streetField,extendedField,cityField,regionField,countryField,postBoxField;
 	private JCheckBox homeBox,workBox;
 	
-	public boolean mergeWith(Adress adr2) {
-		if (!isCompatibleWith(adr2)) return false;
-		extendedAdress=merge(extendedAdress,adr2.extendedAdress);
-		streetAdress=merge(streetAdress, adr2.streetAdress);
-		postOfficeBox=merge(postOfficeBox, adr2.postOfficeBox);
-		zip=merge(zip, adr2.zip);
-		city=merge(city, adr2.city);
-		region=merge(region, adr2.region);
-		country=merge(country, adr2.country);
-		if (adr2.home) home=true;
-		if (adr2.work) work=true;
-	  return true;
-  }
+	public Adress(String content) throws UnknownObjectException, InvalidFormatException {
+		if (!content.startsWith("ADR")) throw new InvalidFormatException("Adress does not start with \"ADR;\": "+content);
+		String line = content.substring(3);
+		while (!line.startsWith(":")) {
+			String upper = line.toUpperCase();
+			if (upper.startsWith(";TYPE=HOME")) {
+				home = true;
+				line = line.substring(10);
+				continue;
+			}
+			if (upper.startsWith(";TYPE=WORK")) {
+				work = true;
+				line = line.substring(10);
+				continue;
+			}
+			if (line.startsWith(";")) {
+				line = line.substring(1);
+				continue;
+			}
+			throw new UnknownObjectException(line);
+		}
+		readAddr(line.substring(1));
+	}
 
 	
-	private String merge(String s1, String s2) {
-		if (different(s1,s2)) throw new InvalidParameterException("Trying to merge \""+s1+"\" with \""+s2+"\"!");
-		if (s1==null || s1.isEmpty()){
-			return s2;
-		}
-	  return s1;
-  }
+	public String canonical() {
+		StringBuffer sb = new StringBuffer();
+		if (postOfficeBox != null) sb.append(postOfficeBox);
+		sb.append(';');
+		if (extendedAdress != null) sb.append(extendedAdress);
+		sb.append(';');
+		if (streetAdress != null) sb.append(streetAdress);
+		sb.append(';');
+		if (city != null) sb.append(city);
+		sb.append(';');
+		if (region != null) sb.append(region);
+		sb.append(';');
+		if (zip != null) sb.append(zip);
+		sb.append(';');
+		if (country != null) sb.append(country);
+		return sb.toString();
+	}
 
 
-	private boolean different(String s1,String s2){
-		if (s1==null || s1.isEmpty()) return false;
-		if (s2==null || s2.isEmpty()) return false;
-		return !s1.toLowerCase().equals(s2.toLowerCase());
+	public void changedUpdate(DocumentEvent arg0) {
+		update();
 	}
 	
-	public boolean isCompatibleWith(Adress adr2){
-		if (different(country,adr2.country)) return false;
-		if (different(region,adr2.region)) return false;
-		if (different(city,adr2.city)) return false;
-		if (different(zip,adr2.zip)) return false;
-		if (different(postOfficeBox,adr2.postOfficeBox)) return false;
-		if (different(streetAdress,adr2.streetAdress)) return false;
-		if (different(extendedAdress, extendedAdress)) return false;
-		return true;
+	public int compareTo(Adress otherAdress) {
+		return this.toString().compareTo(otherAdress.toString());
 	}
 	
 	public VerticalPanel editForm() {
@@ -94,6 +105,51 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 		return form;
 	}
 
+	public void insertUpdate(DocumentEvent arg0) {
+		update();
+	}
+	
+	public boolean isCompatibleWith(Adress adr2){
+		if (different(country,adr2.country)) return false;
+		if (different(region,adr2.region)) return false;
+		if (different(city,adr2.city)) return false;
+		if (different(zip,adr2.zip)) return false;
+		if (different(postOfficeBox,adr2.postOfficeBox)) return false;
+		if (different(streetAdress,adr2.streetAdress)) return false;
+		if (different(extendedAdress, extendedAdress)) return false;
+		return true;
+	}
+
+	public boolean isEmpty() {
+		return ((postOfficeBox==null||postOfficeBox.isEmpty())&&(extendedAdress==null||extendedAdress.isEmpty())&&(streetAdress==null||streetAdress.isEmpty())&&(city==null||city.isEmpty())&&(region==null||region.isEmpty())&&(zip==null||zip.isEmpty())&&(country==null||country.isEmpty()));
+	}
+
+	public boolean isInvalid() {
+		return invalid;
+	}
+	
+	public boolean mergeWith(Adress adr2) {
+		if (!isCompatibleWith(adr2)) return false;
+		extendedAdress=merge(extendedAdress,adr2.extendedAdress);
+		streetAdress=merge(streetAdress, adr2.streetAdress);
+		postOfficeBox=merge(postOfficeBox, adr2.postOfficeBox);
+		zip=merge(zip, adr2.zip);
+		city=merge(city, adr2.city);
+		region=merge(region, adr2.region);
+		country=merge(country, adr2.country);
+		if (adr2.home) home=true;
+		if (adr2.work) work=true;
+	  return true;
+  }
+
+	public void removeUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public void stateChanged(ChangeEvent arg0) {
+		update();
+	}
+
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("ADR");
@@ -103,48 +159,20 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 		sb.append(canonical());
 		return sb.toString();
 	}
-	
-	public String canonical() {
-		StringBuffer sb = new StringBuffer();
-		if (postOfficeBox != null) sb.append(postOfficeBox);
-		sb.append(';');
-		if (extendedAdress != null) sb.append(extendedAdress);
-		sb.append(';');
-		if (streetAdress != null) sb.append(streetAdress);
-		sb.append(';');
-		if (city != null) sb.append(city);
-		sb.append(';');
-		if (region != null) sb.append(region);
-		sb.append(';');
-		if (zip != null) sb.append(zip);
-		sb.append(';');
-		if (country != null) sb.append(country);
-		return sb.toString();
+
+	private boolean different(String s1,String s2){
+		if (s1==null || s1.isEmpty()) return false;
+		if (s2==null || s2.isEmpty()) return false;
+		return !s1.toLowerCase().equals(s2.toLowerCase());
 	}
 
-	public Adress(String content) throws UnknownObjectException, InvalidFormatException {
-		if (!content.startsWith("ADR")) throw new InvalidFormatException("Adress does not start with \"ADR;\": "+content);
-		String line = content.substring(3);
-		while (!line.startsWith(":")) {
-			String upper = line.toUpperCase();
-			if (upper.startsWith(";TYPE=HOME")) {
-				home = true;
-				line = line.substring(10);
-				continue;
-			}
-			if (upper.startsWith(";TYPE=WORK")) {
-				work = true;
-				line = line.substring(10);
-				continue;
-			}
-			if (line.startsWith(";")) {
-				line = line.substring(1);
-				continue;
-			}
-			throw new UnknownObjectException(line);
+	private String merge(String s1, String s2) {
+		if (different(s1,s2)) throw new InvalidParameterException("Trying to merge \""+s1+"\" with \""+s2+"\"!");
+		if (s1==null || s1.isEmpty()){
+			return s2;
 		}
-		readAddr(line.substring(1));
-	}
+	  return s1;
+  }	
 
 	private void readAddr(String line) {
 		postOfficeBox=null;
@@ -186,30 +214,6 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 			}
 		}
 	}
-	
-	public boolean isEmpty() {
-		return ((postOfficeBox==null||postOfficeBox.isEmpty())&&(extendedAdress==null||extendedAdress.isEmpty())&&(streetAdress==null||streetAdress.isEmpty())&&(city==null||city.isEmpty())&&(region==null||region.isEmpty())&&(zip==null||zip.isEmpty())&&(country==null||country.isEmpty()));
-	}
-
-	public boolean isInvalid() {
-		return invalid;
-	}
-
-	public void changedUpdate(DocumentEvent arg0) {
-		update();
-	}
-
-	public void insertUpdate(DocumentEvent arg0) {
-		update();
-	}
-
-	public void removeUpdate(DocumentEvent arg0) {
-		update();
-	}
-
-	public void stateChanged(ChangeEvent arg0) {
-		update();
-	}	
 
 	private void update() {
 		invalid=false;
@@ -222,9 +226,4 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 			form.setBackground(invalid?Color.red:Color.green);
 		}
 	}
-
-	public int compareTo(Adress otherAdress) {
-		return this.toString().compareTo(otherAdress.toString());
-	}
-
 }

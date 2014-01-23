@@ -43,7 +43,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
 	private TreeSet<String> titles = new TreeSet<String>();
 	private Collection<Phone> phones = new TreeSet<Phone>();
-	private AdressList adresses = new AdressList();
+	private MergableList<Adress> adresses = new MergableList<Adress>();
 	private Collection<Email> mails = new TreeSet<Email>();
 	private TreeSet<String> roles = new TreeSet<String>();
 	private Birthday birthday;
@@ -323,7 +323,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 
 	public boolean isInvalid() {
-		for (Adress a : adresses) {
+		for (Adress a:adresses) {
 			if (a.isInvalid()) return true;
 		}
 		for (Phone p : phones) {
