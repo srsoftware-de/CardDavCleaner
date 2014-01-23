@@ -20,35 +20,6 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 	private JCheckBox homeBox,workBox,internetBox;
 	private VerticalPanel form;
 	
-	public VerticalPanel editForm() {
-		form=new VerticalPanel("Nickname");
-		if (invalid) form.setBackground(Color.red);
-		if (isEmpty()) form.setBackground(Color.yellow);
-		
-		form.add(nickField=new InputField("Nickname",nick));
-		nickField.addChangeListener(this);
-		
-		form.add(homeBox=new JCheckBox("Home",home));
-		homeBox.addChangeListener(this);
-		form.add(workBox=new JCheckBox("Work",work));
-		workBox.addChangeListener(this);
-		form.add(internetBox=new JCheckBox("Internet",internet));
-		internetBox.addChangeListener(this);
-		form.scale();
-		return form;
-	}
-	
-	public String toString() {
-		StringBuffer sb=new StringBuffer();
-		sb.append("NICKNAME");
-		if (home) sb.append(";TYPE=HOME");
-		if (work) sb.append(";TYPE=WORK");
-		if (internet) sb.append(";TYPE=INTERNET");
-		sb.append(":");
-		sb.append(nick);
-		return sb.toString();
-	}
-
 	public Nickname(String content) throws UnknownObjectException, InvalidFormatException {
 		if (content.startsWith("NICKNAME")){
 			String line = content.substring(8);
@@ -81,22 +52,68 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 			nick=content.substring(9);
 		} else throw new InvalidFormatException("Nickname adress does not start with \"NICKNAME;\" or \"NICKNAME:\"");
 	}
+	
+	public String category() {
+		if (work) return "work";
+		if (home) return "home";
+		if (internet) return "internet";
+		return "no category";
+	}
 
-	private void readNick(String line) {
-		line=line.trim();
-		if (line.isEmpty()) {
-			nick=null;
-		} else {
-			nick = line;
-		}
+	public void changedUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public int compareTo(Nickname o) {
+		return this.toString().compareTo(o.toString());
 	}
 	
+	public VerticalPanel editForm() {
+		form=new VerticalPanel("Nickname");
+		if (invalid) form.setBackground(Color.red);
+		if (isEmpty()) form.setBackground(Color.yellow);
+		
+		form.add(nickField=new InputField("Nickname",nick));
+		nickField.addChangeListener(this);
+		
+		form.add(homeBox=new JCheckBox("Home",home));
+		homeBox.addChangeListener(this);
+		form.add(workBox=new JCheckBox("Work",work));
+		workBox.addChangeListener(this);
+		form.add(internetBox=new JCheckBox("Internet",internet));
+		internetBox.addChangeListener(this);
+		form.scale();
+		return form;
+	}
+
+	public void insertUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	@Override
+  public boolean isCompatibleWith(Nickname other) {
+		if (different(nick,other.nick)) return false;
+	  return true;
+  }
+
 	public boolean isEmpty() {
 		return nick==null || nick.trim().isEmpty();
 	}
 
-	public String name() {
-		return nick;
+	public boolean isHomeNick() {
+		return home;
+	}
+	
+	public boolean isInternetNick(){
+		return internet;
+	}
+
+	public boolean isInvalid() {
+		return invalid;
+	}
+
+	public boolean isWorkNick() {
+		return work;
 	}
 
 	public void merge(Nickname nick) throws InvalidAssignmentException {
@@ -106,22 +123,21 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 		if (nick.internet) internet=true;
 	}
 
-	public boolean isHomeNick() {
-		return home;
+	@Override
+  public boolean mergeWith(Nickname other) {
+		nick=merge(nick,other.nick);
+		if (other.home) home=true;
+		if (other.work) work=true;
+		if (other.internet) internet=true;
+	  return true;
+  }
+
+	public String name() {
+		return nick;
 	}
 
-	public boolean isWorkNick() {
-		return work;
-	}
-	
-	public boolean isInternetNick(){
-		return internet;
-	}
-
-	public void setWork() {
-		work=true;
-		home=false;
-		internet=false;
+	public void removeUpdate(DocumentEvent arg0) {
+		update();		
 	}
 
 	public void setHome() {
@@ -136,33 +152,36 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 		internet=true;
 	}
 
-	public String category() {
-		if (work) return "work";
-		if (home) return "home";
-		if (internet) return "internet";
-		return "no category";
+	public void setWork() {
+		work=true;
+		home=false;
+		internet=false;
 	}
-
-	public boolean isInvalid() {
-		return invalid;
-	}
-
-	public void changedUpdate(DocumentEvent arg0) {
-		update();
-	}
-
-	public void insertUpdate(DocumentEvent arg0) {
-		update();
-	}
-
-	public void removeUpdate(DocumentEvent arg0) {
-		update();		
-	}
-
+	
 	public void stateChanged(ChangeEvent arg0) {
 		update();
 	}
-	
+
+	public String toString() {
+		StringBuffer sb=new StringBuffer();
+		sb.append("NICKNAME");
+		if (home) sb.append(";TYPE=HOME");
+		if (work) sb.append(";TYPE=WORK");
+		if (internet) sb.append(";TYPE=INTERNET");
+		sb.append(":");
+		sb.append(nick);
+		return sb.toString();
+	}
+
+	private void readNick(String line) {
+		line=line.trim();
+		if (line.isEmpty()) {
+			nick=null;
+		} else {
+			nick = line;
+		}
+	}
+
 	private void update() {
 		invalid=false;
 		readNick(nickField.getText());
@@ -175,24 +194,5 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 			form.setBackground(invalid?Color.red:Color.green);
 		}
 	}
-
-	public int compareTo(Nickname o) {
-		return this.toString().compareTo(o.toString());
-	}
-
-	@Override
-  public boolean isCompatibleWith(Nickname other) {
-		if (different(nick,other.nick)) return false;
-	  return true;
-  }
-
-	@Override
-  public boolean mergeWith(Nickname other) {
-		nick=merge(nick,other.nick);
-		if (other.home) home=true;
-		if (other.work) work=true;
-		if (other.internet) internet=true;
-	  return true;
-  }
 
 }
