@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
+import java.security.InvalidParameterException;
 
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
@@ -25,9 +26,34 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 	private InputField zipField,streetField,extendedField,cityField,regionField,countryField,postBoxField;
 	private JCheckBox homeBox,workBox;
 	
+	public boolean mergeWith(Adress adr2) {
+		if (!isCompatibleWith(adr2)) return false;
+		extendedAdress=merge(extendedAdress,adr2.extendedAdress);
+		streetAdress=merge(streetAdress, adr2.streetAdress);
+		postOfficeBox=merge(postOfficeBox, adr2.postOfficeBox);
+		zip=merge(zip, adr2.zip);
+		city=merge(city, adr2.city);
+		region=merge(region, adr2.region);
+		country=merge(country, adr2.country);
+		if (adr2.home) home=true;
+		if (adr2.work) work=true;
+	  return false;
+  }
+
+	
+	private String merge(String s1, String s2) {
+		if (s1==null || s1.isEmpty()){
+			return s2;
+		} else {
+			if (s2 != null && !s2.isEmpty()) throw new InvalidParameterException("Trying to merge \""+s1+"\" with \""+s2+"\"!");
+		}
+	  return s1;
+  }
+
+
 	private boolean different(String s1,String s2){
-		if (s1==null) return false;
-		if (s2==null) return false;
+		if (s1==null || s1.isEmpty()) return false;
+		if (s2==null || s2.isEmpty()) return false;
 		return s1.equals(s2);
 	}
 	
@@ -201,4 +227,5 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 	public int compareTo(Adress otherAdress) {
 		return this.toString().compareTo(otherAdress.toString());
 	}
+
 }

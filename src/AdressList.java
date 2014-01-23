@@ -2,14 +2,20 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 
 public class AdressList implements SortedSet<Adress> {
 
+	private TreeSet<Adress> adresses=new TreeSet<Adress>();
 	@Override
-	public boolean add(Adress a) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean add(Adress newAdr) {
+		for (Adress adr:adresses){
+			if (adr.isCompatibleWith(newAdr)){
+				return adr.mergeWith(newAdr);				 
+			}
+		}
+		return adresses.add(newAdr);
 	}
 
 	@Override
@@ -38,14 +44,12 @@ public class AdressList implements SortedSet<Adress> {
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return adresses.isEmpty();
 	}
 
 	@Override
 	public Iterator<Adress> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return adresses.iterator();
 	}
 
 	@Override
