@@ -146,7 +146,16 @@ public class Phone implements DocumentListener, ChangeListener, Comparable<Phone
 	}
 
 	public String simpleNumber() {
-		String number=this.number.replace("(", "").replace(")", "");
+		String number=this.number.trim();
+		while (number.contains("(")){
+			number=number.replace("(", "");
+		}
+		while (number.contains(")")){
+			number=number.replace(")", "");
+		}
+		while (number.contains(" ")){
+			number=number.replace(" ", "");
+		}
 		if (number.startsWith("+49")) number=0+number.substring(3);
 		if (number.startsWith("0049")) number=0+number.substring(4);
 		return number;
