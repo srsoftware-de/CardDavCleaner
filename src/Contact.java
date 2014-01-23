@@ -91,9 +91,10 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private VerticalPanel noteForm;
 	private JButton newNoteButton;
 	private VerticalPanel nameForm;
+	private HorizontalPanel outerForm;
 	
 	private JComponent editForm() {
-		HorizontalPanel outerForm=new HorizontalPanel();
+		outerForm=new HorizontalPanel();
 		
 		form=new VerticalPanel();
 	
@@ -255,12 +256,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		System.out.println("Outer:"+outerForm.getPreferredSize());
 		
 		Dimension screenDim=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		Dimension formDim=outerForm.getPreferredSize();
-		double width=Math.min(screenDim.getWidth()-100,20+formDim.getWidth());
-		double height=Math.min(screenDim.getHeight()-100,20+formDim.getHeight());
-		
-		screenDim.setSize(width,height);
-		
+
+		screenDim.setSize(screenDim.getWidth()-100,screenDim.getHeight()-100);
 		scroll=new JScrollPane(outerForm);
 
 		scroll.setPreferredSize(screenDim);
@@ -1045,7 +1042,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			titleField.addEditListener(this);
 			titleFields.add(titleField);
 			titleForm.insertCompoundBefore(newTitleButton, titleField);
-			form.rescale();
+			rescale();
 		}
 		
 		if (source==newNickButton){
@@ -1054,7 +1051,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newNickForm = newNick.editForm();
 				nickForm.insertCompoundBefore(newNickButton, newNickForm);
 				nicks.add(newNick);
-				form.rescale();
+				rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
 			} catch (InvalidFormatException e) {
@@ -1066,7 +1063,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			roleField.addEditListener(this);
 			roleFields.add(roleField);
 			roleForm.insertCompoundBefore(newRoleButton, roleField);
-			form.rescale();
+			rescale();
 		}
 		if (source==birthdayButton){
 			try {
@@ -1082,7 +1079,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newPhoneForm = newPhone.editForm();
 				phoneForm.insertCompoundBefore(newPhoneButton,newPhoneForm);
 				phones.add(newPhone);
-				form.rescale();
+				rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
 			} catch (InvalidFormatException e) {
@@ -1095,7 +1092,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newAdressForm = newAdress.editForm();
 				adressForm.insertCompoundBefore(newAdressButton,newAdressForm);
 				adresses.add(newAdress);
-				form.rescale();
+				rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
 			} catch (InvalidFormatException e) {
@@ -1108,7 +1105,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newMailForm = newMail.editForm();
 				mailForm.insertCompoundBefore(newMailButton,newMailForm);
 				mails.add(newMail);
-				form.rescale();
+				rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
 			} catch (InvalidFormatException e) {
@@ -1121,7 +1118,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newUrlForm = newUrl.editForm();
 				urlForm.insertCompoundBefore(newUrlButton,newUrlForm);
 				urls.add(newUrl);
-				form.rescale();
+				rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
 			} catch (InvalidFormatException e) {
@@ -1134,7 +1131,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newOrgForm = newOrg.editForm();
 				orgForm.insertCompoundBefore(newOrgButton,newOrgForm);
 				orgs.add(newOrg);
-				form.rescale();
+				rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
 			} catch (InvalidFormatException e) {
@@ -1147,7 +1144,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				VerticalPanel newMessengerForm = newMessenger.editForm();
 				messengerForm.insertCompoundBefore(newMessengerButton,newMessengerForm);
 				messengers.add(newMessenger);
-				form.rescale();
+				rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
 			} catch (InvalidFormatException e) {
@@ -1159,15 +1156,21 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			categoryField.addEditListener(this);
 			categoryFields.add(categoryField);
 			categoryForm.insertCompoundBefore(newCategoryButton, categoryField);
-			form.rescale();
+			rescale();
 		}
 		if (source==newNoteButton){
 			NoteField newNoteField=new NoteField("Note");
 			newNoteField.addEditListener(this);
 			noteFields.add(newNoteField);
 			noteForm.insertCompoundBefore(newNoteButton, newNoteField);
-			form.rescale();
+			rescale();
 		}
+	}
+
+	private void rescale() {
+		form.rescale();
+		outerForm.rescale();
+		scroll.revalidate();
 	}
 
 	public void changedUpdate(DocumentEvent e) {
