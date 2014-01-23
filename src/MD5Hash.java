@@ -9,6 +9,10 @@ import java.security.NoSuchAlgorithmException;
  *
  */
 public class MD5Hash implements Comparable<MD5Hash>{
+	public static void test() {
+		// TODO Auto-generated method stub
+		
+	}
 	String hashtext;
 	/**
 	 * create new hash value for given object
@@ -27,14 +31,14 @@ public class MD5Hash implements Comparable<MD5Hash>{
 		  hashtext = "0"+hashtext;
 		}
   }
+	public int compareTo(MD5Hash o) {
+		return hashtext.compareTo(o.hashtext);
+	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString(){
 		return hashtext;
-	}
-	public int compareTo(MD5Hash o) {
-		return hashtext.compareTo(o.hashtext);
 	}
 	
 }

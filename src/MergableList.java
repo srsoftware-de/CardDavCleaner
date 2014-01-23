@@ -7,8 +7,13 @@ import java.util.TreeSet;
 
 public class MergableList<Type extends Mergable<Type>> implements SortedSet<Type> {
 
+	public static void test() {
+		// TODO Auto-generated method stub
+		
+	}
 	private TreeSet<Type> set=new TreeSet<Type>();
-	@Override
+	
+	
 	public boolean add(Type newElement) {
 		if (newElement==null || newElement.isEmpty()) return false;
 		for (Type element:set){
@@ -18,17 +23,8 @@ public class MergableList<Type extends Mergable<Type>> implements SortedSet<Type
 		}
 		return set.add(newElement);
 	}
-	
-	public void update(){
-		TreeSet<Type> newSet = new TreeSet<Type>();
-		for (Type element:set){
-			if (element!=null && !element.isEmpty()) newSet.add(element);
-		}
-		set.clear();
-		set.addAll(newSet);
-	}
 
-	@Override
+	
 	public boolean addAll(Collection<? extends Type> entries) {
 		boolean success=true;
 		for (Type e:entries){
@@ -37,92 +33,101 @@ public class MergableList<Type extends Mergable<Type>> implements SortedSet<Type
 		return success;
 	}
 
-	@Override
+	
   public void clear() {
 		set.clear();
   }
 
-	@Override
+	
   public Comparator<? super Type> comparator() {
 	  return set.comparator();
   }
 
-	@Override
+	
   public boolean contains(Object o) {
 	  return set.contains(o);
   }
 
-	@Override
+	
   public boolean containsAll(Collection<?> c) {
 		return set.containsAll(c);
   }
 
-	@Override
+	
   public Type first() {
 	  return set.first();
   }
 
-	@Override
+	
   public SortedSet<Type> headSet(Type toElement) {
 	  return set.headSet(toElement);
   }
 
-	@Override
+	
   public boolean isEmpty() {
 	  return set.isEmpty();
   }
 
-	@Override
+	
   public Iterator<Type> iterator() {
 	  return set.iterator();
   }
 
-	@Override
+	
   public Type last() {
 	  return set.last();
   }
 
-	@Override
+	
   public boolean remove(Object o) {
 	  return set.remove(o);
   }
 
-	@Override
+	
   public boolean removeAll(Collection<?> c) {
 	  return set.removeAll(c);
   }
 
-	@Override
+	
   public boolean retainAll(Collection<?> c) {
 	  return set.retainAll(c);
   }
 
-	@Override
+	
   public int size() {
 	  return set.size();
   }
 
-	@Override
+	
   public SortedSet<Type> subSet(Type fromElement, Type toElement) {
 	  return set.subSet(fromElement, toElement);
   }
 
-	@Override
+	
   public SortedSet<Type> tailSet(Type fromElement) {
 	  return set.tailSet(fromElement);
   }
 
-	@Override
+	
   public Object[] toArray() {
 		return set.toArray();
   }
 
-	@Override
+	
   public <T> T[] toArray(T[] a) {
 		return set.toArray(a);
   }
 	
 	public String toString(){
 		return set.toString();
+	}
+
+	public void update(){
+		TreeSet<Type> newSet = new TreeSet<Type>();
+		for (Type element:set){
+			if (element!=null && !element.isEmpty()) newSet.add(element);
+		}
+		set.clear();
+		set.addAll(newSet);
 	}
 }

@@ -6,6 +6,10 @@ public abstract class Mergable<T> {
 	public abstract boolean mergeWith(T other);
 	public abstract boolean isEmpty();
 	
+	public static void test(){
+		System.out.println("test() not implemented for "+Mergable.class.getSimpleName());
+	}
+	
 	protected boolean different(String s1,String s2){
 		if (s1==null || s1.isEmpty()) return false;
 		if (s2==null || s2.isEmpty()) return false;
