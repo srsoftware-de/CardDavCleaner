@@ -273,7 +273,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (birthday != null && c2.birthday != null && !birthday.equals(c2.birthday)) return true;
 		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) return true;
 		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) return true;
-		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getPhoneNumbers().equals(c2.getPhoneNumbers())) return true;
+		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getSimplePhoneNumbers().equals(c2.getSimplePhoneNumbers())) return true;
 		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) return true;
 		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) return true;
 		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls)) return true;
@@ -405,13 +405,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			}
 		}
 		return result;
-	}
-
-	public TreeSet<String> phoneNumbers() {
-		TreeSet<String> numbers = new TreeSet<String>();
-		for (Phone p : phones)
-			numbers.add(p.number());
-		return numbers;
 	}
 
 	public void removeUpdate(DocumentEvent e) {
@@ -787,10 +780,10 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		return result;
 	}
 
-	private TreeSet<String> getPhoneNumbers() {
+	private TreeSet<String> getSimplePhoneNumbers() {
 		TreeSet<String> result = new TreeSet<String>();
 		for (Phone phone : phones)
-			result.add(phone.number());
+			result.add(phone.simpleNumber());
 		return result;
 	}
 
@@ -886,19 +879,19 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		/* add the current phones to the phone map */
 		for (Phone phone : phones) {
 			if (phone.isEmpty()) continue;
-			Phone existingPhone = phoneMap.get(phone.number());
+			Phone existingPhone = phoneMap.get(phone.simpleNumber());
 			if (existingPhone != null) {
 				existingPhone.merge(phone);
-			} else phoneMap.put(phone.number(), phone);
+			} else phoneMap.put(phone.simpleNumber(), phone);
 		}
 
 		/* add the phone numbers of the second contact to the phone map */
 		for (Phone phone : contact.phones) {
 			if (phone.isEmpty()) continue;
-			Phone existingPhone = phoneMap.get(phone.number());
+			Phone existingPhone = phoneMap.get(phone.simpleNumber());
 			if (existingPhone != null) {
 				existingPhone.merge(phone);
-			} else phoneMap.put(phone.number(), phone);
+			} else phoneMap.put(phone.simpleNumber(), phone);
 		}
 
 		if (thunderbirdMerge) {

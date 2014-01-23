@@ -24,7 +24,7 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 	private VerticalPanel form;
 	private InputField zipField,streetField,extendedField,cityField,regionField,countryField,postBoxField;
 	private JCheckBox homeBox,workBox;
-
+	
 	public VerticalPanel editForm() {
 		form=new VerticalPanel("Adress");
 		if (invalid) form.setBackground(Color.red);
@@ -182,6 +182,6 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 	}
 
 	public int compareTo(Adress otherAdress) {
-	return this.toString().compareTo(otherAdress.toString());
+		return this.toString().compareTo(otherAdress.toString());
 	}
 }
