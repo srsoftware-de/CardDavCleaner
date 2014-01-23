@@ -54,7 +54,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private MergableList<Phone> phones = new MergableList<Phone>();
 	private MergableList<Adress> adresses = new MergableList<Adress>();
 	private MergableList<Email> mails = new MergableList<Email>();
-	private TreeSet<Url> urls = new TreeSet<Url>();
+	private MergableList<Url> urls = new MergableList<Url>();
 	private TreeSet<Organization> orgs = new TreeSet<Organization>();
 	private TreeSet<Messenger> messengers = new TreeSet<Messenger>();
 	private MergableList<Nickname> nicks = new MergableList<Nickname>();
@@ -393,16 +393,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		titles.addAll(contact.titles);
 		roles.addAll(contact.roles);
 		categories.addAll(contact.categories);
-		mergeBirthday(contact);
+		mergeBirthday(contact);		
+		urls.addAll(contact.urls);
+		notes.addAll(contact.notes);
+		photos.addAll(contact.photos);
 
-		if (contact.htmlMail) htmlMail = true;
-
-		mergeUrls(contact);
-		if (uid == null) uid = contact.uid;
-		mergeNotes(contact);
-		mergePhotos(contact);
 		mergeOrgs(contact);
 		markForRewrite();
+
+		if (contact.htmlMail) htmlMail = true;
+		if (uid == null) uid = contact.uid;
 		return true;
 	}
 
@@ -833,14 +833,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 	}
 
-	/*
-	 * private void readProductId(String line) { if (line.isEmpty()) return; productId = line; }
-	 */
-
-	private void mergeNotes(Contact contact) {
-		notes.addAll(contact.notes);
-	}
-
 	private void mergeOrgs(Contact contact) {
 		orgs.addAll(contact.orgs);
 	}
@@ -848,14 +840,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	/*
 	 * private void readRevision(String line) { if (line.isEmpty()) return; revision = line; }
 	 */
-
-	private void mergePhotos(Contact contact) {
-		photos.addAll(contact.photos);
-	}
-
-	private void mergeUrls(Contact contact) {
-		urls.addAll(contact.urls);
-	}
 
 	private String newRevision() {
 		String date = formatter.format(new Date()).replace('#', 'T');
@@ -1265,12 +1249,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void updateUrls() {
-		TreeSet<Url> newUrls = new TreeSet<Url>();
-		for (Url p : urls) {
-			if (!p.isEmpty()) {
-				newUrls.add(p);
-			}
-		}
+		MergableList<Url> newUrls = new MergableList<Url>();
+		newUrls.addAll(urls);
 		urls = newUrls;
 	}
 
