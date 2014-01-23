@@ -6,7 +6,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 
-public class Messenger implements ChangeListener, Comparable<Messenger> {
+public class Messenger extends Mergable<Messenger> implements ChangeListener, Comparable<Messenger> {
 	
 	private boolean aim=false;
 	private boolean icq=false;
@@ -23,38 +23,6 @@ public class Messenger implements ChangeListener, Comparable<Messenger> {
 	private JCheckBox facebookBox;
 	private VerticalPanel form;
 	
-	public VerticalPanel editForm() {
-		form=new VerticalPanel("Messenger");
-		if (invalid) form.setBackground(Color.red);
-		form.add(nickField=new InputField("Nickname",nick));
-		nickField.addEditListener(this);
-		form.add(aimBox=new JCheckBox("AIM",aim));
-		aimBox.addChangeListener(this);
-		form.add(icqBox=new JCheckBox("ICQ",icq));
-		icqBox.addChangeListener(this);
-		form.add(skypeBox=new JCheckBox("Skype",skype));
-		skypeBox.addChangeListener(this);
-		form.add(msnBox=new JCheckBox("MSN",msn));
-		msnBox.addChangeListener(this);
-		form.add(facebookBox=new JCheckBox("Facebook",facebook));
-		facebookBox.addChangeListener(this);
-		form.scale();
-		return form;
-	}
-	
-	public String toString() {
-		StringBuffer sb=new StringBuffer();
-		sb.append("IMPP:");
-		if (aim) sb.append("aim");
-		if (icq) sb.append("icq");
-		if (skype) sb.append("skype");
-		if (msn) sb.append("msn");
-		if (facebook) sb.append("facebook");
-		sb.append(":");
-		sb.append(nick);
-		return sb.toString();
-	}
-
 	public Messenger(String content) throws InvalidFormatException, UnknownObjectException {
 		if (!content.startsWith("IMPP:")) throw new InvalidFormatException("Messenger adress does not start with \"IMPP:\"");
 		String line = content.substring(5);
@@ -90,18 +58,50 @@ public class Messenger implements ChangeListener, Comparable<Messenger> {
 		readAddr(line.substring(1));		
 	}
 
-	private void readAddr(String line) {
-		while (line.startsWith(":")) line=line.substring(1);
-		if (line.isEmpty()) return;		
-		nick = line.toLowerCase();
+	public int compareTo(Messenger otherMessenger) {
+		return this.toString().compareTo(otherMessenger.toString());
 	}
 	
+	public VerticalPanel editForm() {
+		form=new VerticalPanel("Messenger");
+		if (invalid) form.setBackground(Color.red);
+		form.add(nickField=new InputField("Nickname",nick));
+		nickField.addEditListener(this);
+		form.add(aimBox=new JCheckBox("AIM",aim));
+		aimBox.addChangeListener(this);
+		form.add(icqBox=new JCheckBox("ICQ",icq));
+		icqBox.addChangeListener(this);
+		form.add(skypeBox=new JCheckBox("Skype",skype));
+		skypeBox.addChangeListener(this);
+		form.add(msnBox=new JCheckBox("MSN",msn));
+		msnBox.addChangeListener(this);
+		form.add(facebookBox=new JCheckBox("Facebook",facebook));
+		facebookBox.addChangeListener(this);
+		form.scale();
+		return form;
+	}
+	
+	public String id() throws UnknownObjectException {
+		if (aim) return "aim:"+nick;
+		if (icq) return "icq:"+nick;
+		if (skype) return "skype:"+nick;
+		if (msn) return "msn:"+nick;
+		if (facebook) return "facebook"+nick;
+		throw new UnknownObjectException("Messenger \""+nick+"\" has no known type!");
+  }
+
+	@Override
+  public boolean isCompatibleWith(Messenger other) {
+		if (different(nick, other.nick)) return false;
+		return true;
+  }
+
 	public boolean isEmpty() {
 		return nick==null || nick.isEmpty();
 	}
-
-	public String nick() {
-		return nick;
+	
+	public boolean isInvalid() {
+		return invalid;
 	}
 
 	public void merge(Messenger m) throws InvalidAssignmentException {
@@ -113,17 +113,19 @@ public class Messenger implements ChangeListener, Comparable<Messenger> {
 		if (m.facebook) facebook=true;
 	}
 
-	public String id() throws UnknownObjectException {
-		if (aim) return "aim:"+nick;
-		if (icq) return "icq:"+nick;
-		if (skype) return "skype:"+nick;
-		if (msn) return "msn:"+nick;
-		if (facebook) return "facebook"+nick;
-		throw new UnknownObjectException("Messenger \""+nick+"\" has no known type!");
+	@Override
+  public boolean mergeWith(Messenger other) {
+		nick=merge(nick,other.nick);
+		if (other.aim)aim =true;
+		if (other.icq)icq =true;
+		if (other.skype)skype =true;
+		if (other.msn)msn =true;
+		if (other.facebook) facebook=true;
+	  return false;
   }
 
-	public boolean isInvalid() {
-		return invalid;
+	public String nick() {
+		return nick;
 	}
 
 	public void stateChanged(ChangeEvent ce) {
@@ -145,8 +147,25 @@ public class Messenger implements ChangeListener, Comparable<Messenger> {
 		}
 	}
 
-	public int compareTo(Messenger otherMessenger) {
-		return this.toString().compareTo(otherMessenger.toString());
+	public String toString() {
+		StringBuffer sb=new StringBuffer();
+		sb.append("IMPP:");
+		if (aim) sb.append("aim");
+		if (icq) sb.append("icq");
+		if (skype) sb.append("skype");
+		if (msn) sb.append("msn");
+		if (facebook) sb.append("facebook");
+		sb.append(":");
+		sb.append(nick);
+		return sb.toString();
 	}
+
+	private void readAddr(String line) {
+		while (line.startsWith(":")) line=line.substring(1);
+		if (line.isEmpty()) return;		
+		nick = line.toLowerCase();
+	}
+
+
 
 }
