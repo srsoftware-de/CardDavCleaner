@@ -20,7 +20,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -58,7 +57,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private TreeSet<Organization> orgs = new TreeSet<Organization>();
 	private TreeSet<Messenger> messengers = new TreeSet<Messenger>();
 	private TreeSet<String> categories = new TreeSet<String>();
-	private Collection<Nickname> nicks = new TreeSet<Nickname>();
+	private MergableList<Nickname> nicks = new MergableList<Nickname>();
 
 	private Contact clonedContact;
 
@@ -384,10 +383,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
   }
 
 	public boolean mergeWith(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-		mergeAdresses(contact);
-		mergePhones(contact, thunderbirdMerge);
-		mergeMails(contact, thunderbirdMerge);
-		mergeNicks(contact);
+		adresses.addAll(contact.adresses);
+		phones.addAll(contact.phones);
+		thunderbirdMergePhone(phones);
+		mails.addAll(contact.mails);
+		thunderbirdMergeMail(mails);
+		nicks.addAll(contact.nicks);
 		mergeNames(contact);
 		mergeTitles(contact);
 		mergeRoles(contact);
@@ -806,10 +807,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return result;
 	}
 
-	private void mergeAdresses(Contact contact) {		
-		adresses.addAll(contact.adresses);
-  }
-
 	private void mergeBirthday(Contact contact) {
 		if (birthday != null) {
 			if (contact.birthday != null && !contact.birthday.equals(birthday)) {
@@ -826,13 +823,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		} else categories = contact.categories;
 	}
 
-	private void mergeMails(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-		mails.addAll(contact.mails);
-		if (thunderbirdMerge) {
-			thunderbirdMergeMail(mails);
-		}
-	}
-
 	private void mergeNames(Contact contact) {
 		if (name != null) {
 			if (contact.name != null && !contact.name.equals(name)) {
@@ -847,26 +837,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		} else formattedName = contact.formattedName;
 	}
 
-	private void mergeNicks(Contact contact) throws InvalidAssignmentException {
-		TreeMap<String, Nickname> nickMap = new TreeMap<String, Nickname>();
-
-		for (Nickname nick : nicks) {
-			Nickname existingNick = nickMap.get(nick.name());
-			if (existingNick != null) {
-				existingNick.merge(nick);
-			} else nickMap.put(nick.name(), nick);
-		}
-
-		for (Nickname nick : contact.nicks) {
-			Nickname existingNick = nickMap.get(nick.name());
-			if (existingNick != null) {
-				existingNick.merge(nick);
-			} else nickMap.put(nick.name(), nick);
-		}
-
-		nicks = nickMap.values();
-	}
-
 	/*
 	 * private void readProductId(String line) { if (line.isEmpty()) return; productId = line; }
 	 */
@@ -877,13 +847,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	private void mergeOrgs(Contact contact) {
 		orgs.addAll(contact.orgs);
-	}
-
-	private void mergePhones(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-		phones.addAll(contact.phones);
-		if (thunderbirdMerge) {
-			thunderbirdMergePhone(phones);
-		}
 	}
 
 	/*
@@ -1253,12 +1216,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void updateNicks() {
-		TreeSet<Nickname> newNicks = new TreeSet<Nickname>();
-		for (Nickname n : nicks) {
-			if (!n.isEmpty()) {
-				newNicks.add(n);
-			}
-		}
+		MergableList<Nickname> newNicks = new MergableList<Nickname>();
+		newNicks.addAll(nicks);	
 		nicks = newNicks;
 	}
 
