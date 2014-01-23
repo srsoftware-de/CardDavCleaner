@@ -292,7 +292,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		switch (choice) {
 		case 1:
 			clearFields();
-			changed();
 			break;
 		default:
 			changed();
@@ -358,10 +357,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			mails.add(e.address());
 		}
 		return mails;
-	}
-
-	public void markForDeletion() {
-		clearFields();
 	}
 
 	public void markForRewrite() {
@@ -430,12 +425,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		update();
 	}
 
-	public boolean shallBeDeleted() {
-		return isEmpty();
-	}
-
 	public boolean shallBeRewritten() {
-		return rewrite && !shallBeDeleted(); // only rewrite if it is not marked for deletion
+		return rewrite; // only rewrite if it is not marked for deletion
 	}
 
 	public TreeSet<String> simpleNumbers() {
@@ -764,7 +755,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		nicks.update();
 	}
 
-	private void clearFields() {
+	void clearFields() {
 		adresses.clear();
 		phones.clear();
 		mails.clear();
@@ -777,6 +768,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		photos.clear();
 		orgs.clear();
 		nicks.clear();
+		changed();
 	}
 
 	private JComponent editForm() {
@@ -1222,7 +1214,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	protected Contact clone() {
 		try {
 			changed();
-			System.out.println(toString());
 			return new Contact(toString());
 		} catch (UnknownObjectException e) {
 			e.printStackTrace();

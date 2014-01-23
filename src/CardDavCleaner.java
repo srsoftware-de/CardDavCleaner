@@ -15,7 +15,6 @@ import java.net.URL;
 import java.rmi.AlreadyBoundException;
 import java.rmi.UnexpectedException;
 import java.rmi.activation.UnknownObjectException;
-import java.util.Collection;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -32,6 +31,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	InputField serverField, userField, passwordField;
 	private JCheckBox thunderbirdBox;
+	private TreeSet<Contact> deleteList=new TreeSet<Contact>();
+	
 	private static final long serialVersionUID = -2875331857455588061L;
 
 	public CardDavCleaner() {
@@ -154,7 +155,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 						if (askForMege("name", name, contact, existingContact)) {
 							contact.mergeWith(existingContact, thunderbirdBox.isSelected());
 							contacts.remove(existingContact);
-							existingContact.markForDeletion();
+						  deleteList.add(existingContact);
 							cleanByName(contacts, blackLists);
 							return;
 						} else { // if merging was denied: add contact pair to blacklist
@@ -190,7 +191,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 							if (askForMege("phone number", number, contact, existingContact)) {
 								contact.mergeWith(existingContact, thunderbirdBox.isSelected());
 								contacts.remove(existingContact);
-								existingContact.markForDeletion();
+								deleteList.add(existingContact);
 								cleanByPhone(contacts, blackLists);
 								return;
 							} else { // if merging was denied: add contact pair to blacklist
@@ -226,7 +227,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 							if (askForMege("e-mail", email, contact, existingContact)) {
 								contact.mergeWith(existingContact, thunderbirdBox.isSelected());
 								contacts.remove(existingContact);
-								existingContact.markForDeletion();
+								deleteList.add(existingContact);
 								cleanByEmail(contacts, blackLists);
 								return;
 							} else { // if merging was denied: add contact pair to blacklist
@@ -263,7 +264,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 							if (askForMege("messenger", messengerID, contact, existingContact)) {
 								contact.mergeWith(existingContact, thunderbirdBox.isSelected());
 								contacts.remove(existingContact);
-								existingContact.markForDeletion();
+								deleteList.add(existingContact);
 								cleanByMessenger(contacts, blackLists);
 								return;
 							} else { // if merging was denied: add contact pair to blacklist
@@ -280,7 +281,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private void writeContacts(String host, Vector<Contact> contacts) throws IOException {
-		TreeSet<Contact> deleteList = getDeletionList(contacts);
 		TreeSet<Contact> writeList = getWriteList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())) {
 			if (confirmLists(writeList, deleteList)) {
@@ -301,14 +301,14 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		Vector<Contact> contacts = new Vector<Contact>();
 		// Next: read all contacts, remember contacts that contain nothing but a name
 		for (String contactName : contactNamess) {
-			if (counter>10) break;
 			System.out.println("reading contact " + (++counter) + "/" + total + ": " + contactName);
 			try {
 				Contact contact = new Contact(host, contactName);
 				do {
 					if (skipInvalidContact(contact)) break;;
 					if (contact.isEmpty()) {
-						contact.markForDeletion();
+						contact.clearFields();
+						deleteList.add(contact);
 						System.out.println("Warning: skipping empty contact " + contact.vcfName() + " (Contains nothing but a name)");
 					} else {
 						contacts.add(contact);
@@ -336,16 +336,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		return result;
 	}
 
-	private TreeSet<Contact> getDeletionList(Collection<Contact> contacts) {
-		TreeSet<Contact> result = new TreeSet<Contact>();
-		for (Contact contact : contacts) {
-			if (contact.shallBeDeleted()) {
-				result.add(contact);
-			}
-		}
-		return result;
-	}
-
 	private boolean skipInvalidContact(Contact contact) {
 		while (contact.isInvalid()) {
 			String[] options = { "Edit manually", "Skip", "Abort program" };
@@ -353,7 +343,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			switch (opt) {
 			case 0:
 				if (contact.edited()) {
-					contact.markForRewrite();
+					if (contact.isEmpty()){
+						deleteList.add(contact);
+					} else {
+						contact.markForRewrite();
+					}
 				}
 				break;
 			case 1:
@@ -364,6 +358,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 		return false;
 	}
+
+	
 
 	/**
 	 * subsumes changes to be performed and asks usert to confirm to apply those changes
