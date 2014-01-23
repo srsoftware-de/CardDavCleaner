@@ -56,8 +56,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private static void readContactsTest() {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	private static void test() {
