@@ -368,13 +368,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		nicks.clear();
 	}
 	
-	public void mergeWith(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-		adresses.addAll(contact.adresses);
-		
-		/* merging phones by numbers */
+	private void mergePhones(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException{
 		TreeMap<String,Phone> phoneMap=new TreeMap<String, Phone>();
-		
-		/** phones **/
+
 		/* add the current phones to the phone map */
 		for (Phone phone:phones){
 			if (phone.isEmpty()) continue;
@@ -396,9 +392,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (thunderbirdMerge) {
 			phones=thunderbirdMergePhone(phoneMap.values());
 		} else phones=phoneMap.values();
-		/** endof phones **/
-
-		/** email adresses **/
+	}
+	
+	private void mergeMails(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException{
 		TreeMap<String,Email> mailMap=new TreeMap<String,Email>();
 		
 		for (Email mail:mails){
@@ -420,7 +416,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (thunderbirdMerge) {
 			mails=thunderbirdMergeMail(mailMap.values());
 		} else mails=mailMap.values();
-		
+	}
+	
+	private void mergeNicks(Contact contact) throws InvalidAssignmentException{
 		TreeMap<String, Nickname> nickMap=new TreeMap<String, Nickname>();
 		
 		for (Nickname nick:nicks){
@@ -438,7 +436,9 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		}
 		
 		nicks=nickMap.values();
-
+	}
+	
+	private void mergeNames(Contact contact){
 		if (name!=null){
 			if (contact.name!=null && !contact.name.equals(name)){
 				name=(Name) selectOneOf("name",name,contact.name,contact);
@@ -450,31 +450,70 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 				formattedName=(String) selectOneOf("formated name", formattedName, contact.formattedName,contact);
 			}
 		} else formattedName=contact.formattedName;
-		
-		titles.addAll(contact.titles);
-		roles.addAll(contact.roles);
-		
+	}
+	
+	private void mergeTitles(Contact contact){
+		titles.addAll(contact.titles);		
+	}
+	
+	private void mergeRoles(Contact contact){
+		roles.addAll(contact.roles);		
+	}
+	
+	private void mergeCategories(Contact contact){
 		if (categories!=null){
 			if (contact.categories!=null){
 				categories.addAll(contact.categories);
 			}
 		} else categories=contact.categories;
+	}
+	
+	public void mergeWith(Contact contact,boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
+		adresses.addAll(contact.adresses);
 		
+		mergePhones(contact,thunderbirdMerge);
+		mergeMails(contact,thunderbirdMerge);
+		mergeNicks(contact);
+		mergeNames(contact);
+		mergeTitles(contact);
+		mergeRoles(contact);
+		mergeCategories(contact);
+		mergeBirthday(contact);
+		
+		if (contact.htmlMail) htmlMail=true;
+		
+		mergeUrls(contact);
+		if (uid==null) uid=contact.uid;
+		mergeNotes(contact);
+		mergePhotos(contact);
+		mergeOrgs(contact);
+		markForRewrite();
+	}
+	
+	private void mergeOrgs(Contact contact) {
+		orgs.addAll(contact.orgs);	
+  }
+
+	private void mergePhotos(Contact contact) {
+		photos.addAll(contact.photos);
+  }
+
+	private void mergeNotes(Contact contact) {
+		notes.addAll(contact.notes);
+  }
+
+	private void mergeUrls(Contact contact) {
+		urls.addAll(contact.urls);
+  }
+
+	private void mergeBirthday(Contact contact) {
 		if (birthday!=null){
 			if (contact.birthday!=null && !contact.birthday.equals(birthday)){
 				birthday= (Birthday) selectOneOf("birtday", birthday, contact.birthday,contact);
 			}
 		} else birthday=contact.birthday;
-		
-		if (contact.htmlMail) htmlMail=true;
-		urls.addAll(contact.urls);
-		if (uid==null) uid=contact.uid;
-		notes.addAll(contact.notes);
-		photos.addAll(contact.photos);
-		orgs.addAll(contact.orgs);	
-		markForRewrite();
-	}
-	
+  }
+
 	private Collection<Email> thunderbirdMergeMail(Collection<Email> mails) throws ToMuchEntriesForThunderbirdException {
 		TreeSet<Email> overloadedCategoryNumbers=new TreeSet<Email>();
 		boolean home=false;
