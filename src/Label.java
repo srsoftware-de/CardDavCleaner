@@ -4,7 +4,6 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 	TreeSet<String> types=new TreeSet<String>();
 	String encoding=null;
 	String label;
-	private boolean invalid;
 	
 	public Label(String line) throws InvalidFormatException {
 		String data=null;
@@ -43,10 +42,6 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 		return result.replace(";:", ":")+label;
 	}
 
-	public boolean isInvalid() {
-		return invalid;
-	}
-
 	public int compareTo(Label o) {
 		return this.toString().compareTo(o.toString());
 	}
@@ -61,5 +56,9 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
   public boolean mergeWith(Label other) {
 		label=merge(label,other.label);
 	  return true;
+  }
+
+	public boolean isEmpty() {
+	  return label==null || label.trim().isEmpty();
   }
 }

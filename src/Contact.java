@@ -41,7 +41,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private Name name;
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
 	private Birthday birthday;
-	private Label label;
 	private String uid;
 	private String vcfName;
 	private boolean htmlMail;
@@ -51,6 +50,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private TreeSet<String> notes = new TreeSet<String>();
 	private TreeSet<String> photos = new TreeSet<String>();
 	private TreeSet<String> categories = new TreeSet<String>();
+	private MergableList<Label> labels = new MergableList<Label>();
 	private MergableList<Phone> phones = new MergableList<Phone>();
 	private MergableList<Adress> adresses = new MergableList<Adress>();
 	private MergableList<Email> mails = new MergableList<Email>();
@@ -271,7 +271,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		if (!name.isCompatibleWith(c2.name)) return true;
 		if (!birthday.isCompatibleWith(c2.birthday)) return true;
 		if (different(formattedName,c2.formattedName)) return true;
-		if (!label.isCompatibleWith(c2.label)) return true;
+		if (!labels.isEmpty() && !c2.labels.isEmpty() && !labels.equals(c2.labels)) return true;
 		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) return true;
 		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) return true;
 		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getSimplePhoneNumbers().equals(c2.getSimplePhoneNumbers())) return true;
@@ -344,7 +344,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (n.isInvalid()) return true;
 		}
 		if (birthday != null && birthday.isInvalid()) return true;
-		if (label != null && label.isInvalid()) return true;
 		for (Messenger m : messengers) {
 			if (m.isInvalid()) return true;
 		}
@@ -511,13 +510,18 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		for (String role : roles) {
 			sb.append("ROLE:" + role + "\n");
-		}
+		}		
 
 		if (birthday != null && !birthday.toString().equals("BDAY:")) {
 			sb.append(birthday);
 			sb.append("\n");
 		}
-
+		
+		for (Label label:labels){
+			sb.append(label);
+			sb.append("\n");
+		}
+		
 		for (Adress adress : adresses) {
 			sb.append(adress);
 			sb.append("\n");
@@ -738,14 +742,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		form.scale();
 		return form;
 	}
-
+	
 	private void changed() {
-		updateNicks();
 		updatePhones();
+		updateAdresses();
+		updateLabels();
 		updateEmails();
 		updateUrls();
 		updateOrgs();
 		updateMessengers();
+		updateNicks();
 	}
 
 	private void clearFields() {
@@ -850,7 +856,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
 		Vector<String> lines = new Vector<String>();
 		String line;
+		System.out.println();
+		System.out.println("Input:");
 		while ((line = in.readLine()) != null) {
+			System.out.println(line);
 			lines.add(line);
 		}
 		in.close();
@@ -874,8 +883,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (line.startsWith("VERSION:")) known = true;
 			if (line.startsWith("ADR") && (known = true)) readAdress(line);
 			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
-			if (line.startsWith("TEL;") && (known = true)) readPhone(line);
-			if (line.startsWith("TEL:") && (known = true)) readPhone(line.replace(":", ";TYPE=home:"));
+			if (line.startsWith("TEL") && (known = true)) readPhone(line);
 			if (line.startsWith("EMAIL") && (known = true)) readMail(line);
 			if (line.startsWith("NICKNAME") && (known = true)) readNick(line);
 			if (line.startsWith("IMPP:") && (known = true)) readIMPP(line);
@@ -934,7 +942,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void readLabel(String line) throws InvalidFormatException {
-		label = new Label(line);
+		Label label = new Label(line);
+		if (!label.isEmpty()) labels.add(label);
 	}
 
 	private void readMail(String line) throws UnknownObjectException, InvalidFormatException {
@@ -969,7 +978,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	private void readPhone(String line) throws InvalidFormatException, UnknownObjectException {
 		Phone phone = new Phone(line);
-		if (!phone.isEmpty()) phones.add(phone);
+		System.out.println(phone);
+		if (!phone.isEmpty()) {
+			phones.add(phone);
+		}
 	}
 
 	private void readPhoto(String line) {
@@ -1148,7 +1160,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		if (source instanceof TitleField) updateTitles();
 		if (source instanceof RoleField) updateRoles();
 		if (source instanceof CategoryField) updateCategories();
-		if (source instanceof NoteField) updateNotefields();
+		if (source instanceof NoteField) updateNotes();
+	}
+
+	private void updateAdresses() {
+		MergableList<Adress> newAdresses = new MergableList<Adress>();
+		newAdresses.addAll(adresses);
+		adresses = newAdresses;
 	}
 
 	private void updateCategories() {
@@ -1170,6 +1188,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		mails = newMails;
 	}
 
+	private void updateLabels() {
+		MergableList<Label> newLabels = new MergableList<Label>();
+		newLabels.addAll(labels);
+		labels = newLabels;
+	}
+
 	private void updateMessengers() {
 		MergableList<Messenger> newMessengers = new MergableList<Messenger>();
 		newMessengers.addAll(messengers);
@@ -1181,8 +1205,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		newNicks.addAll(nicks);	
 		nicks = newNicks;
 	}
-
-	private void updateNotefields() {
+	
+	private void updateNotes() {
 		notes.clear();
 		for (NoteField nf : noteFields) {
 			String note = nf.getText().trim();
@@ -1203,7 +1227,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	private void updatePhones() {
 		MergableList<Phone> newPhones = new MergableList<Phone>();
-		phones.addAll(phones);
+		newPhones.addAll(phones);
 		phones = newPhones;
 	}
 
