@@ -19,10 +19,10 @@ public class MergableList<Type extends Mergable<Type>> implements SortedSet<Type
 	}
 
 	@Override
-	public boolean addAll(Collection<? extends Type> adresses) {
+	public boolean addAll(Collection<? extends Type> entries) {
 		boolean success=true;
-		for (Type a:adresses){
-			add(a);
+		for (Type e:entries){
+			add(e);
 		}
 		return success;
 	}

@@ -48,7 +48,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private boolean htmlMail;
 	private boolean rewrite = false;
 	private TreeSet<String> titles = new TreeSet<String>();
-	private Collection<Phone> phones = new TreeSet<Phone>();
+	private MergableList<Phone> phones = new MergableList<Phone>();
 	private MergableList<Adress> adresses = new MergableList<Adress>();
 	private Collection<Email> mails = new TreeSet<Email>();
 	private TreeSet<String> roles = new TreeSet<String>();
@@ -897,29 +897,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void mergePhones(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-		TreeMap<String, Phone> phoneMap = new TreeMap<String, Phone>();
-
-		/* add the current phones to the phone map */
-		for (Phone phone : phones) {
-			if (phone.isEmpty()) continue;
-			Phone existingPhone = phoneMap.get(phone.simpleNumber());
-			if (existingPhone != null) {
-				existingPhone.merge(phone);
-			} else phoneMap.put(phone.simpleNumber(), phone);
-		}
-
-		/* add the phone numbers of the second contact to the phone map */
-		for (Phone phone : contact.phones) {
-			if (phone.isEmpty()) continue;
-			Phone existingPhone = phoneMap.get(phone.simpleNumber());
-			if (existingPhone != null) {
-				existingPhone.merge(phone);
-			} else phoneMap.put(phone.simpleNumber(), phone);
-		}
-
+		phones.addAll(contact.phones);
 		if (thunderbirdMerge) {
-			phones = thunderbirdMergePhone(phoneMap.values());
-		} else phones = phoneMap.values();
+			thunderbirdMergePhone(phones);
+		}
 	}
 
 	/*
@@ -1178,7 +1159,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return mails;
 	}
 
-	private Collection<Phone> thunderbirdMergePhone(Collection<Phone> phones) throws ToMuchEntriesForThunderbirdException {
+	private void thunderbirdMergePhone(Collection<Phone> phones) throws ToMuchEntriesForThunderbirdException {
 		TreeSet<Phone> overloadedCategoryNumbers = new TreeSet<Phone>();
 		boolean fax = false;
 		boolean home = false;
@@ -1246,7 +1227,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			}
 			throw new ToMuchEntriesForThunderbirdException("There is no thunderbird slot left for the following number entry: " + phone);
 		}
-		return phones;
 	}
 
 	private void update() {
@@ -1327,12 +1307,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void updatePhones() {
-		TreeSet<Phone> newPhones = new TreeSet<Phone>();
-		for (Phone p : phones) {
-			if (!p.isEmpty()) {
-				newPhones.add(p);
-			}
-		}
+		MergableList<Phone> newPhones = new MergableList<Phone>();
+		phones.addAll(phones);
 		phones = newPhones;
 	}
 
