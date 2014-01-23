@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
-import java.security.InvalidParameterException;
 
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
@@ -10,7 +9,7 @@ import javax.swing.event.DocumentListener;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class Adress implements Mergable<Adress>,DocumentListener, ChangeListener,Comparable<Adress> {
+public class Adress extends Mergable<Adress> implements DocumentListener, ChangeListener,Comparable<Adress> {
 
 	private boolean home = false;
 	private boolean work = false;
@@ -159,20 +158,6 @@ public class Adress implements Mergable<Adress>,DocumentListener, ChangeListener
 		sb.append(canonical());
 		return sb.toString();
 	}
-
-	private boolean different(String s1,String s2){
-		if (s1==null || s1.isEmpty()) return false;
-		if (s2==null || s2.isEmpty()) return false;
-		return !s1.toLowerCase().equals(s2.toLowerCase());
-	}
-
-	private String merge(String s1, String s2) {
-		if (different(s1,s2)) throw new InvalidParameterException("Trying to merge \""+s1+"\" with \""+s2+"\"!");
-		if (s1==null || s1.isEmpty()){
-			return s2;
-		}
-	  return s1;
-  }	
 
 	private void readAddr(String line) {
 		postOfficeBox=null;

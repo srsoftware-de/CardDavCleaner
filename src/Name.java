@@ -9,21 +9,41 @@ import javax.swing.event.DocumentListener;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
-public class Name implements DocumentListener, Comparable<Name> {	
+public class Name extends Mergable<Name> implements DocumentListener, Comparable<Name> {	
 	
 	private String family;
 	private String first;
 	private String prefix;
 	private String suffix;
 	private String middle;
-	private boolean invalid=false;
+	//private boolean invalid=false;
 	
 	private InputField prefBox,firstBox,middleBox,familyBox,sufBox;
 	private VerticalPanel form;
 	
+	@Override
+  public boolean mergeWith(Name otherName) {
+		family=merge(family,otherName.family);
+		first=merge(first,otherName.first);
+		prefix=merge(prefix,otherName.prefix);
+		suffix=merge(suffix,otherName.suffix);
+		middle=merge(middle,otherName.middle);
+	  return true;
+  }
+
+	@Override
+  public boolean isCompatibleWith(Name otherName) {
+		if (different(first,otherName.first)) return false;
+		if (different(family,otherName.family)) return false;
+		if (different(prefix,otherName.prefix)) return false;
+		if (different(suffix, otherName.suffix)) return false;
+		if (different(middle,otherName.middle)) return false;
+	  return true;
+  }
+
+	
 	public JPanel editForm(String title) {
 		form=new VerticalPanel(title);
-		if (isInvalid()) form.setBackground(Color.red);
 		
 		form.add(prefBox=new InputField("Prefix",prefix));
 		prefBox.addChangeListener(this);
@@ -175,10 +195,6 @@ public class Name implements DocumentListener, Comparable<Name> {
 		return parts.toString().replace("[", "").replace("]", ""); // sorted set of name parts
 	}
 
-	public boolean isInvalid() {
-		return invalid;
-	}
-
 	public void changedUpdate(DocumentEvent arg0) {
 		update();
 	}
@@ -192,7 +208,7 @@ public class Name implements DocumentListener, Comparable<Name> {
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(invalid?Color.red:Color.green);
+			form.setBackground(Color.green);
 		}
 	}
 

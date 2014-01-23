@@ -35,7 +35,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class Contact implements ActionListener, DocumentListener, ChangeListener, Comparable<Contact> {
+public class Contact extends Mergable<Contact> implements ActionListener, DocumentListener, ChangeListener, Comparable<Contact> {
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	// private String revision;
 	// private String productId;
@@ -284,6 +284,12 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		return false;
 	}
 
+	@Override
+  public boolean isCompatibleWith(Contact other) {		
+		// TODO: implement other fields
+	  return true;
+  }
+	
 	public boolean edited() {
 		String before = this.toString();
 		String[] options = { "Ok", "Delete this contact" };
@@ -335,7 +341,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		for (Nickname n : nicks) {
 			if (n.isInvalid()) return true;
 		}
-		if (name != null && name.isInvalid()) return true;
 		if (birthday != null && birthday.isInvalid()) return true;
 		if (label != null && label.isInvalid()) return true;
 		for (Organization o : orgs) {
@@ -363,8 +368,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		rewrite = true;
 	}
 
-	public void mergeWith(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-
+	public boolean mergeWith(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
 		mergeAdresses(contact);
 		mergePhones(contact, thunderbirdMerge);
 		mergeMails(contact, thunderbirdMerge);
@@ -383,6 +387,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		mergePhotos(contact);
 		mergeOrgs(contact);
 		markForRewrite();
+		return true;
 	}
 
 	public TreeSet<String> messengerNicks() throws UnknownObjectException {
@@ -1364,4 +1369,16 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		}
 		return null;
 	}
+
+	@Override
+  public boolean mergeWith(Contact other) {
+	  try {
+	    return mergeWith(other,false);
+    } catch (InvalidAssignmentException e) {
+	    e.printStackTrace();
+    } catch (ToMuchEntriesForThunderbirdException e) {
+	    e.printStackTrace();
+    }
+	  return false;
+  }
 }
