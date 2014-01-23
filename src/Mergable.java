@@ -2,9 +2,9 @@ import java.security.InvalidParameterException;
 
 
 public abstract class Mergable<T> {
-	public abstract boolean isCompatibleWith(T other);
-	
+	public abstract boolean isCompatibleWith(T other);	
 	public abstract boolean mergeWith(T other);
+	public abstract boolean isEmpty();
 	
 	protected boolean different(String s1,String s2){
 		if (s1==null || s1.isEmpty()) return false;

@@ -17,6 +17,17 @@ public class Birthday extends Mergable<Birthday>implements ChangeListener, Compa
 	private boolean invalid = false;
 	private InputField yearField, monthField, dayField, hourField, minuteField, secondField;
 	
+	@Override
+  public boolean isEmpty() {
+		if (year!=null) return false;
+		if (month!=null) return false;
+		if (day!=null) return false;
+		if (hour!=null) return false;
+		if (minute!=null) return false;
+		if (second!=null) return false;
+	  return true;
+  }
+
 	public Birthday(String birthday) throws InvalidFormatException {
 		String bday = birthday;
 		if (bday.startsWith(";VALUE=DATE-TIME")) {
@@ -336,4 +347,5 @@ public class Birthday extends Mergable<Birthday>implements ChangeListener, Compa
 		form.scale();
 		return form;
 	}
+
 }
