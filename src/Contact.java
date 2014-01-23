@@ -147,7 +147,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		if (source == newPhoneButton) {
 			try {
-				Phone newPhone = new Phone("TEL;:");
+				Phone newPhone = new Phone("TEL:000");
 				VerticalPanel newPhoneForm = newPhone.editForm();
 				phoneForm.insertCompoundBefore(newPhoneButton, newPhoneForm);
 				phones.add(newPhone);
@@ -856,10 +856,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
 		Vector<String> lines = new Vector<String>();
 		String line;
-		System.out.println();
-		System.out.println("Input:");
 		while ((line = in.readLine()) != null) {
-			System.out.println(line);
 			lines.add(line);
 		}
 		in.close();
@@ -978,7 +975,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	private void readPhone(String line) throws InvalidFormatException, UnknownObjectException {
 		Phone phone = new Phone(line);
-		System.out.println(phone);
 		if (!phone.isEmpty()) {
 			phones.add(phone);
 		}
@@ -1265,6 +1261,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	protected Contact clone() {
 		try {
+			System.out.println(toString());
 			return new Contact(toString());
 		} catch (UnknownObjectException e) {
 			e.printStackTrace();
