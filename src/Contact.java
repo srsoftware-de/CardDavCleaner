@@ -269,8 +269,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	public boolean conflictsWith(Contact c2) {
-		if (name != null && c2.name != null && !name.canonical().equals(c2.name.canonical())) return true;
-		if (birthday != null && c2.birthday != null && !birthday.equals(c2.birthday)) return true;
+		if (!name.isCompatibleWith(c2.name)) return true;
+		if (!birthday.isCompatibleWith(c2.birthday)) return true;
+		if (different(formattedName,c2.formattedName)) return true;		
 		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) return true;
 		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) return true;
 		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getSimplePhoneNumbers().equals(c2.getSimplePhoneNumbers())) return true;
@@ -284,13 +285,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return false;
 	}
 
-	@Override
-  public boolean isCompatibleWith(Contact other) {		
-		if (!name.isCompatibleWith(other.name)) return false;
-		// TODO: implement for other fields
-	  return true;
-  }
-	
 	public boolean edited() {
 		String before = this.toString();
 		String[] options = { "Ok", "Delete this contact" };
@@ -304,7 +298,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		return !this.equals(before);
 	}
-
+	
 	public void generateName() {
 		try {
 			vcfName = (new MD5Hash(this)) + ".vcf";
@@ -324,6 +318,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	public void insertUpdate(DocumentEvent e) {
 		update();
 	}
+
+	@Override
+  public boolean isCompatibleWith(Contact other) {		
+		if (!name.isCompatibleWith(other.name)) return false;
+		if (!birthday.isCompatibleWith(other.birthday)) return false;
+	  return true;
+  }
 
 	public boolean isEmpty() {
 		return adresses.isEmpty() && phones.isEmpty() && mails.isEmpty() && titles.isEmpty() && roles.isEmpty() && birthday == null && (categories == null || categories.isEmpty()) && urls.isEmpty() && notes.isEmpty() && photos.isEmpty() && orgs.isEmpty() && nicks.isEmpty();
@@ -368,6 +369,18 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	public void markForRewrite() {
 		rewrite = true;
 	}
+
+	@Override
+  public boolean mergeWith(Contact other) {
+	  try {
+	    return mergeWith(other,false);
+    } catch (InvalidAssignmentException e) {
+	    e.printStackTrace();
+    } catch (ToMuchEntriesForThunderbirdException e) {
+	    e.printStackTrace();
+    }
+	  return false;
+  }
 
 	public boolean mergeWith(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
 		mergeAdresses(contact);
@@ -870,13 +883,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		nicks = nickMap.values();
 	}
 
-	private void mergeNotes(Contact contact) {
-		notes.addAll(contact.notes);
-	}
-
 	/*
 	 * private void readProductId(String line) { if (line.isEmpty()) return; productId = line; }
 	 */
+
+	private void mergeNotes(Contact contact) {
+		notes.addAll(contact.notes);
+	}
 
 	private void mergeOrgs(Contact contact) {
 		orgs.addAll(contact.orgs);
@@ -908,13 +921,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		} else phones = phoneMap.values();
 	}
 
-	private void mergePhotos(Contact contact) {
-		photos.addAll(contact.photos);
-	}
-
 	/*
 	 * private void readRevision(String line) { if (line.isEmpty()) return; revision = line; }
 	 */
+
+	private void mergePhotos(Contact contact) {
+		photos.addAll(contact.photos);
+	}
 
 	private void mergeRoles(Contact contact) {
 		roles.addAll(contact.roles);
@@ -1370,16 +1383,4 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		return null;
 	}
-
-	@Override
-  public boolean mergeWith(Contact other) {
-	  try {
-	    return mergeWith(other,false);
-    } catch (InvalidAssignmentException e) {
-	    e.printStackTrace();
-    } catch (ToMuchEntriesForThunderbirdException e) {
-	    e.printStackTrace();
-    }
-	  return false;
-  }
 }
