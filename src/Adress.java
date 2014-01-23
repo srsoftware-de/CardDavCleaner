@@ -14,16 +14,33 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 	private boolean home = false;
 	private boolean work = false;
 	private boolean invalid = false;
-	private String streetAdress;
-	private String city;
-	private String zip;
-	private String country;
-	private String region;
 	private String extendedAdress;
+	private String streetAdress;
 	private String postOfficeBox;
+	private String zip;
+	private String city;
+	private String region;
+	private String country;
 	private VerticalPanel form;
 	private InputField zipField,streetField,extendedField,cityField,regionField,countryField,postBoxField;
 	private JCheckBox homeBox,workBox;
+	
+	private boolean different(String s1,String s2){
+		if (s1==null) return false;
+		if (s2==null) return false;
+		return s1.equals(s2);
+	}
+	
+	public boolean isCompatibleWith(Adress adr2){
+		if (different(country,adr2.country)) return false;
+		if (different(region,adr2.region)) return false;
+		if (different(city,adr2.city)) return false;
+		if (different(zip,adr2.zip)) return false;
+		if (different(postOfficeBox,adr2.postOfficeBox)) return false;
+		if (different(streetAdress,adr2.streetAdress)) return false;
+		if (different(extendedAdress, extendedAdress)) return false;
+		return true;
+	}
 	
 	public VerticalPanel editForm() {
 		form=new VerticalPanel("Adress");

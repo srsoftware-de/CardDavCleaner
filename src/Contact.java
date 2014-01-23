@@ -43,7 +43,7 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
 	private TreeSet<String> titles = new TreeSet<String>();
 	private Collection<Phone> phones = new TreeSet<Phone>();
-	private TreeSet<Adress> adresses = new TreeSet<Adress>();
+	private AdressList adresses = new AdressList();
 	private Collection<Email> mails = new TreeSet<Email>();
 	private TreeSet<String> roles = new TreeSet<String>();
 	private Birthday birthday;
@@ -364,8 +364,8 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	}
 
 	public void mergeWith(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-		adresses.addAll(contact.adresses);
 
+		mergeAdresses(contact);
 		mergePhones(contact, thunderbirdMerge);
 		mergeMails(contact, thunderbirdMerge);
 		mergeNicks(contact);
@@ -724,7 +724,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private void changed() {
 		updateNicks();
 		updatePhones();
-		updateAdresses();
 		updateEmails();
 		updateUrls();
 		updateOrgs();
@@ -786,6 +785,10 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 			result.add(phone.simpleNumber());
 		return result;
 	}
+
+	private void mergeAdresses(Contact contact) {		
+		adresses.addAll(contact.adresses);
+  }
 
 	private void mergeBirthday(Contact contact) {
 		if (birthday != null) {
@@ -1237,16 +1240,6 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		if (source instanceof NoteField) updateNotefields();
 	}
 
-	private void updateAdresses() {
-		TreeSet<Adress> newAdresses = new TreeSet<Adress>();
-		for (Adress p : adresses) {
-			if (!p.isEmpty()) {
-				newAdresses.add(p);
-			}
-		}
-		adresses = newAdresses;
-	}
-
 	private void updateCategories() {
 		categories.clear();
 		for (CategoryField cf : categoryFields) {
@@ -1363,13 +1356,10 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		try {
 			return new Contact(toString());
 		} catch (UnknownObjectException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (InvalidFormatException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (AlreadyBoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
