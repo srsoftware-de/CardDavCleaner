@@ -286,7 +286,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	@Override
   public boolean isCompatibleWith(Contact other) {		
-		// TODO: implement other fields
+		if (!name.isCompatibleWith(other.name)) return false;
+		// TODO: implement for other fields
 	  return true;
   }
 	
