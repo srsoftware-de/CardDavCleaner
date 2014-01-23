@@ -48,7 +48,6 @@ public class HorizontalPanel extends JPanel {
 		width=5;
 		offset=5;
 		if (caption){
-			System.out.println("setting offset to "+(offset+25));
 			offset+=15;
 		}
 	}
