@@ -18,6 +18,15 @@ public class MergableList<Type extends Mergable<Type>> implements SortedSet<Type
 		}
 		return set.add(newElement);
 	}
+	
+	public void update(){
+		TreeSet<Type> newSet = new TreeSet<Type>();
+		for (Type element:set){
+			if (element!=null && !element.isEmpty()) newSet.add(element);
+		}
+		set.clear();
+		set.addAll(newSet);
+	}
 
 	@Override
 	public boolean addAll(Collection<? extends Type> entries) {

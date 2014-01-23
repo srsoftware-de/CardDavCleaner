@@ -218,22 +218,23 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 
 	public String simpleNumber() {
-		String number=this.number.trim();
-		while (number.contains("(")){
-			number=number.replace("(", "");
+		String simple=this.number.trim();
+		while (simple.contains("(")){
+			simple=simple.replace("(", "");
 		}
-		while (number.contains(")")){
-			number=number.replace(")", "");
+		while (simple.contains(")")){
+			simple=simple.replace(")", "");
 		}
-		while (number.contains(" ")){
-			number=number.replace(" ", "");
+		while (simple.contains(" ")){
+			simple=simple.replace(" ", "");
 		}
-		while (number.contains("-")){
-			number=number.replace("-", "");
+		while (simple.contains("-")){
+			simple=simple.replace("-", "");
 		}
-		if (number.startsWith("+49")) number=0+number.substring(3);
-		if (number.startsWith("0049")) number=0+number.substring(4);
-		return number;
+		if (simple.startsWith("+49")) simple=0+simple.substring(3);
+		if (simple.startsWith("0049")) simple=0+simple.substring(4);
+		if (simple.startsWith("+")) simple=0+simple.substring(1);
+		return simple;
 }	
 
 	public void stateChanged(ChangeEvent arg0) {
@@ -259,9 +260,9 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			return;
 		}
 		number=line;
-		String simple=number.replace(" ", "").replace("/", "").replace("-", "");
+		String simple=simpleNumber();
 		for (char c:simple.toCharArray()){
-			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') invalid=true;				
+			if (!Character.isDigit(c)) invalid=true;				
 		}
 	}
 

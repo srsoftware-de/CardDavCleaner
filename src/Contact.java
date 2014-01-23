@@ -292,6 +292,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		switch (choice) {
 		case 1:
 			clearFields();
+			changed();
 			break;
 		default:
 			changed();
@@ -312,6 +313,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	public Contact getClonedContactIfExists() {
+		if (clonedContact!=null)clonedContact.changed();
 		return clonedContact;
 	}
 
@@ -456,6 +458,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	 * @return the code of that contact
 	 */
 	public String toString(boolean shorter) {
+		int cutLength=60;
 		StringBuffer sb = new StringBuffer();
 		sb.append("BEGIN:VCARD\n");
 
@@ -517,9 +520,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			sb.append("\n");
 		}
 		
-		for (Label label:labels){
-			sb.append(label);
-			sb.append("\n");
+		if (shorter) {
+			for (Label label:labels) {
+				String labelString=label.toString();
+				sb.append(((labelString.length() > cutLength+2) ? (labelString.substring(0, cutLength) + "...") : labelString) + "\n");
+			}
+		} else {
+			for (Label label:labels) {
+				sb.append(label);
+				sb.append("\n");
+			}
 		}
 		
 		for (Adress adress : adresses) {
@@ -545,7 +555,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		if (shorter) {
 			for (String note : notes) {
-				sb.append("NOTE:" + ((note.length() > 30) ? (note.substring(0, 28) + "...") : note) + "\n");
+				sb.append("NOTE:" + ((note.length() > cutLength+2) ? (note.substring(0, cutLength) + "...") : note) + "\n");
 			}
 		} else {
 			for (String note : notes) {
@@ -744,14 +754,14 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 	
 	private void changed() {
-		updatePhones();
-		updateAdresses();
-		updateLabels();
-		updateEmails();
-		updateUrls();
-		updateOrgs();
-		updateMessengers();
-		updateNicks();
+		phones.update();
+		adresses.update();
+		labels.update();
+		mails.update();
+		urls.update();
+		orgs.update();
+		messengers.update();
+		nicks.update();
 	}
 
 	private void clearFields() {
@@ -975,9 +985,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	private void readPhone(String line) throws InvalidFormatException, UnknownObjectException {
 		Phone phone = new Phone(line);
-		if (!phone.isEmpty()) {
-			phones.add(phone);
-		}
+		phones.add(phone);
 	}
 
 	private void readPhoto(String line) {
@@ -1005,9 +1013,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void rescale() {
-		form.rescale();
-		outerForm.rescale();
-		scroll.revalidate();
+		if (form!=null)form.rescale();
+		if (outerForm!=null)outerForm.rescale();
+		if (scroll!=null) scroll.revalidate();
 	}
 
 	private Object selectOneOf(String title, Object o1, Object o2, Contact contact2) {
@@ -1159,12 +1167,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		if (source instanceof NoteField) updateNotes();
 	}
 
-	private void updateAdresses() {
-		MergableList<Adress> newAdresses = new MergableList<Adress>();
-		newAdresses.addAll(adresses);
-		adresses = newAdresses;
-	}
-
 	private void updateCategories() {
 		categories.clear();
 		for (CategoryField cf : categoryFields) {
@@ -1178,30 +1180,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 	}
 
-	private void updateEmails() {
-		MergableList<Email> newMails = new MergableList<Email>();
-		newMails.addAll(mails);
-		mails = newMails;
-	}
-
-	private void updateLabels() {
-		MergableList<Label> newLabels = new MergableList<Label>();
-		newLabels.addAll(labels);
-		labels = newLabels;
-	}
-
-	private void updateMessengers() {
-		MergableList<Messenger> newMessengers = new MergableList<Messenger>();
-		newMessengers.addAll(messengers);
-		messengers = newMessengers;
-	}
-
-	private void updateNicks() {
-		MergableList<Nickname> newNicks = new MergableList<Nickname>();
-		newNicks.addAll(nicks);	
-		nicks = newNicks;
-	}
-	
 	private void updateNotes() {
 		notes.clear();
 		for (NoteField nf : noteFields) {
@@ -1213,18 +1191,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				nf.setBackground(Color.yellow);
 			}
 		}
-	}
-
-	private void updateOrgs() {
-		MergableList<Organization> newOrgs = new MergableList<Organization>();
-		newOrgs.addAll(orgs);
-		orgs = newOrgs;
-	}
-
-	private void updatePhones() {
-		MergableList<Phone> newPhones = new MergableList<Phone>();
-		newPhones.addAll(phones);
-		phones = newPhones;
 	}
 
 	private void updateRoles() {
@@ -1253,14 +1219,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 	}
 
-	private void updateUrls() {
-		MergableList<Url> newUrls = new MergableList<Url>();
-		newUrls.addAll(urls);
-		urls = newUrls;
-	}
-
 	protected Contact clone() {
 		try {
+			changed();
 			System.out.println(toString());
 			return new Contact(toString());
 		} catch (UnknownObjectException e) {
