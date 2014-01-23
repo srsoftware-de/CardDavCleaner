@@ -37,15 +37,14 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 		country=merge(country, adr2.country);
 		if (adr2.home) home=true;
 		if (adr2.work) work=true;
-	  return false;
+	  return true;
   }
 
 	
 	private String merge(String s1, String s2) {
+		if (different(s1,s2)) throw new InvalidParameterException("Trying to merge \""+s1+"\" with \""+s2+"\"!");
 		if (s1==null || s1.isEmpty()){
 			return s2;
-		} else {
-			if (s2 != null && !s2.isEmpty()) throw new InvalidParameterException("Trying to merge \""+s1+"\" with \""+s2+"\"!");
 		}
 	  return s1;
   }
@@ -54,7 +53,7 @@ public class Adress implements DocumentListener, ChangeListener,Comparable<Adres
 	private boolean different(String s1,String s2){
 		if (s1==null || s1.isEmpty()) return false;
 		if (s2==null || s2.isEmpty()) return false;
-		return s1.equals(s2);
+		return !s1.toLowerCase().equals(s2.toLowerCase());
 	}
 	
 	public boolean isCompatibleWith(Adress adr2){
