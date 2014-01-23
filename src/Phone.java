@@ -228,6 +228,9 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		while (number.contains(" ")){
 			number=number.replace(" ", "");
 		}
+		while (number.contains("-")){
+			number=number.replace("-", "");
+		}
 		if (number.startsWith("+49")) number=0+number.substring(3);
 		if (number.startsWith("0049")) number=0+number.substring(4);
 		return number;
