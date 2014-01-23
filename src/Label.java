@@ -1,6 +1,6 @@
 import java.util.TreeSet;
 
-public class Label implements Comparable<Label>{
+public class Label extends Mergable<Label> implements Comparable<Label>{
 	TreeSet<String> types=new TreeSet<String>();
 	String encoding=null;
 	String label;
@@ -50,4 +50,16 @@ public class Label implements Comparable<Label>{
 	public int compareTo(Label o) {
 		return this.toString().compareTo(o.toString());
 	}
+
+	@Override
+  public boolean isCompatibleWith(Label other) {
+		if (different(label,other.label)) return false;
+	  return true;
+  }
+
+	@Override
+  public boolean mergeWith(Label other) {
+		label=merge(label,other.label);
+	  return true;
+  }
 }

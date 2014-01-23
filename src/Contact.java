@@ -41,21 +41,21 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	// private String productId;
 	private Name name;
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
+	private Birthday birthday;
+	private Label label;
+	private String uid;
+	private String vcfName;
+	private boolean htmlMail;
+	private boolean rewrite = false;
 	private TreeSet<String> titles = new TreeSet<String>();
 	private Collection<Phone> phones = new TreeSet<Phone>();
 	private MergableList<Adress> adresses = new MergableList<Adress>();
 	private Collection<Email> mails = new TreeSet<Email>();
 	private TreeSet<String> roles = new TreeSet<String>();
-	private Birthday birthday;
-	private Label label;
-	private boolean htmlMail;
-	private boolean rewrite = false;
 	private TreeSet<Url> urls = new TreeSet<Url>();
-	private String uid;
 	private TreeSet<String> notes = new TreeSet<String>();
 	private TreeSet<String> photos = new TreeSet<String>();
 	private TreeSet<Organization> orgs = new TreeSet<Organization>();
-	private String vcfName;
 	private TreeSet<Messenger> messengers = new TreeSet<Messenger>();
 	private TreeSet<String> categories = new TreeSet<String>();
 	private Collection<Nickname> nicks = new TreeSet<Nickname>();
@@ -271,7 +271,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	public boolean conflictsWith(Contact c2) {
 		if (!name.isCompatibleWith(c2.name)) return true;
 		if (!birthday.isCompatibleWith(c2.birthday)) return true;
-		if (different(formattedName,c2.formattedName)) return true;		
+		if (different(formattedName,c2.formattedName)) return true;
+		if (!label.isCompatibleWith(c2.label)) return true;
 		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) return true;
 		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) return true;
 		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getSimplePhoneNumbers().equals(c2.getSimplePhoneNumbers())) return true;
