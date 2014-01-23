@@ -29,10 +29,17 @@ public class InputField extends HorizontalPanel implements DocumentListener {
 	}
 
 	public InputField(String caption,String defaultValue) {
-		add(new JLabel(caption + " "));		
-		result = (defaultValue==null || defaultValue.isEmpty())?new JTextField(20):new JTextField(defaultValue);		
+		add(new JLabel(caption + " "));
+		if (defaultValue==null || defaultValue.isEmpty()){
+			result=new JTextField(10);
+		} else {
+			result=new JTextField(defaultValue+"   ");
+		}
 		add(result);
-		scale();	
+		scale();
+		if (defaultValue!=null && !defaultValue.isEmpty()) {
+			result.setText(defaultValue);
+		}
 	}
 
 	public InputField(String caption) {

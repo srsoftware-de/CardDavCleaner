@@ -1,6 +1,8 @@
 import java.awt.Color;
 import java.util.Calendar;
 
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -15,15 +17,16 @@ public class Birthday implements ChangeListener, Comparable<Birthday> {
 	private boolean invalid = false;
 	private InputField yearField, monthField, dayField, hourField, minuteField, secondField;
 
-	public HorizontalPanel editForm() {
-		HorizontalPanel form = new HorizontalPanel("Birthday");
-		if (invalid) form.setBackground(Color.red);
-		form.add(yearField = new InputField("Year of birth", year));
-		yearField.addEditListener(this);
-		form.add(monthField = new InputField("Month of birth", month));
-		monthField.addEditListener(this);
-		form.add(dayField = new InputField("Day of birth", day));
-		dayField.addEditListener(this);
+	public JPanel editForm() {
+		VerticalPanel form = new VerticalPanel("Birthday");
+		form.add(dateForm());
+		form.add(timeForm());
+		form.scale();
+		return form;
+	}
+
+	private JComponent timeForm() {
+		HorizontalPanel form = new HorizontalPanel();
 		form.add(hourField = new InputField("Hour", hour));
 		hourField.addEditListener(this);
 		form.add(minuteField = new InputField("Minute", minute));
@@ -34,8 +37,21 @@ public class Birthday implements ChangeListener, Comparable<Birthday> {
 		return form;
 	}
 
+	private JComponent dateForm() {
+		HorizontalPanel dateForm = new HorizontalPanel();
+		if (invalid) dateForm.setBackground(Color.red);
+		dateForm.add(yearField = new InputField("Year of birth", year));
+		yearField.addEditListener(this);
+		dateForm.add(monthField = new InputField("Month of birth", month));
+		monthField.addEditListener(this);
+		dateForm.add(dayField = new InputField("Day of birth", day));
+		dayField.addEditListener(this);
+		dateForm.scale();
+		return dateForm;
+	}
+
 	public boolean equals(Birthday b2) {
-		if (b2==null) return false;
+		if (b2 == null) return false;
 		return (year.equals(b2.year) && month.equals(b2.month) && day.equals(b2.day));
 	}
 
@@ -128,10 +144,10 @@ public class Birthday implements ChangeListener, Comparable<Birthday> {
 					bday = bday.substring(1);
 				}
 			}
-			if (!bday.isEmpty()) {				
+			if (!bday.isEmpty()) {
 				day = bday.substring(0, 2);
 				bday = bday.substring(2);
-				
+
 			}
 		}
 		if (!bday.isEmpty()) {
@@ -269,27 +285,27 @@ public class Birthday implements ChangeListener, Comparable<Birthday> {
 		Object source = evt.getSource();
 		if (source == yearField) {
 			year = yearField.getText().trim();
-			if (year.isEmpty()) year=null;
+			if (year.isEmpty()) year = null;
 		}
 		if (source == monthField) {
 			month = monthField.getText().trim();
-			if (month.isEmpty()) month=null;
+			if (month.isEmpty()) month = null;
 		}
 		if (source == dayField) {
 			day = dayField.getText().trim();
-			if (day.isEmpty()) day=null;
+			if (day.isEmpty()) day = null;
 		}
 		if (source == hourField) {
 			hour = hourField.getText().trim();
-			if (hour.isEmpty()) hour=null;
+			if (hour.isEmpty()) hour = null;
 		}
 		if (source == minuteField) {
 			minute = minuteField.getText().trim();
-			if (minute.isEmpty()) minute=null;
+			if (minute.isEmpty()) minute = null;
 		}
 		if (source == secondField) {
 			second = secondField.getText().trim();
-			if (second.isEmpty()) second=null;
+			if (second.isEmpty()) second = null;
 		}
 		checkInvalidity();
 	}
