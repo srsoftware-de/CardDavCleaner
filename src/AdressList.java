@@ -20,26 +20,29 @@ public class AdressList implements SortedSet<Adress> {
 
 	@Override
 	public boolean addAll(Collection<? extends Adress> adresses) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean success=true;
+		for (Adress a:adresses){
+			add(a);
+		}
+		return success;
 	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-
+		adresses.clear();
 	}
 
 	@Override
 	public boolean contains(Object obj) {
-		// TODO Auto-generated method stub
-		return false;
+		return adresses.contains(obj);
 	}
 
 	@Override
-	public boolean containsAll(Collection<?> obj) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean containsAll(Collection<?> objects) {
+		for (Object o:objects){
+			if (!contains(o)) return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -54,74 +57,62 @@ public class AdressList implements SortedSet<Adress> {
 
 	@Override
 	public boolean remove(Object obj) {
-		// TODO Auto-generated method stub
-		return false;
+		return adresses.remove(obj);
 	}
 
 	@Override
 	public boolean removeAll(Collection<?> objects) {
-		// TODO Auto-generated method stub
-		return false;
+		return adresses.removeAll(objects);
 	}
 
 	@Override
 	public boolean retainAll(Collection<?> objects) {
-		// TODO Auto-generated method stub
-		return false;
+		return adresses.retainAll(objects);
 	}
 
 	@Override
 	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
+		return adresses.size();
 	}
 
 	@Override
 	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
+		return adresses.toArray();
 	}
 
 	@Override
 	public <T> T[] toArray(T[] arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return adresses.toArray(arg0);
 	}
 
 	@Override
 	public Comparator<? super Adress> comparator() {
-		// TODO Auto-generated method stub
-		return null;
+		return adresses.comparator();
 	}
 
 	@Override
 	public Adress first() {
-		// TODO Auto-generated method stub
-		return null;
+		return adresses.first();
 	}
 
 	@Override
 	public SortedSet<Adress> headSet(Adress arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return adresses.headSet(arg0);
 	}
 
 	@Override
 	public Adress last() {
-		// TODO Auto-generated method stub
-		return null;
+		return adresses.last();
 	}
 
 	@Override
-	public SortedSet<Adress> subSet(Adress arg0, Adress arg1) {
-		// TODO Auto-generated method stub
-		return null;
+	public SortedSet<Adress> subSet(Adress fromElement, Adress toElement) {
+		return adresses.subSet(fromElement, toElement);
 	}
 
 	@Override
-	public SortedSet<Adress> tailSet(Adress arg0) {
-		// TODO Auto-generated method stub
-		return null;
+	public SortedSet<Adress> tailSet(Adress fromElement) {
+		return adresses.tailSet(fromElement);
 	}
 
 }
