@@ -47,16 +47,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private boolean htmlMail;
 	private boolean rewrite = false;
 	private TreeSet<String> titles = new TreeSet<String>();
+	private TreeSet<String> roles = new TreeSet<String>();
+	private TreeSet<String> notes = new TreeSet<String>();
+	private TreeSet<String> photos = new TreeSet<String>();
+	private TreeSet<String> categories = new TreeSet<String>();
 	private MergableList<Phone> phones = new MergableList<Phone>();
 	private MergableList<Adress> adresses = new MergableList<Adress>();
 	private MergableList<Email> mails = new MergableList<Email>();
-	private TreeSet<String> roles = new TreeSet<String>();
 	private TreeSet<Url> urls = new TreeSet<Url>();
-	private TreeSet<String> notes = new TreeSet<String>();
-	private TreeSet<String> photos = new TreeSet<String>();
 	private TreeSet<Organization> orgs = new TreeSet<Organization>();
 	private TreeSet<Messenger> messengers = new TreeSet<Messenger>();
-	private TreeSet<String> categories = new TreeSet<String>();
 	private MergableList<Nickname> nicks = new MergableList<Nickname>();
 
 	private Contact clonedContact;
@@ -390,9 +390,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		thunderbirdMergeMail(mails);
 		nicks.addAll(contact.nicks);
 		mergeNames(contact);
-		mergeTitles(contact);
-		mergeRoles(contact);
-		mergeCategories(contact);
+		titles.addAll(contact.titles);
+		roles.addAll(contact.roles);
+		categories.addAll(contact.categories);
 		mergeBirthday(contact);
 
 		if (contact.htmlMail) htmlMail = true;
@@ -808,11 +808,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void mergeBirthday(Contact contact) {
-		if (birthday != null) {
-			if (contact.birthday != null && !contact.birthday.equals(birthday)) {
-				birthday = (Birthday) selectOneOf("birtday", birthday, contact.birthday, contact);
-			}
-		} else birthday = contact.birthday;
+		if (birthday==null){
+			birthday=contact.birthday;
+		} else if (birthday.isCompatibleWith(contact.birthday)){
+			birthday.mergeWith(contact.birthday);
+		} else {
+			birthday = (Birthday) selectOneOf("birtday", birthday, contact.birthday, contact);
+		}
 	}
 
 	private void mergeCategories(Contact contact) {
@@ -860,11 +862,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void mergeRoles(Contact contact) {
-		roles.addAll(contact.roles);
+		
 	}
 
 	private void mergeTitles(Contact contact) {
-		titles.addAll(contact.titles);
 	}
 
 	private void mergeUrls(Contact contact) {
