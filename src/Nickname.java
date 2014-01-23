@@ -8,7 +8,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
-public class Nickname implements DocumentListener, ChangeListener, Comparable<Nickname> {
+public class Nickname extends Mergable<Nickname> implements DocumentListener, ChangeListener, Comparable<Nickname> {
 	
 	private boolean work=false;
 	private boolean home=false;
@@ -179,5 +179,20 @@ public class Nickname implements DocumentListener, ChangeListener, Comparable<Ni
 	public int compareTo(Nickname o) {
 		return this.toString().compareTo(o.toString());
 	}
+
+	@Override
+  public boolean isCompatibleWith(Nickname other) {
+		if (different(nick,other.nick)) return false;
+	  return true;
+  }
+
+	@Override
+  public boolean mergeWith(Nickname other) {
+		nick=merge(nick,other.nick);
+		if (other.home) home=true;
+		if (other.work) work=true;
+		if (other.internet) internet=true;
+	  return true;
+  }
 
 }
