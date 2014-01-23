@@ -9,7 +9,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
-public class Phone implements DocumentListener, ChangeListener, Comparable<Phone> {
+public class Phone extends Mergable<Phone> implements DocumentListener, ChangeListener, Comparable<Phone> {
 	
 	private boolean fax=false;
 	private boolean home=false;
@@ -25,41 +25,6 @@ public class Phone implements DocumentListener, ChangeListener, Comparable<Phone
 	
 	static TreeSet<String> numbers=new TreeSet<String>();
 	
-	public VerticalPanel editForm() {
-		form=new VerticalPanel("Phone");
-		if (invalid) form.setBackground(Color.red);
-		if (isEmpty()) form.setBackground(Color.yellow);
-		
-		form.add(numField=new InputField("Number",number));
-		numField.addChangeListener(this);
-		
-		form.add(homeBox=new JCheckBox("Home Phone",home));
-		homeBox.addChangeListener(this);
-		form.add(voiceBox=new JCheckBox("Voice Phone",voice));
-		voiceBox.addChangeListener(this);
-		form.add(workBox=new JCheckBox("Work Phone",work));
-		workBox.addChangeListener(this);
-		form.add(cellBox=new JCheckBox("Cell Phone",cell));
-		cellBox.addChangeListener(this);
-		form.add(faxBox=new JCheckBox("Fax",fax));
-		faxBox.addChangeListener(this);
-		form.scale();
-		return form;
-	}
-	
-	public String toString() {
-		StringBuffer sb=new StringBuffer();
-		sb.append("TEL");
-		if (fax) sb.append(";TYPE=FAX");
-		if (home) sb.append(";TYPE=HOME");
-		if (cell) sb.append(";TYPE=CELL");
-		if (work) sb.append(";TYPE=WORK");
-		if (voice) sb.append(";TYPE=VOICE");
-		sb.append(':');
-		sb.append(number);
-		return sb.toString();
-	}
-
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
 		if (!content.startsWith("TEL;")) throw new InvalidFormatException("Phone does not start with \"TEL;\"");
 		String line=content.substring(4);
@@ -118,22 +83,82 @@ public class Phone implements DocumentListener, ChangeListener, Comparable<Phone
 		}
 		readPhone(line.substring(1));		
 	}
-
-	private void readPhone(String line) {
-		if (line.isEmpty()){
-			number=null;
-			return;
-		}
-		String phone=line.replace(" ", "").replace("/", "").replace("-", "");
-		for (char c:phone.toCharArray()){
-			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') invalid=true;				
-		}
-		number = phone;
-		numbers.add(number);
+	
+	public String category() {
+		if (home) return "home";
+		if (work) return "work";
+		if (fax) return "fax";
+		if (cell) return "cell";
+		if (voice) return "voice";
+		return "empty category";
 	}
 
-	public String number() {
-		return number;
+	public void changedUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public int compareTo(Phone otherPhone) {
+		return this.toString().compareTo(otherPhone.toString());
+	}
+
+	public VerticalPanel editForm() {
+		form=new VerticalPanel("Phone");
+		if (invalid) form.setBackground(Color.red);
+		if (isEmpty()) form.setBackground(Color.yellow);
+		
+		form.add(numField=new InputField("Number",number));
+		numField.addChangeListener(this);
+		
+		form.add(homeBox=new JCheckBox("Home Phone",home));
+		homeBox.addChangeListener(this);
+		form.add(voiceBox=new JCheckBox("Voice Phone",voice));
+		voiceBox.addChangeListener(this);
+		form.add(workBox=new JCheckBox("Work Phone",work));
+		workBox.addChangeListener(this);
+		form.add(cellBox=new JCheckBox("Cell Phone",cell));
+		cellBox.addChangeListener(this);
+		form.add(faxBox=new JCheckBox("Fax",fax));
+		faxBox.addChangeListener(this);
+		form.scale();
+		return form;
+	}
+
+	public void insertUpdate(DocumentEvent arg0) {
+		update();
+	}
+
+	public boolean isCellPhone() {
+		return cell;
+	}
+
+	@Override
+  public boolean isCompatibleWith(Phone other) {
+		if (different(simpleNumber(),other.simpleNumber())) return false;
+	  return true;
+  }
+
+	public boolean isEmpty(){
+		return number==null || number.trim().isEmpty();
+	}
+
+	public boolean isFax() {
+		return fax;
+	}
+
+	public boolean isHomePhone() {
+		return home;
+	}
+	
+	public boolean isInvalid() {
+		return invalid ;
+	}
+
+	public boolean isVoice(){
+		return voice;
+	}
+
+	public boolean isWorkPhone() {
+		return work;
 	}
 
 	public void merge(Phone phone) throws InvalidAssignmentException {
@@ -143,6 +168,60 @@ public class Phone implements DocumentListener, ChangeListener, Comparable<Phone
 		if (phone.cell)cell= true;
 		if (phone.fax) fax=true;
 		if (phone.voice)voice=true; 
+	}
+
+	@Override
+  public boolean mergeWith(Phone other) {
+		number=merge(simpleNumber(), other.simpleNumber());
+	  return true;
+  }
+	
+	public String number() {
+		return number;
+	}
+
+	public void removeUpdate(DocumentEvent arg0) {
+		update();
+	}
+	
+	public void setCell() {
+		home=false;
+		work=false;
+		fax=false;
+		cell=true;
+		voice=false;
+	}
+
+	public void setFax() {
+		home=false;
+		work=false;
+		fax=true;
+		cell=false;
+		voice=false;
+	}
+
+	public void setHome() {
+		home=true;
+		work=false;
+		fax=false;
+		cell=false;
+		voice=false;
+	}
+
+	public void setVoice() {
+		home=false;
+		work=false;
+		fax=false;
+		cell=false;
+		voice=true;
+	}
+
+	public void setWork() {
+		home=false;
+		work=true;
+		fax=false;
+		cell=false;
+		voice=false;
 	}
 
 	public String simpleNumber() {
@@ -159,100 +238,37 @@ public class Phone implements DocumentListener, ChangeListener, Comparable<Phone
 		if (number.startsWith("+49")) number=0+number.substring(3);
 		if (number.startsWith("0049")) number=0+number.substring(4);
 		return number;
-}
-
-	public boolean isHomePhone() {
-		return home;
-	}
-
-	public boolean isWorkPhone() {
-		return work;
-	}
-
-	public boolean isCellPhone() {
-		return cell;
-	}
-
-	public boolean isFax() {
-		return fax;
-	}
-	
-	public boolean isVoice(){
-		return voice;
-	}
-
-	public void setHome() {
-		home=true;
-		work=false;
-		fax=false;
-		cell=false;
-		voice=false;
-	}
-
-	public void setCell() {
-		home=false;
-		work=false;
-		fax=false;
-		cell=true;
-		voice=false;
-	}
-
-	public void setWork() {
-		home=false;
-		work=true;
-		fax=false;
-		cell=false;
-		voice=false;
-	}
-
-	public void setFax() {
-		home=false;
-		work=false;
-		fax=true;
-		cell=false;
-		voice=false;
-	}
-	
-	public void setVoice() {
-		home=false;
-		work=false;
-		fax=false;
-		cell=false;
-		voice=true;
-	}
-
-	public String category() {
-		if (home) return "home";
-		if (work) return "work";
-		if (fax) return "fax";
-		if (cell) return "cell";
-		if (voice) return "voice";
-		return "empty category";
-	}
-	
-	public boolean isEmpty(){
-		return number==null || number.trim().isEmpty();
-	}
-
-	public boolean isInvalid() {
-		return invalid ;
-	}
-
-	public void changedUpdate(DocumentEvent arg0) {
-		update();
-	}
-
-	public void insertUpdate(DocumentEvent arg0) {
-		update();
-	}
-
-	public void removeUpdate(DocumentEvent arg0) {
-		update();
-	}
+}	
 
 	public void stateChanged(ChangeEvent arg0) {
 		update();
-	}	
+	}
+
+	public String toString() {
+		StringBuffer sb=new StringBuffer();
+		sb.append("TEL");
+		if (fax) sb.append(";TYPE=FAX");
+		if (home) sb.append(";TYPE=HOME");
+		if (cell) sb.append(";TYPE=CELL");
+		if (work) sb.append(";TYPE=WORK");
+		if (voice) sb.append(";TYPE=VOICE");
+		sb.append(':');
+		sb.append(number);
+		return sb.toString();
+	}
+
+	private void readPhone(String line) {
+		if (line.isEmpty()){
+			number=null;
+			return;
+		}
+		String phone=line.replace(" ", "").replace("/", "").replace("-", "");
+		for (char c:phone.toCharArray()){
+			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') invalid=true;				
+		}
+		number = phone;
+		numbers.add(number);
+	}
 
 	private void update() {
 		invalid=false;
@@ -267,9 +283,5 @@ public class Phone implements DocumentListener, ChangeListener, Comparable<Phone
 		} else {
 			form.setBackground(invalid?Color.red:Color.green);
 		}
-	}
-
-	public int compareTo(Phone otherPhone) {
-		return this.toString().compareTo(otherPhone.toString());
 	}
 }
