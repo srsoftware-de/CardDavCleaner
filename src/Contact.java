@@ -824,17 +824,19 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void mergeNames(Contact contact) {
-		if (name != null) {
-			if (contact.name != null && !contact.name.equals(name)) {
-				name = (Name) selectOneOf("name", name, contact.name, contact);
-			}
-		} else name = contact.name;
-
-		if (formattedName != null) {
-			if (contact.formattedName != null && !contact.formattedName.equals(formattedName)) {
-				formattedName = (String) selectOneOf("formated name", formattedName, contact.formattedName, contact);
-			}
-		} else formattedName = contact.formattedName;
+		if (name==null){
+			name=contact.name;
+		} else if (name.isCompatibleWith(contact.name)){
+			name.mergeWith(contact.name);
+		} else {
+			name = (Name) selectOneOf("name", name, contact.name, contact);
+		}		
+		
+		if (different(formattedName,contact.formattedName)){
+			formattedName = (String) selectOneOf("formated name", formattedName, contact.formattedName, contact);			
+		} else {
+			formattedName=merge(formattedName, contact.formattedName);
+		}
 	}
 
 	/*
