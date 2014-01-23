@@ -10,6 +10,8 @@ import javax.swing.event.DocumentListener;
 
 
 public class InputField extends HorizontalPanel implements DocumentListener {
+
+  private static final long serialVersionUID = -3739363092163085626L;
 	/**
 	 * used to create non-password input fields for the server login form
 	 * @param owner the panel, to which the component shall be added 

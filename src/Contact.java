@@ -56,7 +56,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private MergableList<Email> mails = new MergableList<Email>();
 	private MergableList<Url> urls = new MergableList<Url>();
 	private MergableList<Organization> orgs = new MergableList<Organization>();
-	private TreeSet<Messenger> messengers = new TreeSet<Messenger>();
+	private MergableList<Messenger> messengers = new MergableList<Messenger>();
 	private MergableList<Nickname> nicks = new MergableList<Nickname>();
 
 	private Contact clonedContact;
@@ -395,6 +395,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		notes.addAll(contact.notes);
 		photos.addAll(contact.photos);
 		orgs.addAll(contact.orgs);
+		messengers.addAll(contact.messengers);
 		markForRewrite();
 
 		if (contact.htmlMail) htmlMail = true;
@@ -1170,12 +1171,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void updateMessengers() {
-		TreeSet<Messenger> newMessengers = new TreeSet<Messenger>();
-		for (Messenger m : messengers) {
-			if (!m.isEmpty()) {
-				newMessengers.add(m);
-			}
-		}
+		MergableList<Messenger> newMessengers = new MergableList<Messenger>();
+		newMessengers.addAll(messengers);
 		messengers = newMessengers;
 	}
 
