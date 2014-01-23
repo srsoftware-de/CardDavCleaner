@@ -93,13 +93,10 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 	private VerticalPanel nameForm;
 	
 	private JComponent editForm() {
-		form=new VerticalPanel();
-		scroll=new JScrollPane(form);
-		Dimension dim=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-		dim.setSize(dim.getWidth()-100, dim.getHeight()-100);
-		scroll.setPreferredSize(dim);
-		scroll.setSize(scroll.getPreferredSize());
+		HorizontalPanel outerForm=new HorizontalPanel();
 		
+		form=new VerticalPanel();
+	
 		/* Name */
 		nameForm=new VerticalPanel("Name");
 		if (name==null) try {
@@ -252,6 +249,23 @@ public class Contact implements ActionListener, DocumentListener, ChangeListener
 		form.add(noteForm);	
 		
 		form.scale();
+		outerForm.add(form);
+		outerForm.scale();
+		System.out.println("Form:"+form.getPreferredSize());
+		System.out.println("Outer:"+outerForm.getPreferredSize());
+		
+		Dimension screenDim=java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension formDim=outerForm.getPreferredSize();
+		double width=Math.min(screenDim.getWidth()-100,20+formDim.getWidth());
+		double height=Math.min(screenDim.getHeight()-100,20+formDim.getHeight());
+		
+		screenDim.setSize(width,height);
+		
+		scroll=new JScrollPane(outerForm);
+
+		scroll.setPreferredSize(screenDim);
+		scroll.setSize(scroll.getPreferredSize());
+
 		return scroll;
 	}
 
