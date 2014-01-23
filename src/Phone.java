@@ -1,6 +1,5 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
-import java.util.TreeSet;
 
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
@@ -23,11 +22,9 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	VerticalPanel form;
 	private JCheckBox homeBox,voiceBox,workBox,cellBox,faxBox;
 	
-	static TreeSet<String> numbers=new TreeSet<String>();
-	
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
-		if (!content.startsWith("TEL;")) throw new InvalidFormatException("Phone does not start with \"TEL;\"");
-		String line=content.substring(4);
+		if (!content.startsWith("TEL")) throw new InvalidFormatException("Phone does not start with \"TEL\"");
+		String line=content.substring(3);
 		while(!line.startsWith(":")){
 			String upper=line.toUpperCase();
 			if (upper.startsWith("TYPE=FAX")){
@@ -258,12 +255,11 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			number=null;
 			return;
 		}
-		String phone=line.replace(" ", "").replace("/", "").replace("-", "");
-		for (char c:phone.toCharArray()){
+		number=line;
+		String simple=number.replace(" ", "").replace("/", "").replace("-", "");
+		for (char c:simple.toCharArray()){
 			if (!Character.isDigit(c) && c!='+' && c!='(' && c!=')') invalid=true;				
 		}
-		number = phone;
-		numbers.add(number);
 	}
 
 	private void update() {
