@@ -119,13 +119,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 		Vector<Contact> contacts = readContacts(host, contactNamess);
 
-		int i=0;
-		for (Contact c:contacts){
-			System.out.println(++i);
-			System.out.println(c);
-			System.out.println();
-		}
-		
 		// next: find and merge related contacts
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
 		cleanByPhone(contacts, blackLists);
