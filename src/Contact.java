@@ -50,7 +50,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private TreeSet<String> titles = new TreeSet<String>();
 	private MergableList<Phone> phones = new MergableList<Phone>();
 	private MergableList<Adress> adresses = new MergableList<Adress>();
-	private Collection<Email> mails = new TreeSet<Email>();
+	private MergableList<Email> mails = new MergableList<Email>();
 	private TreeSet<String> roles = new TreeSet<String>();
 	private TreeSet<Url> urls = new TreeSet<Url>();
 	private TreeSet<String> notes = new TreeSet<String>();
@@ -827,27 +827,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void mergeMails(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-		TreeMap<String, Email> mailMap = new TreeMap<String, Email>();
-
-		for (Email mail : mails) {
-			if (mail.isEmpty()) continue;
-			Email existingMail = mailMap.get(mail.address());
-			if (existingMail != null) {
-				existingMail.merge(mail);
-			} else mailMap.put(mail.address(), mail);
-		}
-
-		for (Email mail : contact.mails) {
-			if (mail.isEmpty()) continue;
-			Email existingMail = mailMap.get(mail.address());
-			if (existingMail != null) {
-				existingMail.merge(mail);
-			} else mailMap.put(mail.address(), mail);
-		}
-
+		mails.addAll(contact.mails);
 		if (thunderbirdMerge) {
-			mails = thunderbirdMergeMail(mailMap.values());
-		} else mails = mailMap.values();
+			thunderbirdMergeMail(mails);
+		}
 	}
 
 	private void mergeNames(Contact contact) {
@@ -1117,7 +1100,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return null;
 	}
 
-	private Collection<Email> thunderbirdMergeMail(Collection<Email> mails) throws ToMuchEntriesForThunderbirdException {
+	private Collection<Email> thunderbirdMergeMail(MergableList<Email> mails) throws ToMuchEntriesForThunderbirdException {
 		TreeSet<Email> overloadedCategoryNumbers = new TreeSet<Email>();
 		boolean home = false;
 		boolean work = false;
@@ -1254,12 +1237,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void updateEmails() {
-		TreeSet<Email> newMails = new TreeSet<Email>();
-		for (Email e : mails) {
-			if (!e.isEmpty()) {
-				newMails.add(e);
-			}
-		}
+		MergableList<Email> newMails = new MergableList<Email>();
+		newMails.addAll(mails);
 		mails = newMails;
 	}
 
