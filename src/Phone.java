@@ -161,18 +161,14 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		return work;
 	}
 
-	public void merge(Phone phone) throws InvalidAssignmentException {
-		if (!number.equals(phone.number)) throw new InvalidAssignmentException("Trying to unite two phone number entries with different numbers!");
-		if (phone.home) home=true;
-		if (phone.work) work=true;
-		if (phone.cell)cell= true;
-		if (phone.fax) fax=true;
-		if (phone.voice)voice=true; 
-	}
-
 	@Override
   public boolean mergeWith(Phone other) {
 		number=merge(simpleNumber(), other.simpleNumber());
+		if (other.home) home=true;
+		if (other.work) work=true;
+		if (other.cell)cell= true;
+		if (other.fax) fax=true;
+		if (other.voice)voice=true;
 	  return true;
   }
 	
