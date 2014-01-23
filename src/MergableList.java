@@ -9,13 +9,14 @@ public class MergableList<Type extends Mergable<Type>> implements SortedSet<Type
 
 	private TreeSet<Type> set=new TreeSet<Type>();
 	@Override
-	public boolean add(Type newElment) {
+	public boolean add(Type newElement) {
+		if (newElement==null || newElement.isEmpty()) return false;
 		for (Type element:set){
-			if (element.isCompatibleWith(newElment)){
-				return element.mergeWith(newElment);				 
+			if (element.isCompatibleWith(newElement)){
+				return element.mergeWith(newElement);				 
 			}
 		}
-		return set.add(newElment);
+		return set.add(newElement);
 	}
 
 	@Override
