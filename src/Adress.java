@@ -12,7 +12,6 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class Adress extends Mergable<Adress> implements DocumentListener, ChangeListener, Comparable<Adress> {
 
 	public static void test() {
-
 		try {
 			System.out.print("Adress creation (null)...");
 			try {

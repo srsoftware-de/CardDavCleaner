@@ -8,6 +8,117 @@ import javax.swing.event.ChangeListener;
 
 public class Birthday extends Mergable<Birthday>implements ChangeListener, Comparable<Birthday> {
 
+	public static void test() {
+		try {
+			System.out.print("Birthday creation test (null)...");
+			String testCase=null;
+			try{ 
+				Birthday nb = new Birthday(testCase);
+				System.err.println("failed: "+nb);
+				System.exit(-1);
+			} catch (InvalidFormatException ife){
+				System.out.println("ok");				
+			}			
+
+			System.out.print("Birthday creation test (empty)...");
+			testCase="BDAY:";
+			Birthday eb = new Birthday(testCase);
+			if (eb.toString().equals(testCase)){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+eb);
+				System.exit(-1);
+			}			
+				
+			System.out.print("Birthday creation test (valid year)...");
+			testCase="BDAY:1234";
+			Birthday vyb = new Birthday(testCase);
+			if (vyb.toString().equals(testCase) && !vyb.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+vyb);
+				System.exit(-1);
+			}	
+			
+			System.out.print("Birthday creation test (invalid year)...");
+			testCase="BDAY:XXXX";
+			Birthday iyb = new Birthday(testCase);
+			if (iyb.toString().equals(testCase) && iyb.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+iyb);
+				System.exit(-1);
+			}	
+
+			System.out.print("Birthday creation test (valid month)...");
+			testCase="BDAY:--01";
+			Birthday vmb = new Birthday(testCase);
+			if (vmb.toString().equals(testCase) && !vmb.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+vmb);
+				System.exit(-1);
+			}			
+
+			System.out.print("Birthday creation test (invalid month 1)...");
+			testCase="BDAY:--13";
+			Birthday imb1 = new Birthday(testCase);
+			if (imb1.toString().equals(testCase) && imb1.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+imb1);
+				System.exit(-1);
+			}
+			
+			System.out.print("Birthday creation test (invalid month 2)...");
+			testCase="BDAY:--XX";
+			Birthday imb2 = new Birthday(testCase);
+			if (imb2.toString().equals(testCase) && imb2.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+imb2);
+				System.exit(-1);
+			}
+			
+			System.out.print("Birthday creation test (valid day)...");
+			testCase="BDAY:---01";
+			Birthday vdb = new Birthday(testCase);
+			if (vdb.toString().equals(testCase) && !vdb.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+vdb);
+				System.exit(-1);
+			}			
+
+			System.out.print("Birthday creation test (invalid day 1)...");
+			testCase="BDAY:---32";
+			Birthday idb1 = new Birthday(testCase);
+			if (idb1.toString().equals(testCase) && idb1.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+idb1);
+				System.exit(-1);
+			}
+			
+			System.out.print("Birthday creation test (invalid day 2)...");
+			testCase="BDAY:---XX";
+			Birthday idb2 = new Birthday(testCase);
+			if (idb2.toString().equals(testCase) && idb2.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+idb2);
+				System.exit(-1);
+			}	
+
+			// TODO:
+			System.out.println("weiter mit birthday.test");
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
 	private String year;
 	private String month;
 	private String day;
@@ -15,29 +126,22 @@ public class Birthday extends Mergable<Birthday>implements ChangeListener, Compa
 	private String minute;
 	private String second;
 	private boolean invalid = false;
-	private InputField yearField, monthField, dayField, hourField, minuteField, secondField;
 	
-	@Override
-  public boolean isEmpty() {
-		if (year!=null) return false;
-		if (month!=null) return false;
-		if (day!=null) return false;
-		if (hour!=null) return false;
-		if (minute!=null) return false;
-		if (second!=null) return false;
-	  return true;
-  }
-
-	public Birthday(String birthday) throws InvalidFormatException {
+	private InputField yearField, monthField, dayField, hourField, minuteField, secondField;
+	public Birthday(String birthday) throws InvalidFormatException {		
 		String bday = birthday;
+		if (bday==null || !bday.startsWith("BDAY")) {
+			throw new InvalidFormatException("Birthday entry does not start with BDAY: \"" + birthday+"\"");
+		}
+		bday=bday.substring(4);
 		if (bday.startsWith(";VALUE=DATE-TIME")) {
 			bday = bday.substring(16);
 		}
 		if (!bday.startsWith(":")) {
-			throw new InvalidFormatException("BDAY format invalid: BDAY" + birthday);
+			throw new InvalidFormatException("BDAY format invalid: " + birthday);
 		}
 		bday = bday.substring(1); // remove ':'
-
+		if (bday.isEmpty()) return;
 		if (!bday.startsWith("T")) {
 			// date given
 			if (!bday.startsWith("--")) {
@@ -48,14 +152,13 @@ public class Birthday extends Mergable<Birthday>implements ChangeListener, Compa
 				if (bday.startsWith("-")) {
 					bday = bday.substring(1);
 				}
-			} else {
+			} else { // bday starts with --
 				bday = bday.substring(2);
 			}
 			if (!bday.isEmpty()) {
 				if (!bday.startsWith("-")) {
 					month = bday.substring(0, 2);
 					bday = bday.substring(2);
-
 					if (bday.startsWith("-")) {
 						bday = bday.substring(1);
 					}
@@ -66,7 +169,6 @@ public class Birthday extends Mergable<Birthday>implements ChangeListener, Compa
 			if (!bday.isEmpty()) {
 				day = bday.substring(0, 2);
 				bday = bday.substring(2);
-
 			}
 		}
 		if (!bday.isEmpty()) {
@@ -224,6 +326,17 @@ public class Birthday extends Mergable<Birthday>implements ChangeListener, Compa
 	  return true;
   }
 
+	@Override
+  public boolean isEmpty() {
+		if (year!=null) return false;
+		if (month!=null) return false;
+		if (day!=null) return false;
+		if (hour!=null) return false;
+		if (minute!=null) return false;
+		if (second!=null) return false;
+	  return true;
+  }
+
 	public boolean isInvalid() {
 		return invalid;
 	}
@@ -281,12 +394,15 @@ public class Birthday extends Mergable<Birthday>implements ChangeListener, Compa
 		sb.append(':');
 		if (year == null || year.isEmpty()) {
 			// no year given
+			if (month == null || month.isEmpty()) {
+				if (day!=null && !day.isEmpty()){
+					sb.append("---");
+				}				
+			} else {
+				sb.append("--"+month);
+			}
+
 			if (day != null && !day.isEmpty()) {
-				if (month == null || month.isEmpty()) {
-					sb.append("-");
-				} else {
-					sb.append(month);
-				}
 				sb.append(day);
 			}
 		} else {

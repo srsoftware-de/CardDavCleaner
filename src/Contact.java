@@ -889,7 +889,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (line.startsWith("REV:")) known = true;// readRevision(line.substring(4));
 			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
 			if (line.startsWith("LABEL") && (known = true)) readLabel(line);
-			if (line.startsWith("BDAY") && (known = true)) readBirthday(line.substring(4));
+			if (line.startsWith("BDAY") && (known = true)) readBirthday(line);
 			if (line.startsWith("ROLE:") && (known = true)) readRole(line.substring(5));
 			if (line.startsWith("URL") && (known = true)) readUrl(line);
 			if (line.startsWith("PRODID:")) known = true; // readProductId(line.substring(7));
