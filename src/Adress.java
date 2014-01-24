@@ -161,7 +161,6 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 					comp++;
 				}
 			}
-			num=adresses1.length;
 			if (comp==num){
 				System.out.println("ok");
 			} else {

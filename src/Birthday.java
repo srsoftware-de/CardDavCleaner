@@ -259,7 +259,6 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 					comp++;
 				}
 			}
-			num = bdays.length;
 			if (comp == num) {
 				System.out.println("ok");
 			} else {
