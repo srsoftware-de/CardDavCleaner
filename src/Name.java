@@ -223,4 +223,11 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 			form.setBackground(Color.green);
 		}
 	}
+	protected Object clone() throws CloneNotSupportedException {		
+		try {
+			return new Email(this.toString());
+		} catch (Exception e) {
+			throw new CloneNotSupportedException(e.getMessage());
+		}
+	}
 }
