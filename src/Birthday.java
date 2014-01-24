@@ -312,8 +312,50 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 				System.exit(-1);
 			}
 			
-			// TODO:
-			System.out.println("weiter mit birthday.test");
+			System.out.print("Birthday merge test...");
+			comp=0;
+			num=0;
+			for (Birthday b:bdays){
+				try {
+					comp+=2;
+					Birthday clone1=(Birthday) b.clone();
+					Birthday clone2=(Birthday) fb.clone();
+					
+					if (clone1.mergeWith(fb) && clone1.toString().equals(fb.toString())) num++;
+					if (clone2.mergeWith(b) && clone2.toString().equals(fb.toString())) num++;
+					if (comp>num){
+						if ((fb.year!=null && !fb.year.isEmpty()) && (b.year!=null && !b.year.isEmpty()) && !fb.year.equals(b.year)) {
+							num+=2;
+						} else if ((fb.month!=null && !fb.month.isEmpty()) && (b.month!=null && !b.month.isEmpty()) && !fb.month.equals(b.month)) {
+							num+=2;
+						} else if ((fb.day!=null && !fb.day.isEmpty()) && (b.day!=null && !b.day.isEmpty()) && !fb.day.equals(b.day)) {
+							num+=2;
+						} else if ((fb.hour!=null && !fb.hour.isEmpty()) && (b.hour!=null && !b.hour.isEmpty()) && !fb.hour.equals(b.hour)) {
+							num+=2;
+						} else if ((fb.minute!=null && !fb.minute.isEmpty()) && (b.minute!=null && !b.minute.isEmpty()) && !fb.minute.equals(b.minute)) {
+							num+=2;
+						} else if ((fb.second!=null && !fb.second.isEmpty()) && (b.second!=null && !b.second.isEmpty()) && !fb.second.equals(b.second)) {
+							num+=2;
+						} 
+					}
+					if (comp>num){
+						System.out.println();
+						System.out.println("fb: "+fb);
+						System.out.println(" b: "+b);
+						System.out.println("merged:");
+						System.out.println("fb: "+clone2);
+						System.out.println(" b: "+clone1);
+					}
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}				
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+				System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
 		} catch (InvalidFormatException e) {
 			e.printStackTrace();
 		}
@@ -544,12 +586,13 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 
 	@Override
 	public boolean mergeWith(Birthday other) {
+		if (!isCompatibleWith(other)) return false;
 		year = merge(year, other.year);
-		year = merge(month, other.month);
-		year = merge(day, other.day);
-		year = merge(hour, other.hour);
-		year = merge(minute, other.minute);
-		year = merge(second, other.second);
+		month = merge(month, other.month);
+		day = merge(day, other.day);
+		hour = merge(hour, other.hour);
+		minute = merge(minute, other.minute);
+		second = merge(second, other.second);
 		if (other.invalid) invalid = true;
 		return true;
 	}
