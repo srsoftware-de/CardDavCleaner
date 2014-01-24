@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.rmi.AlreadyBoundException;
 import java.rmi.activation.UnknownObjectException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
@@ -35,6 +34,264 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 public class Contact extends Mergable<Contact> implements ActionListener, DocumentListener, ChangeListener, Comparable<Contact> {
+	
+	public static void test() {
+		try {
+			System.out.print("Contact creation test (null)...");
+			String testCase = null;
+			try {
+				Contact nullC = new Contact(testCase);
+				System.err.println("failed: " + nullC);
+				System.exit(-1);
+			} catch (InvalidFormatException e) {
+				System.out.println("ok");
+      }
+
+			System.out.print("Contact creation test (empty)...");
+			testCase = "";
+			try {
+				Contact emptyC = new Contact(testCase);
+				System.err.println("failed: " + emptyC);
+				System.exit(-1);
+			} catch (InvalidFormatException e) {
+				System.out.println("ok");
+      }
+
+			System.out.print("Contact creation test (name only)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nEND:VCARD\n";
+			Contact nameOnly = new Contact(testCase);
+			if (nameOnly.toString(true).equals(testCase) && !nameOnly.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + nameOnly.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + formatted name)...");
+			testCase = "BEGIN:VCARD\nFN:Testcard\nN:Test;Contact;;;\nEND:VCARD\n";
+			Contact formatted = new Contact(testCase);
+			if (formatted.toString(true).equals(testCase) && !formatted.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + formatted.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + number)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nTEL;TYPE=WORK:0123456789\nEND:VCARD\n";
+			Contact number = new Contact(testCase);
+			if (number.toString(true).equals(testCase) && !number.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + number.toString(true));
+				System.exit(-1);
+			}
+
+			System.out.print("Contact creation test (name + nick)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nNICKNAME;TYPE=HOME:Egon\nEND:VCARD\n";
+			Contact nick = new Contact(testCase);
+			if (nick.toString(true).equals(testCase) && !nick.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + nick.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + email)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nEMAIL;TYPE=INTERNET:test@example.com\nEND:VCARD\n";
+			Contact mops = new Contact(testCase);
+			if (mops.toString(true).equals(testCase) && !mops.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + mops.toString(true));
+				System.exit(-1);
+			}
+			/*
+			System.out.print("Email creation test (invalid)...");
+			testCase = "EMAIL:steinlaus";
+			Email iM = new Email(testCase);
+			if (iM.toString().equals(testCase) && iM.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + iM);
+				System.exit(-1);
+			}
+			
+			System.out.print("Email creation test (valid work)...");
+			testCase = "EMAIL;TYPE=WORK:work@example.com";
+			Email workM = new Email(testCase);
+			if (workM.toString().equals(testCase) && !workM.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + workM);
+				System.exit(-1);
+			}
+
+			System.out.print("Email creation test (valid home)...");
+			testCase = "EMAIL;TYPE=HOME:home@example.com";
+			Email homeM = new Email(testCase);
+			if (homeM.toString().equals(testCase) && !homeM.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + homeM);
+				System.exit(-1);
+			}
+
+			System.out.print("Email creation test (valid internet)...");
+			testCase = "EMAIL;TYPE=INTERNET:net@example.com";
+			Email netM = new Email(testCase);
+			if (netM.toString().equals(testCase) && !netM.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + netM);
+				System.exit(-1);
+			}
+			
+			Email[] mails = { eM,vM,iM,workM,homeM,netM };
+
+			System.out.print("Email isEmpty test...");
+			int comp = 0;
+			int num = 0;
+			for (Email m : mails) {
+				comp++;
+				if (!m.isEmpty()) {
+					num++;
+				} else if (m == eM) {
+					num++;
+				}
+			}
+			if (num == comp) {
+				System.out.println("ok");
+			} else {
+				System.err.println(num + "/" + comp + " => failed");
+				System.exit(-1);
+			}
+
+			System.out.print("Email compare test...");
+			comp = 0;
+			num = 0;
+			for (Email m : mails) {
+				comp++;
+				if (m.compareTo(netM) != 0 && m.compareTo(netM) == -netM.compareTo(m)) {
+					num++;
+				} else {
+					if (netM==m){
+						num++;
+					}
+				}
+			}
+			if (comp == num) {
+				System.out.println("ok");
+			} else {
+				System.err.println(num + "/" + comp + " => failed");
+				System.exit(-1);
+			}
+
+			System.out.print("Email compatibility test...");
+			comp = 0;
+			num = 0;
+			for (Email a : mails) {
+				for (Email b : mails) {
+					num++;
+					if (a.isCompatibleWith(b)) {
+						comp++;
+					} else {
+						String concat = (a + "" + b).replace("EMAIL", "").replace(";TYPE=INTERNET", "").replace(";TYPE=WORK", "").replace(";TYPE=HOME", "").replaceFirst(":", "");
+						if (concat.equals("net@example.com:test.test-24+a@test.example.com") ||
+								concat.equals("net@example.com:steinlaus") ||
+								concat.equals("net@example.com:work@example.com") ||
+								concat.equals("net@example.com:home@example.com") ||
+								concat.equals("steinlaus:home@example.com") ||
+								concat.equals("steinlaus:net@example.com") ||
+								concat.equals("steinlaus:test.test-24+a@test.example.com") ||
+								concat.equals("steinlaus:work@example.com") ||
+								concat.equals("test.test-24+a@test.example.com:home@example.com") ||
+								concat.equals("test.test-24+a@test.example.com:net@example.com") ||
+								concat.equals("test.test-24+a@test.example.com:steinlaus") ||
+								concat.equals("test.test-24+a@test.example.com:work@example.com") ||
+								concat.equals("work@example.com:home@example.com") ||
+								concat.equals("work@example.com:net@example.com") ||
+								concat.equals("work@example.com:steinlaus") ||
+								concat.equals("work@example.com:test.test-24+a@test.example.com") ||
+								concat.equals("home@example.com:steinlaus") ||
+								concat.equals("home@example.com:net@example.com") ||
+								concat.equals("home@example.com:test.test-24+a@test.example.com") ||
+								concat.equals("home@example.com:work@example.com")) {
+							comp++;
+						} else {
+							System.err.println(a + " <=> " + b);
+						}
+					}
+				}
+			}
+			if (comp == num) {
+				System.out.println("ok");
+			} else {
+				System.err.println(num + "/" + comp + " => failed");
+				System.exit(-1);
+			}
+			
+			System.out.print("Email clone test...");
+			comp=0;
+			num=0;
+			for (Email m:mails){
+				comp++;
+				try {
+					if (m.toString().equals(m.clone().toString())){
+						num++;
+					}
+				} catch (CloneNotSupportedException e) {
+				}
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+								System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+
+			System.out.print("Email merge test...");
+			comp=0;
+			num=0;
+			for (Email m:mails){
+				try {
+					comp+=2;
+					Email clone1=(Email) m.clone();
+					Email clone2=(Email) netM.clone();
+					
+					if (clone1.mergeWith(netM) && clone1.toString().equals(netM.toString())) num++;
+					if (clone2.mergeWith(m) && clone2.toString().equals(netM.toString())) num++;
+					if (comp>num){
+						if ((m.adress!=null && !m.adress.isEmpty()) && (netM.adress!=null && !netM.adress.isEmpty()) && !m.adress.equals(netM.adress)){
+							num+=2;
+						}
+					}
+					if (comp>num){
+						System.out.println();
+						System.out.println("fb: "+netM);
+						System.out.println(" b: "+m);
+						System.out.println("merged:");
+						System.out.println("fb: "+clone2);
+						System.out.println(" b: "+clone1);
+					}
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}				
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+				System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}/**/
+		} catch (UnknownObjectException e) {
+      e.printStackTrace();
+		} catch (InvalidFormatException e) {
+	    e.printStackTrace();
+    }
+
+	}
+	
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	// private String revision;
 	// private String productId;
@@ -98,11 +355,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private JButton resetCloneButton;
 	private HorizontalPanel clonePanel;
 
-	public Contact(String data) throws UnknownObjectException, InvalidFormatException, AlreadyBoundException {
+	public Contact(String data) throws UnknownObjectException, InvalidFormatException {
 		parse(data);
 	}
 
-	public Contact(String directory, String name) throws UnknownObjectException, IOException, AlreadyBoundException, InvalidFormatException {
+	public Contact(String directory, String name) throws UnknownObjectException, IOException, InvalidFormatException {
 		vcfName = name;
 		parse(new URL(directory + name));
 	}
@@ -462,9 +719,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			sb.append("\n");
 		}
 
-		sb.append("FN:");
-		if (formattedName != null) sb.append(formattedName); // required for Version 3
-		sb.append("\n");
+		if (formattedName != null) {
+			sb.append("FN:");
+			sb.append(formattedName); // required for Version 3
+			sb.append("\n");
+		}
 
 		sb.append(name);// required for Version 3
 		sb.append("\n");
@@ -752,22 +1011,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		nicks.update();
 	}
 
-	void clearFields() {
-		adresses.clear();
-		phones.clear();
-		mails.clear();
-		titles.clear();
-		roles.clear();
-		birthday = null;
-		categories.clear();
-		urls.clear();
-		notes.clear();
-		photos.clear();
-		orgs.clear();
-		nicks.clear();
-		changed();
-	}
-
 	private JComponent editForm() {
 		outerForm = new HorizontalPanel();
 
@@ -819,37 +1062,38 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 	}
 
-		private void mergeNames(Contact contact) {
-		if (name==null){
-			name=contact.name;
-		} else if (name.isCompatibleWith(contact.name)){
-			name.mergeWith(contact.name);
-		} else {
-			name = (Name) selectOneOf("name", name, contact.name, contact);
-		}		
-		
-		if (different(formattedName,contact.formattedName)){
-			formattedName = (String) selectOneOf("formated name", formattedName, contact.formattedName, contact);			
-		} else {
-			formattedName=merge(formattedName, contact.formattedName);
-		}
-	}
+	private void mergeNames(Contact contact) {
+  if (name==null){
+  	name=contact.name;
+  } else if (name.isCompatibleWith(contact.name)){
+  	name.mergeWith(contact.name);
+  } else {
+  	name = (Name) selectOneOf("name", name, contact.name, contact);
+  }		
+  
+  if (different(formattedName,contact.formattedName)){
+  	formattedName = (String) selectOneOf("formated name", formattedName, contact.formattedName, contact);			
+  } else {
+  	formattedName=merge(formattedName, contact.formattedName);
+  }
+}
+
+		private String newRevision() {
+    	String date = formatter.format(new Date()).replace('#', 'T');
+    	return "REV:" + date;
+    }
 
 	/*
 	 * private void readRevision(String line) { if (line.isEmpty()) return; revision = line; }
 	 */
 
-	private String newRevision() {
-		String date = formatter.format(new Date()).replace('#', 'T');
-		return "REV:" + date;
-	}
-
-	private void parse(String data) throws UnknownObjectException, InvalidFormatException, AlreadyBoundException {
+	private void parse(String data) throws UnknownObjectException, InvalidFormatException {
+		if (data==null||data.isEmpty()) throw new InvalidFormatException("No data given");
 		String[] lineArray = data.split("\n");
 		parse(new Vector<String>(Arrays.asList(lineArray)));
 	}
 
-	private void parse(URL url) throws IOException, UnknownObjectException, AlreadyBoundException, InvalidFormatException {
+	private void parse(URL url) throws IOException, UnknownObjectException, InvalidFormatException {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
@@ -864,7 +1108,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		parse(lines);
 	}
 
-	private void parse(Vector<String> lines) throws UnknownObjectException, InvalidFormatException, AlreadyBoundException {
+	private void parse(Vector<String> lines) throws UnknownObjectException, InvalidFormatException {
 		for (int index = 0; index < lines.size(); index++) {
 			String line = lines.elementAt(index);
 			while (index + 1 < lines.size() && (lines.elementAt(index + 1).startsWith(" ") || lines.elementAt(index + 1).startsWith("\\n"))) {
@@ -918,7 +1162,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		birthday = new Birthday(bday);
 	}
 
-	private void readCategories(String line) throws AlreadyBoundException {
+	private void readCategories(String line)  {
 		if (line.isEmpty()) return;
 		if (categories == null) categories = new TreeSet<String>();
 		String[] cats = line.split(",");
@@ -962,12 +1206,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		if (!nick.isEmpty()) nicks.add(nick);
 	}
 
-	private void readNote(String line) throws AlreadyBoundException {
+	private void readNote(String line)  {
 		if (line.isEmpty()) return;
 		notes.add(line);
 	}
 
-	private void readOrg(String line) throws InvalidFormatException, UnknownObjectException, AlreadyBoundException {
+	private void readOrg(String line) throws InvalidFormatException, UnknownObjectException {
 		Organization org = new Organization(line);
 		if (!org.isEmpty()) orgs.add(org);
 	}
@@ -981,12 +1225,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		photos.add(line);
 	}
 
-	private void readRole(String line) throws AlreadyBoundException {
+	private void readRole(String line)  {
 		if (line.isEmpty()) return;
 		roles.add(line.replace("\\n", "\n"));
 	}
 
-	private void readTitle(String line) throws AlreadyBoundException {
+	private void readTitle(String line)  {
 		if (line.isEmpty()) return;
 		titles.add(line);
 	}
@@ -1216,9 +1460,23 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			e.printStackTrace();
 		} catch (InvalidFormatException e) {
 			e.printStackTrace();
-		} catch (AlreadyBoundException e) {
-			e.printStackTrace();
 		}
 		return null;
+	}
+
+	void clearFields() {
+		adresses.clear();
+		phones.clear();
+		mails.clear();
+		titles.clear();
+		roles.clear();
+		birthday = null;
+		categories.clear();
+		urls.clear();
+		notes.clear();
+		photos.clear();
+		orgs.clear();
+		nicks.clear();
+		changed();
 	}
 }
