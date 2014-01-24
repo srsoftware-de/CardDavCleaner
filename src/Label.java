@@ -158,26 +158,26 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 				System.err.println(num+"/"+comp+" => failed");
 				System.exit(-1);
 			}
-/*
+
 			System.out.print("Label merge test...");
 			comp=0;
 			num=0;
-			for (Label m:mails){
+			for (Label m:labels){
 				try {
 					comp+=2;
 					Label clone1=(Label) m.clone();
-					Label clone2=(Label) netM.clone();
+					Label clone2=(Label) fL.clone();
 					
-					if (clone1.mergeWith(netM) && clone1.toString().equals(netM.toString())) num++;
-					if (clone2.mergeWith(m) && clone2.toString().equals(netM.toString())) num++;
+					if (clone1.mergeWith(fL) && clone1.toString().equals(fL.toString())) num++;
+					if (clone2.mergeWith(m) && clone2.toString().equals(fL.toString())) num++;
 					if (comp>num){
-						if ((m.adress!=null && !m.adress.isEmpty()) && (netM.adress!=null && !netM.adress.isEmpty()) && !m.address().equals(netM.adress)){
+						if ((m.label!=null && !m.label.isEmpty()) && (fL.label!=null && !fL.label.isEmpty()) && !m.label.equals(fL.label)){
 							num+=2;
 						}
 					}
 					if (comp>num){
 						System.out.println();
-						System.out.println("fb: "+netM);
+						System.out.println("fb: "+fL);
 						System.out.println(" b: "+m);
 						System.out.println("merged:");
 						System.out.println("fb: "+clone2);
@@ -240,7 +240,10 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 
 	@Override
   public boolean mergeWith(Label other) {
+		if (!isCompatibleWith(other)) return false;
 		label=merge(label,other.label);
+		encoding=merge(encoding,other.encoding);
+		types.addAll(other.types);
 	  return true;
   }
 
