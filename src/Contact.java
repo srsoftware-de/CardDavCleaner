@@ -332,9 +332,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	public boolean isInvalid() {
-		for (Adress a:adresses) {
-			if (a.isInvalid()) return true;
-		}
 		for (Phone p : phones) {
 			if (p.isInvalid()) return true;
 		}

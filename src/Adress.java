@@ -12,28 +12,40 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class Adress extends Mergable<Adress> implements DocumentListener, ChangeListener, Comparable<Adress> {
 
 	public static void test() {
+
 		try {
+			System.out.print("Adress creation (null)...");
+			try {
+				Adress nullA = new Adress(null);
+				System.err.println("failed: " + nullA);
+			} catch (InvalidFormatException ife) {				
+				System.out.println("ok");
+			}
+			
 			System.out.print("Adress creation (empty)...");
-			Adress emptyA = new Adress("ADR:");
-			Adress emptyB = new Adress("ADR:;;;;;;");
-			if (emptyA.toString().equals("ADR:;;;;;;") && emptyB.toString().equals("ADR:;;;;;;")) {
+			String testcase="ADR:;;;;;;";
+			Adress emptyA = new Adress(testcase.replace(";",""));
+			Adress emptyB = new Adress(testcase);
+			if (emptyA.toString().equals(testcase) && emptyB.toString().equals(testcase)) {
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + emptyA);
 			}
 
 			System.out.print("Adress creation (postbox)...");
-			Adress pbA = new Adress("ADR:postbox");
-			Adress pbB = new Adress("ADR:xobtsop;;;;;;");
+			testcase="ADR:xobtsop;;;;;;";
+			Adress pbA = new Adress(Tests.reversed(testcase));
+			Adress pbB = new Adress(testcase);
 			if (pbA.toString().equals("ADR:postbox;;;;;;")&&pbB.toString().equals("ADR:xobtsop;;;;;;")) {
 				System.out.println("ok");
 			} else {
-				System.err.println("failed: " + pbA);
+				System.err.println("failed: " + pbA+"/"+pbB);
 			}
 
 			System.out.print("Adress creation (extended)...");
-			Adress extA = new Adress("ADR:;extended");
-			Adress extB = new Adress("ADR:;dednetxe;;;;;");
+			testcase="ADR:;dednetxe;;;;;";
+			Adress extA = new Adress(Tests.reversed(testcase));
+			Adress extB = new Adress(testcase);
 			if (extA.toString().equals("ADR:;extended;;;;;") && extB.toString().equals("ADR:;dednetxe;;;;;")) {
 				System.out.println("ok");
 			} else {
@@ -41,8 +53,9 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			}
 
 			System.out.print("Adress creation (street)...");
-			Adress strA = new Adress("ADR:;;street");
-			Adress strB = new Adress("ADR:;;teerts;;;;");
+			testcase="ADR:;;teerts;;;;";
+			Adress strA = new Adress(Tests.reversed(testcase));
+			Adress strB = new Adress(testcase);
 			if (strA.toString().equals("ADR:;;street;;;;")&&strB.toString().equals("ADR:;;teerts;;;;")) {
 				System.out.println("ok");
 			} else {
@@ -50,8 +63,9 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			}
 			
 			System.out.print("Adress creation (city)...");
-			Adress citA = new Adress("ADR:;;;city");
-			Adress citB = new Adress("ADR:;;;ytic;;;");
+			testcase="ADR:;;;ytic;;;";
+			Adress citA = new Adress(Tests.reversed(testcase));
+			Adress citB = new Adress(testcase);
 			if (citA.toString().equals("ADR:;;;city;;;")&&citB.toString().equals("ADR:;;;ytic;;;")) {
 				System.out.println("ok");
 			} else {
@@ -59,8 +73,9 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			}
 
 			System.out.print("Adress creation (region)...");
-			Adress regA = new Adress("ADR:;;;;region");
-			Adress regB = new Adress("ADR:;;;;noiger;;");
+			testcase="ADR:;;;;noiger;;";
+			Adress regA = new Adress(Tests.reversed(testcase));
+			Adress regB = new Adress(testcase);
 			if (regA.toString().equals("ADR:;;;;region;;")&&regB.toString().equals("ADR:;;;;noiger;;")) {
 				System.out.println("ok");
 			} else {
@@ -68,8 +83,9 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			}
 
 			System.out.print("Adress creation (zip)...");
-			Adress zipA = new Adress("ADR:;;;;;zip");
-			Adress zipB = new Adress("ADR:;;;;;piz;");
+			testcase="ADR:;;;;;piz;";
+			Adress zipA = new Adress(Tests.reversed(testcase));
+			Adress zipB = new Adress(testcase);
 			if (zipA.toString().equals("ADR:;;;;;zip;")&&zipB.toString().equals("ADR:;;;;;piz;")) {
 				System.out.println("ok");
 			} else {
@@ -77,30 +93,43 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			}
 
 			System.out.print("Adress creation (country)...");
-			Adress ctrA = new Adress("ADR:;;;;;;country");
-			Adress ctrB = new Adress("ADR:;;;;;;yrtnuoc");
+			testcase="ADR:;;;;;;yrtnuoc";
+			Adress ctrA = new Adress(Tests.reversed(testcase));
+			Adress ctrB = new Adress(testcase);
 			if (ctrA.toString().equals("ADR:;;;;;;country")&&ctrB.toString().equals("ADR:;;;;;;yrtnuoc")) {
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + ctrA);
 			}
 			
-			Adress [] adresses1={emptyA,pbA,extA,strA,citA,regA,zipA,ctrA};
+			System.out.print("Adress creation (home adress)...");
+			testcase="ADR;TYPE=HOME:postbox;ext;street;city;region;zip;country";
+			Adress homeA=new Adress(testcase);
+			if (homeA.toString().equals(testcase)){
+				System.out.println("ok");
+			} else {
+				System.err.println(homeA);
+			}
+			Adress [] adresses1={emptyA,pbA,extA,strA,citA,regA,zipA,ctrA,homeA};
 			Adress [] adresses2={emptyB,pbB,extB,strB,citB,regB,zipB,ctrB};
 
 			System.out.print("Compatibility test 1...");
 			int comp=0;
 			for (Adress a:adresses1){
 				for (Adress b:adresses1){
-					if (a.isCompatibleWith(b)) comp++;
+					if (a.isCompatibleWith(b)) {
+						comp++;
+					} else {
+						System.out.println(a+" <=> "+b);
+					}
 				}
 			}
-			if (comp==64){
+			int num=adresses1.length*adresses1.length;
+			if (comp==num){
 				System.out.println("ok");
 			} else {
-				System.err.println("fail!");
+				System.err.println("fail ("+comp+"/"+num+")!");
 			}
-
 			System.out.print("Compatibility test 2...");
 			comp=0;
 			for (Adress a:adresses1){
@@ -109,19 +138,31 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 						comp++;
 					} else {
 						String concat=(a+""+b).replace("ADR:","").replace(";", "");
-						if (concat.equals("postboxxobtsop")) comp++;
-						if (concat.equals("streetteerts")) comp++;
-						if (concat.equals("cityytic")) comp++;
-						if (concat.equals("regionnoiger")) comp++;
-						if (concat.equals("zippiz")) comp++;
-						if (concat.equals("countryyrtnuoc")) comp++;
+						if (concat.equals("postboxxobtsop") ||
+							  concat.equals("streetteerts") ||
+							  concat.equals("cityytic") ||
+						    concat.equals("regionnoiger") ||
+						    concat.equals("zippiz") ||
+						    concat.equals("countryyrtnuoc") ||
+						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryxobtsop") ||
+						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryteerts") ||
+						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryytic") ||
+						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountrynoiger") ||
+						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountrypiz") ||
+						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryyrtnuoc")){
+							comp++;
+						} else {
+							System.out.println(concat);
+						}
+
 					}
 				}
 			}
-			if (comp==64){
+			num=adresses1.length*adresses2.length;
+			if (comp==num){
 				System.out.println("ok");
 			} else {
-				System.err.println("fail!");
+				System.err.println("fail ("+comp+"/"+num+")!");
 			}
 
 			// continue tests here
@@ -134,7 +175,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 
 	private boolean home = false;
 	private boolean work = false;
-	private boolean invalid = false;
+	//private boolean invalid = false;
 	private String extendedAdress;
 	private String streetAdress;
 	private String postOfficeBox;
@@ -148,7 +189,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 	private JCheckBox homeBox, workBox;
 
 	public Adress(String content) throws UnknownObjectException, InvalidFormatException {
-		if (!content.startsWith("ADR")) throw new InvalidFormatException("Adress does not start with \"ADR;\": " + content);
+		if (content==null || !content.startsWith("ADR")) throw new InvalidFormatException("Adress does not start with \"ADR;\": " + content);
 		String line = content.substring(3);
 		while (!line.startsWith(":")) {
 			String upper = line.toUpperCase();
@@ -199,7 +240,6 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 
 	public VerticalPanel editForm() {
 		form = new VerticalPanel("Adress");
-		if (invalid) form.setBackground(Color.red);
 		if (isEmpty()) form.setBackground(Color.yellow);
 
 		form.add(streetField = new InputField("Street Adress", streetAdress));
@@ -241,10 +281,6 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 
 	public boolean isEmpty() {
 		return ((postOfficeBox == null || postOfficeBox.isEmpty()) && (extendedAdress == null || extendedAdress.isEmpty()) && (streetAdress == null || streetAdress.isEmpty()) && (city == null || city.isEmpty()) && (region == null || region.isEmpty()) && (zip == null || zip.isEmpty()) && (country == null || country.isEmpty()));
-	}
-
-	public boolean isInvalid() {
-		return invalid;
 	}
 
 	public boolean mergeWith(Adress adr2) {
@@ -321,14 +357,13 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 	}
 
 	private void update() {
-		invalid = false;
 		home = homeBox.isSelected();
 		work = workBox.isSelected();
 		readAddr(postBoxField.getText() + ";" + extendedField.getText() + ";" + streetField.getText() + ";" + cityField.getText() + ";" + regionField.getText() + ";" + zipField.getText() + ";" + countryField.getText());
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(invalid ? Color.red : Color.green);
+			form.setBackground(Color.green);
 		}
 	}
 }

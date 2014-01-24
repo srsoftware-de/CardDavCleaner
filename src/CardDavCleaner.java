@@ -61,6 +61,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private static void test() {
 		MD5Hash.test();
+		Tests.test();
 		MergableList.test();
 		Adress.test();
 		Birthday.test();
