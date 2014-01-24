@@ -25,7 +25,7 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 			}
 
 			System.out.print("Label creation test (simple)...");
-			testCase = "LABEL:this is a test label";
+			testCase = "LABEL:this is a simple label";
 			Label sL = new Label(testCase);
 			if (sL.toString().equals(testCase)) {
 				System.out.println("ok");
@@ -35,7 +35,7 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 			}
 
 			System.out.print("Label creation test (encoded)...");
-			testCase = "LABEL;ENCODING=UTF8:this is a test label";
+			testCase = "LABEL;ENCODING=UTF-8:this is an encoded label";
 			Label cL = new Label(testCase);
 			if (cL.toString().equals(testCase)) {
 				System.out.println("ok");
@@ -45,7 +45,7 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 			}
 			
 			System.out.print("Label creation test (with types)...");
-			testCase = "LABEL;TYPE=HOME;TYPE=WORK:this is a test label";
+			testCase = "LABEL;TYPE=HOME;TYPE=WORK:this is a typed label";
 			Label tL = new Label(testCase);
 			if (tL.toString().equals(testCase) && tL.types.toString().equals("[HOME, WORK]")) {
 				System.out.println("ok");
@@ -64,57 +64,16 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 				System.exit(-1);
 			}
 
-			/*
-			System.out.print("Label creation test (invalid)...");
-			testCase = "Label:steinlaus";
-			Label iM = new Label(testCase);
-			if (iM.toString().equals(testCase) && iM.isInvalid()) {
-				System.out.println("ok");
-			} else {
-				System.err.println("failed: " + iM);
-				System.exit(-1);
-			}
-			
-			System.out.print("Label creation test (valid work)...");
-			testCase = "Label;TYPE=WORK:work@example.com";
-			Label workM = new Label(testCase);
-			if (workM.toString().equals(testCase) && !workM.isInvalid()) {
-				System.out.println("ok");
-			} else {
-				System.err.println("failed: " + workM);
-				System.exit(-1);
-			}
-
-			System.out.print("Label creation test (valid home)...");
-			testCase = "Label;TYPE=HOME:home@example.com";
-			Label homeM = new Label(testCase);
-			if (homeM.toString().equals(testCase) && !homeM.isInvalid()) {
-				System.out.println("ok");
-			} else {
-				System.err.println("failed: " + homeM);
-				System.exit(-1);
-			}
-
-			System.out.print("Label creation test (valid internet)...");
-			testCase = "Label;TYPE=INTERNET:net@example.com";
-			Label netM = new Label(testCase);
-			if (netM.toString().equals(testCase) && !netM.isInvalid()) {
-				System.out.println("ok");
-			} else {
-				System.err.println("failed: " + netM);
-				System.exit(-1);
-			}
-			
-			Label[] mails = { eM,vM,iM,workM,homeM,netM };
+			Label[] labels = { eL,sL,cL,tL,fL };
 
 			System.out.print("Label isEmpty test...");
 			int comp = 0;
 			int num = 0;
-			for (Label m : mails) {
+			for (Label l : labels) {
 				comp++;
-				if (!m.isEmpty()) {
+				if (!l.isEmpty()) {
 					num++;
-				} else if (m == eM) {
+				} else if (l == eL) {
 					num++;
 				}
 			}
@@ -128,12 +87,12 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 			System.out.print("Label compare test...");
 			comp = 0;
 			num = 0;
-			for (Label m : mails) {
+			for (Label l : labels) {
 				comp++;
-				if (m.compareTo(netM) != 0 && m.compareTo(netM) == -netM.compareTo(m)) {
+				if (l.compareTo(fL) != 0 && l.compareTo(fL) == -fL.compareTo(l)) {
 					num++;
 				} else {
-					if (netM==m){
+					if (fL==l){
 						num++;
 					}
 				}
@@ -148,37 +107,28 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 			System.out.print("Label compatibility test...");
 			comp = 0;
 			num = 0;
-			for (Label a : mails) {
-				for (Label b : mails) {
+			for (Label a : labels) {
+				for (Label b : labels) {
 					num++;
 					if (a.isCompatibleWith(b)) {
 						comp++;
 					} else {
-						String concat = (a + "" + b).replace("Label", "").replace(";TYPE=INTERNET", "").replace(";TYPE=WORK", "").replace(";TYPE=HOME", "").replaceFirst(":", "");
-						if (concat.equals("net@example.com:test.test-24+a@test.example.com") ||
-								concat.equals("net@example.com:steinlaus") ||
-								concat.equals("net@example.com:work@example.com") ||
-								concat.equals("net@example.com:home@example.com") ||
-								concat.equals("steinlaus:home@example.com") ||
-								concat.equals("steinlaus:net@example.com") ||
-								concat.equals("steinlaus:test.test-24+a@test.example.com") ||
-								concat.equals("steinlaus:work@example.com") ||
-								concat.equals("test.test-24+a@test.example.com:home@example.com") ||
-								concat.equals("test.test-24+a@test.example.com:net@example.com") ||
-								concat.equals("test.test-24+a@test.example.com:steinlaus") ||
-								concat.equals("test.test-24+a@test.example.com:work@example.com") ||
-								concat.equals("work@example.com:home@example.com") ||
-								concat.equals("work@example.com:net@example.com") ||
-								concat.equals("work@example.com:steinlaus") ||
-								concat.equals("work@example.com:test.test-24+a@test.example.com") ||
-								concat.equals("home@example.com:steinlaus") ||
-								concat.equals("home@example.com:net@example.com") ||
-								concat.equals("home@example.com:test.test-24+a@test.example.com") ||
-								concat.equals("home@example.com:work@example.com")) {
+						String concat = (a + "" + b).replace("LABEL", "").replace(";ENCODING=UTF-8", "").replace(";TYPE=TEST", "").replace(";TYPE=WORK", "").replace(";TYPE=HOME", "").replaceFirst(":", "");
+						if (concat.equals("this is a simple label:this is an encoded label") ||
+								concat.equals("this is a simple label:this is a typed label") ||
+								concat.equals("this is a simple label:full label") ||
+								concat.equals("this is an encoded label:this is a simple label") ||
+								concat.equals("this is an encoded label:this is a typed label") ||
+								concat.equals("this is an encoded label:full label") ||
+								concat.equals("this is a typed label:this is a simple label") ||
+								concat.equals("this is a typed label:this is an encoded label") ||
+								concat.equals("this is a typed label:full label") ||
+								concat.equals("full label:this is a simple label") ||
+								concat.equals("full label:this is an encoded label") ||
+								concat.equals("full label:this is a typed label")) {
 							comp++;
 						} else {
-							System.err.println(concat);
-							//System.err.println(a + " <=> " + b);
+							System.err.println(a + " <=> " + b);
 						}
 					}
 				}
@@ -189,11 +139,11 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 				System.err.println(num + "/" + comp + " => failed");
 				System.exit(-1);
 			}
-			
+
 			System.out.print("Label clone test...");
 			comp=0;
 			num=0;
-			for (Label m:mails){
+			for (Label m:labels){
 				comp++;
 				try {
 					if (m.toString().equals(m.clone().toString())){
@@ -205,10 +155,10 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 			if (comp==num){
 				System.out.println("ok");
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+				System.err.println(num+"/"+comp+" => failed");
 				System.exit(-1);
 			}
-
+/*
 			System.out.print("Label merge test...");
 			comp=0;
 			num=0;
@@ -308,4 +258,13 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 		if (label!=null) return result+label;
 		return result;
 	}
+	
+	protected Object clone() throws CloneNotSupportedException {		
+		try {
+			return new Label(this.toString());
+		} catch (Exception e) {
+			throw new CloneNotSupportedException(e.getMessage());
+		}
+	}
+
 }

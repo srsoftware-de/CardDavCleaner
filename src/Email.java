@@ -155,8 +155,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 								concat.equals("home@example.com:work@example.com")) {
 							comp++;
 						} else {
-							System.err.println(concat);
-							//System.err.println(a + " <=> " + b);
+							System.err.println(a + " <=> " + b);
 						}
 					}
 				}
