@@ -122,5 +122,12 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 			form.setBackground(invalid?Color.red:Color.green);
 		}	
 	}
-
+	
+	protected Object clone() throws CloneNotSupportedException {		
+		try {
+			return new Url(this.toString());
+		} catch (Exception e) {
+			throw new CloneNotSupportedException(e.getMessage());
+		}
+	}
 }

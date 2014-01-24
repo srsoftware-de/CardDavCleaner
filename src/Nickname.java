@@ -393,4 +393,5 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 		} catch (Exception e) {
 			throw new CloneNotSupportedException(e.getMessage());
 		}
-	}}
+	}
+}
