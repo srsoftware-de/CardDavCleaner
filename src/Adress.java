@@ -110,9 +110,19 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			} else {
 				System.err.println(homeA);
 			}
+			
+			System.out.print("Adress creation (work adress)...");
+			testcase="ADR;TYPE=WORK:xobtsop;txe;teerts;ytic;noiger;piz;yrtnuoc";
+			Adress workB=new Adress(testcase);
+			if (workB.toString().equals(testcase)){
+				System.out.println("ok");
+			} else {
+				System.err.println(workB);
+			}
 			Adress [] adresses1={emptyA,pbA,extA,strA,citA,regA,zipA,ctrA,homeA};
-			Adress [] adresses2={emptyB,pbB,extB,strB,citB,regB,zipB,ctrB};
-
+			Adress [] adresses2={emptyB,pbB,extB,strB,citB,regB,zipB,ctrB,workB};
+			
+			
 			System.out.print("Compatibility test 1...");
 			int comp=0;
 			for (Adress a:adresses1){
@@ -120,7 +130,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 					if (a.isCompatibleWith(b)) {
 						comp++;
 					} else {
-						System.out.println(a+" <=> "+b);
+						System.err.println(a+" <=> "+b);
 					}
 				}
 			}
@@ -149,10 +159,17 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryytic") ||
 						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountrynoiger") ||
 						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountrypiz") ||
-						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryyrtnuoc")){
+						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryyrtnuoc") ||
+						    concat.equals("postboxADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("streetADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("cityADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("regionADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("zipADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("countryADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc")){
 							comp++;
 						} else {
-							System.out.println(concat);
+							System.err.println(a+" <=> "+b);
 						}
 
 					}
@@ -164,7 +181,6 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			} else {
 				System.err.println("fail ("+comp+"/"+num+")!");
 			}
-
 			// continue tests here
 		} catch (UnknownObjectException e) {
 			e.printStackTrace();
