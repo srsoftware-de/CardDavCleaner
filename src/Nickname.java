@@ -9,7 +9,201 @@ import javax.swing.event.DocumentListener;
 
 
 public class Nickname extends Mergable<Nickname> implements DocumentListener, ChangeListener, Comparable<Nickname> {
-	
+	public static void test() {
+		try {
+			System.out.print("Nickname creation test (null)...");
+			String testCase = null;
+			try {
+				Nickname nM = new Nickname(testCase);
+				System.err.println("failed: " + nM);
+				System.exit(-1);
+			} catch (InvalidFormatException e) {
+				System.out.println("ok");
+      }
+
+			System.out.print("Nickname creation test (empty)...");
+			testCase = "NICKNAME:";
+			Nickname emptyN = new Nickname(testCase);
+			if (emptyN.toString().equals(testCase)) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + emptyN);
+				System.exit(-1);
+			}
+
+			System.out.print("Nickname creation test (simple)...");
+			testCase = "NICKNAME:Master of Daleks";
+			Nickname simplN = new Nickname(testCase);
+			if (simplN.toString().equals(testCase) && !simplN.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + simplN);
+				System.exit(-1);
+			}
+
+			System.out.print("Nickname creation test (work)...");
+			testCase = "NICKNAME;TYPE=WORK:Edward Snowden";
+			Nickname workN = new Nickname(testCase);
+			if (workN.toString().equals(testCase) && !workN.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + workN);
+				System.exit(-1);
+			}
+
+			System.out.print("Nickname creation test (home)...");
+			testCase = "NICKNAME;TYPE=HOME:KIMBLE";
+			Nickname homeN = new Nickname(testCase);
+			if (homeN.toString().equals(testCase) && !homeN.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + homeN);
+				System.exit(-1);
+			}
+
+			System.out.print("Nickname creation test (valid internet)...");
+			testCase = "NICKNAME;TYPE=INTERNET:";
+			Nickname netN = new Nickname(testCase);
+			if (netN.toString().equals(testCase) && !netN.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + netN);
+				System.exit(-1);
+			}
+			
+			Nickname[] nicknames = { emptyN,simplN,workN,homeN,netN };
+
+			System.out.print("Nickname isEmpty test...");
+			int comp = 0;
+			int num = 0;
+			for (Nickname m : nicknames) {
+				comp++;
+				if (!m.isEmpty()) {
+					num++;
+				} else if (m == emptyN||m==netN) {
+					num++;
+				}
+			}
+			if (num == comp) {
+				System.out.println("ok");
+			} else {
+				System.err.println(num + "/" + comp + " => failed");
+				System.exit(-1);
+			}
+
+			System.out.print("Nickname compare test...");
+			comp = 0;
+			num = 0;
+			for (Nickname m : nicknames) {
+				comp++;
+				if (m.compareTo(netN) != 0 && m.compareTo(netN) == -netN.compareTo(m)) {
+					num++;
+				} else {
+					if (netN==m){
+						num++;
+					}
+				}
+			}
+			if (comp == num) {
+				System.out.println("ok");
+			} else {
+				System.err.println(num + "/" + comp + " => failed");
+				System.exit(-1);
+			}
+
+			System.out.print("Nickname compatibility test...");
+			comp = 0;
+			num = 0;
+			for (Nickname a : nicknames) {
+				for (Nickname b : nicknames) {
+					num++;
+					if (a.isCompatibleWith(b)) {
+						comp++;
+					} else {
+						String concat = (a + "" + b).replace("NICKNAME", "").replace(";TYPE=INTERNET", "").replace(";TYPE=WORK", "").replace(";TYPE=HOME", "").replaceFirst(":", "");
+						if (concat.equals("Master of Daleks:Edward Snowden") ||
+								concat.equals("Master of Daleks:KIMBLE") ||
+								concat.equals("Edward Snowden:Master of Daleks") ||
+								concat.equals("Edward Snowden:KIMBLE") ||
+								concat.equals("KIMBLE:Master of Daleks") ||
+								concat.equals("KIMBLE:Edward Snowden")) {
+							comp++;
+						} else {
+							System.err.println(concat);
+							//System.err.println(a + " <=> " + b);
+						}
+					}
+				}
+			}
+			if (comp == num) {
+				System.out.println("ok");
+			} else {
+				System.err.println(num + "/" + comp + " => failed");
+				System.exit(-1);
+			}
+			
+			System.out.print("Nickname clone test...");
+			comp=0;
+			num=0;
+			for (Nickname m:nicknames){
+				comp++;
+				try {
+					if (m.toString().equals(m.clone().toString())){
+						num++;
+					}
+				} catch (CloneNotSupportedException e) {
+				}
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+								System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+
+			System.out.print("Nickname merge test...");
+			comp=0;
+			num=0;
+			for (Nickname m:nicknames){
+				try {
+					comp+=2;
+					Nickname clone1=(Nickname) m.clone();
+					Nickname clone2=(Nickname) workN.clone();
+					
+					if (clone1.mergeWith(workN) && clone1.toString().equals(workN.toString())) num++;
+					if (clone2.mergeWith(m) && clone2.toString().equals(workN.toString())) num++;
+					if (clone1.toString().equals("NICKNAME;TYPE=WORK;TYPE=INTERNET:Edward Snowden")) num++;
+					if (clone2.toString().equals("NICKNAME;TYPE=WORK;TYPE=INTERNET:Edward Snowden")) num++;if (comp>num){
+						if ((m.nick!=null && !m.nick.isEmpty()) && (workN.nick!=null && !workN.nick.isEmpty()) && !m.nick.equals(workN.nick)){
+							num+=2;
+						}
+					}
+					if (comp>num){
+						System.out.println();
+						System.out.println("fb: "+workN);
+						System.out.println(" b: "+m);
+						System.out.println("merged:");
+						System.out.println("fb: "+clone2);
+						System.out.println(" b: "+clone1);
+					}
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}				
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+				System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+		} catch (UnknownObjectException e) {
+      e.printStackTrace();
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+
+		}
+
+	}
 	private boolean work=false;
 	private boolean home=false;
 	private boolean internet=false;
@@ -21,36 +215,32 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 	private VerticalPanel form;
 	
 	public Nickname(String content) throws UnknownObjectException, InvalidFormatException {
-		if (content.startsWith("NICKNAME")){
-			String line = content.substring(8);
-			while(!line.startsWith(":")){
-				String upper = line.toUpperCase();
-				if (upper.startsWith("TYPE=WORK")){
-					work=true;
-					line=line.substring(9);
-					continue;
-				}
-				if (upper.startsWith("TYPE=HOME")){
-					home=true;
-					line=line.substring(9);
-					continue;
-				} 
-				if (upper.startsWith("TYPE=INTERNET")){
-					internet=true;
-					line=line.substring(13);
-					continue;
-				} 
-				if (line.startsWith(";")){
-					line=line.substring(1);
-					continue;
-				}
-				throw new UnknownObjectException(line+" in "+content);
+		if (content==null || !content.startsWith("NICKNAME"))throw new InvalidFormatException("Nickname adress does not start with \"NICKNAME\"!");
+		String line=content.substring(8);
+		while(!line.startsWith(":")){
+			String upper = line.toUpperCase();
+			if (upper.startsWith("TYPE=WORK")){
+				work=true;
+				line=line.substring(9);
+				continue;
 			}
-			readNick(line.substring(1));
-		} else if (content.startsWith("NICKNAME:")){
-			if (content.contains(";")) throw new InvalidFormatException("content");
-			nick=content.substring(9);
-		} else throw new InvalidFormatException("Nickname adress does not start with \"NICKNAME;\" or \"NICKNAME:\"");
+			if (upper.startsWith("TYPE=HOME")){
+				home=true;
+				line=line.substring(9);
+				continue;
+			} 
+			if (upper.startsWith("TYPE=INTERNET")){
+				internet=true;
+				line=line.substring(13);
+				continue;
+			} 
+			if (line.startsWith(";")){
+				line=line.substring(1);
+				continue;
+			}
+			throw new UnknownObjectException(line+" in "+content);
+		}		
+		readNick(line.substring(1));
 	}
 	
 	public String category() {
@@ -125,6 +315,7 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 
 	@Override
   public boolean mergeWith(Nickname other) {
+		if (!isCompatibleWith(other)) return false;
 		nick=merge(nick,other.nick);
 		if (other.home) home=true;
 		if (other.work) work=true;
@@ -169,11 +360,12 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 		if (work) sb.append(";TYPE=WORK");
 		if (internet) sb.append(";TYPE=INTERNET");
 		sb.append(":");
-		sb.append(nick);
+		if (nick!=null)sb.append(nick);
 		return sb.toString();
 	}
 
 	private void readNick(String line) {
+		if (line==null) return;
 		line=line.trim();
 		if (line.isEmpty()) {
 			nick=null;

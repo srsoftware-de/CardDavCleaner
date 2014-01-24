@@ -13,7 +13,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 	
 	public static void test() {
 		try {
-			System.out.print("EMail creation test (null)...");
+			System.out.print("Email creation test (null)...");
 			String testCase = null;
 			try {
 				Email nM = new Email(testCase);
@@ -198,7 +198,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 					if (clone1.mergeWith(netM) && clone1.toString().equals(netM.toString())) num++;
 					if (clone2.mergeWith(m) && clone2.toString().equals(netM.toString())) num++;
 					if (comp>num){
-						if ((m.adress!=null && !m.adress.isEmpty()) && (netM.adress!=null && !netM.adress.isEmpty()) && !m.address().equals(netM.adress)){
+						if ((m.adress!=null && !m.adress.isEmpty()) && (netM.adress!=null && !netM.adress.isEmpty()) && !m.adress.equals(netM.adress)){
 							num+=2;
 						}
 					}
