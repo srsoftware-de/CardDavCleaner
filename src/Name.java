@@ -10,7 +10,315 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 
 public class Name extends Mergable<Name> implements DocumentListener, Comparable<Name> {	
-	
+	public static void test() {
+		try {
+			System.out.print("Name creation (null)...");
+			try {
+				Name nullA = new Name(null);
+				System.err.println("failed: " + nullA);
+				System.exit(-1);
+			} catch (InvalidFormatException ife) {				
+				System.out.println("ok");
+			}
+			
+			System.out.print("Name creation (empty)...");
+			String testcase="N:;;;;";
+			Name emptyA = new Name(testcase.replace(";",""));
+			Name emptyB = new Name(testcase);
+			if (emptyA.toString().equals(testcase) && emptyB.toString().equals(testcase)) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + emptyA);
+				System.exit(-1);
+			}
+
+			System.out.print("Name creation (family)...");
+			testcase="N:ylimaf;;;;";
+			Name famA = new Name(Tests.reversed(testcase));
+			Name famB = new Name(testcase);
+			if (famA.toString().equals(Tests.reversed(testcase)+";;;;")&&famB.toString().equals(testcase)) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + famA+"/"+famB);
+				System.exit(-1);
+			}
+
+			System.out.print("Name creation (first)...");
+			testcase="N:;tsrif;;;";
+			Name firstA = new Name(Tests.reversed(testcase));
+			Name firstB = new Name(testcase);
+			if (firstA.toString().equals(Tests.reversed(testcase)+";;;")&&firstB.toString().equals(testcase)) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + firstA+"/"+firstB);
+				System.exit(-1);
+			}
+
+			System.out.print("Name creation (middle)...");
+			testcase="N:;;elddim;;";
+			Name midA = new Name(Tests.reversed(testcase));
+			Name midB = new Name(testcase);
+			if (midA.toString().equals(Tests.reversed(testcase)+";;")&&midB.toString().equals(testcase)) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + midA+"/"+midB);
+				System.exit(-1);
+			}
+			
+			System.out.print("Name creation (prefix)...");
+			testcase="N:;;;xiferp;";
+			Name prefA = new Name(Tests.reversed(testcase));
+			Name prefB = new Name(testcase);
+			if (prefA.toString().equals(Tests.reversed(testcase)+";")&&prefB.toString().equals(testcase)) {
+
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + prefA+"/"+prefB);
+				System.exit(-1);
+			}
+
+			System.out.print("Name creation (suffix)...");
+			testcase="N:;;;;xiffus";
+			Name sufA = new Name(Tests.reversed(testcase));
+			Name sufB = new Name(testcase);
+			if (sufA.toString().equals(Tests.reversed(testcase))&&sufB.toString().equals(testcase)) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + sufA+"/"+sufB);
+				System.exit(-1);
+			}
+			
+			System.out.print("Name creation (complete)...");
+			testcase="N:ylimaf;tsrif;elddim;xiferp;xiffus";
+			Name fullA = new Name(Tests.reversed(testcase));
+			Name fullB = new Name(testcase);
+			if (fullA.toString().equals(Tests.reversed(testcase))&&fullB.toString().equals(testcase)) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + fullA+"/"+fullB);
+				System.exit(-1);
+			}
+
+			Name [] names1={emptyA,famA,firstA,midA,prefA,sufA,fullA};
+			Name [] names2={emptyB,famB,firstB,midB,prefB,sufB,fullB};
+			
+			System.out.print("Name isEmpty test...");
+			int comp=0;
+			int num=0;
+			for (Name a:names1){
+				comp++;
+				if (!a.isEmpty()){
+					num++;
+				} else if (a==emptyA||a==sufA||a==prefA) {
+					num++;
+				}
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {
+				System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+			
+			System.out.print("Name compare test...");
+			comp=0;
+			num=0;
+			for (Name a:names1){
+				num++;
+				if (a.compareTo(fullB)!=0 && a.compareTo(fullB)==-fullB.compareTo(a)){
+					comp++;
+				}
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {
+				System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+				
+			System.out.print("Name compatibility test 1 (self)...");
+			comp=0;
+			num=0;
+			for (Name a:names1){
+				for (Name b:names1){
+					num++;
+					if (a.isCompatibleWith(b)) {
+						comp++;
+					} else {
+						System.err.println(a+" <=> "+b);
+					}
+				}
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {
+								System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+
+		
+			System.out.print("Name compatibility test 2 (other)...");
+			comp=0;
+			num=0;
+			for (Name a:names1){
+				for (Name b:names2){
+					num++;
+					if (a.isCompatibleWith(b)) {
+						comp++;
+					} else {
+						String concat=(a+""+b).replace("N:","").replace(";", "");
+						if (concat.equals("familyylimaf") ||
+							  concat.equals("familyylimaftsrifelddimxiferpxiffus") ||
+							  concat.equals("firsttsrif") ||
+							  concat.equals("firstylimaftsrifelddimxiferpxiffus") ||
+							  concat.equals("middleelddim") ||
+							  concat.equals("middleylimaftsrifelddimxiferpxiffus") ||
+							  concat.equals("prefixxiferp") ||
+							  concat.equals("prefixylimaftsrifelddimxiferpxiffus") ||
+							  concat.equals("suffixxiffus") ||
+							  concat.equals("suffixylimaftsrifelddimxiferpxiffus") ||
+							  concat.equals("familyfirstmiddleprefixsuffixylimaf") ||
+							  concat.equals("familyfirstmiddleprefixsuffixtsrif") ||
+							  concat.equals("familyfirstmiddleprefixsuffixelddim") ||
+							  concat.equals("familyfirstmiddleprefixsuffixxiferp") ||
+							  concat.equals("familyfirstmiddleprefixsuffixxiffus") ||
+							  concat.equals("familyfirstmiddleprefixsuffixylimaftsrifelddimxiferpxiffus")){
+							comp++;
+						} else {
+							//System.err.println(concat);
+							System.err.println(a+" <=> "+b);
+						}
+					}
+				}
+				
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {
+								System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+			
+			System.out.print("Name clone test...");
+			comp=0;
+			num=0;
+			for (Name a:names1){
+				num++;
+				try {
+					if (a.toString().equals(a.clone().toString())){
+						comp++;
+					}
+				} catch (CloneNotSupportedException e) {
+				}
+			}
+			for (Name b:names2){
+				num++;
+				try {
+					if (b.toString().equals(b.clone().toString())){
+						comp++;
+					}
+				} catch (CloneNotSupportedException e) {
+				}
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+								System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+			
+			
+			System.out.print("Name merge test 1 (compatible)...");
+			comp=0;
+			num=0;
+			for (Name a:names1){
+				try {
+					comp+=2;
+					Name clone1=(Name) a.clone();
+					Name clone2=(Name) fullA.clone();
+					
+					if (clone1.mergeWith(fullA) && clone1.toString().equals(fullA.toString())) num++;
+					if (clone2.mergeWith(a) && clone2.toString().equals(fullA.toString())) num++;
+				
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}				
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+								System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+			
+			System.out.print("Name merge test 2 (incompatible)...");
+			comp=0;
+			num=0;
+			for (Name b:names2){
+				try {
+					comp+=2;
+					Name clone1=(Name) b.clone();
+					Name clone2=(Name) fullA.clone();
+					
+					if (!clone1.mergeWith(fullA)) {
+						num++;
+					} else if (b==emptyB){
+						num++;
+					}
+					if (!clone2.mergeWith(b)) {
+						num++;
+					} else if (b==emptyB){
+						num++;
+					}
+				
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}				
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+								System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+			
+			System.out.print("Name merge test 4 (incompatible,work)...");
+			comp=0;
+			num=0;
+			for (Name a:names1){
+				try {
+					comp+=2;
+					Name clone1=(Name) a.clone();
+					Name clone2=(Name) fullB.clone();
+					
+					if (!clone1.mergeWith(fullB)) {
+						num++;
+					} else if (a==emptyA){
+						num++;
+					}
+					if (!clone2.mergeWith(a)) {
+						num++;
+					} else if (a==emptyA){
+						num++;
+					}
+				
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}				
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+				System.err.println(num + "/" + comp + " => failed");
+				System.exit(-1);
+			}
+			// continue tests here
+		} catch (UnknownObjectException e) {
+			e.printStackTrace();
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		}
+	}
 	private String family;
 	private String first;
 	private String prefix;
@@ -22,8 +330,9 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 	private VerticalPanel form;
 	
 	public Name(String line) throws UnknownObjectException, InvalidFormatException {		
-		if (!line.startsWith("N:")) throw new InvalidFormatException("Name does not start with \"N:\"");
+		if (line==null||!line.startsWith("N:")) throw new InvalidFormatException("Name does not start with \"N:\"");
 		line=line.substring(2).trim();
+		if (line.isEmpty()) return;
 		if (line.contains(";")){
 			String[] parts = line.split(";");
 			if (parts.length>0) setFamily(parts[0].trim());
@@ -39,7 +348,7 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 				}
 				throw new NotImplementedException();
 			}
-		} else family=line.substring(2); 
+		} else family=line; 
 		
 	}
 
@@ -133,7 +442,7 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 	  return true;
   }
 	public boolean isEmpty() {
-		return ((family==null) && (first==null));	
+		return ((family==null) && (first==null) && (middle==null));	
 	}
 	
 	public String last() {
@@ -142,6 +451,7 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 	
 	@Override
   public boolean mergeWith(Name otherName) {
+		if (!isCompatibleWith(otherName)) return false;
 		family=merge(family,otherName.family);
 		first=merge(first,otherName.first);
 		prefix=merge(prefix,otherName.prefix);
@@ -225,7 +535,7 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 	}
 	protected Object clone() throws CloneNotSupportedException {		
 		try {
-			return new Email(this.toString());
+			return new Name(this.toString());
 		} catch (Exception e) {
 			throw new CloneNotSupportedException(e.getMessage());
 		}

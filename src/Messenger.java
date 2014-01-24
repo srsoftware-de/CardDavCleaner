@@ -303,7 +303,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 				types.add("aim");
 				line=line.substring(3);
 				continue;
-			}
+			}			
 			if (upper.startsWith("SKYPE")){
 				types.add("skype");
 				line=line.substring(5);
