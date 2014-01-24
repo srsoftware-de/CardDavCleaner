@@ -148,7 +148,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			if (comp==num){
 				System.out.println("ok");
 			} else {
-				System.err.println("fail ("+num+"/"+comp+")!");
+								System.err.println(num+"/"+comp+" => failed");
 				System.exit(-1);
 			}
 			
@@ -165,7 +165,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			if (comp==num){
 				System.out.println("ok");
 			} else {
-				System.err.println("fail ("+num+"/"+comp+")!");
+								System.err.println(num+"/"+comp+" => failed");
 				System.exit(-1);
 			}
 				
@@ -185,7 +185,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			if (comp==num){
 				System.out.println("ok");
 			} else {
-				System.err.println("fail ("+num+"/"+comp+")!");
+								System.err.println(num+"/"+comp+" => failed");
 				System.exit(-1);
 			}
 
@@ -233,7 +233,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			if (comp==num){
 				System.out.println("ok");
 			} else {
-				System.err.println("fail ("+num+"/"+comp+")!");
+								System.err.println(num+"/"+comp+" => failed");
 				System.exit(-1);
 			}
 			
@@ -261,7 +261,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			if (comp==num){
 				System.out.println("ok");
 			} else {				
-				System.err.println("fail ("+num+"/"+comp+")!");
+								System.err.println(num+"/"+comp+" => failed");
 				System.exit(-1);
 			}
 			
@@ -285,7 +285,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			if (comp==num){
 				System.out.println("ok");
 			} else {				
-				System.err.println("fail ("+num+"/"+comp+")!");
+								System.err.println(num+"/"+comp+" => failed");
 				System.exit(-1);
 			}
 			
@@ -306,7 +306,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			if (comp==num){
 				System.out.println("ok");
 			} else {				
-				System.err.println("fail ("+num+"/"+comp+")!");
+								System.err.println(num+"/"+comp+" => failed");
 				System.exit(-1);
 			}
 			
@@ -337,7 +337,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			if (comp==num){
 				System.out.println("ok");
 			} else {				
-				System.err.println("fail ("+num+"/"+comp+")!");
+								System.err.println(num+"/"+comp+" => failed");
 				System.exit(-1);
 			}
 			
@@ -368,7 +368,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			if (comp==num){
 				System.out.println("ok");
 			} else {				
-				System.err.println("fail ("+num+"/"+comp+")!");
+				System.err.println(num + "/" + comp + " => failed");
 				System.exit(-1);
 			}
 			// continue tests here

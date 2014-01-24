@@ -108,6 +108,16 @@ public class Birthday extends Mergable<Birthday>implements ChangeListener, Compa
 			} else {
 				System.err.println("failed: "+idb2);
 				System.exit(-1);
+			}
+			
+			System.out.print("Birthday creation test (full date)...");
+			testCase="BDAY:19831026";
+			Birthday fdb = new Birthday(testCase);
+			if (fdb.toString().equals(testCase) && !fdb.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+fdb);
+				System.exit(-1);
 			}	
 
 			System.out.print("Birthday creation test (valid hour)...");
@@ -199,6 +209,45 @@ public class Birthday extends Mergable<Birthday>implements ChangeListener, Compa
 				System.err.println("failed: "+isb2);
 				System.exit(-1);
 			}	
+			
+			System.out.print("Birthday creation test (full time)...");
+			testCase="BDAY:T235959";
+			Birthday ftb = new Birthday(testCase);
+			if (ftb.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && !ftb.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+ftb);
+				System.exit(-1);
+			}	
+			
+			Birthday [] bdays={eb,vyb,iyb,vmb,imb1,imb2,vdb,idb1,idb2,fdb,vhb,ihb1,ihb2,vminb,iminb1,iminb2,vsb,isb1,isb2};
+			
+			System.out.print("Birthday isEmpty test...");
+			int comp=0;
+			int num=0;
+			for (Birthday b:bdays){
+				comp++;
+				if (!b.isEmpty()) {
+					num++;					
+				} else if (b==eb){
+					num++;
+				}
+			}
+			if (num==comp){
+				System.out.println("ok");
+			} else {
+				System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+			
+			System.out.print("Birthday isEmpty test 3...");
+			if (!ftb.isEmpty()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+ftb);
+				System.exit(-1);
+			}
+
 			// TODO:
 			System.out.println("weiter mit birthday.test");
 		} catch (InvalidFormatException e) {
