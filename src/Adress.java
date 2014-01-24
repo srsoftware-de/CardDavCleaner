@@ -130,12 +130,32 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				System.err.println(workB);
 				System.exit(-1);
 			}
+			
+			
 			Adress [] adresses1={emptyA,pbA,extA,strA,citA,regA,zipA,ctrA,homeA};
 			Adress [] adresses2={emptyB,pbB,extB,strB,citB,regB,zipB,ctrB,workB};
 			
-			System.out.print("Adress compare test...");
+			System.out.print("Adress isEmpty test...");
 			int comp=0;
 			int num=0;
+			for (Adress a:adresses1){
+				comp++;
+				if (!a.isEmpty()){
+					num++;
+				} else if (a==emptyA) {
+					num++;
+				}
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {
+				System.err.println("fail ("+num+"/"+comp+")!");
+				System.exit(-1);
+			}
+			
+			System.out.print("Adress compare test...");
+			comp=0;
+			num=0;
 			for (Adress a:adresses1){
 				num++;
 				if (a.compareTo(workB)!=0 && a.compareTo(workB)==-workB.compareTo(a)){
@@ -277,30 +297,75 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				try {
 					comp+=2;
 					Adress clone1=(Adress) b.clone();
-					Adress clone2=(Adress) workB.clone();
+					Adress clone2=(Adress) workB.clone();					
+					if (clone1.mergeWith(workB) && clone1.toString().equals(workB.toString())) num++;
+					if (clone2.mergeWith(b) && clone2.toString().equals(workB.toString())) num++;				
+				} catch (CloneNotSupportedException e) {
+				}				
+			}
+			
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+				System.err.println("fail ("+num+"/"+comp+")!");
+				System.exit(-1);
+			}
+			
+			System.out.print("Adress merge test 3 (incompatible,home)...");
+			comp=0;
+			num=0;
+			for (Adress b:adresses2){
+				try {
+					comp+=2;
+					Adress clone1=(Adress) b.clone();
+					Adress clone2=(Adress) homeA.clone();
 					
-					if (clone1.mergeWith(workB) && clone1.toString().equals(workB.toString())) {
-								num++;					
-					} else {
-						System.out.println();
-						System.out.println(b);
-						System.out.println(workB);
-						System.out.println(clone1);
-					}
-					if (clone2.mergeWith(b) && clone2.toString().equals(workB.toString())) {
+					if (!clone1.mergeWith(homeA)) {
 						num++;
-					}else {
-						System.out.println();
-						System.out.println(b);
-						System.out.println(workB);
-						System.out.println(clone2);
+					} else if (b==emptyB){
+						num++;
+					}
+					if (!clone2.mergeWith(b)) {
+						num++;
+					} else if (b==emptyB){
+						num++;
 					}
 				
 				} catch (CloneNotSupportedException e) {
 					e.printStackTrace();
 				}				
 			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+				System.err.println("fail ("+num+"/"+comp+")!");
+				System.exit(-1);
+			}
 			
+			System.out.print("Adress merge test 4 (incompatible,work)...");
+			comp=0;
+			num=0;
+			for (Adress a:adresses1){
+				try {
+					comp+=2;
+					Adress clone1=(Adress) a.clone();
+					Adress clone2=(Adress) workB.clone();
+					
+					if (!clone1.mergeWith(workB)) {
+						num++;
+					} else if (a==emptyA){
+						num++;
+					}
+					if (!clone2.mergeWith(a)) {
+						num++;
+					} else if (a==emptyA){
+						num++;
+					}
+				
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}				
+			}
 			if (comp==num){
 				System.out.println("ok");
 			} else {				
