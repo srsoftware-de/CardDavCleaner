@@ -110,6 +110,95 @@ public class Birthday extends Mergable<Birthday>implements ChangeListener, Compa
 				System.exit(-1);
 			}	
 
+			System.out.print("Birthday creation test (valid hour)...");
+			testCase="BDAY:T01";
+			Birthday vhb = new Birthday(testCase);
+			if (vhb.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && !vhb.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+vhb);
+				System.exit(-1);
+			}			
+
+			System.out.print("Birthday creation test (invalid hour 1)...");
+			testCase="BDAY:T24";
+			Birthday ihb1 = new Birthday(testCase);
+			if (ihb1.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && ihb1.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+ihb1);
+				System.exit(-1);
+			}
+			
+			System.out.print("Birthday creation test (invalid hour 2)...");
+			testCase="BDAY:TXX";
+			Birthday ihb2 = new Birthday(testCase);
+			if (ihb2.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && ihb2.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+ihb2);
+				System.exit(-1);
+			}	
+			
+			System.out.print("Birthday creation test (valid minute)...");
+			testCase="BDAY:T-01";
+			Birthday vminb = new Birthday(testCase);
+			if (vminb.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && !vminb.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+vminb);
+				System.exit(-1);
+			}			
+
+			System.out.print("Birthday creation test (invalid minute 1)...");
+			testCase="BDAY:T-60";
+			Birthday iminb1 = new Birthday(testCase);
+			if (iminb1.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && iminb1.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+iminb1);
+				System.exit(-1);
+			}
+			
+			System.out.print("Birthday creation test (invalid minute 2)...");
+			testCase="BDAY:T-XX";
+			Birthday iminb2 = new Birthday(testCase);
+			if (iminb2.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && iminb2.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+iminb2);
+				System.exit(-1);
+			}	
+			
+			System.out.print("Birthday creation test (valid second)...");
+			testCase="BDAY:T--01";
+			Birthday vsb = new Birthday(testCase);
+			if (vsb.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && !vsb.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+vsb);
+				System.exit(-1);
+			}			
+
+			System.out.print("Birthday creation test (invalid second 1)...");
+			testCase="BDAY:T--60";
+			Birthday isb1 = new Birthday(testCase);
+			if (isb1.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && isb1.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+isb1);
+				System.exit(-1);
+			}
+			
+			System.out.print("Birthday creation test (invalid second 2)...");
+			testCase="BDAY:T--XX";
+			Birthday isb2 = new Birthday(testCase);
+			if (isb2.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && isb2.isInvalid()){
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: "+isb2);
+				System.exit(-1);
+			}	
 			// TODO:
 			System.out.println("weiter mit birthday.test");
 		} catch (InvalidFormatException e) {
@@ -428,7 +517,9 @@ public class Birthday extends Mergable<Birthday>implements ChangeListener, Compa
 				sb.append(hour);
 			}
 			if (minute == null || minute.isEmpty()) {
-				sb.append("-");
+				if (second != null && !second.isEmpty()) {
+					sb.append("-");
+				}
 			} else {
 				sb.append(minute);
 			}
