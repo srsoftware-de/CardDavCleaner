@@ -18,6 +18,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			try {
 				Adress nullA = new Adress(null);
 				System.err.println("failed: " + nullA);
+				System.exit(-1);
 			} catch (InvalidFormatException ife) {				
 				System.out.println("ok");
 			}
@@ -30,6 +31,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + emptyA);
+				System.exit(-1);
 			}
 
 			System.out.print("Adress creation (postbox)...");
@@ -40,6 +42,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + pbA+"/"+pbB);
+				System.exit(-1);
 			}
 
 			System.out.print("Adress creation (extended)...");
@@ -50,6 +53,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + extA);
+				System.exit(-1);
 			}
 
 			System.out.print("Adress creation (street)...");
@@ -60,6 +64,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + strA);
+				System.exit(-1);
 			}
 			
 			System.out.print("Adress creation (city)...");
@@ -70,6 +75,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + citA);
+				System.exit(-1);
 			}
 
 			System.out.print("Adress creation (region)...");
@@ -80,6 +86,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + regA);
+				System.exit(-1);
 			}
 
 			System.out.print("Adress creation (zip)...");
@@ -90,6 +97,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + zipA);
+				System.exit(-1);
 			}
 
 			System.out.print("Adress creation (country)...");
@@ -100,33 +108,54 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + ctrA);
+				System.exit(-1);
 			}
 			
 			System.out.print("Adress creation (home adress)...");
-			testcase="ADR;TYPE=HOME:postbox;ext;street;city;region;zip;country";
+			testcase="ADR;TYPE=HOME:postbox;extended;street;city;region;zip;country";
 			Adress homeA=new Adress(testcase);
 			if (homeA.toString().equals(testcase)){
 				System.out.println("ok");
 			} else {
 				System.err.println(homeA);
+				System.exit(-1);
 			}
 			
 			System.out.print("Adress creation (work adress)...");
-			testcase="ADR;TYPE=WORK:xobtsop;txe;teerts;ytic;noiger;piz;yrtnuoc";
+			testcase="ADR;TYPE=WORK:xobtsop;dednetxe;teerts;ytic;noiger;piz;yrtnuoc";
 			Adress workB=new Adress(testcase);
 			if (workB.toString().equals(testcase)){
 				System.out.println("ok");
 			} else {
 				System.err.println(workB);
+				System.exit(-1);
 			}
 			Adress [] adresses1={emptyA,pbA,extA,strA,citA,regA,zipA,ctrA,homeA};
 			Adress [] adresses2={emptyB,pbB,extB,strB,citB,regB,zipB,ctrB,workB};
 			
-			
-			System.out.print("Compatibility test 1...");
+			System.out.print("Adress compare test...");
 			int comp=0;
+			int num=0;
+			for (Adress a:adresses1){
+				num++;
+				if (a.compareTo(workB)!=0 && a.compareTo(workB)==-workB.compareTo(a)){
+					comp++;
+				}
+			}
+			num=adresses1.length;
+			if (comp==num){
+				System.out.println("ok");
+			} else {
+				System.err.println("fail ("+num+"/"+comp+")!");
+				System.exit(-1);
+			}
+				
+			System.out.print("Adress compatibility test 1 (self)...");
+			comp=0;
+			num=0;
 			for (Adress a:adresses1){
 				for (Adress b:adresses1){
+					num++;
 					if (a.isCompatibleWith(b)) {
 						comp++;
 					} else {
@@ -134,52 +163,149 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 					}
 				}
 			}
-			int num=adresses1.length*adresses1.length;
 			if (comp==num){
 				System.out.println("ok");
 			} else {
-				System.err.println("fail ("+comp+"/"+num+")!");
+				System.err.println("fail ("+num+"/"+comp+")!");
+				System.exit(-1);
 			}
-			System.out.print("Compatibility test 2...");
+
+		
+			System.out.print("Adress compatibility test 2 (other)...");
 			comp=0;
+			num=0;
 			for (Adress a:adresses1){
 				for (Adress b:adresses2){
+					num++;
 					if (a.isCompatibleWith(b)) {
 						comp++;
 					} else {
 						String concat=(a+""+b).replace("ADR:","").replace(";", "");
 						if (concat.equals("postboxxobtsop") ||
+							  concat.equals("extendeddednetxe") ||
 							  concat.equals("streetteerts") ||
-							  concat.equals("cityytic") ||
+						    concat.equals("cityytic") ||
 						    concat.equals("regionnoiger") ||
 						    concat.equals("zippiz") ||
 						    concat.equals("countryyrtnuoc") ||
-						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryxobtsop") ||
-						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryteerts") ||
-						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryytic") ||
-						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountrynoiger") ||
-						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountrypiz") ||
-						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryyrtnuoc") ||
-						    concat.equals("postboxADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
-						    concat.equals("streetADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
-						    concat.equals("cityADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
-						    concat.equals("regionADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
-						    concat.equals("zipADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
-						    concat.equals("countryADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc") ||
-						    concat.equals("ADRTYPE=HOME:postboxextstreetcityregionzipcountryADRTYPE=WORK:xobtsoptxeteertsyticnoigerpizyrtnuoc")){
+						    concat.equals("ADRTYPE=HOME:postboxextendedstreetcityregionzipcountryADRTYPE=WORK:xobtsopdednetxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("ADRTYPE=HOME:postboxextendedstreetcityregionzipcountryyrtnuoc") ||
+						    concat.equals("ADRTYPE=HOME:postboxextendedstreetcityregionzipcountrypiz") ||
+						    concat.equals("ADRTYPE=HOME:postboxextendedstreetcityregionzipcountrynoiger") ||
+						    concat.equals("ADRTYPE=HOME:postboxextendedstreetcityregionzipcountryytic") ||
+						    concat.equals("ADRTYPE=HOME:postboxextendedstreetcityregionzipcountryteerts") ||
+						    concat.equals("ADRTYPE=HOME:postboxextendedstreetcityregionzipcountrydednetxe") ||
+						    concat.equals("ADRTYPE=HOME:postboxextendedstreetcityregionzipcountryxobtsop") ||
+						    concat.equals("countryADRTYPE=WORK:xobtsopdednetxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("zipADRTYPE=WORK:xobtsopdednetxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("regionADRTYPE=WORK:xobtsopdednetxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("cityADRTYPE=WORK:xobtsopdednetxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("streetADRTYPE=WORK:xobtsopdednetxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("extendedADRTYPE=WORK:xobtsopdednetxeteertsyticnoigerpizyrtnuoc") ||
+						    concat.equals("postboxADRTYPE=WORK:xobtsopdednetxeteertsyticnoigerpizyrtnuoc")){
 							comp++;
 						} else {
 							System.err.println(a+" <=> "+b);
 						}
-
 					}
 				}
+				
 			}
-			num=adresses1.length*adresses2.length;
 			if (comp==num){
 				System.out.println("ok");
 			} else {
-				System.err.println("fail ("+comp+"/"+num+")!");
+				System.err.println("fail ("+num+"/"+comp+")!");
+				System.exit(-1);
+			}
+			
+			System.out.print("Adress clone test...");
+			comp=0;
+			num=0;
+			for (Adress a:adresses1){
+				num++;
+				try {
+					if (a.toString().equals(a.clone().toString())){
+						comp++;
+					}
+				} catch (CloneNotSupportedException e) {
+				}
+			}
+			for (Adress b:adresses2){
+				num++;
+				try {
+					if (b.toString().equals(b.clone().toString())){
+						comp++;
+					}
+				} catch (CloneNotSupportedException e) {
+				}
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+				System.err.println("fail ("+num+"/"+comp+")!");
+				System.exit(-1);
+			}
+			
+			
+			System.out.print("Adress merge test 1 (compatible,home)...");
+			comp=0;
+			num=0;
+			for (Adress a:adresses1){
+				try {
+					comp+=2;
+					Adress clone1=(Adress) a.clone();
+					Adress clone2=(Adress) homeA.clone();
+					
+					if (clone1.mergeWith(homeA) && clone1.toString().equals(homeA.toString())) num++;
+					if (clone2.mergeWith(a) && clone2.toString().equals(homeA.toString())) num++;
+				
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}				
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+				System.err.println("fail ("+num+"/"+comp+")!");
+				System.exit(-1);
+			}
+			
+			System.out.print("Adress merge test 2 (compatible,work)...");
+			comp=0;
+			num=0;
+			for (Adress b:adresses2){
+				try {
+					comp+=2;
+					Adress clone1=(Adress) b.clone();
+					Adress clone2=(Adress) workB.clone();
+					
+					if (clone1.mergeWith(workB) && clone1.toString().equals(workB.toString())) {
+								num++;					
+					} else {
+						System.out.println();
+						System.out.println(b);
+						System.out.println(workB);
+						System.out.println(clone1);
+					}
+					if (clone2.mergeWith(b) && clone2.toString().equals(workB.toString())) {
+						num++;
+					}else {
+						System.out.println();
+						System.out.println(b);
+						System.out.println(workB);
+						System.out.println(clone2);
+					}
+				
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}				
+			}
+			
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+				System.err.println("fail ("+num+"/"+comp+")!");
+				System.exit(-1);
 			}
 			// continue tests here
 		} catch (UnknownObjectException e) {
@@ -226,6 +352,15 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			throw new UnknownObjectException(line);
 		}
 		readAddr(line.substring(1));
+	}
+	
+	@Override
+	protected Object clone() throws CloneNotSupportedException {		
+		try {
+			return new Adress(this.toString());
+		} catch (Exception e) {
+			throw new CloneNotSupportedException(e.getMessage());
+		}
 	}
 
 	public String canonical() {
@@ -291,7 +426,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 		if (different(zip, adr2.zip)) return false;
 		if (different(postOfficeBox, adr2.postOfficeBox)) return false;
 		if (different(streetAdress, adr2.streetAdress)) return false;
-		if (different(extendedAdress, extendedAdress)) return false;
+		if (different(extendedAdress, adr2.extendedAdress)) return false;
 		return true;
 	}
 
