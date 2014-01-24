@@ -291,6 +291,27 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 				System.err.println(num + "/" + comp + " => failed");
 				System.exit(-1);
 			}
+			
+			System.out.print("Birthday clone test...");
+			comp=0;
+			num=0;
+			for (Birthday b:bdays){
+				comp++;
+				try {
+					if (b.toString().equals(b.clone().toString())){
+						num++;
+					}
+				} catch (CloneNotSupportedException e) {
+					e.printStackTrace();
+				}
+			}
+			if (comp==num){
+				System.out.println("ok");
+			} else {				
+								System.err.println(num+"/"+comp+" => failed");
+				System.exit(-1);
+			}
+			
 			// TODO:
 			System.out.println("weiter mit birthday.test");
 		} catch (InvalidFormatException e) {
@@ -298,7 +319,7 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 		}
 
 	}
-
+	
 	private String year;
 	private String month;
 	private String day;
@@ -306,7 +327,6 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 	private String minute;
 	private String second;
 	private boolean invalid = false;
-
 	private InputField yearField, monthField, dayField, hourField, minuteField, secondField;
 
 	public Birthday(String birthday) throws InvalidFormatException {
@@ -645,6 +665,14 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 		secondField.addEditListener(this);
 		form.scale();
 		return form;
+	}
+
+	protected Object clone() throws CloneNotSupportedException {		
+		try {
+			return new Birthday(this.toString());
+		} catch (Exception e) {
+			throw new CloneNotSupportedException(e.getMessage());
+		}
 	}
 
 }
