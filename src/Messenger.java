@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
+import java.util.TreeSet;
 
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
@@ -157,16 +158,16 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 				System.exit(-1);
 			}
 
-			/*
+			
 			System.out.print("Messenger compare test...");
 			comp = 0;
 			num = 0;
-			for (Messenger m : mails) {
+			for (Messenger m : messengers) {
 				comp++;
-				if (m.compareTo(netM) != 0 && m.compareTo(netM) == -netM.compareTo(m)) {
+				if (m.compareTo(icq) != 0 && m.compareTo(icq) == -icq.compareTo(m)) {
 					num++;
 				} else {
-					if (netM==m){
+					if (icq==m){
 						num++;
 					}
 				}
@@ -181,36 +182,29 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print("Messenger compatibility test...");
 			comp = 0;
 			num = 0;
-			for (Messenger a : mails) {
-				for (Messenger b : mails) {
+			for (Messenger a : messengers) {
+				for (Messenger b : messengers) {
 					num++;
 					if (a.isCompatibleWith(b)) {
 						comp++;
 					} else {
-						String concat = (a + "" + b).replace("EMAIL", "").replace(";TYPE=INTERNET", "").replace(";TYPE=WORK", "").replace(";TYPE=HOME", "").replaceFirst(":", "");
-						if (concat.equals("net@example.com:test.test-24+a@test.example.com") ||
-								concat.equals("net@example.com:steinlaus") ||
-								concat.equals("net@example.com:work@example.com") ||
-								concat.equals("net@example.com:home@example.com") ||
-								concat.equals("steinlaus:home@example.com") ||
-								concat.equals("steinlaus:net@example.com") ||
-								concat.equals("steinlaus:test.test-24+a@test.example.com") ||
-								concat.equals("steinlaus:work@example.com") ||
-								concat.equals("test.test-24+a@test.example.com:home@example.com") ||
-								concat.equals("test.test-24+a@test.example.com:net@example.com") ||
-								concat.equals("test.test-24+a@test.example.com:steinlaus") ||
-								concat.equals("test.test-24+a@test.example.com:work@example.com") ||
-								concat.equals("work@example.com:home@example.com") ||
-								concat.equals("work@example.com:net@example.com") ||
-								concat.equals("work@example.com:steinlaus") ||
-								concat.equals("work@example.com:test.test-24+a@test.example.com") ||
-								concat.equals("home@example.com:steinlaus") ||
-								concat.equals("home@example.com:net@example.com") ||
-								concat.equals("home@example.com:test.test-24+a@test.example.com") ||
-								concat.equals("home@example.com:work@example.com")) {
+						String concat = (a + "" + b).replace("IMPP:", "").replace("icq", "").replace("skype", "").replace("msn", "").replace("aim", "").replace("facebook", "").replaceFirst(":", "");
+						if (concat.equals("123456:test") ||
+								concat.equals("123456:test@example.com") ||
+								concat.equals("123456:toast@example.com") ||
+								concat.equals("test:123456") ||
+								concat.equals("test:test@example.com") ||
+								concat.equals("test:toast@example.com") ||
+								concat.equals("test@example.com:123456") ||
+								concat.equals("test@example.com:test") ||
+								concat.equals("test@example.com:toast@example.com") ||
+								concat.equals("toast@example.com:123456") ||
+								concat.equals("toast@example.com:test") ||
+								concat.equals("toast@example.com:test@example.com")) {
 							comp++;
 						} else {
-							System.err.println(a + " <=> " + b);
+							System.err.println(concat);
+							//System.err.println(a + " <=> " + b);
 						}
 					}
 				}
@@ -218,14 +212,14 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			if (comp == num) {
 				System.out.println("ok");
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(comp + "/" + num + " => failed");
 				System.exit(-1);
 			}
 			
 			System.out.print("Messenger clone test...");
 			comp=0;
 			num=0;
-			for (Messenger m:mails){
+			for (Messenger m:messengers){
 				comp++;
 				try {
 					if (m.toString().equals(m.clone().toString())){
@@ -244,26 +238,27 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print("Messenger merge test...");
 			comp=0;
 			num=0;
-			for (Messenger m:mails){
+			for (Messenger m:messengers){
 				try {
 					comp+=2;
 					Messenger clone1=(Messenger) m.clone();
-					Messenger clone2=(Messenger) netM.clone();
+					Messenger clone2=(Messenger) icq.clone();
 					
-					if (clone1.mergeWith(netM) && clone1.toString().equals(netM.toString())) num++;
-					if (clone2.mergeWith(m) && clone2.toString().equals(netM.toString())) num++;
+					if (clone1.mergeWith(icq) && clone1.nick.equals(icq.nick) && clone1.types.containsAll(m.types) && clone1.types.containsAll(icq.types)) num++;
+					if (clone2.mergeWith(m) && clone2.nick.equals(icq.nick) && clone2.types.containsAll(m.types) && clone2.types.containsAll(icq.types)) num++;
 					if (comp>num){
-						if ((m.adress!=null && !m.adress.isEmpty()) && (netM.adress!=null && !netM.adress.isEmpty()) && !m.address().equals(netM.adress)){
+						if ((m.nick!=null && !m.nick.isEmpty()) && (icq.nick!=null && !icq.nick.isEmpty()) && !m.nick.equals(icq.nick)){
 							num+=2;
 						}
 					}
-					if (comp>num){
+					if (comp>num){						
 						System.out.println();
-						System.out.println("fb: "+netM);
-						System.out.println(" b: "+m);
+						System.out.println(comp+" : "+num);
+						System.out.println("fb: <"+icq+">");
+						System.out.println(" b: <"+m+">");
 						System.out.println("merged:");
-						System.out.println("fb: "+clone2);
-						System.out.println(" b: "+clone1);
+						System.out.println("fb: <"+clone2+">");
+						System.out.println(" b: <"+clone1+">");
 					}
 				} catch (CloneNotSupportedException e) {
 					e.printStackTrace();
@@ -284,13 +279,8 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		}
 
 	}
-	private boolean aim=false;
-	private boolean icq=false;
-	private boolean skype=false;
-	private boolean msn=false;
-	private boolean facebook=false;
-	private boolean invalid;
 	private String nick=null;
+	private TreeSet<String> types=new TreeSet<String>();
 	private InputField nickField;
 	private JCheckBox aimBox;
 	private JCheckBox icqBox;
@@ -305,27 +295,27 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		while(!line.startsWith(":")){
 			String upper = line.toUpperCase();
 			if (upper.startsWith("ICQ")){
-				icq=true;
+				types.add("icq");
 				line=line.substring(3);
 				continue;
 			}
 			if (upper.startsWith("AIM")){
-				aim=true;
+				types.add("aim");
 				line=line.substring(3);
 				continue;
 			}
 			if (upper.startsWith("SKYPE")){
-				skype=true;
+				types.add("skype");
 				line=line.substring(5);
 				continue;
 			} 
 			if (upper.startsWith("MSN")){
-				msn=true;
+				types.add("msn");
 				line=line.substring(3);
 				continue;
 			} 
 			if (upper.startsWith("FACEBOOK")){
-				facebook=true;
+				types.add("facebook");
 				line=line.substring(8);
 				continue;
 			} 
@@ -340,30 +330,29 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 	
 	public VerticalPanel editForm() {
 		form=new VerticalPanel("Messenger");
-		if (invalid) form.setBackground(Color.red);
+		if (isInvalid()) form.setBackground(Color.red);
 		form.add(nickField=new InputField("Nickname",nick));
 		nickField.addEditListener(this);
-		form.add(aimBox=new JCheckBox("AIM",aim));
+		form.add(aimBox=new JCheckBox("AIM",types.contains("aim")));
 		aimBox.addChangeListener(this);
-		form.add(icqBox=new JCheckBox("ICQ",icq));
+		form.add(icqBox=new JCheckBox("ICQ",types.contains("icq")));
 		icqBox.addChangeListener(this);
-		form.add(skypeBox=new JCheckBox("Skype",skype));
+		form.add(skypeBox=new JCheckBox("Skype",types.contains("skype")));
 		skypeBox.addChangeListener(this);
-		form.add(msnBox=new JCheckBox("MSN",msn));
+		form.add(msnBox=new JCheckBox("MSN",types.contains("msn")));
 		msnBox.addChangeListener(this);
-		form.add(facebookBox=new JCheckBox("Facebook",facebook));
+		form.add(facebookBox=new JCheckBox("Facebook",types.contains("facebook")));
 		facebookBox.addChangeListener(this);
 		form.scale();
 		return form;
 	}
 	
 	public String id() throws UnknownObjectException {
-		if (aim) return "aim:"+nick;
-		if (icq) return "icq:"+nick;
-		if (skype) return "skype:"+nick;
-		if (msn) return "msn:"+nick;
-		if (facebook) return "facebook"+nick;
-		throw new UnknownObjectException("Messenger \""+nick+"\" has no known type!");
+		if (types.isEmpty()) throw new UnknownObjectException("Messenger \""+nick+"\" has no known type!");
+		String result=types.toString().replace("[", "").replace("]", ":").replace(",", ":");
+		if (nick==null || nick.isEmpty()) return result;
+		return result+nick;
+		
   }
 
 	@Override
@@ -377,27 +366,15 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 	}
 	
 	public boolean isInvalid() {
-		return invalid;
-	}
-
-	public void merge(Messenger m) throws InvalidAssignmentException {
-		if (!nick.equals(m.nick)) throw new InvalidAssignmentException("Trying to merge two messenger accounts with different ids!");
-		if (m.aim) aim=true;
-		if (m.icq) icq=true;
-		if (m.skype) skype=true;
-		if (m.msn) msn=true;
-		if (m.facebook) facebook=true;
+		return types.isEmpty();
 	}
 
 	@Override
   public boolean mergeWith(Messenger other) {
+		if (!isCompatibleWith(other)) return false;
 		nick=merge(nick,other.nick);
-		if (other.aim)aim =true;
-		if (other.icq)icq =true;
-		if (other.skype)skype =true;
-		if (other.msn)msn =true;
-		if (other.facebook) facebook=true;
-	  return false;
+		types.addAll(other.types);
+	  return true;
   }
 
 	public String nick() {
@@ -409,31 +386,45 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		if (source==nickField){
 			nick=nickField.getText().trim();
 		}
-		aim=aimBox.isSelected();
-		icq=icqBox.isSelected();
-		skype=skypeBox.isSelected();
-		msn=msnBox.isSelected();
-		facebook=facebookBox.isSelected();
+		if (aimBox.isSelected()){
+			types.add("aim");
+		} else {
+			types.remove("aim");
+		}
+		if (icqBox.isSelected()){
+			types.add("icq");
+		} else {
+			types.remove("icq");
+		}
+		if (skypeBox.isSelected()){
+			types.add("skype");
+		} else {
+			types.remove("skype");
+		}
+		if (msnBox.isSelected()){
+			types.add("msn");
+		} else {
+			types.remove("msn");
+		}
+		if (facebookBox.isSelected()){
+			types.add("facebook");
+		} else {
+			types.remove("facebook");
+		}
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
-			invalid=false;
 		} else {
-			invalid=(aim==false&&icq==false&&skype==false&&msn==false&&facebook==false); 
-			form.setBackground(invalid?Color.red:Color.green);
+			form.setBackground(isInvalid()?Color.red:Color.green);
 		}
 	}
 
 	public String toString() {
-		StringBuffer sb=new StringBuffer();
-		sb.append("IMPP:");
-		if (aim) sb.append("aim");
-		if (icq) sb.append("icq");
-		if (skype) sb.append("skype");
-		if (msn) sb.append("msn");
-		if (facebook) sb.append("facebook");
-		sb.append(":");
-		if (nick!=null && !nick.isEmpty()) sb.append(nick);
-		return sb.toString();
+		try {
+	    return "IMPP:"+id();
+    } catch (UnknownObjectException e) {
+	    e.printStackTrace();
+	    return null;
+    }
 	}
 
 	private void readAddr(String line) {
@@ -442,6 +433,12 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		nick = line.toLowerCase();
 	}
 
-
+	protected Object clone() throws CloneNotSupportedException {		
+		try {
+			return new Messenger(this.toString());
+		} catch (Exception e) {
+			throw new CloneNotSupportedException(e.getMessage());
+		}
+	}
 
 }
