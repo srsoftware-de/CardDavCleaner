@@ -141,7 +141,8 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				comp++;
 				if (!a.isEmpty()){
 					num++;
-				} else if (a==emptyA) {
+				}
+				if (a==emptyA) {
 					num++;
 				}
 			}

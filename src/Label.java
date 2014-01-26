@@ -73,8 +73,9 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 				comp++;
 				if (!l.isEmpty()) {
 					num++;
-				} else if (l == eL) {
-					num++;
+				} 
+				if (l == eL) {
+					comp--;
 				}
 			}
 			if (num == comp) {

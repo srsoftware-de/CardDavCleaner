@@ -71,8 +71,9 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 				comp++;
 				if (!a.isEmpty()){
 					num++;
-				} else if (a==emptyA) {
-					num++;
+				}
+				if (a==emptyA) {
+					comp--;
 				}
 			}
 			if (comp==num){

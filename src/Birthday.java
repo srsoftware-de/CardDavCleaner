@@ -239,8 +239,9 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 				comp++;
 				if (!b.isEmpty()) {
 					num++;
-				} else if (b == eb) {
-					num++;
+				} 
+				if (b == eb) {
+					comp--;
 				}
 			}
 			if (num == comp) {

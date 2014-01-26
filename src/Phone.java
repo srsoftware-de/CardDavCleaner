@@ -111,8 +111,9 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 				comp++;
 				if (!m.isEmpty()) {
 					num++;
-				} else if (m == eM) {
-					num++;
+				}
+				if (m == eM) {
+					comp--;
 				}
 			}
 			if (num == comp) {

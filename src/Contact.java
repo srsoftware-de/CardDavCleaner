@@ -268,7 +268,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					num++;
 				}
 				if (c==name||c==formatted||c==label){
-					num++;
+					comp--;
 				}				
 			}
 			if (num == comp) {

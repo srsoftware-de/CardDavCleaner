@@ -80,8 +80,9 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 				comp++;
 				if (!m.isEmpty()) {
 					num++;
-				} else if (m == emptyN||m==netN) {
-					num++;
+				} 
+				if (m == emptyN||m==netN) {
+					comp--;
 				}
 			}
 			if (num == comp) {

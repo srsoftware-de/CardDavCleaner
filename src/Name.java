@@ -109,8 +109,9 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 				comp++;
 				if (!a.isEmpty()){
 					num++;
-				} else if (a==emptyA||a==sufA||a==prefA) {
-					num++;
+				}
+				if (a==emptyA||a==sufA||a==prefA) {
+					comp--;
 				}
 			}
 			if (comp==num){

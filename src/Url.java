@@ -69,8 +69,9 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 				comp++;
 				if (!m.isEmpty()) {
 					num++;
-				} else if (m == emptyN) {
-					num++;
+				}
+				if (m == emptyN) {
+					comp--;
 				}
 			}
 			if (num == comp) {

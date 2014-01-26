@@ -139,16 +139,9 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 				comp++;
 				if (!m.isEmpty()) {
 					num++;
-				} else if (m == eICQ) {
-					num++;
-				} else if (m == eSkype) {
-					num++;
-				} else if (m == eMSN) {
-					num++;
-				} else if (m == eAIM) {
-					num++;
-				} else if (m == eFB) {
-					num++;
+				}
+				if (m == eICQ||m == eSkype||m == eMSN||m == eAIM||m == eFB) {
+					comp--;
 				}
 			}
 			if (num == comp) {
