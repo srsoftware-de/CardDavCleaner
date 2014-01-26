@@ -288,7 +288,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * starts the actual scanning of contacts upon server login
 	 * 
 	 * @param host the hostname
-	 * @param contactNamess the list of contact file names
+	 * @param contactNames the list of contact file names
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws UnknownObjectException
@@ -296,9 +296,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws InvalidAssignmentException
 	 * @throws ToMuchEntriesForThunderbirdException
 	 */
-	private void cleanContacts(String host, Set<String> contactNamess) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
+	private void cleanContacts(String host, Set<String> contactNames) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
 
-		Vector<Contact> contacts = readContacts(host, contactNamess);
+		Vector<Contact> contacts = readContacts(host, contactNames);
 
 		// next: find and merge related contacts
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
