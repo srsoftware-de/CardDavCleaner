@@ -27,5 +27,9 @@ public class Translations {
 		return new Translation();
 	}
 
+	public static String get(String key, int response) {
+		return get(key).replace("#", ""+response);
+	}
+
 
 }
