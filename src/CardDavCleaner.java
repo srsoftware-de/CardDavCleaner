@@ -57,7 +57,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private static boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
 		if (!contact.conflictsWith(contact2)) return true;
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new JLabel("<html>The " + identifier + " \"<b>" + name + "</b>\" is used by both following contacts:"));
+		vp.add(new JLabel(_("<html>The #" + identifier + " \"<b>#" + name + "</b>\" is used by both following contacts:",new Object[]{identifier,name})));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
 		hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));
@@ -372,6 +372,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		return Translations.get(key,response);
 	}
 
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
+	}
+
 	/**
 	 * starts the actual scanning of contacts upon server login
 	 * 
@@ -499,7 +503,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 */
 	private void deleteUselessContacts(String host, TreeSet<Contact> deleteList) throws IOException {
 		for (Contact c : deleteList) {
-			System.out.println("Deleting " + c.vcfName());
+			System.out.println(_("Deleting #",c.vcfName()));
 			deleteContact(new URL(host + "/" + c.vcfName()));
 		}
 	}

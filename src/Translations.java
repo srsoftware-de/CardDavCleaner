@@ -26,9 +26,17 @@ public class Translations {
 		System.out.println("Failed. Using en.");
 		return new Translation();
 	}
-
-	public static String get(String key, int response) {
-		return get(key).replace("#", ""+response);
+	
+	public static String get(String key, Object insert) {
+		if (insert instanceof Object []){
+			Object[] oarray = (Object[])insert;
+			key=get(key);
+			for (Object o:oarray){
+				key=key.replaceFirst("#", o.toString());
+			}
+			return key;
+		}
+		return get(key).replace("#", insert.toString());
 	}
 
 
