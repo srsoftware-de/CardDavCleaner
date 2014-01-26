@@ -179,14 +179,43 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			
 			System.out.print("Contact creation test (name + birthday [full])...");
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nBDAY;VALUE=DATE-TIME:19910417T123456\nEND:VCARD\n";
+			Contact bday = new Contact(testCase);
+			if (bday.toString(true).equals(testCase) && !bday.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + bday.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + role)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nROLE:contact for testing\nEND:VCARD\n";
+			Contact role = new Contact(testCase);
+			if (role.toString(true).equals(testCase) && !role.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + role.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + url)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nURL:www.srsoftware.de\nEND:VCARD\n";
+			Contact url = new Contact(testCase);
+			if (url.toString(true).equals(testCase) && !url.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + url.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + organization)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nORG:SRSoftware GbR;Gera;Thüringen\nEND:VCARD\n";
 			Contact mops = new Contact(testCase);
 			if (mops.toString(true).equals(testCase) && !mops.isInvalid()) {
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + mops.toString(true));
 				System.exit(-1);
-			}
-			/*
+			}			/*
 			System.out.print("Email creation test (invalid)...");
 			testCase = "EMAIL:steinlaus";
 			Email iM = new Email(testCase);

@@ -18,7 +18,7 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 			}
 			
 			System.out.print("Organization creation (empty)...");
-			String testcase="ORG:;;";
+			String testcase="ORG:;";
 			Organization emptyA = new Organization(testcase.replace(";",""));
 			Organization emptyB = new Organization(testcase);
 			if (emptyA.toString().equals(testcase) && emptyB.toString().equals(testcase)) {
@@ -29,10 +29,10 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 			}
 
 			System.out.print("Organization creation (name)...");
-			testcase="ORG:eman;;";
+			testcase="ORG:eman;";
 			Organization namA = new Organization(Tests.reversed(testcase));
 			Organization namB = new Organization(testcase);
-			if (namA.toString().equals(Tests.reversed(testcase)+";;")&&namB.toString().equals(testcase)) {
+			if (namA.toString().equals(Tests.reversed(testcase)+";")&&namB.toString().equals(testcase)) {
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + namA+"/"+namB);
@@ -40,10 +40,10 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 			}
 
 			System.out.print("Organization creation (extended)...");
-			testcase="ORG:;dednetxe;";
+			testcase="ORG:;dednetxe";
 			Organization extA = new Organization(Tests.reversed(testcase));
 			Organization extB = new Organization(testcase);
-			if (extA.toString().equals(Tests.reversed(testcase)+";")&&extB.toString().equals(testcase)) {
+			if (extA.toString().equals(Tests.reversed(testcase))&&extB.toString().equals(testcase)) {
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + extA+"/"+extB);
@@ -51,10 +51,10 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 			}
 
 			System.out.print("Organization creation (complete)...");
-			testcase="ORG:eman;dednetxe;";
+			testcase="ORG:eman;dednetxe";
 			Organization fullA = new Organization(Tests.reversed(testcase));
 			Organization fullB = new Organization(testcase);
-			if (fullA.toString().equals(Tests.reversed(testcase)+";")&&fullB.toString().equals(testcase)) {
+			if (fullA.toString().equals(Tests.reversed(testcase))&&fullB.toString().equals(testcase)) {
 				System.out.println("ok");
 			} else {
 				System.err.println("failed: " + fullA+"/"+fullB);
@@ -252,8 +252,18 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 		String line=content.substring(4);
 		if (line.contains(";")){
 			String[] parts = line.split(";",0);
-			if (parts.length>0 && !parts[0].isEmpty()) name=parts[0];
-			if (parts.length>1 && !parts[1].isEmpty()) extended=parts[1];
+			name=null;
+			extended="";
+			for (String part:parts){
+				if (name==null){
+					name=part;					
+				} else {
+					extended+=";"+part;
+				}
+			}
+			if (name!=null && name.trim().isEmpty()) name=null;
+			while (extended.startsWith(";")) extended=extended.substring(1);
+			if (extended.isEmpty())extended=null;
 		} else name=line; 
 		
 	}
@@ -310,7 +320,6 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 		if (name!=null) sb.append(name);
 		sb.append(';');
 		if (extended!=null)sb.append(extended);
-		sb.append(';');
 		return sb.toString();
 	}
 
