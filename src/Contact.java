@@ -99,6 +99,86 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			
 			System.out.print("Contact creation test (name + email)...");
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nEMAIL;TYPE=INTERNET:test@example.com\nEND:VCARD\n";
+			Contact mail = new Contact(testCase);
+			if (mail.toString(true).equals(testCase) && !mail.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + mail.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + messenger)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nIMPP:icq:123456\nEND:VCARD\n";
+			Contact messenger = new Contact(testCase);
+			if (messenger.toString(true).equals(testCase) && !messenger.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + messenger.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + note)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nNOTE:this is a note\nEND:VCARD\n";
+			Contact note = new Contact(testCase);
+			if (note.toString(true).equals(testCase) && !note.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + note.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + label)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nLABEL:a label\nEND:VCARD\n";
+			Contact label = new Contact(testCase);
+			if (label.toString(true).equals(testCase) && !label.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + label.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + birthday [year only])...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nBDAY:1991\nEND:VCARD\n";
+			Contact bdayyear = new Contact(testCase);
+			if (bdayyear.toString(true).equals(testCase) && !bdayyear.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + bdayyear.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + birthday [month only])...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nBDAY:--04\nEND:VCARD\n";
+			Contact bdaymonth = new Contact(testCase);
+			if (bdaymonth.toString(true).equals(testCase) && !bdaymonth.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + bdaymonth.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + birthday [day only])...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nBDAY:---17\nEND:VCARD\n";
+			Contact bdayday = new Contact(testCase);
+			if (bdayday.toString(true).equals(testCase) && !bdayday.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + bdayday.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + birthday [time only])...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nBDAY;VALUE=DATE-TIME:T123456\nEND:VCARD\n";
+			Contact bdaytime = new Contact(testCase);
+			if (bdaytime.toString(true).equals(testCase) && !bdaytime.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + bdaytime.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (name + birthday [full])...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nBDAY;VALUE=DATE-TIME:19910417T123456\nEND:VCARD\n";
 			Contact mops = new Contact(testCase);
 			if (mops.toString(true).equals(testCase) && !mops.isInvalid()) {
 				System.out.println("ok");
