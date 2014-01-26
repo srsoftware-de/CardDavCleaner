@@ -66,22 +66,19 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
 		TreeSet<Contact> deleteList = new TreeSet<Contact>();
 		Vector<Contact> contacts=new Vector<Contact>();
-		Contact c1 =new Contact("BEGIN:VCARD\nN:Contact;Test\nFN:Testcontact;\nEND:VCARD");
+		Contact c1 =new Contact("BEGIN:VCARD\nN:Contact;Test;;;Senior\nFN:Testcontact;\nEND:VCARD");
 		Contact c2=new Contact("BEGIN:VCARD\nN:Test;Contact\nNOTE:second contact\nEND:VCARD");
-		Contact c3=new Contact("BEGIN:VCARD\nN:Contact;;Test\nEMAIL:internet@example.com\nEND:VCARD");
+		Contact c3=new Contact("BEGIN:VCARD\nN:Contact;;Test;Master\nEMAIL:internet@example.com\nEND:VCARD");
 		Contact c4=new Contact("BEGIN:VCARD\nN:;Contact;Test\nROLE:permutation\nEND:VCARD");
 		contacts.add(c1);
-		System.out.println(c1.vcfName());
 		contacts.add(c2);
-		System.out.println(c2.vcfName());
 		contacts.add(c3);
-		System.out.println(c3.vcfName());
 		contacts.add(c4);
-		System.out.println(c4.vcfName());
 		cleanByName(contacts, blackLists, deleteList, false, true);
-		if (deleteList.contains(c1) && deleteList.contains(c2) && contacts.size()==1 && contacts.firstElement().mailAdresses().toString().equals("[example@example.com, internet@example.com, work@example.com]")){
+		if (contacts.size()==1 && contacts.toString().startsWith("[BEGIN:VCARD\nVERSION:3.0\nPRODID:-//SRSoftware CalDavCleaner\nREV") && contacts.toString().endsWith("FN:Testcontact;\nN:Contact;Test;Test;Master;Senior\nROLE:permutation\nEMAIL:internet@example.com\nNOTE:second contact\nEND:VCARD\n]")){
 			System.out.println("ok");
 		} else {
+			System.out.println(contacts.size());
 			System.out.println(contacts);
 			System.err.println(deleteList);
 			System.exit(-1);
@@ -212,7 +209,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 						}
 						// if this contact pair is not blacklisted:
 						if (skipAsk||askForMege("e-mail", email, contact, existingContact)) {
-							if (contact.mergeWith(existingContact, thunderbird)){
+							if (contact.mergeWith(existingContact, thunderbird,skipAsk)){
 								contacts.remove(existingContact);
 								deleteList.add(existingContact);
 								cleanByEmail(contacts, blackLists, deleteList, thunderbird,skipAsk);
@@ -250,7 +247,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 						}
 						// if this contact pair is not blacklisted:
 						if (askForMege("messenger", messengerID, contact, existingContact)) {
-							if (contact.mergeWith(existingContact, thunderbirdBox.isSelected())){
+							if (contact.mergeWith(existingContact, thunderbirdBox.isSelected(),false)){
 								contacts.remove(existingContact);
 								deleteList.add(existingContact);
 								cleanByMessenger(contacts, blackLists);
@@ -284,14 +281,14 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					contactsForName = new TreeSet<Contact>();
 					contactsForName.add(contact);
 					phoneMap.put(name, contactsForName);
-				} else { // we already have one or more contact with this mail address
+				} else { // we already have one or more contact with this canonical name address
 					for (Contact existingContact : contactsForName) {
 						if (blacklistForContact != null && blacklistForContact.contains(existingContact)) {
 							continue;// this contact pair is blacklisted, go on to next contact
 						}
 						// if this contact pair is not blacklisted:
 						if (skipAsk||askForMege("name", name, contact, existingContact)) {
-							if (contact.mergeWith(existingContact, thunderbird)){
+							if (contact.mergeWith(existingContact, thunderbird,skipAsk)){
 								contacts.remove(existingContact);
 								deleteList.add(existingContact);
 								cleanByName(contacts, blackLists,deleteList,thunderbird,skipAsk);
@@ -328,7 +325,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 						}
 						// if this contact pair is not blacklisted:
 						if (skipAsk||askForMege("phone number", number, contact, existingContact)) {
-							if (contact.mergeWith(existingContact, thunderbird)){
+							if (contact.mergeWith(existingContact, thunderbird,skipAsk)){
 								contacts.remove(existingContact);
 								deleteList.add(existingContact);
 								cleanByPhone(contacts, blackLists, deleteList,thunderbird,skipAsk);

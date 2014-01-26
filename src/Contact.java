@@ -717,7 +717,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	@Override
 	public boolean mergeWith(Contact other) {
 		try {
-			return mergeWith(other, false);
+			return mergeWith(other, false,false);
 		} catch (InvalidAssignmentException e) {
 			e.printStackTrace();
 		} catch (ToMuchEntriesForThunderbirdException e) {
@@ -726,16 +726,14 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return false;
 	}
 
-	public boolean mergeWith(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-		System.out.println(this.vcfName+" merge with "+contact.vcfName);
-		if (!isCompatibleWith(contact)) return false;
+	public boolean mergeWith(Contact contact, boolean thunderbirdMerge,boolean skipAsk) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
 		adresses.addAll(contact.adresses);
 		phones.addAll(contact.phones);
 		if (thunderbirdMerge) thunderbirdMergePhone(phones);
 		mails.addAll(contact.mails);
 		if (thunderbirdMerge) thunderbirdMergeMail(mails);
 		nicks.addAll(contact.nicks);
-		mergeNames(contact);
+		mergeNames(contact,skipAsk);
 		titles.addAll(contact.titles);
 		roles.addAll(contact.roles);
 		categories.addAll(contact.categories);
@@ -1164,18 +1162,25 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 	}
 
-	private void mergeNames(Contact contact) {
-		System.out.println("name merge: "+this.vcfName+" and "+contact.vcfName);
+	private void mergeNames(Contact contact,boolean skipAsk) {
 		if (name == null) {
 			name = contact.name;
 		} else if (name.isCompatibleWith(contact.name)) {
 			name.mergeWith(contact.name);
 		} else {
-			name = (Name) selectOneOf("name", name, contact.name, contact);
+			if (skipAsk) {
+				name = contact.name;
+			} else {
+				name = (Name) selectOneOf("name", name, contact.name, contact);	
+			}			
 		}
 
 		if (different(formattedName, contact.formattedName)) {
-			formattedName = (String) selectOneOf("formated name", formattedName, contact.formattedName, contact);
+			if (skipAsk){
+				formattedName = contact.formattedName;
+			} else {
+				formattedName = (String) selectOneOf("formated name", formattedName, contact.formattedName, contact);
+			}
 		} else {
 			formattedName = merge(formattedName, contact.formattedName);
 		}
