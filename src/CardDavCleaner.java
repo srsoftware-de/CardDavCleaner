@@ -57,13 +57,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private static boolean askForMege(String identifier, String name, Contact contact, Contact contact2) throws InterruptedException {
 		if (!contact.conflictsWith(contact2)) return true;
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new JLabel(_("<html>The #" + identifier + " \"<b>#" + name + "</b>\" is used by both following contacts:",new Object[]{identifier,name})));
+		vp.add(new JLabel(_("<html>The # \"<b>#</b>\" is used by both following contacts:",new Object[]{identifier,name})));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
 		hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));
 		hp.scale();
 		vp.add(hp);
-		vp.add(new JLabel("<html><br>Shall those contacts be <i>merged</i>?"));
+		vp.add(new JLabel(_("<html><br>Shall those contacts be <i>merged</i>?")));
 		if (contact.birthday() != null && contact2.birthday() != null && !contact.birthday().equals(contact2.birthday())) {
 			vp.add(new JLabel("<html><font color=\"red\">Warning! Those contacts contain unequal birth dates!"));
 		}
