@@ -59,11 +59,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 			System.out.print("Contact creation test (name only)...");
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nEND:VCARD\n";
-			Contact nameOnly = new Contact(testCase);
-			if (nameOnly.toString(true).equals(testCase) && !nameOnly.isInvalid()) {
+			Contact name = new Contact(testCase);
+			if (name.toString(true).equals(testCase) && !name.isInvalid()) {
 				System.out.println("ok");
 			} else {
-				System.err.println("failed: " + nameOnly.toString(true));
+				System.err.println("failed: " + name.toString(true));
 				System.exit(-1);
 			}
 			
@@ -209,65 +209,67 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			
 			System.out.print("Contact creation test (name + organization)...");
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nORG:SRSoftware GbR;Gera;Thüringen\nEND:VCARD\n";
-			Contact mops = new Contact(testCase);
-			if (mops.toString(true).equals(testCase) && !mops.isInvalid()) {
+			Contact org = new Contact(testCase);
+			if (org.toString(true).equals(testCase) && !org.isInvalid()) {
 				System.out.println("ok");
 			} else {
-				System.err.println("failed: " + mops.toString(true));
+				System.err.println("failed: " + org.toString(true));
 				System.exit(-1);
-			}			/*
-			System.out.print("Email creation test (invalid)...");
-			testCase = "EMAIL:steinlaus";
-			Email iM = new Email(testCase);
-			if (iM.toString().equals(testCase) && iM.isInvalid()) {
+			}		
+			
+			System.out.print("Contact creation test (name + title)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nTITLE:Prof. Dr. rer. nat.\nEND:VCARD\n";
+			Contact title = new Contact(testCase);
+			if (title.toString(true).equals(testCase) && !title.isInvalid()) {
 				System.out.println("ok");
 			} else {
-				System.err.println("failed: " + iM);
+				System.err.println("failed: " + title.toString(true));
 				System.exit(-1);
 			}
 			
-			System.out.print("Email creation test (valid work)...");
-			testCase = "EMAIL;TYPE=WORK:work@example.com";
-			Email workM = new Email(testCase);
-			if (workM.toString().equals(testCase) && !workM.isInvalid()) {
+			System.out.print("Contact creation test (name + categories)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nCATEGORIES:Family,Work\nEND:VCARD\n";
+			Contact categories = new Contact(testCase);
+			if (categories.toString(true).equals(testCase) && !categories.isInvalid()) {
 				System.out.println("ok");
 			} else {
-				System.err.println("failed: " + workM);
-				System.exit(-1);
-			}
-
-			System.out.print("Email creation test (valid home)...");
-			testCase = "EMAIL;TYPE=HOME:home@example.com";
-			Email homeM = new Email(testCase);
-			if (homeM.toString().equals(testCase) && !homeM.isInvalid()) {
-				System.out.println("ok");
-			} else {
-				System.err.println("failed: " + homeM);
-				System.exit(-1);
-			}
-
-			System.out.print("Email creation test (valid internet)...");
-			testCase = "EMAIL;TYPE=INTERNET:net@example.com";
-			Email netM = new Email(testCase);
-			if (netM.toString().equals(testCase) && !netM.isInvalid()) {
-				System.out.println("ok");
-			} else {
-				System.err.println("failed: " + netM);
+				System.err.println("failed: " + categories.toString(true));
 				System.exit(-1);
 			}
 			
-			Email[] mails = { eM,vM,iM,workM,homeM,netM };
+			System.out.print("Contact creation test (name + adress)...");
+			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nADR;TYPE=HOME:postbox;extended;street;city;region;zip;country\nEND:VCARD\n";
+			Contact adress = new Contact(testCase);
+			if (adress.toString(true).equals(testCase) && !adress.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + adress.toString(true));
+				System.exit(-1);
+			}
+			
+			System.out.print("Contact creation test (full)...");
+			testCase = "BEGIN:VCARD\nFN:Testcard\nN:Test;Contact;;;\nNICKNAME;TYPE=HOME:0perat0r\nCATEGORIES:Family,Work\nTITLE:Prof. Dr. rer. nat.\nORG:SRSoftware GbR;\nIMPP:icq:123456\nROLE:contact for testing\nBDAY;VALUE=DATE-TIME:19910417T123456\nLABEL:a label\nADR;TYPE=HOME:postbox;extended;street;city;region;zip;country\nTEL;TYPE=WORK:9876543210\nEMAIL;TYPE=INTERNET:test@example.com\nURL:www.srsoftware.de\nNOTE:this is a note\nEND:VCARD\n";
+			Contact full = new Contact(testCase);
+			if (full.toString(true).equals(testCase) && !full.isInvalid()) {
+				System.out.println("ok");
+			} else {
+				System.err.println("failed: " + full.toString(true));
+				System.exit(-1);
+			}
 
-			System.out.print("Email isEmpty test...");
+			Contact[] contacts = { name, formatted,number,nick,mail,messenger,note,label,bdayyear,bdaymonth,bdayday,bdaytime,bday,role,url,org,title,categories,adress,full};
+
+			System.out.print("Contact isEmpty test...");
 			int comp = 0;
 			int num = 0;
-			for (Email m : mails) {
+			for (Contact c : contacts) {
 				comp++;
-				if (!m.isEmpty()) {
-					num++;
-				} else if (m == eM) {
+				if (!c.isEmpty()) {
 					num++;
 				}
+				if (c==name||c==formatted||c==label){
+					num++;
+				}				
 			}
 			if (num == comp) {
 				System.out.println("ok");
@@ -275,7 +277,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				System.err.println(num + "/" + comp + " => failed");
 				System.exit(-1);
 			}
-
+/*
 			System.out.print("Email compare test...");
 			comp = 0;
 			num = 0;
@@ -694,7 +696,19 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
   }
 
 	public boolean isEmpty() {
-		return adresses.isEmpty() && phones.isEmpty() && mails.isEmpty() && titles.isEmpty() && roles.isEmpty() && birthday == null && (categories == null || categories.isEmpty()) && urls.isEmpty() && notes.isEmpty() && photos.isEmpty() && orgs.isEmpty() && nicks.isEmpty();
+		return adresses.isEmpty() &&
+				phones.isEmpty() &&
+				mails.isEmpty() &&
+				titles.isEmpty() &&
+				roles.isEmpty() &&
+				birthday == null &&
+				(categories == null || categories.isEmpty()) &&
+				urls.isEmpty() &&
+				notes.isEmpty() &&
+				photos.isEmpty() &&
+				orgs.isEmpty() &&
+				messengers.isEmpty() &&
+				nicks.isEmpty();
 	}
 
 	public boolean isInvalid() {
