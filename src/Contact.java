@@ -727,6 +727,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	public boolean mergeWith(Contact contact, boolean thunderbirdMerge) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
+		System.out.println(this.vcfName+" merge with "+contact.vcfName);
 		if (!isCompatibleWith(contact)) return false;
 		adresses.addAll(contact.adresses);
 		phones.addAll(contact.phones);
@@ -1164,6 +1165,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void mergeNames(Contact contact) {
+		System.out.println("name merge: "+this.vcfName+" and "+contact.vcfName);
 		if (name == null) {
 			name = contact.name;
 		} else if (name.isCompatibleWith(contact.name)) {
