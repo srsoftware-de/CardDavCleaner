@@ -623,7 +623,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	public boolean conflictsWith(Contact c2) {
 		if (!name.isCompatibleWith(c2.name)) return true;
-		if (!birthday.isCompatibleWith(c2.birthday)) return true;
+		if (birthday!=null && !birthday.isCompatibleWith(c2.birthday)) return true;
 		if (different(formattedName, c2.formattedName)) return true;
 		if (!labels.isEmpty() && !c2.labels.isEmpty() && !labels.equals(c2.labels)) return true;
 		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) return true;
@@ -732,7 +732,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		phones.addAll(contact.phones);
 		if (thunderbirdMerge) thunderbirdMergePhone(phones);
 		mails.addAll(contact.mails);
-		thunderbirdMergeMail(mails);
+		if (thunderbirdMerge) thunderbirdMergeMail(mails);
 		nicks.addAll(contact.nicks);
 		mergeNames(contact);
 		titles.addAll(contact.titles);
