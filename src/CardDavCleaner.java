@@ -447,11 +447,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 */
 	private void createComponents() {
 
-		VerticalPanel mainPanel = new VerticalPanel("Server settings");
+		VerticalPanel mainPanel = new VerticalPanel(_("Server settings"));
 
-		mainPanel.add(serverField = new InputField("Server + Path to addressbook:", false));
-		mainPanel.add(userField = new InputField("User:", false));
-		mainPanel.add(passwordField = new InputField("Password:", true));
+		mainPanel.add(serverField = new InputField(_("Server + Path to addressbook:"), false));
+		mainPanel.add(userField = new InputField(_("User:"), false));
+		mainPanel.add(passwordField = new InputField(_("Password:"), true));
 		thunderbirdBox = new JCheckBox("<html>I use Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)");
 		mainPanel.add(thunderbirdBox);
 		JButton startButton = new JButton("start");
@@ -462,6 +462,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		add(mainPanel);
 		pack();
 		setVisible(true);
+	}
+
+	private static String _(String text) { 
+		return Translations.get(text);
 	}
 
 	/**
