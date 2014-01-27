@@ -24,6 +24,7 @@ public class TranslationDE extends Translation{
 		trans.put("Birthday entry does not start with BDAY: \"#\"", "Geburtstags-Eintrag started nicht mit BDAY: \"#\"");
 		trans.put("Categories", "Kategorien");
 		trans.put("Category", "Kategorie");
+		trans.put("Cell Phone", "Handy");
 		trans.put("City", "Ort");
 		trans.put("cloned contact", "geklonter Kontakt");
 		trans.put(">> clone this contact >>", ">> diesen Kontakt klonen >>");
@@ -46,6 +47,7 @@ public class TranslationDE extends Translation{
 		trans.put("# has an invalid format", "Das Format von # ist ungültig");
 		trans.put("Home", "Zuhause");
 		trans.put("Home Adress", "Adresse Zuhause");
+		trans.put("Home Phone", "Festnetz/zu Hause");
 		trans.put("Hour", "Stunde");
 		trans.put("Invalid Contact", "ungültiger/beschädigter Kontakt");
 		trans.put("<html>I use Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)","<html>Ich benutze Thunderbird mit diesem Adressbuch.<br>(Das ist wichtig, da Thunderbird nur eine begrenzte Anzahl an Telefonnummern, Email-Adressen, etc. erlaubt.)");
@@ -74,11 +76,15 @@ public class TranslationDE extends Translation{
 		trans.put("...not successful (# / #). Trying to remove first...","...nicht erfolgreich (# / #). Versuche erst zu löschen...");
 		trans.put("<html>No data has been modified on the server <b>until now</b>. Continue?", "<html><b>Bis jetzt</b> wurden keine Daten auf dem Server verändert. Fortfahren?");
 		trans.put("<html>Nothing to do. Your adress book is either empty or well sorted!!", "<html>Keine anstehenden Aufgaben. Ihr Adressbuch ist entweder leer, oder gut sortiert!!");
+		trans.put("Number", "Nummer");
 		trans.put("Organizations", "Unternehmen");
+		trans.put("Organization entry does not start with \"ORG:\": #", "Unternehmen-Eintrag beginnt nicht mit \"ORG:\": #");
 		trans.put("Password:","Passwort:");
 		trans.put("Please confirm", "Bitte bestätigen");
 		trans.put("Please decide!","Bitte entscheiden!");
 		trans.put("Please select","Bitte wählen");
+		trans.put("Phone", "Telefon");
+		trans.put("Phone enty does not start with \"TEL\": #", "Telefon-Eintrag beginntnicht mit \"TEL\": #");
 		trans.put("Phones", "Telefonnummern");
 		trans.put("phone number","Telefonnummer");
 		trans.put("Post Office Box", "Postfach");
@@ -111,6 +117,7 @@ public class TranslationDE extends Translation{
 		trans.put("Uploading #", "Lade # hoch");
 		trans.put("User:","Benutzer:");
 		trans.put("Using # as #, as '#' is already used by another #.", "Setze # als #, da '#' schon von einer anderen # verwendet wird.");
+		trans.put("Voice Phone", "Telefon allgemein");
 		trans.put("Warning: skipping empty contact # (Contains nothing but a name)", "Warnung: überspringe leeren Kontakt # (Enthält außer dem Namen keine Daten)");		
 		trans.put("<html><font color=\"red\">Warning! Those contacts contain unequal birth dates!","<html><font color=\"red\">Achtung! Diese kontakte enthalten unterschiedliche Geburtstags-Einträge!");
 		trans.put("Websites", "Webseiten");
@@ -118,6 +125,7 @@ public class TranslationDE extends Translation{
 		trans.put("<html>#<br>Will abort operation now.", "<html>#<br>Aktion wird nun abgebrochen.");
 		trans.put("Work", "Arbeitsplatz");
 		trans.put("Work Adress", "Adresse Arbeitsplatz");
+		trans.put("Work Phone", "Telefon am Arbeitsplatz");
 		trans.put("Year of birth", "Geburtsjahr");
 		trans.put("Yes", "Ja");
 		trans.put("Zip", "Postleitzahl");

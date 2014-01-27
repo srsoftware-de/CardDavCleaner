@@ -11,99 +11,99 @@ import javax.swing.event.DocumentListener;
 public class Phone extends Mergable<Phone> implements DocumentListener, ChangeListener, Comparable<Phone> {
 	public static void test() {
 		try {
-			System.out.print("Phone creation test (null)...");
+			System.out.print(_("Phone creation test (null)..."));
 			String testCase = null;
 			try {
 				Phone nM = new Phone(testCase);
-				System.err.println("failed: " + nM);
+				System.err.println(_("failed: #", nM));
 				System.exit(-1);
 			} catch (InvalidFormatException e) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			}
 
-			System.out.print("Phone creation test (empty)...");
+			System.out.print(_("Phone creation test (empty)..."));
 			testCase = "TEL:";
 			Phone eM = new Phone(testCase);
 			if (eM.toString().equals(testCase)) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + eM);
+				System.err.println(_("failed: #", eM));
 				System.exit(-1);
 			}
 
-			System.out.print("Phone creation test (valid)...");
+			System.out.print(_("Phone creation test (valid)..."));
 			testCase = "TEL:+49(170)77-05-281";
 			Phone vM = new Phone(testCase);
 			if (vM.toString().equals(testCase) && !vM.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + vM);
+				System.err.println(_("failed: #", vM));
 				System.exit(-1);
 			}
 
-			System.out.print("Phone creation test (invalid)...");
+			System.out.print(_("Phone creation test (invalid)..."));
 			testCase = "TEL:not a phone number";
 			Phone iM = new Phone(testCase);
 			if (iM.toString().equals(testCase) && iM.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + iM);
+				System.err.println(_("failed: #", iM));
 				System.exit(-1);
 			}
 
-			System.out.print("Phone creation test (valid work)...");
+			System.out.print(_("Phone creation test (valid work)..."));
 			testCase = "TEL;TYPE=WORK:0123456";
 			Phone workP = new Phone(testCase);
 			if (workP.toString().equals(testCase) && !workP.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + workP);
+				System.err.println(_("failed: #", workP));
 				System.exit(-1);
 			}
 
-			System.out.print("Phone creation test (valid home)...");
+			System.out.print(_("Phone creation test (valid home)..."));
 			testCase = "TEL;TYPE=HOME:23456";
 			Phone homeP = new Phone(testCase);
 			if (homeP.toString().equals(testCase) && !homeP.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + homeP);
+				System.err.println(_("failed: #", homeP));
 				System.exit(-1);
 			}
 
-			System.out.print("Phone creation test (valid voice)...");
+			System.out.print(_("Phone creation test (valid voice)..."));
 			testCase = "TEL;TYPE=VOICE:2-3(45)6";
 			Phone voiceP = new Phone(testCase);
 			if (voiceP.toString().equals(testCase) && !voiceP.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + voiceP);
+				System.err.println(_("failed: #", voiceP));
 				System.exit(-1);
 			}
 
-			System.out.print("Phone creation test (valid cell)...");
+			System.out.print(_("Phone creation test (valid cell)..."));
 			testCase = "TEL;TYPE=CELL:5 2-8 1";
 			Phone cellP = new Phone(testCase);
 			if (cellP.toString().equals(testCase) && !cellP.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + cellP);
+				System.err.println(_("failed: #", cellP));
 				System.exit(-1);
 			}
 
-			System.out.print("Phone creation test (valid fax)...");
+			System.out.print(_("Phone creation test (valid fax)..."));
 			testCase = "TEL;TYPE=FAX:52(81)77777";
 			Phone faxP = new Phone(testCase);
 			if (faxP.toString().equals(testCase) && !faxP.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + faxP);
+				System.err.println(_("failed: #", faxP));
 				System.exit(-1);
 			}
 
 			Phone[] phones = { eM, vM, iM, workP, homeP, voiceP, voiceP, faxP };
 
-			System.out.print("Phone isEmpty test...");
+			System.out.print(_("Phone isEmpty test..."));
 			int comp = 0;
 			int num = 0;
 			for (Phone m : phones) {
@@ -116,13 +116,13 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 				}
 			}
 			if (num == comp) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Phone compare test...");
+			System.out.print(_("Phone compare test..."));
 			comp = 0;
 			num = 0;
 			for (Phone m : phones) {
@@ -136,13 +136,13 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Phone compatibility test...");
+			System.out.print(_("Phone compatibility test..."));
 			comp = 0;
 			num = 0;
 			for (Phone a : phones) {
@@ -176,13 +176,13 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Phone clone test...");
+			System.out.print(_("Phone clone test..."));
 			comp = 0;
 			num = 0;
 			for (Phone m : phones) {
@@ -194,13 +194,13 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 				} catch (CloneNotSupportedException e) {}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Phone merge test...");
+			System.out.print(_("Phone merge test..."));
 			comp = 0;
 			num = 0;
 			for (Phone m : phones) {
@@ -220,7 +220,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 						System.out.println();
 						System.out.println("fb: " + cellP);
 						System.out.println(" b: " + m);
-						System.out.println("merged:");
+						System.out.println(_("merged:"));
 						System.out.println("fb: " + clone2);
 						System.out.println(" b: " + clone1);
 					}
@@ -229,9 +229,9 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 		} catch (UnknownObjectException e) {
@@ -241,6 +241,12 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 
 		}
 
+	}
+	private static String _(String text) { 
+		return Translations.get(text);
+	}	
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
 	}
 
 	private boolean fax = false;
@@ -256,7 +262,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	private JCheckBox homeBox, voiceBox, workBox, cellBox, faxBox;
 
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
-		if (content == null || !content.startsWith("TEL")) throw new InvalidFormatException("Phone does not start with \"TEL\"");
+		if (content == null || !content.startsWith("TEL")) throw new InvalidFormatException(_("Phone enty does not start with \"TEL\": #",content));
 		String line = content.substring(3);
 		while (!line.startsWith(":")) {
 			String upper = line.toUpperCase();
@@ -332,22 +338,22 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 
 	public VerticalPanel editForm() {
-		form = new VerticalPanel("Phone");
+		form = new VerticalPanel(_("Phone"));
 		if (invalid) form.setBackground(Color.red);
 		if (isEmpty()) form.setBackground(Color.yellow);
 
-		form.add(numField = new InputField("Number", number));
+		form.add(numField = new InputField(_("Number"), number));
 		numField.addChangeListener(this);
 
-		form.add(homeBox = new JCheckBox("Home Phone", home));
+		form.add(homeBox = new JCheckBox(_("Home Phone"), home));
 		homeBox.addChangeListener(this);
-		form.add(voiceBox = new JCheckBox("Voice Phone", voice));
+		form.add(voiceBox = new JCheckBox(_("Voice Phone"), voice));
 		voiceBox.addChangeListener(this);
-		form.add(workBox = new JCheckBox("Work Phone", work));
+		form.add(workBox = new JCheckBox(_("Work Phone"), work));
 		workBox.addChangeListener(this);
-		form.add(cellBox = new JCheckBox("Cell Phone", cell));
+		form.add(cellBox = new JCheckBox(_("Cell Phone"), cell));
 		cellBox.addChangeListener(this);
-		form.add(faxBox = new JCheckBox("Fax", fax));
+		form.add(faxBox = new JCheckBox(_("Fax"), fax));
 		faxBox.addChangeListener(this);
 		form.scale();
 		return form;
@@ -404,14 +410,6 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		if (other.fax) fax = true;
 		if (other.voice) voice = true;
 		return true;
-	}
-
-	private String mergeNumber(String num1, String num2) {
-		if (num1 == null || num1.isEmpty()) return num2;
-		if (num2 == null || num2.isEmpty()) return num1;
-		if (num1.endsWith(num2)) return num1;
-		if (num2.endsWith(num1)) return num2;
-		throw new InvalidParameterException("Trying to merge \"" + num1 + "\" with \"" + num2 + "\"!");
 	}
 
 	public String number() {
@@ -498,6 +496,14 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		sb.append(':');
 		if (number != null) sb.append(number);
 		return sb.toString();
+	}
+
+	private String mergeNumber(String num1, String num2) {
+		if (num1 == null || num1.isEmpty()) return num2;
+		if (num2 == null || num2.isEmpty()) return num1;
+		if (num1.endsWith(num2)) return num1;
+		if (num2.endsWith(num1)) return num2;
+		throw new InvalidParameterException(_("Trying to merge \"#\" with \"#\"!",new Object[]{num1,num2}));
 	}
 
 	private void readPhone(String line) {
