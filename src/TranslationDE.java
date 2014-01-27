@@ -35,11 +35,13 @@ public class TranslationDE extends Translation{
 		trans.put("Edit contact", "Kontakt bearbeiten");
 		trans.put("Edit manually", "bearbeiten");		
 		trans.put("e-mail", "E-Mail");
+		trans.put("Email","E-Mail");
 		trans.put("Email Adresses", "Emailadresse");
 		trans.put("Extended Adress", "Adresszusatz");
 		trans.put("formatted name", "formatierter Name");
 		trans.put("found # @# in #", "# @# in # gefunden");
 		trans.put("# has an invalid format", "Das Format von # ist ungültig");
+		trans.put("Home", "Zuhause");
 		trans.put("Home Adress", "Adresse Zuhause");
 		trans.put("Hour", "Stunde");
 		trans.put("Invalid Contact", "ungültiger/beschädigter Kontakt");
@@ -87,15 +89,17 @@ public class TranslationDE extends Translation{
 		trans.put("There is no thunderbird slot left for the following # entry: #", "Es gibt keinen freien Thunderbird-Platzmehr für den folgenden #-Eintrag: #");
 		trans.put("Title", "Titel");
 		trans.put("Titles", "Titel");
+		trans.put("Trying to merge two mails with different adresses!", "Versuch, zwei verschiedene Mailadressen zu mischen!");
 		trans.put("unknown entry/instruction found in vcard #: '#'", "Unbekannte Anweisung/Eintrag in vcard # gefunden: '#'");
 		trans.put("Uploading #", "Lade # hoch");
 		trans.put("User:","Benutzer:");
-		trans.put("Using # as #, as '#' is already used by another #.", "Setze # als #, da '#' schon von einer anderen # verwendet wird.")
+		trans.put("Using # as #, as '#' is already used by another #.", "Setze # als #, da '#' schon von einer anderen # verwendet wird.");
 		trans.put("Warning: skipping empty contact # (Contains nothing but a name)", "Warnung: überspringe leeren Kontakt # (Enthält außer dem Namen keine Daten)");		
 		trans.put("<html><font color=\"red\">Warning! Those contacts contain unequal birth dates!","<html><font color=\"red\">Achtung! Diese kontakte enthalten unterschiedliche Geburtstags-Einträge!");
 		trans.put("Websites", "Webseiten");
 		trans.put("<html><br>Which # shall be used?", "<html><br>Welcher # soll benutzt werden?");
 		trans.put("<html>#<br>Will abort operation now.", "<html>#<br>Aktion wird nun abgebrochen.");
+		trans.put("Work", "Arbeitsplatz");
 		trans.put("Work Adress", "Adresse Arbeitsplatz");
 		trans.put("Year of birth", "Geburtsjahr");
 		trans.put("Yes", "Ja");
