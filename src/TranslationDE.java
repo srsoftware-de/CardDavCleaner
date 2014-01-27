@@ -48,6 +48,7 @@ public class TranslationDE extends Translation{
 		trans.put("<html>I use Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)","<html>Ich benutze Thunderbird mit diesem Adressbuch.<br>(Das ist wichtig, da Thunderbird nur eine begrenzte Anzahl an Telefonnummern, Email-Adressen, etc. erlaubt.)");
 		trans.put("LABEL does not contain colon: #","LABEL enthält keinen Doppelpunkt: #");
 		trans.put("LABEL does not start with \"LABEL\": #", "LABEL beginnt nicht \"LABEL\": #");
+		trans.put("MD5 hashing...", "Erzeuge MD5-Hash...");
 		trans.put("<html>Merging and cleaning aborted! Goodbye!","<html>Zusammenführen und Bereinigen der Kontakte abgebrochen! Auf Wiedersehen!");
 		trans.put("<html>Merging the following two contacts:<br>&nbsp;", "<html>Führe die folgenden zwei Kontakte zusammen:<br>&nbsp;");
 		trans.put("messenger", "Chat-/Mitteilungsprogramm");
@@ -92,6 +93,7 @@ public class TranslationDE extends Translation{
 		trans.put("Title", "Titel");
 		trans.put("Titles", "Titel");
 		trans.put("Trying to merge two mails with different adresses!", "Versuch, zwei verschiedene Mailadressen zu mischen!");
+		trans.put("Trying to merge \"#\" with \"#\"!", "Versuch, \"#\" und \"#\" zu mischen!");
 		trans.put("unknown entry/instruction found in vcard #: '#'", "Unbekannte Anweisung/Eintrag in vcard # gefunden: '#'");
 		trans.put("Uploading #", "Lade # hoch");
 		trans.put("User:","Benutzer:");
