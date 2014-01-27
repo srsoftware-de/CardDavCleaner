@@ -1,72 +1,71 @@
 import java.util.TreeSet;
 
 public class Label extends Mergable<Label> implements Comparable<Label>{
-	
 	public static void test() {
 		try {
-			System.out.print("Label creation test (null)...");
+			System.out.print(_("Label creation test (null)..."));
 			String testCase = null;
 			try {
 				Label nL = new Label(testCase);
-				System.err.println("failed: " + nL);
+				System.err.println(_("failed: #", nL));
 				System.exit(-1);
 			} catch (InvalidFormatException e) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
       }
 
-			System.out.print("Label creation test (empty)...");
+			System.out.print(_("Label creation test (empty)..."));
 			testCase = "LABEL:";
 			Label eL = new Label(testCase);
 			if (eL.toString().equals(testCase)) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + eL);
+				System.err.println(_("failed: #", eL));
 				System.exit(-1);
 			}
 
-			System.out.print("Label creation test (simple)...");
+			System.out.print(_("Label creation test (simple)..."));
 			testCase = "LABEL:this is a simple label";
 			Label sL = new Label(testCase);
 			if (sL.toString().equals(testCase)) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + sL);
+				System.err.println(_("failed: #", sL));
 				System.exit(-1);
 			}
 
-			System.out.print("Label creation test (encoded)...");
+			System.out.print(_("Label creation test (encoded)..."));
 			testCase = "LABEL;ENCODING=UTF-8:this is an encoded label";
 			Label cL = new Label(testCase);
 			if (cL.toString().equals(testCase)) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + cL);
+				System.err.println(_("failed: #", cL));
 				System.exit(-1);
 			}
 			
-			System.out.print("Label creation test (with types)...");
+			System.out.print(_("Label creation test (with types)..."));
 			testCase = "LABEL;TYPE=HOME;TYPE=WORK:this is a typed label";
 			Label tL = new Label(testCase);
 			if (tL.toString().equals(testCase) && tL.types.toString().equals("[HOME, WORK]")) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + tL);
+				System.err.println(_("failed: #", tL));
 				System.exit(-1);
 			}
 			
-			System.out.print("Label creation test (full)...");
+			System.out.print(_("Label creation test (full)..."));
 			testCase = "LABEL;TYPE=HOME;TYPE=TEST;ENCODING=UTF-8:full label";
 			Label fL = new Label(testCase);
 			if (fL.toString().equals(testCase) && fL.types.toString().equals("[HOME, TEST]")) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + fL);
+				System.err.println(_("failed: #", fL));
 				System.exit(-1);
 			}
 
 			Label[] labels = { eL,sL,cL,tL,fL };
 
-			System.out.print("Label isEmpty test...");
+			System.out.print(_("Label isEmpty test..."));
 			int comp = 0;
 			int num = 0;
 			for (Label l : labels) {
@@ -79,13 +78,13 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 				}
 			}
 			if (num == comp) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Label compare test...");
+			System.out.print(_("Label compare test..."));
 			comp = 0;
 			num = 0;
 			for (Label l : labels) {
@@ -99,13 +98,13 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Label compatibility test...");
+			System.out.print(_("Label compatibility test..."));
 			comp = 0;
 			num = 0;
 			for (Label a : labels) {
@@ -135,13 +134,13 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Label clone test...");
+			System.out.print(_("Label clone test..."));
 			comp=0;
 			num=0;
 			for (Label m:labels){
@@ -154,13 +153,13 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-				System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Label merge test...");
+			System.out.print(_("Label merge test..."));
 			comp=0;
 			num=0;
 			for (Label m:labels){
@@ -189,9 +188,9 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 				}				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-				System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 /**/
@@ -200,17 +199,23 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
     }
 
 	}
+	private static String _(String text) { 
+		return Translations.get(text);
+	}
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
+	}
 	
 	TreeSet<String> types=new TreeSet<String>();
 	String encoding=null;
 	String label;
 	
 	public Label(String line) throws InvalidFormatException {		
-		if (line==null || !line.startsWith("LABEL")) throw new InvalidFormatException("LABEL does not start with \"LABEL\": "+line);
+		if (line==null || !line.startsWith("LABEL")) throw new InvalidFormatException(_("LABEL does not start with \"LABEL\": #",line));
 		String data=line.substring(5);
 		if (!data.startsWith(":")){
 			int p=data.indexOf(":");
-			if (p<0) throw new InvalidFormatException("LABEL does not contain colon: "+line);
+			if (p<0) throw new InvalidFormatException(_("LABEL does not contain colon: #",line));
 			String[] addInfo = data.substring(0,p).split(";");
 			data=data.substring(p);
 			for (String info:addInfo){

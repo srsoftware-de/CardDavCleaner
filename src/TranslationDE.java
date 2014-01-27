@@ -46,6 +46,8 @@ public class TranslationDE extends Translation{
 		trans.put("Hour", "Stunde");
 		trans.put("Invalid Contact", "ungültiger/beschädigter Kontakt");
 		trans.put("<html>I use Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)","<html>Ich benutze Thunderbird mit diesem Adressbuch.<br>(Das ist wichtig, da Thunderbird nur eine begrenzte Anzahl an Telefonnummern, Email-Adressen, etc. erlaubt.)");
+		trans.put("LABEL does not contain colon: #","LABEL enthält keinen Doppelpunkt: #");
+		trans.put("LABEL does not start with \"LABEL\": #", "LABEL beginnt nicht \"LABEL\": #");
 		trans.put("<html>Merging and cleaning aborted! Goodbye!","<html>Zusammenführen und Bereinigen der Kontakte abgebrochen! Auf Wiedersehen!");
 		trans.put("<html>Merging the following two contacts:<br>&nbsp;", "<html>Führe die folgenden zwei Kontakte zusammen:<br>&nbsp;");
 		trans.put("messenger", "Chat-/Mitteilungsprogramm");

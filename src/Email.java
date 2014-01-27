@@ -16,7 +16,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 			String testCase = null;
 			try {
 				Email nM = new Email(testCase);
-				System.err.println(_("failed: ", nM));
+				System.err.println(_("failed: #", nM));
 				System.exit(-1);
 			} catch (InvalidFormatException e) {
 				System.out.println(_("ok"));
@@ -28,7 +28,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 			if (eM.toString().equals(testCase)) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("failed: ", eM));
+				System.err.println(_("failed: #", eM));
 				System.exit(-1);
 			}
 
@@ -38,7 +38,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 			if (vM.toString().equals(testCase) && !vM.isInvalid()) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("failed: ", vM));
+				System.err.println(_("failed: #", vM));
 				System.exit(-1);
 			}
 
@@ -48,7 +48,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 			if (iM.toString().equals(testCase) && iM.isInvalid()) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("failed: ", iM));
+				System.err.println(_("failed: #", iM));
 				System.exit(-1);
 			}
 			
@@ -58,7 +58,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 			if (workM.toString().equals(testCase) && !workM.isInvalid()) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("failed: ", workM));
+				System.err.println(_("failed: #", workM));
 				System.exit(-1);
 			}
 
@@ -68,7 +68,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 			if (homeM.toString().equals(testCase) && !homeM.isInvalid()) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("failed: ", homeM));
+				System.err.println(_("failed: #", homeM));
 				System.exit(-1);
 			}
 
@@ -78,7 +78,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 			if (netM.toString().equals(testCase) && !netM.isInvalid()) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("failed: ", netM));
+				System.err.println(_("failed: #", netM));
 				System.exit(-1);
 			}
 			
