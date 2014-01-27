@@ -475,6 +475,9 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		while (simple.contains("-")) {
 			simple = simple.replace("-", "");
 		}
+		while (simple.contains("/")) {
+			simple = simple.replace("/", "");
+		}
 		if (simple.startsWith("+49")) simple = 0 + simple.substring(3);
 		if (simple.startsWith("0049")) simple = 0 + simple.substring(4);
 		if (simple.startsWith("+")) simple = 0 + simple.substring(1);
