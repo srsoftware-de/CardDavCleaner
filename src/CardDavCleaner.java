@@ -562,7 +562,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			conn.disconnect();
 
 			if (response < 200 || response > 299) {
-				System.out.println(_("...not successful (# / #). Trying to remove first...",new Object[]{response,conn.getResponseMessage()});
+				System.out.println(_("...not successful (# / #). Trying to remove first...",new Object[]{response,conn.getResponseMessage()}));
 
 				/* the next two lines have been added to circumvent the problem, that on some caldav servers, entries can not simply be overwritten */
 				deleteContact(new URL(host + "/" + c.vcfName()));
@@ -600,7 +600,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		Vector<Contact> contacts = new Vector<Contact>();
 		// Next: read all contacts, remember contacts that contain nothing but a name
 		for (String contactName : contactNamess) {
-			System.out.println("reading contact " + (++counter) + "/" + total + ": " + contactName);
+			System.out.println(_("reading contact #/#: #",new Object[]{++counter,total,contactName}));
 			try {
 				Contact contact = new Contact(host, contactName);
 				do {
@@ -609,7 +609,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					if (contact.isEmpty()) {
 						contact.clearFields();
 						deleteList.add(contact);
-						System.out.println("Warning: skipping empty contact " + contact.vcfName() + " (Contains nothing but a name)");
+						System.out.println(_("Warning: skipping empty contact # (Contains nothing but a name)",contact.vcfName()));
 					} else {
 						contacts.add(contact);
 					}
@@ -628,8 +628,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private boolean skipInvalidContact(Contact contact) {
 		while (contact.isInvalid()) {
-			String[] options = { "Edit manually", "Skip", "Abort program" };
-			int opt = JOptionPane.showOptionDialog(null, contact.vcfName() + " has an invalid format", "Invalid Contact", JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+			String[] options = { _("Edit manually"), _("Skip"), _("Abort program") };
+			int opt = JOptionPane.showOptionDialog(null, _("# has an invalid format",contact.vcfName()), _("Invalid Contact"), JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 			switch (opt) {
 			case 0:
 				if (contact.edited()) {
@@ -685,7 +685,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		try {
 			cleanContacts(host, contacts);
 		} catch (ToMuchEntriesForThunderbirdException e) {
-			JOptionPane.showMessageDialog(this, "<html>" + e.getMessage() + "<br>Will abort operation now.");
+			JOptionPane.showMessageDialog(this, _("<html>#<br>Will abort operation now.",e.getMessage()));
 			System.exit(-1);
 		}
 	}
@@ -696,12 +696,12 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			if (confirmLists(writeList, deleteList)) {
 				putMergedContacts(host, writeList);
 				deleteUselessContacts(host, deleteList);
-				JOptionPane.showMessageDialog(null, "<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!");
+				JOptionPane.showMessageDialog(null, _("<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!"));
 			} else {
-				JOptionPane.showMessageDialog(null, "<html>Merging and cleaning aborted! Goodbye!");
+				JOptionPane.showMessageDialog(null, _("<html>Merging and cleaning aborted! Goodbye!"));
 			}
 		} else {
-			JOptionPane.showMessageDialog(null, "<html>Nothing to do. Your adress book is either empty or well sorted!!");
+			JOptionPane.showMessageDialog(null, _("<html>Nothing to do. Your adress book is either empty or well sorted!!"));
 		}
 	}
 }
