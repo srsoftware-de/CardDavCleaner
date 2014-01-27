@@ -64,6 +64,7 @@ public class TranslationDE extends Translation{
 		trans.put("Name does not start with \"N:\": #", "Name beginnt nicht mit \"N:\": #");
 		trans.put("Name with more than 5 parts found:", "Name mit mehr als 5 teilen gefunden:");
 		trans.put("Nickname", "Nickname/Rufname");
+		trans.put("Nickname entry does not start with \"NICKNAME\": #", "Nickname-Eintrag started nicht als \"NICKNAME\": #");
 		trans.put("Nicknames", "Nicknames/Rufnamen");
 		trans.put("No", "Nein");
 		trans.put("No data given", "fehlender Datensatz");
@@ -103,6 +104,7 @@ public class TranslationDE extends Translation{
 		trans.put("Title", "Titel");
 		trans.put("Titles", "Titel");
 		trans.put("Trying to merge two mails with different adresses!", "Versuch, zwei verschiedene Mailadressen zu mischen!");
+		trans.put("Trying to merge two nicknames with different strings!", "Versuch, zwei Rufnamen mit unterschiedlichen Texten zu mischen!");
 		trans.put("Trying to merge \"#\" with \"#\"!", "Versuch, \"#\" und \"#\" zu mischen!");
 		trans.put("unknown entry/instruction found in vcard #: '#'", "Unbekannte Anweisung/Eintrag in vcard # gefunden: '#'");
 		trans.put("Uploading #", "Lade # hoch");
