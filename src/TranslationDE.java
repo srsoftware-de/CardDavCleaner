@@ -52,9 +52,13 @@ public class TranslationDE extends Translation{
 		trans.put("<html>Merging and cleaning aborted! Goodbye!","<html>Zusammenführen und Bereinigen der Kontakte abgebrochen! Auf Wiedersehen!");
 		trans.put("<html>Merging the following two contacts:<br>&nbsp;", "<html>Führe die folgenden zwei Kontakte zusammen:<br>&nbsp;");
 		trans.put("messenger", "Chat-/Mitteilungsprogramm");
+		trans.put("Messenger", "Chat-/Mitteilungsprogramm");
+		trans.put("Messenger adress does not start with \"IMPP:\": #", "Messengeradresse fängt nicht mit \"IMPP:\" an: #");
+		trans.put("Messenger \"#\" has no known type!", "Messenger \"#\" hat unbekannten Typ!");
 		trans.put("Messengers", "Chat-/Mitteilungsprogramme");
 		trans.put("Month of birth", "Geburtsmonat");
 		trans.put("name", "Name");
+		trans.put("Nickname", "Nickname/Rufname");
 		trans.put("Nicknames", "Nicknames/Rufnamen");
 		trans.put("No", "Nein");
 		trans.put("No data given", "fehlender Datensatz");

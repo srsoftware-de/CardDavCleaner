@@ -10,129 +10,129 @@ import javax.swing.event.ChangeListener;
 public class Messenger extends Mergable<Messenger> implements ChangeListener, Comparable<Messenger> {
 	public static void test() {
 		try {
-			System.out.print("Messenger creation test (null)...");
+			System.out.print(_("Messenger creation test (null)..."));
 			String testCase = null;
 			try {
 				Messenger nM = new Messenger(testCase);
-				System.err.println("failed: " + nM);
+				System.err.println(_("failed: #", nM));
 				System.exit(-1);
 			} catch (InvalidFormatException e) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
       }
 
-			System.out.print("Messenger creation test (empty)...");
+			System.out.print(_("Messenger creation test (empty)..."));
 			testCase = "IMPP:";
 			try {
 				Messenger eM = new Messenger(testCase);
-				System.err.println("failed: " + eM);
+				System.err.println(_("failed: #", eM));
 				System.exit(-1);
 			} catch (UnknownObjectException e){
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			}
 
-			System.out.print("Messenger creation test (empty ICQ)...");
+			System.out.print(_("Messenger creation test (empty ICQ)..."));
 			testCase = "IMPP:icq:";
 			Messenger eICQ = new Messenger(testCase);
 			if (eICQ.toString().equals(testCase) && !eICQ.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println("failed: " + eICQ);
+				System.err.println(_("failed: #", eICQ));
 				System.exit(-1);
 			}
 
-			System.out.print("Messenger creation test (empty Skype)...");
+			System.out.print(_("Messenger creation test (empty Skype)..."));
 			testCase = "IMPP:skype:";
 			Messenger eSkype = new Messenger(testCase);
 			if (eSkype.toString().equals(testCase) && !eSkype.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println("failed: " + eSkype);
+				System.err.println(_("failed: #", eSkype));
 				System.exit(-1);
 			}
 			
-			System.out.print("Messenger creation test (empty MSN)...");
+			System.out.print(_("Messenger creation test (empty MSN)..."));
 			testCase = "IMPP:msn:";
 			Messenger eMSN = new Messenger(testCase);
 			if (eMSN.toString().equals(testCase) && !eMSN.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println("failed: " + eMSN);
+				System.err.println(_("failed: #", eMSN));
 				System.exit(-1);
 			}
 			
-			System.out.print("Messenger creation test (empty AIM)...");
+			System.out.print(_("Messenger creation test (empty AIM)..."));
 			testCase = "IMPP:aim:";
 			Messenger eAIM = new Messenger(testCase);
 			if (eAIM.toString().equals(testCase) && !eAIM.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println("failed: " + eAIM);
+				System.err.println(_("failed: #", eAIM));
 				System.exit(-1);
 			}
 			
-			System.out.print("Messenger creation test (empty Facebook)...");
+			System.out.print(_("Messenger creation test (empty Facebook)..."));
 			testCase = "IMPP:facebook:";
 			Messenger eFB = new Messenger(testCase);
 			if (eFB.toString().equals(testCase) && !eFB.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println("failed: " + eFB);
+				System.err.println(_("failed: #", eFB));
 				System.exit(-1);
 			}
 			
-			System.out.print("Messenger creation test (ICQ)...");
+			System.out.print(_("Messenger creation test (ICQ)..."));
 			testCase = "IMPP:icq:123456";
 			Messenger icq = new Messenger(testCase);
 			if (icq.toString().equals(testCase) && !icq.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println("failed: " + icq);
+				System.err.println(_("failed: #", icq));
 				System.exit(-1);
 			}
 
-			System.out.print("Messenger creation test (Skype)...");
+			System.out.print(_("Messenger creation test (Skype)..."));
 			testCase = "IMPP:skype:test";
 			Messenger skype = new Messenger(testCase);
 			if (skype.toString().equals(testCase) && !skype.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println("failed: " + skype);
+				System.err.println(_("failed: #", skype));
 				System.exit(-1);
 			}
 			
-			System.out.print("Messenger creation test (MSN)...");
+			System.out.print(_("Messenger creation test (MSN)..."));
 			testCase = "IMPP:msn:test@example.com";
 			Messenger msn = new Messenger(testCase);
 			if (msn.toString().equals(testCase) && !msn.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println("failed: " + msn);
+				System.err.println(_("failed: #", msn));
 				System.exit(-1);
 			}
 			
-			System.out.print("Messenger creation test (AIM)...");
+			System.out.print(_("Messenger creation test (AIM)..."));
 			testCase = "IMPP:aim:test@example.com";
 			Messenger aim = new Messenger(testCase);
 			if (aim.toString().equals(testCase) && !aim.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println("failed: " + aim);
+				System.err.println(_("failed: #", aim));
 				System.exit(-1);
 			}
 			
-			System.out.print("Messenger creation test (Facebook)...");
+			System.out.print(_("Messenger creation test (Facebook)..."));
 			testCase = "IMPP:facebook:toast@example.com";
 			Messenger fb = new Messenger(testCase);
 			if (fb.toString().equals(testCase) && !fb.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println("failed: " + fb);
+				System.err.println(_("failed: #", fb));
 				System.exit(-1);
 			}
 			
 			Messenger[] messengers = { eICQ,eSkype,eMSN,eAIM,eFB,icq,skype,msn,aim,fb };
 
-			System.out.print("Messenger isEmpty test...");
+			System.out.print(_("Messenger isEmpty test..."));
 			int comp = 0;
 			int num = 0;
 			for (Messenger m : messengers) {
@@ -145,14 +145,14 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 				}
 			}
 			if (num == comp) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
 			
-			System.out.print("Messenger compare test...");
+			System.out.print(_("Messenger compare test..."));
 			comp = 0;
 			num = 0;
 			for (Messenger m : messengers) {
@@ -166,13 +166,13 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Messenger compatibility test...");
+			System.out.print(_("Messenger compatibility test..."));
 			comp = 0;
 			num = 0;
 			for (Messenger a : messengers) {
@@ -203,13 +203,13 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println(comp + "/" + num + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{comp,num}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Messenger clone test...");
+			System.out.print(_("Messenger clone test..."));
 			comp=0;
 			num=0;
 			for (Messenger m:messengers){
@@ -222,13 +222,13 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Messenger merge test...");
+			System.out.print(_("Messenger merge test..."));
 			comp=0;
 			num=0;
 			for (Messenger m:messengers){
@@ -258,9 +258,9 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 				}				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {				
-				System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			/**/
@@ -272,6 +272,12 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		}
 
 	}
+	private static String _(String text) { 
+		return Translations.get(text);
+	}
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
+	}
 	private String nick=null;
 	private TreeSet<String> types=new TreeSet<String>();
 	private InputField nickField;
@@ -279,11 +285,13 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 	private JCheckBox icqBox;
 	private JCheckBox msnBox;
 	private JCheckBox skypeBox;
+	
 	private JCheckBox facebookBox;
+
 	private VerticalPanel form;
 	
 	public Messenger(String content) throws InvalidFormatException, UnknownObjectException {
-		if (content==null ||!content.startsWith("IMPP:")) throw new InvalidFormatException("Messenger adress does not start with \"IMPP:\"");
+		if (content==null ||!content.startsWith("IMPP:")) throw new InvalidFormatException(_("Messenger adress does not start with \"IMPP:\": #",content));
 		String line = content.substring(5);
 		while(!line.startsWith(":")){
 			String upper = line.toUpperCase();
@@ -316,38 +324,38 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		}
 		readAddr(line.substring(1));		
 	}
-
+	
 	public int compareTo(Messenger otherMessenger) {
 		return this.toString().compareTo(otherMessenger.toString());
 	}
-	
+
 	public VerticalPanel editForm() {
-		form=new VerticalPanel("Messenger");
+		form=new VerticalPanel(_("Messenger"));
 		if (isInvalid()) form.setBackground(Color.red);
-		form.add(nickField=new InputField("Nickname",nick));
+		form.add(nickField=new InputField(_("Nickname"),nick));
 		nickField.addEditListener(this);
-		form.add(aimBox=new JCheckBox("AIM",types.contains("aim")));
+		form.add(aimBox=new JCheckBox(_("AIM"),types.contains("aim")));
 		aimBox.addChangeListener(this);
-		form.add(icqBox=new JCheckBox("ICQ",types.contains("icq")));
+		form.add(icqBox=new JCheckBox(_("ICQ"),types.contains("icq")));
 		icqBox.addChangeListener(this);
-		form.add(skypeBox=new JCheckBox("Skype",types.contains("skype")));
+		form.add(skypeBox=new JCheckBox(_("Skype"),types.contains("skype")));
 		skypeBox.addChangeListener(this);
-		form.add(msnBox=new JCheckBox("MSN",types.contains("msn")));
+		form.add(msnBox=new JCheckBox(_("MSN"),types.contains("msn")));
 		msnBox.addChangeListener(this);
-		form.add(facebookBox=new JCheckBox("Facebook",types.contains("facebook")));
+		form.add(facebookBox=new JCheckBox(_("Facebook"),types.contains("facebook")));
 		facebookBox.addChangeListener(this);
 		form.scale();
 		return form;
 	}
-	
+
 	public String id() throws UnknownObjectException {
-		if (types.isEmpty()) throw new UnknownObjectException("Messenger \""+nick+"\" has no known type!");
+		if (types.isEmpty()) throw new UnknownObjectException(_("Messenger \"#\" has no known type!",nick));
 		String result=types.toString().replace("[", "").replace("]", ":").replace(",", ":");
 		if (nick==null || nick.isEmpty()) return result;
 		return result+nick;
 		
   }
-
+	
 	@Override
   public boolean isCompatibleWith(Messenger other) {
 		if (different(nick, other.nick)) return false;
@@ -357,7 +365,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 	public boolean isEmpty() {
 		return nick==null || nick.isEmpty();
 	}
-	
+
 	public boolean isInvalid() {
 		return types.isEmpty();
 	}
@@ -419,13 +427,11 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 	    return null;
     }
 	}
-
 	private void readAddr(String line) {
 		while (line.startsWith(":")) line=line.substring(1);
 		if (line.trim().isEmpty()) return;		
 		nick = line.toLowerCase();
 	}
-
 	protected Object clone() throws CloneNotSupportedException {		
 		try {
 			return new Messenger(this.toString());
@@ -433,5 +439,4 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			throw new CloneNotSupportedException(e.getMessage());
 		}
 	}
-
 }
