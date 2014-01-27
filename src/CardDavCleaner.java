@@ -44,6 +44,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		return Translations.get(text);
 	}
 
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
+	}
+
 	/**
 	 * asks, whether the given contacts shall be merged
 	 * 
@@ -110,7 +114,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 
 	}
-
 	private static void cleanByEmailTest() throws UnknownObjectException, InvalidFormatException, InterruptedException, InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
 		System.out.print(_("testing matching by email adresses..."));
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
@@ -167,6 +170,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			}
 		}
 	}
+
 	private static void cleanByMessengerTest() throws UnknownObjectException, InvalidFormatException, InterruptedException, InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
 		System.out.print(_("testing matching by messenger nicks..."));
 		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
@@ -370,10 +374,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private String _(String key, int response) {
 		return Translations.get(key,response);
-	}
-
-	private static String _(String key, Object insert) {
-		return Translations.get(key, insert);
 	}
 
 	/**
