@@ -10,6 +10,8 @@ import javax.swing.event.DocumentListener;
 
 
 public class InputField extends HorizontalPanel implements DocumentListener {
+
+  private static final long serialVersionUID = -3739363092163085626L;
 	/**
 	 * used to create non-password input fields for the server login form
 	 * @param owner the panel, to which the component shall be added 
@@ -29,10 +31,17 @@ public class InputField extends HorizontalPanel implements DocumentListener {
 	}
 
 	public InputField(String caption,String defaultValue) {
-		add(new JLabel(caption + " "));		
-		result = (defaultValue==null || defaultValue.isEmpty())?new JTextField(20):new JTextField(defaultValue);		
+		add(new JLabel(caption + " "));
+		if (defaultValue==null || defaultValue.isEmpty()){
+			result=new JTextField(10);
+		} else {
+			result=new JTextField(defaultValue+"   ");
+		}
 		add(result);
-		scale();	
+		scale();
+		if (defaultValue!=null && !defaultValue.isEmpty()) {
+			result.setText(defaultValue);
+		}
 	}
 
 	public InputField(String caption) {

@@ -12,26 +12,31 @@ public class VerticalPanel extends JPanel {
    * 
    */
   private static final long serialVersionUID = -3284460780727609981L;
-	private static int offset=5;
+	private int offset=5;
 	private int width=0;
 	private int height=offset;
+	private boolean hasTitle=false;
 	
 	public VerticalPanel(){
-		super();
-		init();
+		this(null);
 	}
 
-	public VerticalPanel(String string) {
+	public VerticalPanel(String title) {
 		super();
+		if (title!=null){
+			hasTitle=true;
+			setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),title)); // Rahmen um Feld Erzeugen
+		}
 		init();
-		height+=15;
-		setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),string)); // Rahmen um Feld Erzeugen
 	}
 
 	private void init() {
+		this.setLayout(null);
 		width=0;
 		height=offset;
-		this.setLayout(null);
+		if (hasTitle){
+			height+=15;
+		}
 	}
 	
 	public void add(JComponent c){
