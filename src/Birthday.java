@@ -10,229 +10,229 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 
 	public static void test() {
 		try {
-			System.out.print("Birthday creation test (null)...");
+			System.out.print(_("Birthday creation test (null)..."));
 			String testCase = null;
 			try {
 				Birthday nb = new Birthday(testCase);
-				System.err.println("failed: " + nb);
+				System.err.println(_("failed: #", nb));
 				System.exit(-1);
 			} catch (InvalidFormatException ife) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			}
 
-			System.out.print("Birthday creation test (empty)...");
+			System.out.print(_("Birthday creation test (empty)..."));
 			testCase = "BDAY:";
 			Birthday eb = new Birthday(testCase);
 			if (eb.toString().equals(testCase)) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + eb);
+				System.err.println(_("failed: #", eb));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (valid year)...");
+			System.out.print(_("Birthday creation test (valid year)..."));
 			testCase = "BDAY:1234";
 			Birthday vyb = new Birthday(testCase);
 			if (vyb.toString().equals(testCase) && !vyb.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + vyb);
+				System.err.println(_("failed: #", vyb));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (invalid year)...");
+			System.out.print(_("Birthday creation test (invalid year)..."));
 			testCase = "BDAY:XXXX";
 			Birthday iyb = new Birthday(testCase);
 			if (iyb.toString().equals(testCase) && iyb.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + iyb);
+				System.err.println(_("failed: #", iyb));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (valid month)...");
+			System.out.print(_("Birthday creation test (valid month)..."));
 			testCase = "BDAY:--01";
 			Birthday vmb = new Birthday(testCase);
 			if (vmb.toString().equals(testCase) && !vmb.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + vmb);
+				System.err.println(_("failed: #", vmb));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (invalid month 1)...");
+			System.out.print(_("Birthday creation test (invalid month 1)..."));
 			testCase = "BDAY:--13";
 			Birthday imb1 = new Birthday(testCase);
 			if (imb1.toString().equals(testCase) && imb1.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + imb1);
+				System.err.println(_("failed: #", imb1));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (invalid month 2)...");
+			System.out.print(_("Birthday creation test (invalid month 2)..."));
 			testCase = "BDAY:--XX";
 			Birthday imb2 = new Birthday(testCase);
 			if (imb2.toString().equals(testCase) && imb2.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + imb2);
+				System.err.println(_("failed: #", imb2));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (valid day)...");
+			System.out.print(_("Birthday creation test (valid day)..."));
 			testCase = "BDAY:---01";
 			Birthday vdb = new Birthday(testCase);
 			if (vdb.toString().equals(testCase) && !vdb.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + vdb);
+				System.err.println(_("failed: #", vdb));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (invalid day 1)...");
+			System.out.print(_("Birthday creation test (invalid day 1)..."));
 			testCase = "BDAY:---32";
 			Birthday idb1 = new Birthday(testCase);
 			if (idb1.toString().equals(testCase) && idb1.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + idb1);
+				System.err.println(_("failed: #", idb1));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (invalid day 2)...");
+			System.out.print(_("Birthday creation test (invalid day 2)..."));
 			testCase = "BDAY:---XX";
 			Birthday idb2 = new Birthday(testCase);
 			if (idb2.toString().equals(testCase) && idb2.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + idb2);
+				System.err.println(_("failed: #", idb2));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (full date)...");
+			System.out.print(_("Birthday creation test (full date)..."));
 			testCase = "BDAY:19831026";
 			Birthday fdb = new Birthday(testCase);
 			if (fdb.toString().equals(testCase) && !fdb.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + fdb);
+				System.err.println(_("failed: #", fdb));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (valid hour)...");
+			System.out.print(_("Birthday creation test (valid hour)..."));
 			testCase = "BDAY:T01";
 			Birthday vhb = new Birthday(testCase);
 			if (vhb.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && !vhb.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + vhb);
+				System.err.println(_("failed: #", vhb));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (invalid hour 1)...");
+			System.out.print(_("Birthday creation test (invalid hour 1)..."));
 			testCase = "BDAY:T24";
 			Birthday ihb1 = new Birthday(testCase);
 			if (ihb1.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && ihb1.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + ihb1);
+				System.err.println(_("failed: #", ihb1));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (invalid hour 2)...");
+			System.out.print(_("Birthday creation test (invalid hour 2)..."));
 			testCase = "BDAY:TXX";
 			Birthday ihb2 = new Birthday(testCase);
 			if (ihb2.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && ihb2.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + ihb2);
+				System.err.println(_("failed: #", ihb2));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (valid minute)...");
+			System.out.print(_("Birthday creation test (valid minute)..."));
 			testCase = "BDAY:T-01";
 			Birthday vminb = new Birthday(testCase);
 			if (vminb.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && !vminb.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + vminb);
+				System.err.println(_("failed: #", vminb));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (invalid minute 1)...");
+			System.out.print(_("Birthday creation test (invalid minute 1)..."));
 			testCase = "BDAY:T-60";
 			Birthday iminb1 = new Birthday(testCase);
 			if (iminb1.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && iminb1.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + iminb1);
+				System.err.println(_("failed: #", iminb1));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (invalid minute 2)...");
+			System.out.print(_("Birthday creation test (invalid minute 2)..."));
 			testCase = "BDAY:T-XX";
 			Birthday iminb2 = new Birthday(testCase);
 			if (iminb2.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && iminb2.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + iminb2);
+				System.err.println(_("failed: #", iminb2));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (valid second)...");
+			System.out.print(_("Birthday creation test (valid second)..."));
 			testCase = "BDAY:T--01";
 			Birthday vsb = new Birthday(testCase);
 			if (vsb.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && !vsb.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + vsb);
+				System.err.println(_("failed: #", vsb));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (invalid second 1)...");
+			System.out.print(_("Birthday creation test (invalid second 1)..."));
 			testCase = "BDAY:T--60";
 			Birthday isb1 = new Birthday(testCase);
 			if (isb1.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && isb1.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + isb1);
+				System.err.println(_("failed: #", isb1));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (invalid second 2)...");
+			System.out.print(_("Birthday creation test (invalid second 2)..."));
 			testCase = "BDAY:T--XX";
 			Birthday isb2 = new Birthday(testCase);
 			if (isb2.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && isb2.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + isb2);
+				System.err.println(_("failed: #", isb2));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (full time)...");
+			System.out.print(_("Birthday creation test (full time)..."));
 			testCase = "BDAY:T235959";
 			Birthday ftb = new Birthday(testCase);
 			if (ftb.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && !ftb.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + ftb);
+				System.err.println(_("failed: #", ftb));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday creation test (full)...");
+			System.out.print(_("Birthday creation test (full)..."));
 			testCase = "BDAY:19991231T235959";
 			Birthday fb = new Birthday(testCase);
 			if (fb.toString().equals(testCase.replace(":", ";VALUE=DATE-TIME:")) && !fb.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + fb);
+				System.err.println(_("failed: #", fb));
 				System.exit(-1);
 			}
 
 			Birthday[] bdays = { eb, vyb, iyb, vmb, imb1, imb2, vdb, idb1, idb2, fdb, vhb, ihb1, ihb2, vminb, iminb1, iminb2, vsb, isb1, isb2 };
 
-			System.out.print("Birthday isEmpty test...");
+			System.out.print(_("Birthday isEmpty test..."));
 			int comp = 0;
 			int num = 0;
 			for (Birthday b : bdays) {
@@ -245,13 +245,13 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 				}
 			}
 			if (num == comp) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday compare test...");
+			System.out.print(_("Birthday compare test..."));
 			comp = 0;
 			num = 0;
 			for (Birthday b : bdays) {
@@ -261,13 +261,13 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Birthday compatibility test...");
+			System.out.print(_("Birthday compatibility test..."));
 			comp = 0;
 			num = 0;
 			for (Birthday a : bdays) {
@@ -286,13 +286,13 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Birthday clone test...");
+			System.out.print(_("Birthday clone test..."));
 			comp=0;
 			num=0;
 			for (Birthday b:bdays){
@@ -306,13 +306,13 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Birthday merge test...");
+			System.out.print(_("Birthday merge test..."));
 			comp=0;
 			num=0;
 			for (Birthday b:bdays){
@@ -342,7 +342,7 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 						System.out.println();
 						System.out.println("fb: "+fb);
 						System.out.println(" b: "+b);
-						System.out.println("merged:");
+						System.out.println(_("merged:"));
 						System.out.println("fb: "+clone2);
 						System.out.println(" b: "+clone1);
 					}
@@ -351,15 +351,21 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 				}				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-				System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 		} catch (InvalidFormatException e) {
 			e.printStackTrace();
 		}
 
+	}
+	private static String _(String text) { 
+		return Translations.get(text);
+	}
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
 	}
 	
 	private String year;
@@ -374,14 +380,14 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 	public Birthday(String birthday) throws InvalidFormatException {
 		String bday = birthday;
 		if (bday == null || !bday.startsWith("BDAY")) {
-			throw new InvalidFormatException("Birthday entry does not start with BDAY: \"" + birthday + "\"");
+			throw new InvalidFormatException(_("Birthday entry does not start with BDAY: \"#\"",birthday));
 		}
 		bday = bday.substring(4);
 		if (bday.startsWith(";VALUE=DATE-TIME")) {
 			bday = bday.substring(16);
 		}
 		if (!bday.startsWith(":")) {
-			throw new InvalidFormatException("BDAY format invalid: " + birthday);
+			throw new InvalidFormatException(_("BDAY format invalid: #",birthday));
 		}
 		bday = bday.substring(1); // remove ':'
 		if (bday.isEmpty()) return;
@@ -416,7 +422,7 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 		}
 		if (!bday.isEmpty()) {
 			if (!bday.startsWith("T")) {
-				throw new InvalidFormatException("BDAY format invalid: BDAY" + birthday);
+				throw new InvalidFormatException(_("BDAY format invalid: #",birthday));
 			} else {
 				bday = bday.substring(1);
 				if (!bday.startsWith("-")) {
@@ -688,11 +694,11 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 	private JComponent dateForm() {
 		HorizontalPanel dateForm = new HorizontalPanel();
 		if (invalid) dateForm.setBackground(Color.red);
-		dateForm.add(yearField = new InputField("Year of birth", year));
+		dateForm.add(yearField = new InputField(_("Year of birth"), year));
 		yearField.addEditListener(this);
-		dateForm.add(monthField = new InputField("Month of birth", month));
+		dateForm.add(monthField = new InputField(_("Month of birth"), month));
 		monthField.addEditListener(this);
-		dateForm.add(dayField = new InputField("Day of birth", day));
+		dateForm.add(dayField = new InputField(_("Day of birth"), day));
 		dayField.addEditListener(this);
 		dateForm.scale();
 		return dateForm;
@@ -700,11 +706,11 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 
 	private JComponent timeForm() {
 		HorizontalPanel form = new HorizontalPanel();
-		form.add(hourField = new InputField("Hour", hour));
+		form.add(hourField = new InputField(_("Hour"), hour));
 		hourField.addEditListener(this);
-		form.add(minuteField = new InputField("Minute", minute));
+		form.add(minuteField = new InputField(_("Minute"), minute));
 		minuteField.addEditListener(this);
-		form.add(secondField = new InputField("Second", second));
+		form.add(secondField = new InputField(_("Second"), second));
 		secondField.addEditListener(this);
 		form.scale();
 		return form;

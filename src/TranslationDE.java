@@ -6,8 +6,11 @@ public class TranslationDE extends Translation{
 		TreeMap<String,String> trans=new TreeMap<String, String>();
 		trans.put("Abort program", "Programmausführung abbrechen");
 		trans.put("Adress", "Adresse");
+		trans.put("BDAY format invalid: #","ungültiges format des Geburtstags-Eintrags: #");
+		trans.put("Birthday entry does not start with BDAY: \"#\"", "Geburtstags-Eintrag started nicht mit BDAY: \"#\"");
 		trans.put("City", "Ort");
 		trans.put("Country", "Land");
+		trans.put("Day of birth", "<html>Geburts<b>tag");
 		trans.put("Deleting #", "# wird gelöscht");
 		trans.put("e-mail", "E-Mail");
 		trans.put("Edit manually", "bearbeiten");
@@ -15,10 +18,12 @@ public class TranslationDE extends Translation{
 		trans.put("found # @# in #", "# @# in # gefunden");
 		trans.put("# has an invalid format", "Das Format von # ist ungültig");
 		trans.put("Home Adress", "Adresse Zuhause");
+		trans.put("Hour", "Stunde");
 		trans.put("Invalid Contact", "ungültiger/beschädigter Kontakt");
 		trans.put("<html>I use Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)","<html>Ich benutze Thunderbird mit diesem Adressbuch.<br>(Das ist wichtig, da Thunderbird nur eine begrenzte Anzahl an Telefonnummern, Email-Adressen, etc. erlaubt.)");
 		trans.put("<html>Merging and cleaning aborted! Goodbye!","<html>Zusammenführen und Bereinigen der Kontakte abgebrochen! Auf Wiedersehen!");
-		trans.put("messenger", "Chat-/Mitteilungsprogramm");
+		trans.put("messenger", "Chat-/Mitteilungsprogramm");		
+		trans.put("Month of birth", "Geburtsmonat");
 		trans.put("name", "Name");
 		trans.put("...not successful (# / #). Trying to remove first...","...nicht erfolgreich (# / #). Versuche erst zu löschen...");
 		trans.put("<html>No data has been modified on the server <b>until now</b>. Continue?", "<html><b>Bis jetzt</b> wurden keine Daten auf dem Server verändert. Fortfahren?");
@@ -31,6 +36,7 @@ public class TranslationDE extends Translation{
 		trans.put("reading contact #/#: #", "lese Kontakt #/#: #");
 		trans.put("Region", "Region/Bundesland");
 		trans.put("<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!", "<html>Prüfen, Zusammenführen und Bereinigen <i>erfolgreich</i> durchgeführt! Auf Wiedersehen!");
+		trans.put("Second", "Sekunde");
 		trans.put("Server responded with CODE #", "Server hat mit CODE # geantwortet");
 		trans.put("Server settings", "Servereinstellungen");
 		trans.put("Server + Path to addressbook:","Server und Pfad zum Adressbuch:");
@@ -49,6 +55,7 @@ public class TranslationDE extends Translation{
 		trans.put("<html><font color=\"red\">Warning! Those contacts contain unequal birth dates!","<html><font color=\"red\">Achtung! Diese kontakte enthalten unterschiedliche Geburtstags-Einträge!");
 		trans.put("<html>#<br>Will abort operation now.", "<html>#<br>Aktion wird nun abgebrochen.");
 		trans.put("Work Adress", "Adresse Arbeitsplatz");
+		trans.put("Year of birth", "Geburtsjahr");
 		trans.put("Zip", "Postleitzahl");
 		return trans;
 	}
