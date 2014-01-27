@@ -8,63 +8,63 @@ import javax.swing.event.ChangeListener;
 public class Organization extends Mergable<Organization> implements ChangeListener, Comparable<Organization> {
 	public static void test() {
 		try {
-			System.out.print("Organization creation (null)...");
+			System.out.print(_("Organization creation (null)..."));
 			try {
 				Organization nullO = new Organization(null);
-				System.err.println("failed: " + nullO);
+				System.err.println(_("failed: #", nullO));
 				System.exit(-1);
 			} catch (InvalidFormatException ife) {				
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			}
 			
-			System.out.print("Organization creation (empty)...");
+			System.out.print(_("Organization creation (empty)..."));
 			String testcase="ORG:;";
 			Organization emptyA = new Organization(testcase.replace(";",""));
 			Organization emptyB = new Organization(testcase);
 			if (emptyA.toString().equals(testcase) && emptyB.toString().equals(testcase)) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + emptyA);
+				System.err.println(_("failed: #", emptyA));
 				System.exit(-1);
 			}
 
-			System.out.print("Organization creation (name)...");
+			System.out.print(_("Organization creation (name)..."));
 			testcase="ORG:eman;";
 			Organization namA = new Organization(Tests.reversed(testcase));
 			Organization namB = new Organization(testcase);
 			if (namA.toString().equals(Tests.reversed(testcase)+";")&&namB.toString().equals(testcase)) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + namA+"/"+namB);
+				System.err.println(_("failed: #", namA+"/"+namB));
 				System.exit(-1);
 			}
 
-			System.out.print("Organization creation (extended)...");
+			System.out.print(_("Organization creation (extended)..."));
 			testcase="ORG:;dednetxe";
 			Organization extA = new Organization(Tests.reversed(testcase));
 			Organization extB = new Organization(testcase);
 			if (extA.toString().equals(Tests.reversed(testcase))&&extB.toString().equals(testcase)) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + extA+"/"+extB);
+				System.err.println(_("failed: #", extA+"/"+extB));
 				System.exit(-1);
 			}
 
-			System.out.print("Organization creation (complete)...");
+			System.out.print(_("Organization creation (complete)..."));
 			testcase="ORG:eman;dednetxe";
 			Organization fullA = new Organization(Tests.reversed(testcase));
 			Organization fullB = new Organization(testcase);
 			if (fullA.toString().equals(Tests.reversed(testcase))&&fullB.toString().equals(testcase)) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + fullA+"/"+fullB);
+				System.err.println(_("failed: #", fullA+"/"+fullB));
 				System.exit(-1);
 			}
 
 			Organization [] orgs1={emptyA,namA,extA,fullA};
 			Organization [] orgs2={emptyB,namB,extB,fullB};
 			
-			System.out.print("Organization isEmpty test...");
+			System.out.print(_("Organization isEmpty test..."));
 			int comp=0;
 			int num=0;
 			for (Organization a:orgs1){
@@ -77,13 +77,13 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Organization compare test...");
+			System.out.print(_("Organization compare test..."));
 			comp=0;
 			num=0;
 			for (Organization a:orgs1){
@@ -93,13 +93,13 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 				
-			System.out.print("Organization compatibility test 1 (self)...");
+			System.out.print(_("Organization compatibility test 1 (self)..."));
 			comp=0;
 			num=0;
 			for (Organization a:orgs1){
@@ -113,14 +113,14 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
 		
-			System.out.print("Organization compatibility test 2 (other)...");
+			System.out.print(_("Organization compatibility test 2 (other)..."));
 			comp=0;
 			num=0;
 			for (Organization a:orgs1){
@@ -146,13 +146,13 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Organization clone test...");
+			System.out.print(_("Organization clone test..."));
 			comp=0;
 			num=0;
 			for (Organization a:orgs1){
@@ -174,14 +174,14 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
 			
-			System.out.print("Organization merge test 1 (compatible)...");
+			System.out.print(_("Organization merge test 1 (compatible)..."));
 			comp=0;
 			num=0;
 			for (Organization a:orgs1){
@@ -198,13 +198,13 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 				}				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Organization merge test 2 (incompatible)...");
+			System.out.print(_("Organization merge test 2 (incompatible)..."));
 			comp=0;
 			num=0;
 			for (Organization b:orgs2){
@@ -229,9 +229,9 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 				}				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
@@ -241,6 +241,12 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 		} catch (InvalidFormatException e) {
 			e.printStackTrace();
 		}
+	}
+	private static String _(String text) { 
+		return Translations.get(text);
+	}
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
 	}	
 	String name=null;
 	String extended=null;
@@ -249,7 +255,7 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 	private VerticalPanel form;
 	
 	public Organization(String content) throws UnknownObjectException, InvalidFormatException {		
-		if (content==null || !content.startsWith("ORG:")) throw new InvalidFormatException("Organization does not start with \"ORG:\"");
+		if (content==null || !content.startsWith("ORG:")) throw new InvalidFormatException(_("Organization entry does not start with \"ORG:\": #",content));
 		String line=content.substring(4);
 		if (line.contains(";")){
 			String[] parts = line.split(";",0);
@@ -274,10 +280,10 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 
 	
 	public VerticalPanel editForm() {
-		form=new VerticalPanel("Organization");
-		form.add(nameField=new InputField("Name",name));
+		form=new VerticalPanel(_("Organization"));
+		form.add(nameField=new InputField(_("Name"),name));
 		nameField.addEditListener(this);
-		form.add(extField=new InputField("Extended",extended));
+		form.add(extField=new InputField(_("Extended"),extended));
 		extField.addEditListener(this);
 		form.scale();
 		return form;

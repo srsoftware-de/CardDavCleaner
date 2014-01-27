@@ -37,6 +37,7 @@ public class TranslationDE extends Translation{
 		trans.put("e-mail", "E-Mail");
 		trans.put("Email","E-Mail");
 		trans.put("Email Adresses", "Emailadresse");
+		trans.put("Extended", "erweitert");
 		trans.put("Extended Adress", "Adresszusatz");
 		trans.put("Family Name", "Familienname");
 		trans.put("First Name", "Vorname");
