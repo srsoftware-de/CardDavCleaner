@@ -12,13 +12,20 @@ public class Tests {
 	}
 	
 	public static void test(){
-		System.out.print("Test.reverse...");
+		System.out.print(_("Test.reverse..."));
 		String dummy="Test:;;;;abcd;;;";
 		dummy=reversed(dummy);
 		if (dummy.equals("Test:;;;;dcba")){
-			System.out.println("ok");
+			System.out.println(_("ok"));
 		} else {
-			System.err.println("failed: "+dummy);
+			System.err.println(_("failed: #",dummy));
 		}
+	}
+	
+	private static String _(String text) { 
+		return Translations.get(text);
+	}	
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
 	}
 }

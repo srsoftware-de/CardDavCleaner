@@ -120,6 +120,7 @@ public class TranslationDE extends Translation{
 		trans.put("Voice Phone", "Telefon allgemein");
 		trans.put("Warning: skipping empty contact # (Contains nothing but a name)", "Warnung: überspringe leeren Kontakt # (Enthält außer dem Namen keine Daten)");		
 		trans.put("<html><font color=\"red\">Warning! Those contacts contain unequal birth dates!","<html><font color=\"red\">Achtung! Diese kontakte enthalten unterschiedliche Geburtstags-Einträge!");
+		trans.put("Web Adress", "Internetadresse");
 		trans.put("Websites", "Webseiten");
 		trans.put("<html><br>Which # shall be used?", "<html><br>Welcher # soll benutzt werden?");
 		trans.put("<html>#<br>Will abort operation now.", "<html>#<br>Aktion wird nun abgebrochen.");
