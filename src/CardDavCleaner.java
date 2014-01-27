@@ -2,18 +2,14 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.rmi.AlreadyBoundException;
-import java.rmi.UnexpectedException;
 import java.rmi.activation.UnknownObjectException;
 import java.util.Set;
 import java.util.TreeMap;
@@ -372,10 +368,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		System.exit(0);
 	}
 
-	private String _(String key, int response) {
-		return Translations.get(key,response);
-	}
-
 	/**
 	 * starts the actual scanning of contacts upon server login
 	 * 
@@ -474,24 +466,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		add(mainPanel);
 		pack();
 		setVisible(true);
-	}
-
-	/**
-	 * actually removes a contact from the server
-	 * 
-	 * @param u the url of the contact to be erased
-	 * @throws IOException
-	 */
-	private void deleteContact(URL u) throws IOException {
-		HttpURLConnection conn = (HttpURLConnection) u.openConnection();
-		conn.setRequestMethod("DELETE");
-		conn.setDoOutput(true);
-		conn.connect();
-		int response = conn.getResponseCode();
-		conn.disconnect();
-		if (response != 204) {
-			throw new UnexpectedException(_("Server responded with CODE #",response));
-		}
 	}
 
 	/**
