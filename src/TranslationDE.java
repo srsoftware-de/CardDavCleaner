@@ -38,6 +38,8 @@ public class TranslationDE extends Translation{
 		trans.put("Email","E-Mail");
 		trans.put("Email Adresses", "Emailadresse");
 		trans.put("Extended Adress", "Adresszusatz");
+		trans.put("Family Name", "Familienname");
+		trans.put("First Name", "Vorname");
 		trans.put("formatted name", "formatierter Name");
 		trans.put("found # @# in #", "# @# in # gefunden");
 		trans.put("# has an invalid format", "Das Format von # ist ungültig");
@@ -56,8 +58,11 @@ public class TranslationDE extends Translation{
 		trans.put("Messenger adress does not start with \"IMPP:\": #", "Messengeradresse fängt nicht mit \"IMPP:\" an: #");
 		trans.put("Messenger \"#\" has no known type!", "Messenger \"#\" hat unbekannten Typ!");
 		trans.put("Messengers", "Chat-/Mitteilungsprogramme");
+		trans.put("Middle Name", "mittlerer Name");
 		trans.put("Month of birth", "Geburtsmonat");
 		trans.put("name", "Name");
+		trans.put("Name does not start with \"N:\": #", "Name beginnt nicht mit \"N:\": #");
+		trans.put("Name with more than 5 parts found:", "Name mit mehr als 5 teilen gefunden:");
 		trans.put("Nickname", "Nickname/Rufname");
 		trans.put("Nicknames", "Nicknames/Rufnamen");
 		trans.put("No", "Nein");
@@ -75,6 +80,7 @@ public class TranslationDE extends Translation{
 		trans.put("Phones", "Telefonnummern");
 		trans.put("phone number","Telefonnummer");
 		trans.put("Post Office Box", "Postfach");
+		trans.put("Prefix", "Präfix");
 		trans.put("reading contact #/#: #", "lese Kontakt #/#: #");
 		trans.put("Region", "Region/Bundesland");
 		trans.put("Role", "Rolle/Stellung");

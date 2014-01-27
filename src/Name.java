@@ -12,88 +12,88 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class Name extends Mergable<Name> implements DocumentListener, Comparable<Name> {	
 	public static void test() {
 		try {
-			System.out.print("Name creation (null)...");
+			System.out.print(_("Name creation (null)..."));
 			try {
 				Name nullA = new Name(null);
 				System.err.println("failed: " + nullA);
 				System.exit(-1);
 			} catch (InvalidFormatException ife) {				
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			}
 			
-			System.out.print("Name creation (empty)...");
+			System.out.print(_("Name creation (empty)..."));
 			String testcase="N:;;;;";
 			Name emptyA = new Name(testcase.replace(";",""));
 			Name emptyB = new Name(testcase);
 			if (emptyA.toString().equals(testcase) && emptyB.toString().equals(testcase)) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
 				System.err.println("failed: " + emptyA);
 				System.exit(-1);
 			}
 
-			System.out.print("Name creation (family)...");
+			System.out.print(_("Name creation (family)..."));
 			testcase="N:ylimaf;;;;";
 			Name famA = new Name(Tests.reversed(testcase));
 			Name famB = new Name(testcase);
 			if (famA.toString().equals(Tests.reversed(testcase)+";;;;")&&famB.toString().equals(testcase)) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
 				System.err.println("failed: " + famA+"/"+famB);
 				System.exit(-1);
 			}
 
-			System.out.print("Name creation (first)...");
+			System.out.print(_("Name creation (first)..."));
 			testcase="N:;tsrif;;;";
 			Name firstA = new Name(Tests.reversed(testcase));
 			Name firstB = new Name(testcase);
 			if (firstA.toString().equals(Tests.reversed(testcase)+";;;")&&firstB.toString().equals(testcase)) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
 				System.err.println("failed: " + firstA+"/"+firstB);
 				System.exit(-1);
 			}
 
-			System.out.print("Name creation (middle)...");
+			System.out.print(_("Name creation (middle)..."));
 			testcase="N:;;elddim;;";
 			Name midA = new Name(Tests.reversed(testcase));
 			Name midB = new Name(testcase);
 			if (midA.toString().equals(Tests.reversed(testcase)+";;")&&midB.toString().equals(testcase)) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
 				System.err.println("failed: " + midA+"/"+midB);
 				System.exit(-1);
 			}
 			
-			System.out.print("Name creation (prefix)...");
+			System.out.print(_("Name creation (prefix)..."));
 			testcase="N:;;;xiferp;";
 			Name prefA = new Name(Tests.reversed(testcase));
 			Name prefB = new Name(testcase);
 			if (prefA.toString().equals(Tests.reversed(testcase)+";")&&prefB.toString().equals(testcase)) {
 
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
 				System.err.println("failed: " + prefA+"/"+prefB);
 				System.exit(-1);
 			}
 
-			System.out.print("Name creation (suffix)...");
+			System.out.print(_("Name creation (suffix)..."));
 			testcase="N:;;;;xiffus";
 			Name sufA = new Name(Tests.reversed(testcase));
 			Name sufB = new Name(testcase);
 			if (sufA.toString().equals(Tests.reversed(testcase))&&sufB.toString().equals(testcase)) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
 				System.err.println("failed: " + sufA+"/"+sufB);
 				System.exit(-1);
 			}
 			
-			System.out.print("Name creation (complete)...");
+			System.out.print(_("Name creation (complete)..."));
 			testcase="N:ylimaf;tsrif;elddim;xiferp;xiffus";
 			Name fullA = new Name(Tests.reversed(testcase));
 			Name fullB = new Name(testcase);
 			if (fullA.toString().equals(Tests.reversed(testcase))&&fullB.toString().equals(testcase)) {
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
 				System.err.println("failed: " + fullA+"/"+fullB);
 				System.exit(-1);
@@ -102,7 +102,7 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 			Name [] names1={emptyA,famA,firstA,midA,prefA,sufA,fullA};
 			Name [] names2={emptyB,famB,firstB,midB,prefB,sufB,fullB};
 			
-			System.out.print("Name isEmpty test...");
+			System.out.print(_("Name isEmpty test..."));
 			int comp=0;
 			int num=0;
 			for (Name a:names1){
@@ -115,13 +115,13 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Name compare test...");
+			System.out.print(_("Name compare test..."));
 			comp=0;
 			num=0;
 			for (Name a:names1){
@@ -131,13 +131,13 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-				System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 				
-			System.out.print("Name compatibility test 1 (self)...");
+			System.out.print(_("Name compatibility test 1 (self)..."));
 			comp=0;
 			num=0;
 			for (Name a:names1){
@@ -151,14 +151,14 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
 		
-			System.out.print("Name compatibility test 2 (other)...");
+			System.out.print(_("Name compatibility test 2 (other)..."));
 			comp=0;
 			num=0;
 			for (Name a:names1){
@@ -194,13 +194,13 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Name clone test...");
+			System.out.print(_("Name clone test..."));
 			comp=0;
 			num=0;
 			for (Name a:names1){
@@ -222,14 +222,14 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
 			
-			System.out.print("Name merge test 1 (compatible)...");
+			System.out.print(_("Name merge test 1 (compatible)..."));
 			comp=0;
 			num=0;
 			for (Name a:names1){
@@ -246,13 +246,13 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 				}				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Name merge test 2 (incompatible)...");
+			System.out.print(_("Name merge test 2 (incompatible)..."));
 			comp=0;
 			num=0;
 			for (Name b:names2){
@@ -277,13 +277,13 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 				}				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Name merge test 4 (incompatible,work)...");
+			System.out.print(_("Name merge test 4 (incompatible,work)..."));
 			comp=0;
 			num=0;
 			for (Name a:names1){
@@ -308,9 +308,9 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 				}				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok."));
 			} else {				
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			// continue tests here
@@ -320,18 +320,27 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 			e.printStackTrace();
 		}
 	}
+	private static String _(String text) { 
+		return Translations.get(text);
+	}
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
+	}
 	private String family;
 	private String first;
 	private String prefix;
+	
 	private String suffix;
 	private String middle;
 	//private boolean invalid=false;
 	
 	private InputField prefBox,firstBox,middleBox,familyBox,sufBox;
+
 	private VerticalPanel form;
+
 	
 	public Name(String line) throws UnknownObjectException, InvalidFormatException {		
-		if (line==null||!line.startsWith("N:")) throw new InvalidFormatException("Name does not start with \"N:\"");
+		if (line==null||!line.startsWith("N:")) throw new InvalidFormatException(_("Name does not start with \"N:\": #",line));
 		line=line.substring(2).trim();
 		if (line.isEmpty()) return;
 		if (line.contains(";")){
@@ -342,7 +351,7 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 			if (parts.length>3) setPrefix(parts[3].trim());
 			if (parts.length>4) setSuffix(parts[4].trim());
 			if (parts.length>5){
-				System.err.println("Name with more than 5 parts found:");
+				System.err.println(_("Name with more than 5 parts found:"));
 				System.err.println(line);
 				for (String p:parts){
 					System.err.println(p);
@@ -352,7 +361,7 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 		} else family=line; 
 		
 	}
-
+	
 	public String canonical() {
 		TreeSet<String> parts=new TreeSet<String>();
 		if (first!=null) parts.add(ascii(first).toLowerCase());
@@ -361,7 +370,6 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 		
 		return parts.toString().replace("[", "").replace("]", ""); // sorted set of name parts
 	}
-
 	
 	public void changedUpdate(DocumentEvent arg0) {
 		update();
@@ -374,25 +382,25 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 	public JPanel editForm(String title) {
 		form=new VerticalPanel(title);
 		
-		form.add(prefBox=new InputField("Prefix",prefix));
+		form.add(prefBox=new InputField(_("Prefix"),prefix));
 		prefBox.addChangeListener(this);
 		
-		form.add(firstBox=new InputField("First Name",first));
+		form.add(firstBox=new InputField(_("First Name"),first));
 		firstBox.addChangeListener(this);
 		
-		form.add(middleBox=new InputField("Middle Name",middle));
+		form.add(middleBox=new InputField(_("Middle Name"),middle));
 		middleBox.addChangeListener(this);
 		
-		form.add(familyBox=new InputField("Family Name",family));
+		form.add(familyBox=new InputField(_("Family Name"),family));
 		familyBox.addChangeListener(this);
 		
-		form.add(sufBox=new InputField("Suffix",suffix));
+		form.add(sufBox=new InputField(_("Suffix"),suffix));
 		sufBox.addChangeListener(this);
 		
 		form.scale();
 		return form;
 	}
-	
+
 	public boolean equals(Name name){		
 		if (first!=null){
 			if (name.first==null) return false;
@@ -421,18 +429,17 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 
 		return true;
 	}
-	
+
 	public String first() {
 		return first;
 	}
-
 	public String full(){
 		return prefix+" "+first+" "+middle+" "+family+" "+suffix;
 	}
-
 	public void insertUpdate(DocumentEvent arg0) {
 		update();
 	}
+	
 	@Override
   public boolean isCompatibleWith(Name otherName) {
 		if (different(first,otherName.first)) return false;
@@ -442,14 +449,15 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 		if (different(middle,otherName.middle)) return false;
 	  return true;
   }
+	
 	public boolean isEmpty() {
 		return ((family==null) && (first==null) && (middle==null));	
 	}
-	
+
 	public String last() {
 		return family;
 	}
-	
+
 	@Override
   public boolean mergeWith(Name otherName) {
 		if (!isCompatibleWith(otherName)) return false;
@@ -464,19 +472,19 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 	public String prefix(){
 		return prefix;
 	}
-
+	
 	public void removeUpdate(DocumentEvent arg0) {
 		update();
 	}
-
+	
 	public String suffix(){
 		return suffix;
 	}
-	
+
 	public String title(){
 		return prefix;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
@@ -516,12 +524,10 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 		if (string.isEmpty()) return;
 		prefix=string;
 	}
-
 	private void setSuffix(String string) {
 		if (string.isEmpty()) return;
 		suffix=string;
 	}
-
 	private void update() {
 		prefix=prefBox.getText();
 		first=firstBox.getText();
