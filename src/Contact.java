@@ -37,229 +37,229 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	public static void test() {
 		try {
-			System.out.print("Contact creation test (null)...");
+			System.out.print(_("Contact creation test (null)..."));
 			String testCase = null;
 			try {
 				Contact nullC = new Contact(testCase);
-				System.err.println("failed: " + nullC);
+				System.err.println(_("failed: #", nullC));
 				System.exit(-1);
 			} catch (InvalidFormatException e) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			}
 
-			System.out.print("Contact creation test (empty)...");
+			System.out.print(_("Contact creation test (empty)..."));
 			testCase = "";
 			try {
 				Contact emptyC = new Contact(testCase);
-				System.err.println("failed: " + emptyC);
+				System.err.println(_("failed: #", emptyC));
 				System.exit(-1);
 			} catch (InvalidFormatException e) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			}
 
-			System.out.print("Contact creation test (name only)...");
+			System.out.print(_("Contact creation test (name only)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nEND:VCARD\n";
 			Contact name = new Contact(testCase);
 			if (name.toString(true).equals(testCase) && !name.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + name.toString(true));
+				System.err.println(_("failed: #", name.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + formatted name)...");
+			System.out.print(_("Contact creation test (name + formatted name)..."));
 			testCase = "BEGIN:VCARD\nFN:Testcard\nN:Test;Kontakt;;;\nEND:VCARD\n";
 			Contact formatted = new Contact(testCase);
 			if (formatted.toString(true).equals(testCase) && !formatted.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + formatted.toString(true));
+				System.err.println(_("failed: #", formatted.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + number)...");
+			System.out.print(_("Contact creation test (name + number)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nTEL;TYPE=WORK:0123456789\nEND:VCARD\n";
 			Contact number = new Contact(testCase);
 			if (number.toString(true).equals(testCase) && !number.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + number.toString(true));
+				System.err.println(_("failed: #", number.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + nick)...");
+			System.out.print(_("Contact creation test (name + nick)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nNICKNAME;TYPE=HOME:Egon\nEND:VCARD\n";
 			Contact nick = new Contact(testCase);
 			if (nick.toString(true).equals(testCase) && !nick.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + nick.toString(true));
+				System.err.println(_("failed: #", nick.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + email)...");
+			System.out.print(_("Contact creation test (name + email)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nEMAIL;TYPE=INTERNET:test@example.com\nEND:VCARD\n";
 			Contact mail = new Contact(testCase);
 			if (mail.toString(true).equals(testCase) && !mail.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + mail.toString(true));
+				System.err.println(_("failed: #", mail.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + messenger)...");
+			System.out.print(_("Contact creation test (name + messenger)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nIMPP:icq:123456\nEND:VCARD\n";
 			Contact messenger = new Contact(testCase);
 			if (messenger.toString(true).equals(testCase) && !messenger.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + messenger.toString(true));
+				System.err.println(_("failed: #", messenger.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + note)...");
+			System.out.print(_("Contact creation test (name + note)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nNOTE:this is a note\nEND:VCARD\n";
 			Contact note = new Contact(testCase);
 			if (note.toString(true).equals(testCase) && !note.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + note.toString(true));
+				System.err.println(_("failed: #", note.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + label)...");
+			System.out.print(_("Contact creation test (name + label)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nLABEL:a label\nEND:VCARD\n";
 			Contact label = new Contact(testCase);
 			if (label.toString(true).equals(testCase) && !label.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + label.toString(true));
+				System.err.println(_("failed: #", label.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + birthday [year only])...");
+			System.out.print(_("Contact creation test (name + birthday [year only])..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nBDAY:1992\nEND:VCARD\n";
 			Contact bdayyear = new Contact(testCase);
 			if (bdayyear.toString(true).equals(testCase) && !bdayyear.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + bdayyear.toString(true));
+				System.err.println(_("failed: #", bdayyear.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + birthday [month only])...");
+			System.out.print(_("Contact creation test (name + birthday [month only])..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nBDAY:--04\nEND:VCARD\n";
 			Contact bdaymonth = new Contact(testCase);
 			if (bdaymonth.toString(true).equals(testCase) && !bdaymonth.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + bdaymonth.toString(true));
+				System.err.println(_("failed: #", bdaymonth.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + birthday [day only])...");
+			System.out.print(_("Contact creation test (name + birthday [day only])..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nBDAY:---17\nEND:VCARD\n";
 			Contact bdayday = new Contact(testCase);
 			if (bdayday.toString(true).equals(testCase) && !bdayday.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + bdayday.toString(true));
+				System.err.println(_("failed: #", bdayday.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + birthday [time only])...");
+			System.out.print(_("Contact creation test (name + birthday [time only])..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nBDAY;VALUE=DATE-TIME:T123456\nEND:VCARD\n";
 			Contact bdaytime = new Contact(testCase);
 			if (bdaytime.toString(true).equals(testCase) && !bdaytime.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + bdaytime.toString(true));
+				System.err.println(_("failed: #", bdaytime.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + birthday [full])...");
+			System.out.print(_("Contact creation test (name + birthday [full])..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nBDAY;VALUE=DATE-TIME:19910417T123456\nEND:VCARD\n";
 			Contact bday = new Contact(testCase);
 			if (bday.toString(true).equals(testCase) && !bday.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + bday.toString(true));
+				System.err.println(_("failed: #", bday.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + role)...");
+			System.out.print(_("Contact creation test (name + role)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nROLE:contact for testing\nEND:VCARD\n";
 			Contact role = new Contact(testCase);
 			if (role.toString(true).equals(testCase) && !role.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + role.toString(true));
+				System.err.println(_("failed: #", role.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + url)...");
+			System.out.print(_("Contact creation test (name + url)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nURL:www.srsoftware.de\nEND:VCARD\n";
 			Contact url = new Contact(testCase);
 			if (url.toString(true).equals(testCase) && !url.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + url.toString(true));
+				System.err.println(_("failed: #", url.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + organization)...");
+			System.out.print(_("Contact creation test (name + organization)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nORG:SRSoftware GbR;Gera;Thüringen\nEND:VCARD\n";
 			Contact org = new Contact(testCase);
 			if (org.toString(true).equals(testCase) && !org.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + org.toString(true));
+				System.err.println(_("failed: #", org.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + title)...");
+			System.out.print(_("Contact creation test (name + title)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nTITLE:Prof. Dr. rer. nat.\nEND:VCARD\n";
 			Contact title = new Contact(testCase);
 			if (title.toString(true).equals(testCase) && !title.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + title.toString(true));
+				System.err.println(_("failed: #", title.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + categories)...");
+			System.out.print(_("Contact creation test (name + categories)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nCATEGORIES:Family,Work\nEND:VCARD\n";
 			Contact categories = new Contact(testCase);
 			if (categories.toString(true).equals(testCase) && !categories.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + categories.toString(true));
+				System.err.println(_("failed: #", categories.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (name + adress)...");
+			System.out.print(_("Contact creation test (name + adress)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nADR;TYPE=HOME:postbox;extended;street;city;region;zip;country\nEND:VCARD\n";
 			Contact adress = new Contact(testCase);
 			if (adress.toString(true).equals(testCase) && !adress.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + adress.toString(true));
+				System.err.println(_("failed: #", adress.toString(true)));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact creation test (full)...");
+			System.out.print(_("Contact creation test (full)..."));
 			testCase = "BEGIN:VCARD\nFN:Testcard\nN:Test;Contact;;;\nNICKNAME;TYPE=HOME:0perat0r\nCATEGORIES:Family,Work\nTITLE:Prof. Dr. rer. nat.\nORG:SRSoftware GbR;\nIMPP:icq:123456\nROLE:contact for testing\nBDAY;VALUE=DATE-TIME:19910417T123456\nLABEL:a label\nADR;TYPE=HOME:postbox;extended;street;city;region;zip;country\nTEL;TYPE=WORK:9876543210\nEMAIL;TYPE=INTERNET:test@example.com\nURL:www.srsoftware.de\nNOTE:this is a note\nEND:VCARD\n";
 			Contact full = new Contact(testCase);
 			if (full.toString(true).equals(testCase) && !full.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + full.toString(true));
+				System.err.println(_("failed: #", full.toString(true)));
 				System.exit(-1);
 			}
 
 			Contact[] contacts = { name, formatted, number, nick, mail, messenger, note, label, bdayyear, bdaymonth, bdayday, bdaytime, bday, role, url, org, title, categories, adress, full };
 
-			System.out.print("Contact isEmpty test...");
+			System.out.print(_("Contact isEmpty test..."));
 			int comp = 0;
 			int num = 0;
 			for (Contact c : contacts) {
@@ -272,13 +272,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				}
 			}
 			if (num == comp) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact compare test...");
+			System.out.print(_("Contact compare test..."));
 			comp = 0;
 			num = 0;
 			for (Contact c : contacts) {
@@ -291,13 +291,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact compatibility test...");
+			System.out.print(_("Contact compatibility test..."));
 			comp = 0;
 			num = 0;
 			for (Contact a : contacts) {
@@ -320,13 +320,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact clone test...");
+			System.out.print(_("Contact clone test..."));
 			comp = 0;
 			num = 0;
 			for (Contact c : contacts) {
@@ -336,13 +336,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Contact merge test...");
+			System.out.print(_("Contact merge test..."));
 			comp = 0;
 			num = 0;
 			for (Contact c : contacts) {
@@ -376,9 +376,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}/**/
 		} catch (UnknownObjectException e) {
@@ -388,7 +388,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 
 	}
-
+	private static String _(String text) { 
+		return Translations.get(text);
+	}
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
+	}
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	// private String revision;
 	// private String productId;
@@ -464,7 +469,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	public void actionPerformed(ActionEvent evt) {
 		Object source = evt.getSource();
 		if (source == newTitleButton) {
-			TitleField titleField = new TitleField("Title");
+			TitleField titleField = new TitleField(_("Title"));
 			titleField.addEditListener(this);
 			titleFields.add(titleField);
 			titleForm.insertCompoundBefore(newTitleButton, titleField);
@@ -485,7 +490,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			}
 		}
 		if (source == newRoleButton) {
-			RoleField roleField = new RoleField("Role");
+			RoleField roleField = new RoleField(_("Role"));
 			roleField.addEditListener(this);
 			roleFields.add(roleField);
 			roleForm.insertCompoundBefore(newRoleButton, roleField);
@@ -578,14 +583,14 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			}
 		}
 		if (source == newCategoryButton) {
-			CategoryField categoryField = new CategoryField("Category");
+			CategoryField categoryField = new CategoryField(_("Category"));
 			categoryField.addEditListener(this);
 			categoryFields.add(categoryField);
 			categoryForm.insertCompoundBefore(newCategoryButton, categoryField);
 			rescale();
 		}
 		if (source == newNoteButton) {
-			NoteField newNoteField = new NoteField("Note");
+			NoteField newNoteField = new NoteField(_("Note"));
 			newNoteField.addEditListener(this);
 			noteFields.add(newNoteField);
 			noteForm.insertCompoundBefore(newNoteButton, newNoteField);
@@ -594,8 +599,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		if (source == cloneButton) {
 			clonedContact = clone();
 			if (clonedContact != null) {
-				clonePanel = new HorizontalPanel("cloned contact");
-				clonePanel.add(resetCloneButton = new JButton("drop clone"));
+				clonePanel = new HorizontalPanel(_("cloned contact"));
+				clonePanel.add(resetCloneButton = new JButton(_("drop clone")));
 				resetCloneButton.addActionListener(this);
 				clonePanel.add(clonedContact.baseForm());
 				clonePanel.scale();
@@ -641,8 +646,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	public boolean edited() {
 		String before = this.toString();
-		String[] options = { "Ok", "Delete this contact" };
-		int choice = JOptionPane.showOptionDialog(null, editForm(), "Edit contact", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+		String[] options = { _("Ok"), _("Delete this contact") };
+		int choice = JOptionPane.showOptionDialog(null, editForm(), _("Edit contact"), JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 		switch (choice) {
 		case 1:
 			clearFields();
@@ -955,45 +960,45 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		nameForm.add(name.editForm(null));
 
 		/* Formatted Name */
-		nameForm.add(formattedField = new InputField("Formatted name", formattedName));
+		nameForm.add(formattedField = new InputField(_("Formatted name"), formattedName));
 		formattedField.addChangeListener(this);
 		nameForm.scale();
 		form.add(nameForm);
 
 		/* Titles */
-		titleForm = new VerticalPanel("Titles");
+		titleForm = new VerticalPanel(_("Titles"));
 		titleFields = new Vector<TitleField>();
 		for (String t : titles) {
-			TitleField titleField = new TitleField("Title", t);
+			TitleField titleField = new TitleField(_("Title"), t);
 			titleField.addEditListener(this);
 			titleForm.add(titleField);
 			titleFields.add(titleField);
 		}
-		titleForm.add(newTitleButton = new JButton("add title"));
+		titleForm.add(newTitleButton = new JButton(_("add title")));
 		newTitleButton.addActionListener(this);
 		titleForm.scale();
 		form.add(titleForm);
 
 		/* Nicknames */
-		nickForm = new VerticalPanel("Nicknames");
+		nickForm = new VerticalPanel(_("Nicknames"));
 		for (Nickname nick : nicks) {
 			nickForm.add(nick.editForm());
 		}
-		nickForm.add(newNickButton = new JButton("add nickname"));
+		nickForm.add(newNickButton = new JButton(_("add nickname")));
 		newNickButton.addActionListener(this);
 		nickForm.scale();
 		form.add(nickForm);
 
 		/* Roles */
-		roleForm = new VerticalPanel("Roles");
+		roleForm = new VerticalPanel(_("Roles"));
 		roleFields = new Vector<RoleField>();
 		for (String t : roles) {
-			RoleField roleField = new RoleField("Role", t);
+			RoleField roleField = new RoleField(_("Role"), t);
 			roleField.addEditListener(this);
 			roleForm.add(roleField);
 			roleFields.add(roleField);
 		}
-		roleForm.add(newRoleButton = new JButton("add role"));
+		roleForm.add(newRoleButton = new JButton(_("add role")));
 		newRoleButton.addActionListener(this);
 		roleForm.scale();
 		form.add(roleForm);
@@ -1002,94 +1007,94 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		if (birthday != null) {
 			form.add(birthday.editForm());
 		} else {
-			form.add(birthdayButton = new JButton("add Birthday"));
+			form.add(birthdayButton = new JButton(_("add birthday")));
 			birthdayButton.addActionListener(this);
 		}
 
 		/* Phones */
-		phoneForm = new HorizontalPanel("Phones");
+		phoneForm = new HorizontalPanel(_("Phones"));
 		for (Phone p : phones) {
 			phoneForm.add(p.editForm());
 		}
-		phoneForm.add(newPhoneButton = new JButton("Add Phone"));
+		phoneForm.add(newPhoneButton = new JButton(_("add phone")));
 		newPhoneButton.addActionListener(this);
 		phoneForm.scale();
 		form.add(phoneForm);
 
 		/* Adresses */
-		adressForm = new HorizontalPanel("Adresses");
+		adressForm = new HorizontalPanel(_("Adresses"));
 		for (Adress a : adresses) {
 			adressForm.add(a.editForm());
 		}
-		adressForm.add(newAdressButton = new JButton("Add Address"));
+		adressForm.add(newAdressButton = new JButton(_("add adress")));
 		newAdressButton.addActionListener(this);
 		adressForm.scale();
 		form.add(adressForm);
 
 		/* Emails */
-		mailForm = new HorizontalPanel("Email Adresses");
+		mailForm = new HorizontalPanel(_("Email Adresses"));
 		for (Email m : mails) {
 			mailForm.add(m.editForm());
 		}
-		mailForm.add(newMailButton = new JButton("Add Email"));
+		mailForm.add(newMailButton = new JButton(_("add email")));
 		newMailButton.addActionListener(this);
 		mailForm.scale();
 		form.add(mailForm);
 
 		/* URLs */
-		urlForm = new VerticalPanel("Websites");
+		urlForm = new VerticalPanel(_("Websites"));
 		for (Url u : urls) {
 			urlForm.add(u.editForm());
 		}
-		urlForm.add(newUrlButton = new JButton("Add URL"));
+		urlForm.add(newUrlButton = new JButton(_("add URL")));
 		newUrlButton.addActionListener(this);
 		urlForm.scale();
 		form.add(urlForm);
 
 		/* Organizations */
-		orgForm = new HorizontalPanel("Organizations");
+		orgForm = new HorizontalPanel(_("Organizations"));
 		for (Organization o : orgs) {
 			orgForm.add(o.editForm());
 		}
-		orgForm.add(newOrgButton = new JButton("Add Organization"));
+		orgForm.add(newOrgButton = new JButton(_("add organization")));
 		newOrgButton.addActionListener(this);
 		orgForm.scale();
 		form.add(orgForm);
 
 		/* Messengers */
-		messengerForm = new HorizontalPanel("Messengers");
+		messengerForm = new HorizontalPanel(_("Messengers"));
 		for (Messenger m : messengers) {
 			messengerForm.add(m.editForm());
 		}
-		messengerForm.add(newMessengerButton = new JButton("Add Messenger"));
+		messengerForm.add(newMessengerButton = new JButton(_("add messenger")));
 		newMessengerButton.addActionListener(this);
 		messengerForm.scale();
 		form.add(messengerForm);
 
 		/* Categories */
-		categoryForm = new VerticalPanel("Categories");
+		categoryForm = new VerticalPanel(_("Categories"));
 		categoryFields = new Vector<CategoryField>();
 		for (String c : categories) {
-			CategoryField categoryField = new CategoryField("Category", c);
+			CategoryField categoryField = new CategoryField(_("Category"), c);
 			categoryField.addEditListener(this);
 			categoryForm.add(categoryField);
 			categoryFields.add(categoryField);
 		}
-		categoryForm.add(newCategoryButton = new JButton("add category"));
+		categoryForm.add(newCategoryButton = new JButton(_("add category")));
 		newCategoryButton.addActionListener(this);
 		categoryForm.scale();
 		form.add(categoryForm);
 
 		/* Notes */
-		noteForm = new VerticalPanel("Notes");
+		noteForm = new VerticalPanel(_("Notes"));
 		noteFields = new Vector<NoteField>();
 		for (String n : notes) {
-			NoteField noteField = new NoteField("Note", n);
+			NoteField noteField = new NoteField(_("Note"), n);
 			noteField.addEditListener(this);
 			noteForm.add(noteField);
 			noteFields.add(noteField);
 		}
-		noteForm.add(newNoteButton = new JButton("add note"));
+		noteForm.add(newNoteButton = new JButton(_("add note")));
 		newNoteButton.addActionListener(this);
 		noteForm.scale();
 		form.add(noteForm);
@@ -1113,7 +1118,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		outerForm = new HorizontalPanel();
 
 		outerForm.add(form = baseForm());
-		outerForm.add(cloneButton = new JButton(">> clone this contact >>"));
+		outerForm.add(cloneButton = new JButton(_(">> clone this contact >>")));
 		cloneButton.addActionListener(this);
 
 		outerForm.scale();
@@ -1158,7 +1163,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		} else if (birthday.isCompatibleWith(contact.birthday)) {
 			birthday.mergeWith(contact.birthday);
 		} else {
-			birthday = (Birthday) selectOneOf("birtday", birthday, contact.birthday, contact);
+			birthday = (Birthday) selectOneOf(_("birtday"), birthday, contact.birthday, contact);
 		}
 	}
 
@@ -1171,7 +1176,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (skipAsk) {
 				name = contact.name;
 			} else {
-				name = (Name) selectOneOf("name", name, contact.name, contact);	
+				name = (Name) selectOneOf(_("name"), name, contact.name, contact);	
 			}			
 		}
 
@@ -1179,7 +1184,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (skipAsk){
 				formattedName = contact.formattedName;
 			} else {
-				formattedName = (String) selectOneOf("formated name", formattedName, contact.formattedName, contact);
+				formattedName = (String) selectOneOf(_("formatted name"), formattedName, contact.formattedName, contact);
 			}
 		} else {
 			formattedName = merge(formattedName, contact.formattedName);
@@ -1196,7 +1201,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	 */
 
 	private void parse(String data) throws UnknownObjectException, InvalidFormatException {
-		if (data == null || data.isEmpty()) throw new InvalidFormatException("No data given");
+		if (data == null || data.isEmpty()) throw new InvalidFormatException(_("No data given"));
 		String[] lineArray = data.split("\n");
 		parse(new Vector<String>(Arrays.asList(lineArray)));
 	}
@@ -1255,7 +1260,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
 
 			if (!known) {
-				throw new UnknownObjectException("unknown entry/instruction found in vcard " + vcfName + ": '" + line + "'");
+				throw new UnknownObjectException(_("unknown entry/instruction found in vcard #: '#'",new Object[]{vcfName,line}));
 			}
 		}
 		changed();
@@ -1361,19 +1366,19 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	private Object selectOneOf(String title, Object o1, Object o2, Contact contact2) {
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new JLabel("<html>Merging the following two contacts:<br>&nbsp;"));
+		vp.add(new JLabel(_("<html>Merging the following two contacts:<br>&nbsp;")));
 		HorizontalPanel hp = new HorizontalPanel();
 		hp.add(new JLabel("<html>" + this.toString(true).replace("\n", "&nbsp;<br>")));
 		hp.add(new JLabel("<html>" + contact2.toString(true).replace("\n", "<br>")));
 		hp.scale();
 		vp.add(hp);
-		vp.add(new JLabel("<html><br>Which " + title + " shall be used?"));
+		vp.add(new JLabel(_("<html><br>Which # shall be used?",title)));
 		vp.scale();
 		UIManager.put("OptionPane.yesButtonText", o1.toString().replace("\\,", ","));
 		UIManager.put("OptionPane.noButtonText", o2.toString().replace("\\,", ","));
-		int decision = JOptionPane.showConfirmDialog(null, vp, "Please select", JOptionPane.YES_NO_CANCEL_OPTION);
-		UIManager.put("OptionPane.yesButtonText", "Yes");
-		UIManager.put("OptionPane.noButtonText", "No");
+		int decision = JOptionPane.showConfirmDialog(null, vp, _("Please select"), JOptionPane.YES_NO_CANCEL_OPTION);
+		UIManager.put("OptionPane.yesButtonText", _("Yes"));
+		UIManager.put("OptionPane.noButtonText", _("No"));
 		switch (decision) {
 		case JOptionPane.YES_OPTION:
 			return o1;
@@ -1411,18 +1416,18 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		for (Email email : overloadedCategoryNumbers) {
 			if (!work) {
-				System.out.println("Using " + email.address() + " as home mail address, as '" + email.category() + "' is already used by another number.");
+				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{email.address(),"work email adress",email.category(),"adress"}));
 				email.setWork();
 				work = true;
 				continue;
 			}
 			if (!home) {
-				System.out.println("Using " + email.address() + " as home mail address, as '" + email.category() + "' is already used by another number.");
+				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{email.address(),"home email adress",email.category(),"adress"}));
 				email.setHome();
 				home = true;
 				continue;
 			}
-			throw new ToMuchEntriesForThunderbirdException("There is no thunderbird slot left for the following email entry: " + email);
+			throw new ToMuchEntriesForThunderbirdException(_("There is no thunderbird slot left for the following # entry: #",new Object[]{"email",email}));
 		}
 		return mails;
 	}
@@ -1470,30 +1475,31 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		for (Phone phone : overloadedCategoryNumbers) {
 			if (!home) {
-				System.out.println("Using " + phone.simpleNumber() + " as home phone number, as '" + phone.category() + "' is already used by another number.");
+				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{phone.simpleNumber(),"home phone number",phone.category(),"number"}));
 				phone.setHome();
 				home = true;
 				continue;
 			}
 			if (!cell) {
-				System.out.println("Using " + phone.simpleNumber() + " as cell phone number, as '" + phone.category() + "' is already used by another number.");
+				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{phone.simpleNumber(),"cell phone number",phone.category(),"number"}));
 				phone.setCell();
 				cell = true;
 				continue;
 			}
 			if (!work) {
-				System.out.println("Using " + phone.simpleNumber() + " as home work number, as '" + phone.category() + "' is already used by another number.");
+				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{phone.simpleNumber(),"work phone number",phone.category(),"number"}));
 				phone.setWork();
 				work = true;
 				continue;
 			}
 			if (!fax) {
-				System.out.println("Using " + phone.simpleNumber() + " as home fax number, as '" + phone.category() + "' is already used by another number.");
+				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{phone.simpleNumber(),"fax number",phone.category(),"number"}));
+				
 				phone.setFax();
 				fax = true;
 				continue;
 			}
-			throw new ToMuchEntriesForThunderbirdException("There is no thunderbird slot left for the following number entry: " + phone);
+			throw new ToMuchEntriesForThunderbirdException(_("There is no thunderbird slot left for the following # entry: #",new Object[]{"number",phone}));
 		}
 	}
 
