@@ -90,7 +90,7 @@ public class TranslationDE extends Translation{
 		trans.put("unknown entry/instruction found in vcard #: '#'", "Unbekannte Anweisung/Eintrag in vcard # gefunden: '#'");
 		trans.put("Uploading #", "Lade # hoch");
 		trans.put("User:","Benutzer:");
-		trans.put("Using # as #, as '#' is already used by another #.", "Setze # als #, da '#' schon von einer anderen # verwendet wird.")
+		trans.put("Using # as #, as '#' is already used by another #.", "Setze # als #, da '#' schon von einer anderen # verwendet wird.");
 		trans.put("Warning: skipping empty contact # (Contains nothing but a name)", "Warnung: überspringe leeren Kontakt # (Enthält außer dem Namen keine Daten)");		
 		trans.put("<html><font color=\"red\">Warning! Those contacts contain unequal birth dates!","<html><font color=\"red\">Achtung! Diese kontakte enthalten unterschiedliche Geburtstags-Einträge!");
 		trans.put("Websites", "Webseiten");
