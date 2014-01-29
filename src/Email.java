@@ -10,82 +10,81 @@ import javax.swing.event.DocumentListener;
 
 
 public class Email extends Mergable<Email> implements DocumentListener, ChangeListener, Comparable<Email> {
-	
 	public static void test() {
 		try {
-			System.out.print("Email creation test (null)...");
+			System.out.print(_("Email creation test (null)..."));
 			String testCase = null;
 			try {
 				Email nM = new Email(testCase);
-				System.err.println("failed: " + nM);
+				System.err.println(_("failed: #", nM));
 				System.exit(-1);
 			} catch (InvalidFormatException e) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
       }
 
-			System.out.print("Email creation test (empty)...");
+			System.out.print(_("Email creation test (empty)..."));
 			testCase = "EMAIL:";
 			Email eM = new Email(testCase);
 			if (eM.toString().equals(testCase)) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + eM);
+				System.err.println(_("failed: #", eM));
 				System.exit(-1);
 			}
 
-			System.out.print("Email creation test (valid)...");
+			System.out.print(_("Email creation test (valid)..."));
 			testCase = "EMAIL:test.test-24+a@test.example.com";
 			Email vM = new Email(testCase);
 			if (vM.toString().equals(testCase) && !vM.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + vM);
+				System.err.println(_("failed: #", vM));
 				System.exit(-1);
 			}
 
-			System.out.print("Email creation test (invalid)...");
+			System.out.print(_("Email creation test (invalid)..."));
 			testCase = "EMAIL:steinlaus";
 			Email iM = new Email(testCase);
 			if (iM.toString().equals(testCase) && iM.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + iM);
+				System.err.println(_("failed: #", iM));
 				System.exit(-1);
 			}
 			
-			System.out.print("Email creation test (valid work)...");
+			System.out.print(_("Email creation test (valid work)..."));
 			testCase = "EMAIL;TYPE=WORK:work@example.com";
 			Email workM = new Email(testCase);
 			if (workM.toString().equals(testCase) && !workM.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + workM);
+				System.err.println(_("failed: #", workM));
 				System.exit(-1);
 			}
 
-			System.out.print("Email creation test (valid home)...");
+			System.out.print(_("Email creation test (valid home)..."));
 			testCase = "EMAIL;TYPE=HOME:home@example.com";
 			Email homeM = new Email(testCase);
 			if (homeM.toString().equals(testCase) && !homeM.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + homeM);
+				System.err.println(_("failed: #", homeM));
 				System.exit(-1);
 			}
 
-			System.out.print("Email creation test (valid internet)...");
+			System.out.print(_("Email creation test (valid internet)..."));
 			testCase = "EMAIL;TYPE=INTERNET:net@example.com";
 			Email netM = new Email(testCase);
 			if (netM.toString().equals(testCase) && !netM.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + netM);
+				System.err.println(_("failed: #", netM));
 				System.exit(-1);
 			}
 			
 			Email[] mails = { eM,vM,iM,workM,homeM,netM };
 
-			System.out.print("Email isEmpty test...");
+			System.out.print(_("Email isEmpty test..."));
 			int comp = 0;
 			int num = 0;
 			for (Email m : mails) {
@@ -98,13 +97,13 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 				}
 			}
 			if (num == comp) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Email compare test...");
+			System.out.print(_("Email compare test..."));
 			comp = 0;
 			num = 0;
 			for (Email m : mails) {
@@ -118,13 +117,13 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Email compatibility test...");
+			System.out.print(_("Email compatibility test..."));
 			comp = 0;
 			num = 0;
 			for (Email a : mails) {
@@ -162,13 +161,13 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Email clone test...");
+			System.out.print(_("Email clone test..."));
 			comp=0;
 			num=0;
 			for (Email m:mails){
@@ -181,13 +180,13 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Email merge test...");
+			System.out.print(_("Email merge test..."));
 			comp=0;
 			num=0;
 			for (Email m:mails){
@@ -207,7 +206,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 						System.out.println();
 						System.out.println("fb: "+netM);
 						System.out.println(" b: "+m);
-						System.out.println("merged:");
+						System.out.println(_("merged:"));
 						System.out.println("fb: "+clone2);
 						System.out.println(" b: "+clone1);
 					}
@@ -216,9 +215,9 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 				}				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-				System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 		} catch (UnknownObjectException e) {
@@ -228,6 +227,12 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 
 		}
 
+	}
+	private static String _(String text) { 
+		return Translations.get(text);
+	}
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
 	}
 	private boolean work=false;
 	private boolean home=false;
@@ -291,19 +296,19 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 	}
 	
 	public VerticalPanel editForm() {
-		form=new VerticalPanel("Email");
+		form=new VerticalPanel(_("Email"));
 		
 		if (invalid) form.setBackground(Color.red);
 		if (isEmpty()) form.setBackground(Color.yellow);
 		
-		form.add(adressBox=new InputField("Adress",adress));
+		form.add(adressBox=new InputField(_("Adress"),adress));
 		adressBox.addChangeListener(this);
 		
-		form.add(homeBox=new JCheckBox("Home",home));
+		form.add(homeBox=new JCheckBox(_("Home"),home));
 		homeBox.addChangeListener(this);
-		form.add(workBox=new JCheckBox("Work",work));
+		form.add(workBox=new JCheckBox(_("Work"),work));
 		workBox.addChangeListener(this);
-		form.add(internetBox=new JCheckBox("Internet",internet));
+		form.add(internetBox=new JCheckBox(_("Internet"),internet));
 		internetBox.addChangeListener(this);
 		form.scale();
 		return form;
@@ -340,7 +345,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 	}
 	
 	public void merge(Email mail) throws InvalidAssignmentException {
-		if (!adress.equals(mail.adress)) throw new InvalidAssignmentException("Trying to merge two mails with different adresses!");
+		if (!adress.equals(mail.adress)) throw new InvalidAssignmentException(_("Trying to merge two mails with different adresses!"));
 		if (mail.home) home=true;
 		if (mail.work) work=true;
 		if (mail.internet) internet=true;

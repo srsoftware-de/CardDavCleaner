@@ -9,71 +9,72 @@ import javax.swing.event.DocumentListener;
 
 
 public class Nickname extends Mergable<Nickname> implements DocumentListener, ChangeListener, Comparable<Nickname> {
+
 	public static void test() {
 		try {
-			System.out.print("Nickname creation test (null)...");
+			System.out.print(_("Nickname creation test (null)..."));
 			String testCase = null;
 			try {
 				Nickname nM = new Nickname(testCase);
-				System.err.println("failed: " + nM);
+				System.err.println(_("failed: #", nM));
 				System.exit(-1);
 			} catch (InvalidFormatException e) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
       }
 
-			System.out.print("Nickname creation test (empty)...");
+			System.out.print(_("Nickname creation test (empty)..."));
 			testCase = "NICKNAME:";
 			Nickname emptyN = new Nickname(testCase);
 			if (emptyN.toString().equals(testCase)) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + emptyN);
+				System.err.println(_("failed: #", emptyN));
 				System.exit(-1);
 			}
 
-			System.out.print("Nickname creation test (simple)...");
+			System.out.print(_("Nickname creation test (simple)..."));
 			testCase = "NICKNAME:Master of Daleks";
 			Nickname simplN = new Nickname(testCase);
 			if (simplN.toString().equals(testCase) && !simplN.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + simplN);
+				System.err.println(_("failed: #", simplN));
 				System.exit(-1);
 			}
 
-			System.out.print("Nickname creation test (work)...");
+			System.out.print(_("Nickname creation test (work)..."));
 			testCase = "NICKNAME;TYPE=WORK:Edward Snowden";
 			Nickname workN = new Nickname(testCase);
 			if (workN.toString().equals(testCase) && !workN.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + workN);
+				System.err.println(_("failed: #", workN));
 				System.exit(-1);
 			}
 
-			System.out.print("Nickname creation test (home)...");
+			System.out.print(_("Nickname creation test (home)..."));
 			testCase = "NICKNAME;TYPE=HOME:KIMBLE";
 			Nickname homeN = new Nickname(testCase);
 			if (homeN.toString().equals(testCase) && !homeN.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + homeN);
+				System.err.println(_("failed: #", homeN));
 				System.exit(-1);
 			}
 
-			System.out.print("Nickname creation test (valid internet)...");
+			System.out.print(_("Nickname creation test (valid internet)..."));
 			testCase = "NICKNAME;TYPE=INTERNET:";
 			Nickname netN = new Nickname(testCase);
 			if (netN.toString().equals(testCase) && !netN.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + netN);
+				System.err.println(_("failed: #", netN));
 				System.exit(-1);
 			}
 			
 			Nickname[] nicknames = { emptyN,simplN,workN,homeN,netN };
 
-			System.out.print("Nickname isEmpty test...");
+			System.out.print(_("Nickname isEmpty test..."));
 			int comp = 0;
 			int num = 0;
 			for (Nickname m : nicknames) {
@@ -86,13 +87,13 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 				}
 			}
 			if (num == comp) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Nickname compare test...");
+			System.out.print(_("Nickname compare test..."));
 			comp = 0;
 			num = 0;
 			for (Nickname m : nicknames) {
@@ -106,13 +107,13 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Nickname compatibility test...");
+			System.out.print(_("Nickname compatibility test..."));
 			comp = 0;
 			num = 0;
 			for (Nickname a : nicknames) {
@@ -137,13 +138,13 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Nickname clone test...");
+			System.out.print(_("Nickname clone test..."));
 			comp=0;
 			num=0;
 			for (Nickname m:nicknames){
@@ -156,13 +157,13 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Nickname merge test...");
+			System.out.print(_("Nickname merge test..."));
 			comp=0;
 			num=0;
 			for (Nickname m:nicknames){
@@ -192,9 +193,9 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 				}				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-				System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 		} catch (UnknownObjectException e) {
@@ -204,6 +205,13 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 
 		}
 
+	}
+
+	private static String _(String text) { 
+		return Translations.get(text);
+	}
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
 	}
 	private boolean work=false;
 	private boolean home=false;
@@ -216,7 +224,7 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 	private VerticalPanel form;
 	
 	public Nickname(String content) throws UnknownObjectException, InvalidFormatException {
-		if (content==null || !content.startsWith("NICKNAME"))throw new InvalidFormatException("Nickname adress does not start with \"NICKNAME\"!");
+		if (content==null || !content.startsWith("NICKNAME"))throw new InvalidFormatException(_("Nickname entry does not start with \"NICKNAME\": #",content));
 		String line=content.substring(8);
 		while(!line.startsWith(":")){
 			String upper = line.toUpperCase();
@@ -260,18 +268,18 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 	}
 	
 	public VerticalPanel editForm() {
-		form=new VerticalPanel("Nickname");
+		form=new VerticalPanel(_("Nickname"));
 		if (invalid) form.setBackground(Color.red);
 		if (isEmpty()) form.setBackground(Color.yellow);
 		
-		form.add(nickField=new InputField("Nickname",nick));
+		form.add(nickField=new InputField(_("Nickname"),nick));
 		nickField.addChangeListener(this);
 		
-		form.add(homeBox=new JCheckBox("Home",home));
+		form.add(homeBox=new JCheckBox(_("Home"),home));
 		homeBox.addChangeListener(this);
-		form.add(workBox=new JCheckBox("Work",work));
+		form.add(workBox=new JCheckBox(_("Work"),work));
 		workBox.addChangeListener(this);
-		form.add(internetBox=new JCheckBox("Internet",internet));
+		form.add(internetBox=new JCheckBox(_("Internet"),internet));
 		internetBox.addChangeListener(this);
 		form.scale();
 		return form;
@@ -308,7 +316,7 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 	}
 
 	public void merge(Nickname nick) throws InvalidAssignmentException {
-		if (!nick.equals(nick)) throw new InvalidAssignmentException("Trying to merge two nicknames with different strings!");
+		if (!nick.equals(nick)) throw new InvalidAssignmentException(_("Trying to merge two nicknames with different strings!"));
 		if (nick.home) home=true;
 		if (nick.work) work=true;
 		if (nick.internet) internet=true;

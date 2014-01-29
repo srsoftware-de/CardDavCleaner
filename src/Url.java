@@ -10,59 +10,59 @@ import javax.swing.event.ChangeListener;
 public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url> {
 	public static void test() {
 		try {
-			System.out.print("Url creation test (null)...");
+			System.out.print(_("Url creation test (null)..."));
 			String testCase = null;
 			try {
 				Url nM = new Url(testCase);
-				System.err.println("failed: " + nM);
+				System.err.println(_("failed: #", nM));
 				System.exit(-1);
 			} catch (InvalidFormatException e) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
       }
 
-			System.out.print("Url creation test (empty)...");
+			System.out.print(_("Url creation test (empty)..."));
 			testCase = "URL:";
 			Url emptyN = new Url(testCase);
 			if (emptyN.toString().equals(testCase) && !emptyN.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + emptyN);
+				System.err.println(_("failed: #", emptyN));
 				System.exit(-1);
 			}
 
-			System.out.print("Url creation test (simple)...");
+			System.out.print(_("Url creation test (simple)..."));
 			testCase = "URL:http://www.example.org";
 			Url simplN = new Url(testCase);
 			if (simplN.toString().equals(testCase) && !simplN.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + simplN);
+				System.err.println(_("failed: #", simplN));
 				System.exit(-1);
 			}
 
-			System.out.print("Url creation test (work/invalid)...");
+			System.out.print(_("Url creation test (work/invalid)..."));
 			testCase = "URL;TYPE=WORK:internet";
 			Url workN = new Url(testCase);
 			if (workN.toString().equals(testCase) && workN.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + workN);
+				System.err.println(_("failed: #", workN));
 				System.exit(-1);
 			}
 
-			System.out.print("Url creation test (home/valid)...");
+			System.out.print(_("Url creation test (home/valid)..."));
 			testCase = "URL;TYPE=HOME:http://example.com";
 			Url homeN = new Url(testCase);
 			if (homeN.toString().equals(testCase) && !homeN.isInvalid()) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println("failed: " + homeN);
+				System.err.println(_("failed: #", homeN));
 				System.exit(-1);
 			}
 
 			Url[] urlnames = { emptyN,simplN,workN,homeN };
 
-			System.out.print("Url isEmpty test...");
+			System.out.print(_("Url isEmpty test..."));
 			int comp = 0;
 			int num = 0;
 			for (Url m : urlnames) {
@@ -75,13 +75,13 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 				}
 			}
 			if (num == comp) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Url compare test...");
+			System.out.print(_("Url compare test..."));
 			comp = 0;
 			num = 0;
 			for (Url m : urlnames) {
@@ -95,13 +95,13 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Url compatibility test...");
+			System.out.print(_("Url compatibility test..."));
 			comp = 0;
 			num = 0;
 			for (Url a : urlnames) {
@@ -125,13 +125,13 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 				}
 			}
 			if (comp == num) {
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {
-				System.err.println(num + "/" + comp + " => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 			
-			System.out.print("Url clone test...");
+			System.out.print(_("Url clone test..."));
 			comp=0;
 			num=0;
 			for (Url m:urlnames){
@@ -144,13 +144,13 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 				}
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-								System.err.println(num+"/"+comp+" => failed");
+								System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 
-			System.out.print("Url merge test...");
+			System.out.print(_("Url merge test..."));
 			comp=0;
 			num=0;
 			for (Url m:urlnames){
@@ -180,9 +180,9 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 				}				
 			}
 			if (comp==num){
-				System.out.println("ok");
+				System.out.println(_("ok"));
 			} else {				
-				System.err.println(num+"/"+comp+" => failed");
+				System.err.println(_("#/# => failed",new Object[]{num,comp}));
 				System.exit(-1);
 			}
 		} catch (UnknownObjectException e) {
@@ -193,6 +193,12 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 		}
 
 	}	
+	private static String _(String text) { 
+		return Translations.get(text);
+	}
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
+	}	
 	private boolean home=false;	
 	private boolean work=false;
 	private boolean invalid=false;
@@ -202,8 +208,9 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 	private JCheckBox workBox;
 	private VerticalPanel form;
 	private Pattern ptr = Pattern.compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+	
 	public Url(String content) throws UnknownObjectException, InvalidFormatException {
-		if (content==null||!content.startsWith("URL")) throw new InvalidFormatException("Url does not start with \"URL\"");
+		if (content==null||!content.startsWith("URL")) throw new InvalidFormatException(_("Url does not start with \"URL\": #",content));
 		String line = content.substring(3);
 		while(!line.startsWith(":")){
 			if (line.startsWith(";")){
@@ -235,14 +242,14 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 	}
 	
 	public VerticalPanel editForm() {
-		form=new VerticalPanel("Web Adress");
+		form=new VerticalPanel(_("Web Adress"));
 		if (invalid) form.setBackground(Color.red);
 		if (isEmpty()) form.setBackground(Color.yellow);
-		form.add(urlField=new InputField("URL",url));
+		form.add(urlField=new InputField(_("URL"),url));
 		urlField.addEditListener(this);
-		form.add(homeBox=new JCheckBox("Home",home));
+		form.add(homeBox=new JCheckBox(_("Home"),home));
 		homeBox.addChangeListener(this);
-		form.add(workBox=new JCheckBox("Work",work));
+		form.add(workBox=new JCheckBox(_("Work"),work));
 		workBox.addChangeListener(this);
 		form.scale();
 		return form;

@@ -28,16 +28,22 @@ public class Translations {
 	}
 	
 	public static String get(String key, Object insert) {
+		String result=get(key);
+		if (result==null) result=key;
 		if (insert instanceof Object []){
 			Object[] oarray = (Object[])insert;
-			key=get(key);
 			for (Object o:oarray){
-				key=key.replaceFirst("#", o.toString());
+				result=result.replaceFirst("#", string(o));
 			}
-			return key;
-		}
-		return get(key).replace("#", insert.toString());
+			return result;
+		}		
+		return result.replace("#", string(insert));
 	}
+
+	private static String string(Object insert) {
+		if (insert==null) return "null";
+	  return insert.toString();
+  }
 
 
 }
