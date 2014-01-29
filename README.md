@@ -1,4 +1,4 @@
-CardDavCleaner
+CardDav Cleaner
 ==============
 
 Java program to merge and clean contacts on CardDAV-Servers
