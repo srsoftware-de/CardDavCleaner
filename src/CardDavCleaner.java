@@ -15,11 +15,15 @@ import java.net.URL;
 import java.rmi.AlreadyBoundException;
 import java.rmi.UnexpectedException;
 import java.rmi.activation.UnknownObjectException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -27,11 +31,14 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 
+import com.sun.net.ssl.SSLContext;
+
 public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -2875331857455588061L;
 
 	public static void main(String[] args) {
+		System.setProperty("jsse.enableSNIExtension", "false");
 		if (args.length>0 && args[0].equals("--test")) {
 			test();
 		} else {
@@ -660,17 +667,28 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws UnknownObjectException
 	 * @throws AlreadyBoundException
 	 * @throws InvalidAssignmentException
+	 * @throws NoSuchAlgorithmException 
+	 * @throws KeyManagementException 
 	 */
-	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
+	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, NoSuchAlgorithmException, KeyManagementException {
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password.toCharArray());
 			}
-		});
+		});	
+		
 
 		if (!host.endsWith("/")) host += "/";
 		URL url = new URL(host);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		
+		com.sun.net.ssl.TrustManager[] tm = { new SelfTrustManager() };
+		SSLContext sc= SSLContext.getInstance("SSL");
+		sc.init(null, tm, new SecureRandom());
+		HttpURLConnection connection= null;
+		if (host.startsWith("https")){
+			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+		}
+		connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
 		String line;

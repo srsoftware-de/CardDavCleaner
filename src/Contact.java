@@ -463,7 +463,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	public Contact(String directory, String name) throws UnknownObjectException, IOException, InvalidFormatException {
 		vcfName = name;
-		parse(new URL(directory + name));
+		URL url=new URL(directory + name);
+		System.out.println(url);
+		parse(url);
 	}
 
 	public void actionPerformed(ActionEvent evt) {
