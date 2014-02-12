@@ -24,6 +24,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLHandshakeException;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -469,7 +470,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		mainPanel.add(serverField = new InputField(_("Server + Path to addressbook:"), false));
 		mainPanel.add(userField = new InputField(_("User:"), false));
 		mainPanel.add(passwordField = new InputField(_("Password:"), true));
-		thunderbirdBox = new JCheckBox(_("<html>I use Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)"));
+		thunderbirdBox = new JCheckBox(_("<html>I use the program Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)"));
 		mainPanel.add(thunderbirdBox);
 		JButton startButton = new JButton(_("start"));
 		startButton.addActionListener(this);
@@ -685,20 +686,21 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			// here we set a socket factory, which uses our own trust manager
 			HttpsURLConnection.setDefaultSSLSocketFactory(TrustHandler.getSocketFactory());
 		}
-		connection = (HttpURLConnection) url.openConnection();
-		InputStream content = (InputStream) connection.getInputStream();
-		BufferedReader in = new BufferedReader(new InputStreamReader(content));
-		String line;
-		TreeSet<String> contacts = new TreeSet<String>();
-		while ((line = in.readLine()) != null) {
-			if (line.contains(".vcf")) contacts.add(extractContactName(line));
-		}
-		in.close();
-		content.close();
-		connection.disconnect();
-
 		try {
+			connection = (HttpURLConnection) url.openConnection();
+			InputStream content = (InputStream) connection.getInputStream();
+			BufferedReader in = new BufferedReader(new InputStreamReader(content));
+			String line;
+			TreeSet<String> contacts = new TreeSet<String>();
+			while ((line = in.readLine()) != null) {
+				if (line.contains(".vcf")) contacts.add(extractContactName(line));
+			}
+			in.close();
+			content.close();
+			connection.disconnect();
 			cleanContacts(host, contacts);
+		} catch (SSLHandshakeException ve){
+			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
 		} catch (ToMuchEntriesForThunderbirdException e) {
 			JOptionPane.showMessageDialog(this, _("<html>#<br>Will abort operation now.",e.getMessage()));
 			System.exit(-1);

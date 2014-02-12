@@ -27,7 +27,6 @@ public class SelfTrustManager implements X509TrustManager {
 
 	public void checkClientTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
 		try {
-			System.out.print("checkClientTrusted(");
 			externalTrustManager.checkClientTrusted(certificates, authType);
 		} catch (ValidatorException ve) {
 			if (certificates == null || certificates.length == 0) throw new IllegalArgumentException(_("Empty certificate chain supplied!"));
@@ -46,8 +45,8 @@ public class SelfTrustManager implements X509TrustManager {
 		try {
 			externalTrustManager.checkServerTrusted(certificates, authType);
 		} catch (ValidatorException ve) {
-			if (certificates == null || certificates.length == 0) throw new IllegalArgumentException("Empty certificate chain supplied!");
-			if (authType == null || authType.isEmpty()) throw new IllegalArgumentException("No authType given!");
+			if (certificates == null || certificates.length == 0) throw new IllegalArgumentException(_("Empty certificate chain supplied!"));
+			if (authType == null || authType.isEmpty()) throw new IllegalArgumentException(_("No authType given!"));
 			for (X509Certificate certificate : certificates) {
 				certificate.checkValidity();
 				int decision=JOptionPane.showConfirmDialog(null, formatCert(certificate), getCertPart(certificate,"CN"), JOptionPane.YES_NO_OPTION);
@@ -70,16 +69,16 @@ public class SelfTrustManager implements X509TrustManager {
 		VerticalPanel result=new VerticalPanel();
 		result.add(new JLabel(_("This website uses a certificate, which is not in your list of trusted certificates!")));
 		VerticalPanel info=new VerticalPanel(_("Certificate Information"));
-		info.add(new JLabel(_("Common Name:")+" "+getCertPart(certificate, "CN")));
-		info.add(new JLabel(_("Organization:")+" "+getCertPart(certificate, "O")));
-		info.add(new JLabel(_("Organizational Unit:")+" "+getCertPart(certificate, "OU")));
-		info.add(new JLabel(_("Location:")+" "+getCertPart(certificate, "L")));
-		info.add(new JLabel(_("State:")+" "+getCertPart(certificate, "ST")));
-		info.add(new JLabel(_("Country:")+" "+getCertPart(certificate, "C")));
-		info.add(new JLabel(_("Email:")+" "+getCertPart(certificate, "EMAILADDRESS")));
+		info.add(new JLabel(_("Common Name")+": "+getCertPart(certificate, "CN")));
+		info.add(new JLabel(_("Organization")+": "+getCertPart(certificate, "O")));
+		info.add(new JLabel(_("Organizational Unit")+": "+getCertPart(certificate, "OU")));
+		info.add(new JLabel(_("Location")+": "+getCertPart(certificate, "L")));
+		info.add(new JLabel(_("State")+": "+getCertPart(certificate, "ST")));
+		info.add(new JLabel(_("Country")+": "+getCertPart(certificate, "C")));
+		info.add(new JLabel(_("Email")+": "+getCertPart(certificate, "EMAILADDRESS")));
 		String sn=certificate.getSerialNumber().toString(16).toUpperCase().replaceAll("(.{2})(?!$)", "$1:"); // hex form
-		info.add(new JLabel(_("Serial Number:")+" "+sn));
-		info.add(new JLabel(_("Validity period:")+" "+df.format(certificate.getNotBefore())+" - "+df.format(certificate.getNotAfter())));
+		info.add(new JLabel(_("Serial Number")+": "+sn));
+		info.add(new JLabel(_("Validity period")+": "+df.format(certificate.getNotBefore())+" - "+df.format(certificate.getNotAfter())));
 		info.scale();
 		result.add(info);
 		result.add(new JLabel(_("Do you trust this certificate/website?")));

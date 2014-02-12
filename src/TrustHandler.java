@@ -37,11 +37,18 @@ public class TrustHandler {
 				context.init(new KeyManager[0], tm, new SecureRandom());
 				sslSocketFactory = (SSLSocketFactory) context.getSocketFactory();
 			} catch (KeyManagementException e) {
-				System.err.println("No SSL algorithm support: " + e.getMessage());
+				System.err.println(_("No SSL algorithm support: #",e.getMessage()));
 			} catch (NoSuchAlgorithmException e) {
-				System.err.println("Exception when setting up the Naive key management.");
+				System.err.println(_("Exception when setting up the key trust management."));
 			}
 		}
 		return sslSocketFactory;
+	}
+	
+	private static String _(String text) { 
+		return Translations.get(text);
+	}
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
 	}
 }
