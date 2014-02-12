@@ -623,7 +623,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				} while (contact != null);
 			} catch (UnknownObjectException uoe) {
 				uoe.printStackTrace();
-				JOptionPane.showMessageDialog(null, uoe.getMessage());
+				JOptionPane.showMessageDialog(null,_("Found unknown object in vCard: ")+uoe.getMessage());
 			} catch (InvalidFormatException ife) {
 				ife.printStackTrace();
 				JOptionPane.showMessageDialog(null, ife.getMessage());

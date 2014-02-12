@@ -1,6 +1,7 @@
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
+import java.util.TreeSet;
 
 import javax.net.ssl.X509TrustManager;
 import javax.swing.JLabel;
@@ -14,6 +15,8 @@ import sun.security.validator.ValidatorException;
  **/
 public class SelfTrustManager implements X509TrustManager {
 
+	private TreeSet<X509Certificate> thrusted=new TreeSet<X509Certificate>(ObjectComparator.get());
+	
 	private static String _(String text) { 
 		return Translations.get(text);
 	}
@@ -33,8 +36,11 @@ public class SelfTrustManager implements X509TrustManager {
 			if (authType == null || authType.isEmpty()) throw new IllegalArgumentException(_("No authType given!"));
 			for (X509Certificate certificate : certificates) {
 				certificate.checkValidity();
+				if (thrusted.contains(certificate)) continue;
 				int decision=JOptionPane.showConfirmDialog(null, formatCert(certificate), getCertPart(certificate,"CN"), JOptionPane.YES_NO_OPTION);
-				if (decision!=JOptionPane.YES_OPTION){
+				if (decision==JOptionPane.YES_OPTION){
+					thrusted.add(certificate);
+				} else {
 					throw ve;
 				}
 			}
@@ -49,8 +55,11 @@ public class SelfTrustManager implements X509TrustManager {
 			if (authType == null || authType.isEmpty()) throw new IllegalArgumentException(_("No authType given!"));
 			for (X509Certificate certificate : certificates) {
 				certificate.checkValidity();
+				if (thrusted.contains(certificate)) continue;
 				int decision=JOptionPane.showConfirmDialog(null, formatCert(certificate), getCertPart(certificate,"CN"), JOptionPane.YES_NO_OPTION);
-				if (decision!=JOptionPane.YES_OPTION){
+				if (decision==JOptionPane.YES_OPTION){
+					thrusted.add(certificate);
+				} else {
 					throw ve;
 				}
 			}			

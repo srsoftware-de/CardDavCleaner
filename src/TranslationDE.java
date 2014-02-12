@@ -49,6 +49,7 @@ public class TranslationDE extends Translation{
 		trans.put("First Name", "Vorname");
 		trans.put("formatted name", "formatierter Name");
 		trans.put("found # @# in #", "# @# in # gefunden");
+		trans.put("Found unknown object in vCard: ", "Habe unbekannen Eintrag in vCard gefunden: ");
 		trans.put("# has an invalid format", "Das Format von # ist ungültig");
 		trans.put("Home", "Zuhause");
 		trans.put("Home Adress", "Adresse Zuhause");
