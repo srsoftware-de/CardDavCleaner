@@ -18,22 +18,18 @@ import java.rmi.activation.UnknownObjectException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLSocketFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-
-import com.sun.net.ssl.SSLContext;
 
 public class CardDavCleaner extends JFrame implements ActionListener {
 
@@ -686,6 +682,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		
 		HttpURLConnection connection= null;
 		if (host.startsWith("https")){
+			// here we set a socket factory, which uses our own trust manager
 			HttpsURLConnection.setDefaultSSLSocketFactory(TrustHandler.getSocketFactory());
 		}
 		connection = (HttpURLConnection) url.openConnection();

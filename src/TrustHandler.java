@@ -14,29 +14,28 @@ import javax.net.ssl.X509TrustManager;
 public class TrustHandler {
 
 	private static SSLSocketFactory sslSocketFactory;
-	private static X509TrustManager externalTrustManager;
+	private static X509TrustManager externalTrustManager; // this references the default java trust manager 
 
 	public static final SSLSocketFactory getSocketFactory() throws NoSuchAlgorithmException, KeyStoreException {
 		if (externalTrustManager == null){
-			TrustManagerFactory tmf= TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			TrustManagerFactory tmf=TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 			tmf.init((KeyStore)null);
+			// in the loop we search the default trust manager for X509 certificates
 			for (TrustManager tm:tmf.getTrustManagers()){
 				if (tm instanceof X509TrustManager){
 					externalTrustManager=(X509TrustManager) tm;
 					break;
 				}
 			}
-		}
-		
+		}		
 		
 		if (sslSocketFactory == null) {
 			try {
+				// in the next lines we create an instance of our own trust manager and pass it to the ssl socket factory
 				TrustManager[] tm = new TrustManager[] { new SelfTrustManager(externalTrustManager) };
 				SSLContext context = SSLContext.getInstance("SSL");
 				context.init(new KeyManager[0], tm, new SecureRandom());
-
 				sslSocketFactory = (SSLSocketFactory) context.getSocketFactory();
-
 			} catch (KeyManagementException e) {
 				System.err.println("No SSL algorithm support: " + e.getMessage());
 			} catch (NoSuchAlgorithmException e) {

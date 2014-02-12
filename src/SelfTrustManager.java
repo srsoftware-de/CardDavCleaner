@@ -9,7 +9,8 @@ import javax.swing.JOptionPane;
 import sun.security.validator.ValidatorException;
 
 /**
- * This Trust Manager is "naive" because it trusts everyone.
+ * This Trust Manager is checks certificates using an external trust manager
+ * and comes into action only if the external trust manager does not validate the certificate.
  **/
 public class SelfTrustManager implements X509TrustManager {
 
@@ -19,20 +20,11 @@ public class SelfTrustManager implements X509TrustManager {
 		return Translations.get(text);
 	}
 
-	private static String _(String key, Object insert) {
-		return Translations.get(key, insert);
-	}
-
 	public SelfTrustManager(X509TrustManager externalTrustManager) {
 		if (externalTrustManager == null) throw new IllegalArgumentException(_("No X509-Trust Manager found."));
 		this.externalTrustManager = externalTrustManager;
 	}
 
-	/**
-	 * Doesn't throw an exception, so this is how it approves a certificate.
-	 * 
-	 * @see javax.net.ssl.X509TrustManager#checkClientTrusted(java.security.cert.X509Certificate[], String)
-	 **/
 	public void checkClientTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
 		try {
 			System.out.print("checkClientTrusted(");
@@ -43,13 +35,10 @@ public class SelfTrustManager implements X509TrustManager {
 			for (X509Certificate certificate : certificates) {
 				certificate.checkValidity();
 				int decision=JOptionPane.showConfirmDialog(null, formatCert(certificate), getCertPart(certificate,"CN"), JOptionPane.YES_NO_OPTION);
-				if (decision==JOptionPane.YES_OPTION){
-					System.out.println("trust!");		
-				} else {
+				if (decision!=JOptionPane.YES_OPTION){
 					throw ve;
 				}
 			}
-			System.exit(-1);
 		}
 	}
 	
@@ -63,11 +52,6 @@ public class SelfTrustManager implements X509TrustManager {
 		return "";
 	}
 
-	/**
-	 * Doesn't throw an exception, so this is how it approves a certificate.
-	 * 
-	 * @see javax.net.ssl.X509TrustManager#checkServerTrusted(java.security.cert.X509Certificate[], String)
-	 **/
 	public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
 		try {
 			externalTrustManager.checkServerTrusted(certificates, authType);
@@ -77,13 +61,10 @@ public class SelfTrustManager implements X509TrustManager {
 			for (X509Certificate certificate : certificates) {
 				certificate.checkValidity();
 				int decision=JOptionPane.showConfirmDialog(null, formatCert(certificate), getCertPart(certificate,"CN"), JOptionPane.YES_NO_OPTION);
-				if (decision==JOptionPane.YES_OPTION){
-					System.out.println("trust!");		
-				} else {
+				if (decision!=JOptionPane.YES_OPTION){
 					throw ve;
 				}
 			}			
-			System.exit(-1);
 		}
 	}
 
