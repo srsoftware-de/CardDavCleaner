@@ -14,11 +14,11 @@ import sun.security.validator.ValidatorException;
  **/
 public class SelfTrustManager implements X509TrustManager {
 
-	private X509TrustManager externalTrustManager;
-	
 	private static String _(String text) { 
 		return Translations.get(text);
 	}
+	
+	private X509TrustManager externalTrustManager;
 
 	public SelfTrustManager(X509TrustManager externalTrustManager) {
 		if (externalTrustManager == null) throw new IllegalArgumentException(_("No X509-Trust Manager found."));
@@ -42,16 +42,6 @@ public class SelfTrustManager implements X509TrustManager {
 		}
 	}
 	
-	String getCertPart(X509Certificate certificate, String key){
-		if (key==null) System.out.println(certificate.getIssuerX500Principal());
-		String[] parts = certificate.getIssuerX500Principal().toString().split(", ");
-		for (String part:parts){
-			String[] map = part.split("=");
-			if (map[0].equals(key)) return map[1];
-		}
-		return "";
-	}
-
 	public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
 		try {
 			externalTrustManager.checkServerTrusted(certificates, authType);
@@ -66,6 +56,13 @@ public class SelfTrustManager implements X509TrustManager {
 				}
 			}			
 		}
+	}
+
+	/**
+	 * @see javax.net.ssl.X509TrustManager#getAcceptedIssuers()
+	 **/
+	public X509Certificate[] getAcceptedIssuers() {
+		return externalTrustManager.getAcceptedIssuers();
 	}
 
 	private VerticalPanel formatCert(X509Certificate certificate) {
@@ -90,10 +87,13 @@ public class SelfTrustManager implements X509TrustManager {
 		return result;
 	}
 
-	/**
-	 * @see javax.net.ssl.X509TrustManager#getAcceptedIssuers()
-	 **/
-	public X509Certificate[] getAcceptedIssuers() {
-		return externalTrustManager.getAcceptedIssuers();
+	String getCertPart(X509Certificate certificate, String key){
+		if (key==null) System.out.println(certificate.getIssuerX500Principal());
+		String[] parts = certificate.getIssuerX500Principal().toString().split(", ");
+		for (String part:parts){
+			String[] map = part.split("=");
+			if (map[0].equals(key)) return map[1];
+		}
+		return "";
 	}
 }
