@@ -16,6 +16,7 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.UnexpectedException;
 import java.rmi.activation.UnknownObjectException;
 import java.security.KeyManagementException;
+import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Set;
@@ -670,8 +671,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws InvalidAssignmentException
 	 * @throws NoSuchAlgorithmException 
 	 * @throws KeyManagementException 
+	 * @throws KeyStoreException 
 	 */
-	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, NoSuchAlgorithmException, KeyManagementException {
+	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password.toCharArray());
