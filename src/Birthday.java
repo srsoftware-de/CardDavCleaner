@@ -566,6 +566,7 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 
 	@Override
 	public boolean isCompatibleWith(Birthday other) {
+		if (other==null) return true;
 		if (different(year, other.year)) return false;
 		if (different(month, other.month)) return false;
 		if (different(day, other.day)) return false;
