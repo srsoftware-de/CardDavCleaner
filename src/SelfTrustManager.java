@@ -42,10 +42,13 @@ public class SelfTrustManager implements X509TrustManager {
 			if (authType == null || authType.isEmpty()) throw new IllegalArgumentException(_("No authType given!"));
 			for (X509Certificate certificate : certificates) {
 				certificate.checkValidity();
-				JOptionPane.showConfirmDialog(null, formatCert(certificate), getCertPart(certificate,"CN"), JOptionPane.YES_NO_OPTION);
+				int decision=JOptionPane.showConfirmDialog(null, formatCert(certificate), getCertPart(certificate,"CN"), JOptionPane.YES_NO_OPTION);
+				if (decision==JOptionPane.YES_OPTION){
+					System.out.println("trust!");		
+				} else {
+					throw ve;
+				}
 			}
-			System.out.println("," + authType);
-
 			System.exit(-1);
 		}
 	}
@@ -73,7 +76,12 @@ public class SelfTrustManager implements X509TrustManager {
 			if (authType == null || authType.isEmpty()) throw new IllegalArgumentException("No authType given!");
 			for (X509Certificate certificate : certificates) {
 				certificate.checkValidity();
-				JOptionPane.showConfirmDialog(null, formatCert(certificate), getCertPart(certificate,"CN"), JOptionPane.YES_NO_OPTION);
+				int decision=JOptionPane.showConfirmDialog(null, formatCert(certificate), getCertPart(certificate,"CN"), JOptionPane.YES_NO_OPTION);
+				if (decision==JOptionPane.YES_OPTION){
+					System.out.println("trust!");		
+				} else {
+					throw ve;
+				}
 			}			
 			System.exit(-1);
 		}
@@ -96,6 +104,7 @@ public class SelfTrustManager implements X509TrustManager {
 		info.add(new JLabel(_("Validity period:")+" "+df.format(certificate.getNotBefore())+" - "+df.format(certificate.getNotAfter())));
 		info.scale();
 		result.add(info);
+		result.add(new JLabel(_("Do you trust this certificate/website?")));
 		result.scale();
 		return result;
 	}
