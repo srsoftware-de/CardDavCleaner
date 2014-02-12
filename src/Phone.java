@@ -254,12 +254,13 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	private boolean cell = false;
 	private boolean work = false;
 	private boolean voice = false;
+	private boolean preffered = false;
 	private String number;
 	private boolean invalid = false;
 
 	private InputField numField;
 	VerticalPanel form;
-	private JCheckBox homeBox, voiceBox, workBox, cellBox, faxBox;
+	private JCheckBox homeBox, voiceBox, workBox, cellBox, faxBox, prefBox;
 
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
 		if (content == null || !content.startsWith("TEL")) throw new InvalidFormatException(_("Phone enty does not start with \"TEL\": #",content));
@@ -269,6 +270,11 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (upper.startsWith("TYPE=FAX")) {
 				fax = true;
 				line = line.substring(8);
+				continue;
+			}
+			if (upper.startsWith("TYPE=PREF")||upper.startsWith("PREF=1")) {
+				preffered = true;
+				line = line.substring(9);
 				continue;
 			}
 			if (upper.startsWith("TYPE=HOME")) {
@@ -345,6 +351,8 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		form.add(numField = new InputField(_("Number"), number));
 		numField.addChangeListener(this);
 
+		form.add(prefBox = new JCheckBox(_("Preferred Phone"), home));
+		prefBox.addChangeListener(this);
 		form.add(homeBox = new JCheckBox(_("Home Phone"), home));
 		homeBox.addChangeListener(this);
 		form.add(voiceBox = new JCheckBox(_("Voice Phone"), voice));
@@ -404,6 +412,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	public boolean mergeWith(Phone other) {
 		if (!isCompatibleWith(other)) return false;
 		number = mergeNumber(simpleNumber(), other.simpleNumber());
+		if (other.preffered) preffered=true;
 		if (other.home) home = true;
 		if (other.work) work = true;
 		if (other.cell) cell = true;
@@ -491,6 +500,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("TEL");
+		if (preffered) sb.append(";PREF=1");
 		if (fax) sb.append(";TYPE=FAX");
 		if (home) sb.append(";TYPE=HOME");
 		if (cell) sb.append(";TYPE=CELL");
@@ -529,6 +539,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		voice = voiceBox.isSelected();
 		cell = cellBox.isSelected();
 		fax = faxBox.isSelected();
+		preffered = prefBox.isSelected();
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {

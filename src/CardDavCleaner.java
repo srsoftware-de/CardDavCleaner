@@ -11,11 +11,16 @@ import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.rmi.AlreadyBoundException;
 import java.rmi.activation.UnknownObjectException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLHandshakeException;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -28,6 +33,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private static final long serialVersionUID = -2875331857455588061L;
 
 	public static void main(String[] args) {
+		System.setProperty("jsse.enableSNIExtension", "false");
 		if (args.length>0 && args[0].equals("--test")) {
 			test();
 		} else {
@@ -456,7 +462,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		mainPanel.add(serverField = new InputField(_("Server + Path to addressbook:"), false));
 		mainPanel.add(userField = new InputField(_("User:"), false));
 		mainPanel.add(passwordField = new InputField(_("Password:"), true));
-		thunderbirdBox = new JCheckBox(_("<html>I use Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)"));
+		thunderbirdBox = new JCheckBox(_("<html>I use the program Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)"));
 		mainPanel.add(thunderbirdBox);
 		JButton startButton = new JButton(_("start"));
 		startButton.addActionListener(this);
@@ -515,7 +521,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				} while (contact != null);
 			} catch (UnknownObjectException uoe) {
 				uoe.printStackTrace();
-				JOptionPane.showMessageDialog(null, uoe.getMessage());
+				JOptionPane.showMessageDialog(null,_("Found unknown object in vCard: ")+uoe.getMessage());
 			} catch (InvalidFormatException ife) {
 				ife.printStackTrace();
 				JOptionPane.showMessageDialog(null, ife.getMessage());
@@ -558,30 +564,41 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws UnknownObjectException
 	 * @throws AlreadyBoundException
 	 * @throws InvalidAssignmentException
+	 * @throws NoSuchAlgorithmException 
+	 * @throws KeyManagementException 
+	 * @throws KeyStoreException 
 	 */
-	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
+	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password.toCharArray());
 			}
-		});
+		});	
+		
 
 		if (!host.endsWith("/")) host += "/";
 		URL url = new URL(host);
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		InputStream content = (InputStream) connection.getInputStream();
-		BufferedReader in = new BufferedReader(new InputStreamReader(content));
-		String line;
-		TreeSet<String> contacts = new TreeSet<String>();
-		while ((line = in.readLine()) != null) {
-			if (line.contains(".vcf")) contacts.add(extractContactName(line));
+		
+		HttpURLConnection connection= null;
+		if (host.startsWith("https")){
+			// here we set a socket factory, which uses our own trust manager
+			HttpsURLConnection.setDefaultSSLSocketFactory(TrustHandler.getSocketFactory());
 		}
-		in.close();
-		content.close();
-		connection.disconnect();
-
 		try {
+			connection = (HttpURLConnection) url.openConnection();
+			InputStream content = (InputStream) connection.getInputStream();
+			BufferedReader in = new BufferedReader(new InputStreamReader(content));
+			String line;
+			TreeSet<String> contacts = new TreeSet<String>();
+			while ((line = in.readLine()) != null) {
+				if (line.contains(".vcf")) contacts.add(extractContactName(line));
+			}
+			in.close();
+			content.close();
+			connection.disconnect();
 			cleanContacts(host, contacts);
+		} catch (SSLHandshakeException ve){
+			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
 		} catch (ToMuchEntriesForThunderbirdException e) {
 			JOptionPane.showMessageDialog(this, _("<html>#<br>Will abort operation now.",e.getMessage()));
 			System.exit(-1);
