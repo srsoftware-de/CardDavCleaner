@@ -1,6 +1,8 @@
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.X509TrustManager;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import sun.security.validator.ValidatorException;
 
@@ -9,6 +11,7 @@ import sun.security.validator.ValidatorException;
  **/
 public class SelfTrustManager implements X509TrustManager {
 
+	private static final int CN = 0;
 	private X509TrustManager externalTrustManager;
 
 	public SelfTrustManager(X509TrustManager externalTrustManager) {
@@ -25,19 +28,31 @@ public class SelfTrustManager implements X509TrustManager {
 		try {
 			System.out.print("checkClientTrusted(");
 			externalTrustManager.checkClientTrusted(certificates, authType);
+		} catch (ValidatorException ve) {
 			if (certificates == null || certificates.length == 0) throw new IllegalArgumentException("Empty certificate chain supplied!");
 			if (authType == null || authType.isEmpty()) throw new IllegalArgumentException("No authType given!");
-
 			for (X509Certificate certificate : certificates) {
-				System.out.println(certificate);
-				System.out.println("=======");
+				certificate.checkValidity();
+				System.out.println("ID:"+certificate.getIssuerUniqueID());
+				System.out.println("Principal:"+certificate.getIssuerX500Principal());
+				System.out.println("DN:"+certificate.getIssuerDN());
+				System.out.println("alt:"+certificate.getIssuerAlternativeNames());
+				System.out.println("from:"+certificate.getNotBefore());
+				System.out.println("to:"+certificate.getNotAfter());
+				System.out.println("serial:"+certificate.getSerialNumber());
+				System.out.println("version:"+certificate.getVersion());
+				System.out.println("=======");				
+				JOptionPane.showConfirmDialog(null, formatCert(certificate), getCertPart(certificate,CN), JOptionPane.YES_NO_OPTION);
 			}
 			System.out.println("," + authType);
-		} catch (ValidatorException ve) {
-			ve.printStackTrace();
-			System.err.println("catched!");
+
 			System.exit(-1);
 		}
+	}
+	
+	String getCertPart(X509Certificate certificate, int part){
+		System.out.println(certificate.getIssuerX500Principal().getName());
+		return "Cert";
 	}
 
 	/**
@@ -49,18 +64,31 @@ public class SelfTrustManager implements X509TrustManager {
 		try {
 			System.out.print("checkServerTrusted(");
 			externalTrustManager.checkServerTrusted(certificates, authType);
+		} catch (ValidatorException ve) {
 			if (certificates == null || certificates.length == 0) throw new IllegalArgumentException("Empty certificate chain supplied!");
 			if (authType == null || authType.isEmpty()) throw new IllegalArgumentException("No authType given!");
 			for (X509Certificate certificate : certificates) {
-				System.out.println(certificate);
-				System.out.println("=======");
-			}
-			System.out.println("," + authType);
-		} catch (ValidatorException ve) {
-			ve.printStackTrace();
-			System.err.println("catched!");
+				certificate.checkValidity();
+				System.out.println("ID:"+certificate.getIssuerUniqueID());
+				System.out.println("Principal:"+certificate.getIssuerX500Principal());
+				System.out.println("DN:"+certificate.getIssuerDN());
+				System.out.println("alt:"+certificate.getIssuerAlternativeNames());
+				System.out.println("from:"+certificate.getNotBefore());
+				System.out.println("to:"+certificate.getNotAfter());
+				System.out.println("serial:"+certificate.getSerialNumber());
+				System.out.println("version:"+certificate.getVersion());
+				System.out.println("=======");				
+				JOptionPane.showConfirmDialog(null, formatCert(certificate), getCertPart(certificate,CN), JOptionPane.YES_NO_OPTION);
+			}			
 			System.exit(-1);
 		}
+	}
+
+	private VerticalPanel formatCert(X509Certificate certificate) {
+		VerticalPanel result=new VerticalPanel("Certificate Info");
+		result.add(new JLabel("Certificate Information here"));
+		result.scale();
+		return result;
 	}
 
 	/**
