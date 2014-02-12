@@ -100,6 +100,7 @@ public class TranslationDE extends Translation{
 		trans.put("Phones", "Telefonnummern");
 		trans.put("phone number","Telefonnummer");
 		trans.put("Post Office Box", "Postfach");
+		trans.put("Preferred Phone", "bevorzugte Nummer");
 		trans.put("Prefix", "Präfix");
 		trans.put("reading contact #/#: #", "lese Kontakt #/#: #");
 		trans.put("Region", "Region/Bundesland");
