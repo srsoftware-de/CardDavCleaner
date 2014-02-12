@@ -24,6 +24,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocketFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
@@ -681,12 +682,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		if (!host.endsWith("/")) host += "/";
 		URL url = new URL(host);
 		
-		com.sun.net.ssl.TrustManager[] tm = { new SelfTrustManager() };
-		SSLContext sc= SSLContext.getInstance("SSL");
-		sc.init(null, tm, new SecureRandom());
 		HttpURLConnection connection= null;
 		if (host.startsWith("https")){
-			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+			HttpsURLConnection.setDefaultSSLSocketFactory(TrustHandler.getSocketFactory());
 		}
 		connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
