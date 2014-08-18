@@ -587,4 +587,12 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			throw new CloneNotSupportedException(e.getMessage());
 		}
 	}
+
+	public boolean isWorkAdress() {
+		return work;
+	}
+
+	public boolean isHomeAdress() {
+		return home;
+	}
 }

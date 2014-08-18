@@ -284,8 +284,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 	private JCheckBox aimBox;
 	private JCheckBox icqBox;
 	private JCheckBox msnBox;
-	private JCheckBox skypeBox;
-	
+	private JCheckBox skypeBox;	
 	private JCheckBox facebookBox;
 
 	private VerticalPanel form;
@@ -438,5 +437,8 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		} catch (Exception e) {
 			throw new CloneNotSupportedException(e.getMessage());
 		}
+	}
+	public boolean belongsTo(String messengerType) {
+		return types.contains(messengerType);
 	}
 }

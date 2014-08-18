@@ -765,30 +765,149 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		labels.addAll(contact.labels);
 
 		if (contact.htmlMail) htmlMail = true;
-		if (uid == null) uid = contact.uid;
 		
 		if (collision!=null){
 			rearrangeContacts(this,contact,collision);
 		} else {
+			if (uid == null) uid = contact.uid;
 			markForRewrite();
 		}
 		return true;
 	}
 
 	private static void rearrangeContacts(Contact master, Contact slave, ToMuchEntriesForThunderbirdException collision) throws ToMuchEntriesForThunderbirdException {
-		// TODO Auto-generated method stub
-		
 		rearrangePhones(master,slave);
 		rearrangeMails(master,slave);
+		rearrangeAddresses(master,slave);
+		rearrangeNicks(master,slave);
 		slave.name=master.name;
+		slave.formattedName=master.formattedName;
+		inaccurateDistribute(slave.titles,master.titles,"titles");
+		inaccurateDistribute(slave.roles, master.roles, "roles");
+		inaccurateDistribute(slave.categories, master.categories, "categories");
 		slave.birthday=master.birthday;
+		inaccurateDistribute(slave.urls, master.urls, "urls");
+		inaccurateDistribute(slave.notes,master.notes,"notes");
+		inaccurateDistribute(slave.photos,master.photos,"photos");
+		inaccurateDistribute(slave.orgs,master.orgs,"orgs");
+		rearrangeMessengers(master,slave);
+		inaccurateDistribute(slave.labels,master.labels,"labels");
 		master.markForRewrite();
 		slave.markForRewrite();
-		System.out.println("rearrange "+master+" and "+slave);
-		System.out.println("we need a clever algorithm here to distribute the given fields");
-		throw collision;
 	}
 	
+	private static void inaccurateDistribute(MergableList slaveList, MergableList masterList, String title) {
+		slaveList.clear();
+		slaveList.addAll(masterList);
+		if (masterList.size()>1){
+			System.err.println("added several "+title+" to both contacts. This might be inaccurate!");
+		}
+	}
+	private static void inaccurateDistribute(TreeSet slaveSet, TreeSet masterSet, String title) {
+		slaveSet.clear();
+		slaveSet.addAll(masterSet);
+		if (masterSet.size()>1){
+			System.err.println("added several "+title+" to both contacts. This might be inaccurate!");
+		}
+	}
+	private static void rearrangeMessengers(Contact master, Contact slave) {
+		slave.messengers.clear();
+		boolean icq = false;
+		boolean aim = false;
+		boolean skype=false;
+		boolean msn=false;
+		boolean fb=false;
+		for (Messenger id:master.messengers){
+			if (id.belongsTo("icq")){
+				if (icq){
+					slave.messengers.add(id);
+				} else {
+					icq=true;
+				}
+			}
+			if (id.belongsTo("aim")){
+				if (aim){
+					slave.messengers.add(id);
+				} else {
+					aim=true;
+				}
+			}
+			if (id.belongsTo("skype")){
+				if (skype){
+					slave.messengers.add(id);
+				} else {
+					skype=true;
+				}
+			}
+			if (id.belongsTo("facebook")){
+				if (fb){
+					slave.messengers.add(id);
+				} else {
+					fb=true;
+				}
+			}
+			if (id.belongsTo("msn")){
+				if (msn){
+					slave.messengers.add(id);
+				} else {
+					msn=true;
+				}
+			}
+		}
+		master.messengers.removeAll(slave.messengers);
+	}
+	private static void rearrangeNicks(Contact master, Contact slave) {
+		slave.nicks.clear();
+		boolean home = false;
+		boolean work = false;
+		boolean net=false;
+		for (Nickname nick:master.nicks){
+			if (nick.isWorkNick()){
+				if (work){
+					slave.nicks.add(nick);
+				} else {
+					work=true;
+				}
+			}
+			if (nick.isInternetNick()){
+				if (net){
+					slave.nicks.add(nick);
+				} else {
+					net=true;
+				}
+			}
+			if (nick.isHomeNick()){
+				if (home){
+					slave.nicks.add(nick);
+				} else {
+					home=true;
+				}
+			}
+		}
+		master.nicks.removeAll(slave.nicks);
+	}
+	private static void rearrangeAddresses(Contact master, Contact slave) {
+		slave.adresses.clear();
+		boolean home = false;
+		boolean work = false;
+		for (Adress adress:master.adresses){
+			if (adress.isWorkAdress()){
+				if (work){
+					slave.adresses.add(adress);
+				} else {
+					work=true;
+				}
+			}
+			if (adress.isHomeAdress()){
+				if (home){
+					slave.adresses.add(adress);
+				} else {
+					home=true;
+				}
+			}
+		}
+		master.adresses.removeAll(slave.adresses);
+	}
 	private static void rearrangeMails(Contact master,Contact slave){
 		slave.mails.clear();
 		boolean home = false;
