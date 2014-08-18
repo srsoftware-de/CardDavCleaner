@@ -768,11 +768,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		
 		if (collision!=null){
 			rearrangeContacts(this,contact,collision);
-		} else {
-			if (uid == null) uid = contact.uid;
-			markForRewrite();
-		}
-		return true;
+			return false;
+		} 
+		if (uid == null) uid = contact.uid;
+		markForRewrite();
+		return true;		
 	}
 
 	private static void rearrangeContacts(Contact master, Contact slave, ToMuchEntriesForThunderbirdException collision) throws ToMuchEntriesForThunderbirdException {
@@ -796,6 +796,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		slave.markForRewrite();
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void inaccurateDistribute(MergableList slaveList, MergableList masterList, String title) {
 		slaveList.clear();
 		slaveList.addAll(masterList);
@@ -803,6 +804,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			System.err.println("added several "+title+" to both contacts. This might be inaccurate!");
 		}
 	}
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static void inaccurateDistribute(TreeSet slaveSet, TreeSet masterSet, String title) {
 		slaveSet.clear();
 		slaveSet.addAll(masterSet);
