@@ -775,12 +775,81 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return true;
 	}
 
-	private static void rearrangeContacts(Contact contact1, Contact contact2, ToMuchEntriesForThunderbirdException collision) throws ToMuchEntriesForThunderbirdException {
+	private static void rearrangeContacts(Contact master, Contact slave, ToMuchEntriesForThunderbirdException collision) throws ToMuchEntriesForThunderbirdException {
 		// TODO Auto-generated method stub
-		System.out.println("rearrange "+contact1+" and "+contact2);
+		
+		rearrangePhones(master,slave);
+		rearrangeMails(master,slave);
+		slave.name=master.name;
+		slave.birthday=master.birthday;
+		master.markForRewrite();
+		slave.markForRewrite();
+		System.out.println("rearrange "+master+" and "+slave);
+		System.out.println("we need a clever algorithm here to distribute the given fields");
 		throw collision;
 	}
 	
+	private static void rearrangeMails(Contact master,Contact slave){
+		slave.mails.clear();
+		boolean home = false;
+		boolean work = false;
+		for (Email email:master.mails){
+			if (email.isWorkMail()){
+				if (work){
+					slave.mails.add(email);
+				} else {
+					work=true;
+				}
+			}
+			if (email.isHomeMail()){
+				if (home){
+					slave.mails.add(email);
+				} else {
+					home=true;
+				}
+			}
+		}
+		master.mails.removeAll(slave.mails);
+	}
+	
+	private static void rearrangePhones(Contact master,Contact slave){
+		slave.phones.clear();
+		boolean fax = false;
+		boolean home = false;
+		boolean cell = false;
+		boolean work = false;
+		for (Phone phone:master.phones){
+			if (phone.isCellPhone()){
+				if (cell){ // master already has cell phone
+					slave.phones.add(phone); // so add it to slave
+				} else {
+					cell=true;
+				}
+			}
+			if (phone.isFax()){
+				if (fax){
+					slave.phones.add(phone);
+				} else {
+					fax=true;
+				}
+			}
+			if (phone.isWorkPhone()){
+				if (work){
+					slave.phones.add(phone);
+				} else {
+					work=true;
+				}
+			}
+			if (phone.isHomePhone()){
+				if (home){
+					slave.phones.add(phone);
+				} else {
+					home=true;
+				}
+			}
+		}
+		master.phones.removeAll(slave.phones);
+	}
 	public TreeSet<String> messengerNicks() throws UnknownObjectException {
 		TreeSet<String> ids = new TreeSet<String>();
 		for (Messenger m : this.messengers) {
