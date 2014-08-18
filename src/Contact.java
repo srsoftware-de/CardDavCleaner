@@ -733,11 +733,24 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	public boolean mergeWith(Contact contact, boolean thunderbirdMerge,boolean skipAsk) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-		adresses.addAll(contact.adresses);
+		ToMuchEntriesForThunderbirdException collision=null;
 		phones.addAll(contact.phones);
-		if (thunderbirdMerge) thunderbirdMergePhone(phones);
+		if (thunderbirdMerge) {
+			try {
+				thunderbirdMergePhone(phones);
+			} catch (ToMuchEntriesForThunderbirdException tmefte){
+				collision=tmefte;
+			}
+		}
 		mails.addAll(contact.mails);
-		if (thunderbirdMerge) thunderbirdMergeMail(mails);
+		if (thunderbirdMerge) {
+			try {
+				thunderbirdMergeMail(mails); 
+			} catch (ToMuchEntriesForThunderbirdException tmefte){
+				collision=tmefte;
+			}
+		}
+		adresses.addAll(contact.adresses);
 		nicks.addAll(contact.nicks);
 		mergeNames(contact,skipAsk);
 		titles.addAll(contact.titles);
@@ -753,10 +766,21 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		if (contact.htmlMail) htmlMail = true;
 		if (uid == null) uid = contact.uid;
-		markForRewrite();
+		
+		if (collision!=null){
+			rearrangeContacts(this,contact,collision);
+		} else {
+			markForRewrite();
+		}
 		return true;
 	}
 
+	private static void rearrangeContacts(Contact contact1, Contact contact2, ToMuchEntriesForThunderbirdException collision) throws ToMuchEntriesForThunderbirdException {
+		// TODO Auto-generated method stub
+		System.out.println("rearrange "+contact1+" and "+contact2);
+		throw collision;
+	}
+	
 	public TreeSet<String> messengerNicks() throws UnknownObjectException {
 		TreeSet<String> ids = new TreeSet<String>();
 		for (Messenger m : this.messengers) {
