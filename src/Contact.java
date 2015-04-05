@@ -628,20 +628,48 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	public boolean conflictsWith(Contact c2) {
-		if (!name.isCompatibleWith(c2.name)) return true;
-		if (birthday!=null && !birthday.isCompatibleWith(c2.birthday)) return true;
-		if (different(formattedName, c2.formattedName)) return true;
-		if (!labels.isEmpty() && !c2.labels.isEmpty() && !labels.equals(c2.labels)) return true;
-		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) return true;
-		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) return true;
-		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getSimplePhoneNumbers().equals(c2.getSimplePhoneNumbers())) return true;
-		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) return true;
-		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) return true;
-		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls)) return true;
-		if (!nicks.isEmpty() && !c2.nicks.isEmpty() && !nicks.equals(c2.nicks)) return true;
-		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes)) return true;
-		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) return true;
-		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos)) return true;
+		if (!name.isCompatibleWith(c2.name)) {
+			System.out.println("name conflict");return true;
+		}
+		if (birthday!=null && !birthday.isCompatibleWith(c2.birthday)){
+			System.out.println("bday conflict");return true;
+		}
+		if (different(formattedName, c2.formattedName)) {
+			System.out.println("formatted name conflict");return true;
+		}
+		if (!labels.isEmpty() && !c2.labels.isEmpty() && !labels.equals(c2.labels)) {
+			System.out.println("labels conflict");return true;
+		}
+		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) {
+			System.out.println("titles conflict");return true;
+		}
+		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) {
+			System.out.println("roles conflict");return true;
+		}
+		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getSimplePhoneNumbers().equals(c2.getSimplePhoneNumbers())) {
+			System.out.println("phones conflict");return true;
+		}
+		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) {
+			System.out.println("mails conflict");return true;
+		}
+		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) {
+			System.out.println("addresses conflict");return true;
+		}
+		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls)) {
+			System.out.println("urls conflict");return true;
+		}
+		if (!nicks.isEmpty() && !c2.nicks.isEmpty() && !nicks.equals(c2.nicks)) {
+			System.out.println("nicknames conflict");return true;
+		}
+		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes)) {
+			System.out.println("notes conflict");return true;
+		}
+		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) {
+			System.out.println("organizations conflict");return true;
+		}
+		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos)) {
+			System.out.println("photo conflict");return true;
+		}
 		return false;
 	}
 
