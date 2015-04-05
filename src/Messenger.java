@@ -284,8 +284,9 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 	private JCheckBox aimBox;
 	private JCheckBox icqBox;
 	private JCheckBox msnBox;
-	private JCheckBox skypeBox;	
-	private JCheckBox facebookBox;
+	private JCheckBox sipBox;
+	private JCheckBox skypeBox;
+		private JCheckBox facebookBox;
 
 	private VerticalPanel form;
 	
@@ -311,6 +312,11 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			} 
 			if (upper.startsWith("MSN")){
 				types.add("msn");
+				line=line.substring(3);
+				continue;
+			} 
+			if (upper.startsWith("SIP")){
+				types.add("sip");
 				line=line.substring(3);
 				continue;
 			} 
@@ -341,6 +347,8 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		skypeBox.addChangeListener(this);
 		form.add(msnBox=new JCheckBox(_("MSN"),types.contains("msn")));
 		msnBox.addChangeListener(this);
+		form.add(sipBox=new JCheckBox(_("SIP"),types.contains("sip")));
+		sipBox.addChangeListener(this);
 		form.add(facebookBox=new JCheckBox(_("Facebook"),types.contains("facebook")));
 		facebookBox.addChangeListener(this);
 		form.scale();
@@ -405,6 +413,11 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			types.add("msn");
 		} else {
 			types.remove("msn");
+		}
+		if (sipBox.isSelected()){
+			types.add("sip");
+		} else {
+			types.remove("sip");
 		}
 		if (facebookBox.isSelected()){
 			types.add("facebook");
