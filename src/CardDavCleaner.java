@@ -161,10 +161,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private void cleanContacts(String host, Set<String> contactNames) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
 
 		Vector<Contact> contacts = readContacts(host, contactNames);
-		// next: find and merge related contacts
-		TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
-		System.out.println("found "+contacts.size()+" contacts.");
-		mergeIdentic(contacts);
+
+		//TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
+		
+		// next: mark duplicates for removal
+		margDuplicatesForRemoval(contacts);
+		
+		// next: find associations between contacts and do an interactive merge 
 		mergeAssociated(contacts);
 		
 		if (thunderbirdBox.isSelected()) {
@@ -199,7 +202,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		} while (repeat);
 	}
 
-	private void mergeIdentic(Vector<Contact> contacts) {
+	private void margDuplicatesForRemoval(Vector<Contact> contacts) {
 		boolean repeat;
 		do {
 			repeat = false;
