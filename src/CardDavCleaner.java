@@ -66,7 +66,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 */
 	private static boolean mergeInteractively(Contact contact, Contact contact2,String[] association) throws InvalidAssignmentException {
 		if (contact.conflictsWith(contact2)){
-			if (association.length != 2) throw new InvalidAssignmentException("Invalid association: "+association);
+			if (association.length != 2) {
+				System.out.println(association);
+				throw new InvalidAssignmentException("Invalid association: "+association);
+			}
 			VerticalPanel vp = new VerticalPanel();
 			vp.add(new JLabel(_("<html>The # \"<b>#</b>\" is used by both following contacts:", new Object[] { association[0], association[1] })));
 			HorizontalPanel hp = new HorizontalPanel();
@@ -185,6 +188,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			repeat = false;
 			for (Contact contact1:contacts){
 				for (Contact contact2:contacts){
+					if (contact1 == contact2) {
+						continue;
+					}
 					String[] association = contact1.getAssociationWith(contact2);
 					if (association != null && mergeInteractively(contact1,contact2,association)){
 						deleteList.add(contact2);
@@ -211,7 +217,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			int prog=0;
 			for (Contact contact1:contacts){
 				if (++prog % num == 0){
-					System.out.print(prog%10);
+					System.out.print('□');
 				}
 				for (Contact contact2:contacts){
 					
