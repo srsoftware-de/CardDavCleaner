@@ -237,12 +237,14 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 	private boolean work=false;
 	private boolean home=false;
 	private boolean internet=false;
+	private boolean mobile=false;
 	private String adress=null;
 
 	private boolean invalid=false;
 	private InputField adressBox;
 	private JCheckBox homeBox;
 	private JCheckBox workBox;
+	private JCheckBox mobileBox;
 	private JCheckBox internetBox;
 	private VerticalPanel form;
 	
@@ -268,6 +270,22 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 				line=line.substring(13);
 				continue;
 			} 
+			if (upper.startsWith("TYPE=X-INTERNET")){
+				internet=true;
+				line=line.substring(15);
+				continue;
+			} 
+			if (upper.startsWith("TYPE=MOBILE")){
+				mobile=true;
+				line=line.substring(11);
+				continue;
+			} 
+			if (upper.startsWith("TYPE=X-MOBILE")){
+				mobile=true;
+				line=line.substring(13);
+				continue;
+			} 
+
 			if (line.startsWith(";")){
 				line=line.substring(1);
 				continue;
@@ -308,6 +326,8 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		homeBox.addChangeListener(this);
 		form.add(workBox=new JCheckBox(_("Work"),work));
 		workBox.addChangeListener(this);
+		form.add(mobileBox=new JCheckBox(_("Mobile"),mobile));
+		mobileBox.addChangeListener(this);
 		form.add(internetBox=new JCheckBox(_("Internet"),internet));
 		internetBox.addChangeListener(this);
 		form.scale();
@@ -348,6 +368,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		if (!adress.equals(mail.adress)) throw new InvalidAssignmentException(_("Trying to merge two mails with different adresses!"));
 		if (mail.home) home=true;
 		if (mail.work) work=true;
+		if (mail.mobile) mobile=true;
 		if (mail.internet) internet=true;
 	}
 
@@ -357,6 +378,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		adress=merge(adress,other.adress);
 		if (other.work) work=true;
 		if (other.home) home=true;
+		if (other.mobile) mobile=true;
 		if (other.internet) internet=true;
 	  return true;
   }
@@ -392,6 +414,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		sb.append("EMAIL");
 		if (home) sb.append(";TYPE=HOME");
 		if (work) sb.append(";TYPE=WORK");
+		if (mobile) sb.append(";TYPE=MOBILE");
 		if (internet) sb.append(";TYPE=INTERNET");
 		sb.append(":");
 		if (adress!=null)	sb.append(adress);
@@ -419,6 +442,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		readAddr(adressBox.getText());
 		home=homeBox.isSelected();
 		work=workBox.isSelected();
+		mobile=mobileBox.isSelected();
 		internet=internetBox.isSelected();
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
