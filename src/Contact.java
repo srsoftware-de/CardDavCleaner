@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -273,7 +275,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (num == comp) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -292,7 +294,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -321,7 +323,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -337,7 +339,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -377,7 +379,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}/**/
 		} catch (UnknownObjectException e) {
@@ -387,12 +389,15 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 
 	}
-	private static String _(String text) { 
+
+	private static String _(String text) {
 		return Translations.get(text);
 	}
+
 	private static String _(String key, Object insert) {
 		return Translations.get(key, insert);
 	}
+
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	// private String revision;
 	// private String productId;
@@ -409,6 +414,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private TreeSet<String> notes = new TreeSet<String>();
 	private TreeSet<String> photos = new TreeSet<String>();
 	private TreeSet<String> categories = new TreeSet<String>();
+	private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
 	private MergableList<Label> labels = new MergableList<Label>();
 	private MergableList<Phone> phones = new MergableList<Phone>();
 	private MergableList<Adress> adresses = new MergableList<Adress>();
@@ -422,21 +428,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	/* form elements */
 	private JScrollPane scroll;
-	private InputField formattedField,anniversaryField;
-	private VerticalPanel form;
-	private VerticalPanel titleForm;
-	private VerticalPanel nickForm;
-	private VerticalPanel roleForm;
-	private JButton newMailButton;
-	private JButton newPhoneButton;
-	private JButton newTitleButton;
-	private JButton newNickButton;
-	private JButton newRoleButton;
+	private InputField formattedField, anniversaryField;
+	private VerticalPanel form, titleForm, nickForm,roleForm,customForm;
+	private JButton newMailButton, newPhoneButton,newTitleButton,newNickButton,newRoleButton,newCustomButton;
+	private HorizontalPanel mailForm,phoneForm,adressForm;
 	private JButton birthdayButton;
-	private HorizontalPanel phoneForm;
-	private HorizontalPanel adressForm;
 	private JButton newAdressButton;
-	private HorizontalPanel mailForm;
+	
 	private VerticalPanel urlForm;
 	private JButton newUrlButton;
 	private HorizontalPanel orgForm;
@@ -445,7 +443,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private JButton newMessengerButton;
 	private VerticalPanel categoryForm;
 	private JButton newCategoryButton;
-	private Vector<TitleField> titleFields;
+	private Vector<CustomField> titleFields,customFields;
 	private Vector<CategoryField> categoryFields;
 	private Vector<RoleField> roleFields;
 	private Vector<NoteField> noteFields;
@@ -463,14 +461,14 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	public Contact(String directory, String name) throws UnknownObjectException, IOException, InvalidFormatException {
 		vcfName = name;
-		URL url=new URL(directory + name);
+		URL url = new URL(directory + name);
 		parse(url);
 	}
 
 	public void actionPerformed(ActionEvent evt) {
 		Object source = evt.getSource();
 		if (source == newTitleButton) {
-			TitleField titleField = new TitleField(_("Title"));
+			CustomField titleField = new CustomField(_("Title"));
 			titleField.addEditListener(this);
 			titleFields.add(titleField);
 			titleForm.insertCompoundBefore(newTitleButton, titleField);
@@ -629,49 +627,72 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	public boolean conflictsWith(Contact c2) {
 		if (!name.isCompatibleWith(c2.name)) {
-			System.out.println("name conflict");return true;
+			System.out.println("name conflict");
+			return true;
 		}
-		if (birthday!=null && !birthday.isCompatibleWith(c2.birthday)){
-			System.out.println("bday conflict");return true;
+		if (birthday != null && !birthday.isCompatibleWith(c2.birthday)) {
+			System.out.println("bday conflict");
+			return true;
 		}
 		if (different(formattedName, c2.formattedName)) {
-			System.out.println("formatted name conflict");return true;
+			System.out.println("formatted name conflict");
+			return true;
 		}
 		if (different(anniversary, c2.anniversary)) {
-			System.out.println("anniversary conflict");return true;
+			System.out.println("anniversary conflict");
+			return true;
 		}
 		if (!labels.isEmpty() && !c2.labels.isEmpty() && !labels.equals(c2.labels)) {
-			System.out.println("labels conflict");return true;
+			System.out.println("labels conflict");
+			return true;
 		}
 		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) {
-			System.out.println("titles conflict");return true;
+			System.out.println("titles conflict");
+			return true;
 		}
 		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) {
-			System.out.println("roles conflict");return true;
+			System.out.println("roles conflict");
+			return true;
 		}
 		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getSimplePhoneNumbers().equals(c2.getSimplePhoneNumbers())) {
-			System.out.println("phones conflict");return true;
+			System.out.println("phones conflict");
+			return true;
 		}
 		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) {
-			System.out.println("mails conflict");return true;
+			System.out.println("mails conflict");
+			return true;
 		}
 		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) {
-			System.out.println("addresses conflict");return true;
+			System.out.println("addresses conflict");
+			return true;
 		}
 		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls)) {
-			System.out.println("urls conflict");return true;
+			System.out.println("urls conflict");
+			return true;
 		}
 		if (!nicks.isEmpty() && !c2.nicks.isEmpty() && !nicks.equals(c2.nicks)) {
-			System.out.println("nicknames conflict");return true;
+			System.out.println("nicknames conflict");
+			return true;
 		}
 		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes)) {
-			System.out.println("notes conflict");return true;
+			System.out.println("notes conflict");
+			return true;
 		}
 		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) {
-			System.out.println("organizations conflict");return true;
+			System.out.println("organizations conflict");
+			return true;
 		}
 		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos)) {
-			System.out.println("photo conflict");return true;
+			System.out.println("photo conflict");
+			return true;
+		}
+		for (Entry<Integer, String> cc:customContent.entrySet()){
+			Integer key = cc.getKey();
+			String val = c2.customContent.get(key);
+			if (val!=null && !val.equals(cc.getValue())){
+				System.out.println("Custom content conflict!");
+				return true;
+			}
 		}
 		return false;
 	}
@@ -713,9 +734,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	@Override
 	public boolean isCompatibleWith(Contact other) {
-		if (!name.isCompatibleWith(other.name)) return false;
-		if (birthday != null && other.birthday != null && !birthday.isCompatibleWith(other.birthday)) return false;
-		return true;
+		return !conflictsWith(other);
 	}
 
 	public boolean isEmpty() {
@@ -754,7 +773,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	@Override
 	public boolean mergeWith(Contact other) {
 		try {
-			mergeWith(other,false);
+			mergeWith(other, false);
 			return true;
 		} catch (InvalidAssignmentException e) {
 			e.printStackTrace();
@@ -762,12 +781,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return false;
 	}
 
-	public void mergeWith(Contact contact,boolean skipAsk) throws InvalidAssignmentException {
+	public void mergeWith(Contact contact, boolean skipAsk) throws InvalidAssignmentException {
 		phones.addAll(contact.phones);
 		mails.addAll(contact.mails);
 		adresses.addAll(contact.adresses);
 		nicks.addAll(contact.nicks);
-		mergeNames(contact,skipAsk);
+		mergeNames(contact, skipAsk);
 		titles.addAll(contact.titles);
 		roles.addAll(contact.roles);
 		categories.addAll(contact.categories);
@@ -780,11 +799,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		labels.addAll(contact.labels);
 
 		if (contact.htmlMail) htmlMail = true;
-		
+
 		if (uid == null) uid = contact.uid;
 		markForRewrite();
 	}
-	
+
 	public TreeSet<String> messengerNicks() throws UnknownObjectException {
 		TreeSet<String> ids = new TreeSet<String>();
 		for (Messenger m : this.messengers) {
@@ -829,7 +848,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	public String toString() {
 		return toString(false);
 	}
-	
+
 	/**
 	 * @param shorter if set to TRUE, the contact will be cut down (for display purposes).
 	 * @return the code of that contact
@@ -838,7 +857,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		StringBuffer sb = new StringBuffer();
 		sb.append("BEGIN:VCARD\n");
 
-		addContent(sb,shorter);
+		addContent(sb, shorter);
 		if (uid != null) sb.append("UID:" + uid + "\n");
 		sb.append("END:VCARD\n");
 		if (!shorter) {
@@ -846,14 +865,14 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		return sb.toString().replace("\\,", ",");
 	}
-	
-	public String getContent(){
+
+	public String getContent() {
 		StringBuffer sb = new StringBuffer();
-		addContent(sb,false);
-		return sb.toString();		
+		addContent(sb, false);
+		return sb.toString();
 	}
-	
-	public void addContent(StringBuffer sb, boolean shorter){
+
+	public void addContent(StringBuffer sb, boolean shorter) {
 		int cutLength = 60;
 
 		if (!shorter) {
@@ -972,6 +991,14 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				sb.append(photo + "\n");
 			}
 		}
+
+		if (shorter) {
+			sb.append("CUSTOM...\n");
+		} else {
+			for (Entry<Integer, String> c : customContent.entrySet()) {
+				sb.append("CUSTOM" + c.getKey()+":" +c.getValue()+ "\n");
+			}
+		}
 	}
 
 	public String vcfName() {
@@ -1011,9 +1038,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		/* Titles */
 		titleForm = new VerticalPanel(_("Titles"));
-		titleFields = new Vector<TitleField>();
+		titleFields = new Vector<CustomField>();
 		for (String t : titles) {
-			TitleField titleField = new TitleField(_("Title"), t);
+			CustomField titleField = new CustomField(_("Title"), t);
 			titleField.addEditListener(this);
 			titleForm.add(titleField);
 			titleFields.add(titleField);
@@ -1054,7 +1081,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			form.add(birthdayButton = new JButton(_("add birthday")));
 			birthdayButton.addActionListener(this);
 		}
-		
+
 		anniversaryField = new InputField(_("Anniversary"), anniversary);
 		anniversaryField.addChangeListener(this);
 		form.add(anniversaryField);
@@ -1147,6 +1174,21 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		noteForm.scale();
 		form.add(noteForm);
 
+		/* Custom */
+		customForm = new VerticalPanel(_("Custom"));
+		customFields = new Vector<CustomField>();
+		for (Entry<Integer, String> cc : customContent.entrySet()) {
+			CustomField customField = new CustomField(_("Custom")+cc.getKey(), cc.getValue());
+			customField.addEditListener(this);
+			customForm.add(customField);
+			customFields.add(customField);
+		}
+		customForm.add(newCustomButton = new JButton(_("add custom field")));
+		newCustomButton.addActionListener(this);
+		customForm.scale();
+		form.add(customForm);
+
+		
 		form.scale();
 		return form;
 	}
@@ -1215,7 +1257,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 	}
 
-	private void mergeNames(Contact contact,boolean skipAsk) {
+	private void mergeNames(Contact contact, boolean skipAsk) {
 		if (name == null) {
 			name = contact.name;
 		} else if (name.isCompatibleWith(contact.name)) {
@@ -1224,12 +1266,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (skipAsk) {
 				name = contact.name;
 			} else {
-				name = (Name) selectOneOf(_("name"), name, contact.name, contact);	
-			}			
+				name = (Name) selectOneOf(_("name"), name, contact.name, contact);
+			}
 		}
 
 		if (different(formattedName, contact.formattedName)) {
-			if (skipAsk){
+			if (skipAsk) {
 				formattedName = contact.formattedName;
 			} else {
 				formattedName = (String) selectOneOf(_("formatted name"), formattedName, contact.formattedName, contact);
@@ -1307,12 +1349,17 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (line.startsWith("CATEGORIES:") && (known = true)) readCategories(line.substring(11));
 			if (line.startsWith("X-MOZILLA-HTML:") && (known = true)) readMailFormat(line.substring(15));
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
-
+			if (line.startsWith("CUSTOM")) readCustom(line.substring(6));
 			if (!known) {
-				throw new UnknownObjectException(_("unknown entry/instruction found in vcard #: '#'",new Object[]{vcfName,line}));
+				throw new UnknownObjectException(_("unknown entry/instruction found in vcard #: '#'", new Object[] { vcfName, line }));
 			}
 		}
 		changed();
+	}
+
+	private void readCustom(String s) {
+		Integer index=Integer.parseInt(""+s.charAt(0));
+		customContent.put(index, s.substring(1));
 	}
 
 	private void readAdress(String line) throws UnknownObjectException, InvalidFormatException {
@@ -1399,7 +1446,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	private void readAnniversary(String line) {
 		if (line.isEmpty()) return;
-		anniversary=line;
+		anniversary = line;
 	}
 
 	private void readUID(String uid) {
@@ -1426,7 +1473,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		hp.add(new JLabel("<html>" + contact2.toString(true).replace("\n", "<br>")));
 		hp.scale();
 		vp.add(hp);
-		vp.add(new JLabel(_("<html><br>Which # shall be used?",title)));
+		vp.add(new JLabel(_("<html><br>Which # shall be used?", title)));
 		vp.scale();
 		UIManager.put("OptionPane.yesButtonText", o1.toString().replace("\\,", ","));
 		UIManager.put("OptionPane.noButtonText", o2.toString().replace("\\,", ","));
@@ -1450,7 +1497,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void update(Object source) {
-		if (source instanceof TitleField) updateTitles();
+		if (source instanceof CustomField) updateTitles();
 		if (source instanceof RoleField) updateRoles();
 		if (source instanceof CategoryField) updateCategories();
 		if (source instanceof NoteField) updateNotes();
@@ -1497,7 +1544,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	private void updateTitles() {
 		titles.clear();
-		for (TitleField tf : titleFields) {
+		for (CustomField tf : titleFields) {
 			String title = tf.getText().trim();
 			if (title != null && !title.isEmpty()) {
 				titles.add(title);
@@ -1535,26 +1582,27 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		nicks.clear();
 		changed();
 	}
-	
+
 	public boolean isSameAs(Contact c2) {
 		return getContent().equals(c2.getContent());
 	}
 
 	public String[] getAssociationWith(Contact contact) {
-		String phoneAssociation=getPhoneAssociation(contact);
-		if (phoneAssociation != null){
-			return new String[]{ _("Phone"), phoneAssociation };
+		String phoneAssociation = getPhoneAssociation(contact);
+		if (phoneAssociation != null) {
+			return new String[] { _("Phone"), phoneAssociation };
 		}
-		String mailAssociation=getMailAssociation(contact);
-		if (mailAssociation !=null){
-			return new String[]{ _("Email"),mailAssociation};
+		String mailAssociation = getMailAssociation(contact);
+		if (mailAssociation != null) {
+			return new String[] { _("Email"), mailAssociation };
 		}
-		String nameAssociation=getNameAssociation(contact);
-		if (nameAssociation !=null){
-			return new String[]{ _("Name"),nameAssociation};
+		String nameAssociation = getNameAssociation(contact);
+		if (nameAssociation != null) {
+			return new String[] { _("Name"), nameAssociation };
 		}
 		return null;
 	}
+
 	private String getNameAssociation(Contact contact) {
 		if (this.name.canonical().equals(contact.name.canonical())) {
 			return name.main();
@@ -1565,16 +1613,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private String getMailAssociation(Contact contact) {
 		TreeSet<String> mails1 = this.mailAdresses();
 		TreeSet<String> mails2 = contact.mailAdresses();
-		for (String mail:mails1){
+		for (String mail : mails1) {
 			if (mails2.contains(mail)) return mail;
 		}
 		return null;
 	}
-	
+
 	private String getPhoneAssociation(Contact contact) {
 		TreeSet<String> numbers1 = this.simpleNumbers();
 		TreeSet<String> numbers2 = contact.simpleNumbers();
-		for (String num:numbers1){
+		for (String num : numbers1) {
 			if (numbers2.contains(num)) return num;
 		}
 		return null;
