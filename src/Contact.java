@@ -18,7 +18,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -1541,7 +1540,43 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return getContent().equals(c2.getContent());
 	}
 
-	public Entry<String, String> getAssociationWith(Contact contact) {
+	public String[] getAssociationWith(Contact contact) {
+		String phoneAssociation=getPhoneAssociation(contact);
+		if (phoneAssociation != null){
+			return new String[]{ _("Phone"), phoneAssociation };
+		}
+		String mailAssociation=getMailAssociation(contact);
+		if (mailAssociation !=null){
+			return new String[]{ _("Email"),mailAssociation};
+		}
+		String nameAssociation=getNameAssociation(contact);
+		if (nameAssociation !=null){
+			return new String[]{ _("Name"),nameAssociation};
+		}
+		return null;
+	}
+	private String getNameAssociation(Contact contact) {
+		if (this.name.canonical().equals(contact.name.canonical())) {
+			return name.main();
+		}
+		return null;
+	}
+
+	private String getMailAssociation(Contact contact) {
+		TreeSet<String> mails1 = this.mailAdresses();
+		TreeSet<String> mails2 = contact.mailAdresses();
+		for (String mail:mails1){
+			if (mails2.contains(mail)) return mail;
+		}
+		return null;
+	}
+	
+	private String getPhoneAssociation(Contact contact) {
+		TreeSet<String> numbers1 = this.simpleNumbers();
+		TreeSet<String> numbers2 = contact.simpleNumbers();
+		for (String num:numbers1){
+			if (numbers2.contains(num)) return num;
+		}
 		return null;
 	}
 }

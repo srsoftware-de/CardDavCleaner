@@ -18,7 +18,6 @@ import java.rmi.activation.UnknownObjectException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -64,11 +63,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @param contact2 the second contact to be merged with the first
 	 * @param association clarifies the type of the association (key / value)
 	 * @return true if contacts have been merged
+	 * @throws InvalidAssignmentException the assignment variable does not contain 2 values
 	 */
-	private static boolean mergeInteractively(Contact contact, Contact contact2,Entry<String, String> association) {
+	private static boolean mergeInteractively(Contact contact, Contact contact2,String[] association) throws InvalidAssignmentException {
 		if (contact.conflictsWith(contact2)){
+			if (association.length != 2) throw new InvalidAssignmentException("Invalid association: "+association);
 			VerticalPanel vp = new VerticalPanel();
-			vp.add(new JLabel(_("<html>The # \"<b>#</b>\" is used by both following contacts:", new Object[] { association.getKey(), association.getValue() })));
+			vp.add(new JLabel(_("<html>The # \"<b>#</b>\" is used by both following contacts:", new Object[] { association[0], association[1] })));
 			HorizontalPanel hp = new HorizontalPanel();
 			hp.add(new JLabel("<html><br>" + contact.toString(true).replace("\n", "&nbsp<br>")));
 			hp.add(new JLabel("<html><br>" + contact2.toString(true).replace("\n", "<br>")));
@@ -174,13 +175,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		writeContacts(host, contacts);
 	}
 
-	private void mergeAssociated(Vector<Contact> contacts) {
+	private void mergeAssociated(Vector<Contact> contacts) throws InvalidAssignmentException {
 		boolean repeat;
 		do {
 			repeat = false;
 			for (Contact contact1:contacts){
 				for (Contact contact2:contacts){
-					Entry<String, String> association = contact1.getAssociationWith(contact2);
+					String[] association = contact1.getAssociationWith(contact2);
 					if (association != null && mergeInteractively(contact1,contact2,association)){
 						deleteList.add(contact2);
 						contacts.remove(contact1);
@@ -513,7 +514,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			TreeSet<String> contacts = new TreeSet<String>();
 			int counter=0;
 			while ((line = in.readLine()) != null) {
-				if (++counter > 200) break;
+//				if (++counter > 1000) break;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();
