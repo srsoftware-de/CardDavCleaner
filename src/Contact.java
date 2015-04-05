@@ -16,9 +16,9 @@ import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -402,6 +402,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private Birthday birthday;
 	private String uid;
 	private String vcfName;
+	private String anniversary;
 	private boolean htmlMail;
 	private boolean rewrite = false;
 	private TreeSet<String> titles = new TreeSet<String>();
@@ -422,7 +423,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	/* form elements */
 	private JScrollPane scroll;
-	private InputField formattedField;
+	private InputField formattedField,anniversaryField;
 	private VerticalPanel form;
 	private VerticalPanel titleForm;
 	private VerticalPanel nickForm;
@@ -637,6 +638,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		if (different(formattedName, c2.formattedName)) {
 			System.out.println("formatted name conflict");return true;
 		}
+		if (different(anniversary, c2.anniversary)) {
+			System.out.println("anniversary conflict");return true;
+		}
 		if (!labels.isEmpty() && !c2.labels.isEmpty() && !labels.equals(c2.labels)) {
 			System.out.println("labels conflict");return true;
 		}
@@ -751,33 +755,17 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	@Override
 	public boolean mergeWith(Contact other) {
 		try {
-			return mergeWith(other, false,false);
+			mergeWith(other,false);
+			return true;
 		} catch (InvalidAssignmentException e) {
-			e.printStackTrace();
-		} catch (ToMuchEntriesForThunderbirdException e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
 
-	public boolean mergeWith(Contact contact, boolean thunderbirdMerge,boolean skipAsk) throws InvalidAssignmentException, ToMuchEntriesForThunderbirdException {
-		ToMuchEntriesForThunderbirdException collision=null;
+	public void mergeWith(Contact contact,boolean skipAsk) throws InvalidAssignmentException {
 		phones.addAll(contact.phones);
-		if (thunderbirdMerge) {
-			try {
-				thunderbirdMergePhone(phones);
-			} catch (ToMuchEntriesForThunderbirdException tmefte){
-				collision=tmefte;
-			}
-		}
 		mails.addAll(contact.mails);
-		if (thunderbirdMerge) {
-			try {
-				thunderbirdMergeMail(mails); 
-			} catch (ToMuchEntriesForThunderbirdException tmefte){
-				collision=tmefte;
-			}
-		}
 		adresses.addAll(contact.adresses);
 		nicks.addAll(contact.nicks);
 		mergeNames(contact,skipAsk);
@@ -794,211 +782,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		if (contact.htmlMail) htmlMail = true;
 		
-		if (collision!=null){
-			rearrangeContacts(this,contact,collision);
-			return false;
-		} 
 		if (uid == null) uid = contact.uid;
 		markForRewrite();
-		return true;		
-	}
-
-	private static void rearrangeContacts(Contact master, Contact slave, ToMuchEntriesForThunderbirdException collision) throws ToMuchEntriesForThunderbirdException {
-		rearrangePhones(master,slave);
-		rearrangeMails(master,slave);
-		rearrangeAddresses(master,slave);
-		rearrangeNicks(master,slave);
-		slave.name=master.name;
-		slave.formattedName=master.formattedName;
-		inaccurateDistribute(slave.titles,master.titles,"titles");
-		inaccurateDistribute(slave.roles, master.roles, "roles");
-		inaccurateDistribute(slave.categories, master.categories, "categories");
-		slave.birthday=master.birthday;
-		inaccurateDistribute(slave.urls, master.urls, "urls");
-		inaccurateDistribute(slave.notes,master.notes,"notes");
-		inaccurateDistribute(slave.photos,master.photos,"photos");
-		inaccurateDistribute(slave.orgs,master.orgs,"orgs");
-		rearrangeMessengers(master,slave);
-		inaccurateDistribute(slave.labels,master.labels,"labels");
-		master.markForRewrite();
-		slave.markForRewrite();
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void inaccurateDistribute(MergableList slaveList, MergableList masterList, String title) {
-		slaveList.clear();
-		slaveList.addAll(masterList);
-		if (masterList.size()>1){
-			System.err.println("added several "+title+" to both contacts. This might be inaccurate!");
-		}
-	}
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static void inaccurateDistribute(TreeSet slaveSet, TreeSet masterSet, String title) {
-		slaveSet.clear();
-		slaveSet.addAll(masterSet);
-		if (masterSet.size()>1){
-			System.err.println("added several "+title+" to both contacts. This might be inaccurate!");
-		}
-	}
-	private static void rearrangeMessengers(Contact master, Contact slave) {
-		slave.messengers.clear();
-		boolean icq = false;
-		boolean aim = false;
-		boolean skype=false;
-		boolean msn=false;
-		boolean fb=false;
-		for (Messenger id:master.messengers){
-			if (id.belongsTo("icq")){
-				if (icq){
-					slave.messengers.add(id);
-				} else {
-					icq=true;
-				}
-			}
-			if (id.belongsTo("aim")){
-				if (aim){
-					slave.messengers.add(id);
-				} else {
-					aim=true;
-				}
-			}
-			if (id.belongsTo("skype")){
-				if (skype){
-					slave.messengers.add(id);
-				} else {
-					skype=true;
-				}
-			}
-			if (id.belongsTo("facebook")){
-				if (fb){
-					slave.messengers.add(id);
-				} else {
-					fb=true;
-				}
-			}
-			if (id.belongsTo("msn")){
-				if (msn){
-					slave.messengers.add(id);
-				} else {
-					msn=true;
-				}
-			}
-		}
-		master.messengers.removeAll(slave.messengers);
-	}
-	private static void rearrangeNicks(Contact master, Contact slave) {
-		slave.nicks.clear();
-		boolean home = false;
-		boolean work = false;
-		boolean net=false;
-		for (Nickname nick:master.nicks){
-			if (nick.isWorkNick()){
-				if (work){
-					slave.nicks.add(nick);
-				} else {
-					work=true;
-				}
-			}
-			if (nick.isInternetNick()){
-				if (net){
-					slave.nicks.add(nick);
-				} else {
-					net=true;
-				}
-			}
-			if (nick.isHomeNick()){
-				if (home){
-					slave.nicks.add(nick);
-				} else {
-					home=true;
-				}
-			}
-		}
-		master.nicks.removeAll(slave.nicks);
-	}
-	private static void rearrangeAddresses(Contact master, Contact slave) {
-		slave.adresses.clear();
-		boolean home = false;
-		boolean work = false;
-		for (Adress adress:master.adresses){
-			if (adress.isWorkAdress()){
-				if (work){
-					slave.adresses.add(adress);
-				} else {
-					work=true;
-				}
-			}
-			if (adress.isHomeAdress()){
-				if (home){
-					slave.adresses.add(adress);
-				} else {
-					home=true;
-				}
-			}
-		}
-		master.adresses.removeAll(slave.adresses);
-	}
-	private static void rearrangeMails(Contact master,Contact slave){
-		slave.mails.clear();
-		boolean home = false;
-		boolean work = false;
-		for (Email email:master.mails){
-			if (email.isWorkMail()){
-				if (work){
-					slave.mails.add(email);
-				} else {
-					work=true;
-				}
-			}
-			if (email.isHomeMail()){
-				if (home){
-					slave.mails.add(email);
-				} else {
-					home=true;
-				}
-			}
-		}
-		master.mails.removeAll(slave.mails);
-	}
-	
-	private static void rearrangePhones(Contact master,Contact slave){
-		slave.phones.clear();
-		boolean fax = false;
-		boolean home = false;
-		boolean cell = false;
-		boolean work = false;
-		for (Phone phone:master.phones){
-			if (phone.isCellPhone()){
-				if (cell){ // master already has cell phone
-					slave.phones.add(phone); // so add it to slave
-				} else {
-					cell=true;
-				}
-			}
-			if (phone.isFax()){
-				if (fax){
-					slave.phones.add(phone);
-				} else {
-					fax=true;
-				}
-			}
-			if (phone.isWorkPhone()){
-				if (work){
-					slave.phones.add(phone);
-				} else {
-					work=true;
-				}
-			}
-			if (phone.isHomePhone()){
-				if (home){
-					slave.phones.add(phone);
-				} else {
-					home=true;
-				}
-			}
-		}
-		master.phones.removeAll(slave.phones);
-	}
 	public TreeSet<String> messengerNicks() throws UnknownObjectException {
 		TreeSet<String> ids = new TreeSet<String>();
 		for (Messenger m : this.messengers) {
@@ -1043,22 +830,37 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	public String toString() {
 		return toString(false);
 	}
-
+	
 	/**
 	 * @param shorter if set to TRUE, the contact will be cut down (for display purposes).
 	 * @return the code of that contact
 	 */
 	public String toString(boolean shorter) {
-		int cutLength = 60;
 		StringBuffer sb = new StringBuffer();
 		sb.append("BEGIN:VCARD\n");
+
+		addContent(sb,shorter);
+		if (uid != null) sb.append("UID:" + uid + "\n");
+		sb.append("END:VCARD\n");
+		if (!shorter) {
+			return sb.toString();
+		}
+		return sb.toString().replace("\\,", ",");
+	}
+	
+	public String getContent(){
+		StringBuffer sb = new StringBuffer();
+		addContent(sb,false);
+		return sb.toString();		
+	}
+	
+	public void addContent(StringBuffer sb, boolean shorter){
+		int cutLength = 60;
 
 		if (!shorter) {
 			sb.append("VERSION:3.0\n");
 			sb.append("PRODID:-//SRSoftware CalDavCleaner\n");
 		}
-
-		if (uid != null) sb.append("UID:" + uid + "\n");
 
 		if (!shorter) {
 			sb.append(newRevision());
@@ -1110,6 +912,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		if (birthday != null && !birthday.toString().equals("BDAY:")) {
 			sb.append(birthday);
+			sb.append("\n");
+		}
+
+		if (anniversary != null) {
+			sb.append("ANNIVERSARY:");
+			sb.append(anniversary); // required for Version 3
 			sb.append("\n");
 		}
 
@@ -1165,12 +973,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				sb.append(photo + "\n");
 			}
 		}
-
-		sb.append("END:VCARD\n");
-		if (!shorter) {
-			return sb.toString();
-		}
-		return sb.toString().replace("\\,", ",");
 	}
 
 	public String vcfName() {
@@ -1253,6 +1055,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			form.add(birthdayButton = new JButton(_("add birthday")));
 			birthdayButton.addActionListener(this);
 		}
+		
+		anniversaryField = new InputField(_("Anniversary"), anniversary);
+		anniversaryField.addChangeListener(this);
+		form.add(anniversaryField);
 
 		/* Phones */
 		phoneForm = new HorizontalPanel(_("Phones"));
@@ -1498,6 +1304,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (line.startsWith("ORG:") && (known = true)) readOrg(line);
 			if (line.startsWith("TITLE:") && (known = true)) readTitle(line.substring(6));
 			if (line.startsWith("PHOTO;") && (known = true)) readPhoto(line);
+			if (line.startsWith("ANNIVERSARY:") && (known = true)) readAnniversary(line.substring(12));
 			if (line.startsWith("CATEGORIES:") && (known = true)) readCategories(line.substring(11));
 			if (line.startsWith("X-MOZILLA-HTML:") && (known = true)) readMailFormat(line.substring(15));
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
@@ -1591,6 +1398,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		titles.add(line);
 	}
 
+	private void readAnniversary(String line) {
+		if (line.isEmpty()) return;
+		anniversary=line;
+	}
+
 	private void readUID(String uid) {
 		if (uid.isEmpty()) return;
 		this.uid = uid;
@@ -1633,121 +1445,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return null;
 	}
 
-	private Collection<Email> thunderbirdMergeMail(MergableList<Email> mails) throws ToMuchEntriesForThunderbirdException {
-		TreeSet<Email> overloadedCategoryNumbers = new TreeSet<Email>();
-		boolean home = false;
-		boolean work = false;
-
-		for (Email mail : mails) {
-			if (mail.isWorkMail()) {
-				mail.setWork(); // if address is tagged both, home and work, then set to work only
-				if (work) {
-					overloadedCategoryNumbers.add(mail);
-				} else {
-					work = true;
-				}
-			}
-
-			if (mail.isHomeMail()) {
-				mail.setHome();
-				if (home) {
-					overloadedCategoryNumbers.add(mail);
-				} else {
-					home = true;
-				}
-			}
-		}
-		for (Email email : overloadedCategoryNumbers) {
-			if (!work) {
-				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{email.address(),"work email adress",email.category(),"adress"}));
-				email.setWork();
-				work = true;
-				continue;
-			}
-			if (!home) {
-				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{email.address(),"home email adress",email.category(),"adress"}));
-				email.setHome();
-				home = true;
-				continue;
-			}
-			throw new ToMuchEntriesForThunderbirdException(_("There is no thunderbird slot left for the following # entry: #",new Object[]{"email",email}));
-		}
-		return mails;
-	}
-
-	private void thunderbirdMergePhone(Collection<Phone> phones) throws ToMuchEntriesForThunderbirdException {
-		TreeSet<Phone> overloadedCategoryNumbers = new TreeSet<Phone>();
-		boolean fax = false;
-		boolean home = false;
-		boolean cell = false;
-		boolean work = false;
-
-		for (Phone phone : phones) {
-			if (phone.isCellPhone()) {
-				phone.setCell();
-				if (cell) {
-					overloadedCategoryNumbers.add(phone);
-				} else {
-					cell = true;
-				}
-			}
-			if (phone.isWorkPhone()) {
-				phone.setWork();
-				if (work) {
-					overloadedCategoryNumbers.add(phone);
-				} else {
-					work = true;
-				}
-			}
-			if (phone.isHomePhone() || phone.isVoice()) {
-				phone.setHome();
-				if (home) {
-					overloadedCategoryNumbers.add(phone);
-				} else {
-					home = true;
-				}
-			}
-			if (phone.isFax()) {
-				phone.setFax();
-				if (fax) {
-					overloadedCategoryNumbers.add(phone);
-				} else {
-					fax = true;
-				}
-			}
-		}
-		for (Phone phone : overloadedCategoryNumbers) {
-			if (!home) {
-				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{phone.simpleNumber(),"home phone number",phone.category(),"number"}));
-				phone.setHome();
-				home = true;
-				continue;
-			}
-			if (!cell) {
-				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{phone.simpleNumber(),"cell phone number",phone.category(),"number"}));
-				phone.setCell();
-				cell = true;
-				continue;
-			}
-			if (!work) {
-				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{phone.simpleNumber(),"work phone number",phone.category(),"number"}));
-				phone.setWork();
-				work = true;
-				continue;
-			}
-			if (!fax) {
-				System.out.println(_("Using # as #, as '#' is already used by another #.",new Object[]{phone.simpleNumber(),"fax number",phone.category(),"number"}));
-				
-				phone.setFax();
-				fax = true;
-				continue;
-			}
-			throw new ToMuchEntriesForThunderbirdException(_("There is no thunderbird slot left for the following # entry: #",new Object[]{"number",phone}));
-		}
-	}
-
 	private void update() {
 		formattedName = formattedField.getText();
+		anniversary = anniversaryField.getText();
 	}
 
 	private void update(Object source) {
@@ -1835,5 +1535,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		orgs.clear();
 		nicks.clear();
 		changed();
+	}
+	
+	public boolean isSameAs(Contact c2) {
+		return getContent().equals(c2.getContent());
+	}
+
+	public Entry<String, String> getAssociationWith(Contact contact) {
+		return null;
 	}
 }
