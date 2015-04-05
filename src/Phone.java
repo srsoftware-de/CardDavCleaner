@@ -254,13 +254,14 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	private boolean cell = false;
 	private boolean work = false;
 	private boolean voice = false;
+	private boolean pager = false;
 	private boolean preffered = false;
 	private String number;
 	private boolean invalid = false;
 
 	private InputField numField;
 	VerticalPanel form;
-	private JCheckBox homeBox, voiceBox, workBox, cellBox, faxBox, prefBox;
+	private JCheckBox homeBox, voiceBox, workBox, cellBox, faxBox, prefBox, pagerBox;
 
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
 		if (content == null || !content.startsWith("TEL")) throw new InvalidFormatException(_("Phone enty does not start with \"TEL\": #",content));
@@ -317,6 +318,16 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 				line = line.substring(7);
 				continue;
 			}
+			if (upper.startsWith("TYPE=PAGER")) {
+				pager = true;
+				line = line.substring(10);
+				continue;
+			}
+			if (upper.startsWith("\\,PAGER")) {
+				pager = true;
+				line = line.substring(7);
+				continue;
+			}
 			if (line.startsWith(";")) {
 				line = line.substring(1);
 				continue;
@@ -332,6 +343,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		if (fax) return "fax";
 		if (cell) return "cell";
 		if (voice) return "voice";
+		if (pager) return "pager";
 		return "empty category";
 	}
 
@@ -361,8 +373,10 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		workBox.addChangeListener(this);
 		form.add(cellBox = new JCheckBox(_("Cell Phone"), cell));
 		cellBox.addChangeListener(this);
-		form.add(faxBox = new JCheckBox(_("Fax"), fax));
+		form.add(faxBox = new JCheckBox(_("Pager"), pager));
 		faxBox.addChangeListener(this);
+		form.add(pagerBox = new JCheckBox(_("Pager"), pager));
+		pagerBox.addChangeListener(this);
 		form.scale();
 		return form;
 	}
@@ -392,6 +406,10 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		return fax;
 	}
 
+	public boolean isPager() {
+		return pager;
+	}
+
 	public boolean isHomePhone() {
 		return home;
 	}
@@ -417,6 +435,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		if (other.work) work = true;
 		if (other.cell) cell = true;
 		if (other.fax) fax = true;
+		if (other.pager) pager = true;
 		if (other.voice) voice = true;
 		return true;
 	}
@@ -435,6 +454,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		fax = false;
 		cell = true;
 		voice = false;
+		pager = false;
 	}
 
 	public void setFax() {
@@ -443,6 +463,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		fax = true;
 		cell = false;
 		voice = false;
+		pager = false;
 	}
 
 	public void setHome() {
@@ -451,6 +472,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		fax = false;
 		cell = false;
 		voice = false;
+		pager = false;
 	}
 
 	public void setVoice() {
@@ -459,6 +481,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		fax = false;
 		cell = false;
 		voice = true;
+		pager = false;
 	}
 
 	public void setWork() {
@@ -467,6 +490,16 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		fax = false;
 		cell = false;
 		voice = false;
+		pager = false;
+	}
+
+	public void setPager() {
+		home = false;
+		work = false;
+		fax = false;
+		cell = false;
+		voice = false;
+		pager = true;
 	}
 
 	public String simpleNumber() {
@@ -506,6 +539,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		if (cell) sb.append(";TYPE=CELL");
 		if (work) sb.append(";TYPE=WORK");
 		if (voice) sb.append(";TYPE=VOICE");
+		if (pager) sb.append(";TYPE=PAGER");
 		sb.append(':');
 		if (number != null) sb.append(number);
 		return sb.toString();
@@ -539,6 +573,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		voice = voiceBox.isSelected();
 		cell = cellBox.isSelected();
 		fax = faxBox.isSelected();
+		pager = pagerBox.isSelected();
 		preffered = prefBox.isSelected();
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
