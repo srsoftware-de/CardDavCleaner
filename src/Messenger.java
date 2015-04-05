@@ -433,7 +433,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 
 	public String toString() {
 		try {
-	    return "IMPP:"+id();
+	    return "IMPP:"+id()+"\nX-"+id();
     } catch (UnknownObjectException e) {
 	    e.printStackTrace();
 	    return null;

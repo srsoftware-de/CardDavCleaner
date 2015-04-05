@@ -8,6 +8,7 @@ public class TranslationDE extends Translation{
 		trans.put("add adress", "Adresse hinzufügen");
 		trans.put("add birthday", "Geburtstag hinzufügen");
 		trans.put("add categories", "Kategorie hinzufügen");
+		trans.put("add custom field", "Benutzerdefiniertes Feld hinzufügen");
 		trans.put("add email", "Emailadresse hinzufügen");
 		trans.put("add messenger", "Messenger-Kennung hizufügen");
 		trans.put("add nickname", "Rufname hizufügen");
@@ -27,6 +28,7 @@ public class TranslationDE extends Translation{
 		trans.put("Cell Phone", "Handy");
 		trans.put("Certificate Information", "Zertifikat-Informationen");
 		trans.put("City", "Ort");
+		trans.put("Custom", "Benutzerdefiniert");
 		trans.put("cloned contact", "geklonter Kontakt");
 		trans.put(">> clone this contact >>", ">> diesen Kontakt klonen >>");
 		trans.put("Common Name", "allgemeiner Name");

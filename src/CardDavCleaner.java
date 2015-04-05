@@ -19,7 +19,6 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -85,6 +84,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			if (decision == JOptionPane.NO_OPTION){
 				return false;
 			}
+		} else {
+			System.out.println("auto merge "+contact.uid()+" with "+contact2.uid());
 		}
 		return contact.mergeWith(contact2);
 	}
@@ -206,12 +207,19 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		boolean repeat;
 		do {
 			repeat = false;
+			int num=contacts.size()/100;
+			int prog=0;
 			for (Contact contact1:contacts){
+				if (++prog % num == 0){
+					System.out.print(prog%10);
+				}
 				for (Contact contact2:contacts){
+					
 					if (contact1 == contact2){
 						continue;
 					}
 					if (contact1.isSameAs(contact2)){
+						System.out.println("\nMarked "+contact2.uid()+" for removal: duplicate of "+contact1.uid()+".");
 						deleteList.add(contact2);
 						contacts.remove(contact2);
 						repeat=true;
@@ -225,7 +233,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					break;
 				}
 			}
-			System.out.println(contacts.size()+" contacts...");
 		} while (repeat);
 	}
 
@@ -536,8 +543,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		TreeSet<Contact> writeList = getWriteList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())) {
 			if (confirmLists(writeList, deleteList)) {
-				putMergedContacts(host, writeList);
-				deleteUselessContacts(host, deleteList);
+				//putMergedContacts(host, writeList);
+				//deleteUselessContacts(host, deleteList);
 				JOptionPane.showMessageDialog(null, _("<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!"));
 			} else {
 				JOptionPane.showMessageDialog(null, _("<html>Merging and cleaning aborted! Goodbye!"));

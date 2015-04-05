@@ -626,7 +626,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	public boolean conflictsWith(Contact c2) {
-		if (!name.isCompatibleWith(c2.name)) {
+		if (name!=null && !name.isCompatibleWith(c2.name)) {
 			System.out.println("name conflict");
 			return true;
 		}
@@ -1626,5 +1626,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (numbers2.contains(num)) return num;
 		}
 		return null;
+	}
+	
+	public String uid(){
+		return uid;
 	}
 }
