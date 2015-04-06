@@ -241,7 +241,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		boolean repeat;
 		do {
 			repeat = false;
-			int num=contacts.size()/100;
+			int num=1+(contacts.size()/100);
 			int prog=0;
 			for (Contact contact1:contacts){
 				if (++prog % num == 0){
@@ -269,6 +269,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				}
 			}
 		} while (repeat);
+		System.out.println();
 	}
 
 	private void thunderbirdDistibute(Vector<Contact> contacts) {
@@ -561,7 +562,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			TreeSet<String> contacts = new TreeSet<String>();
 			int counter=0;
 			while ((line = in.readLine()) != null) {
-//				if (++counter > 1000) break;
+				if (++counter > 3000) break;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();

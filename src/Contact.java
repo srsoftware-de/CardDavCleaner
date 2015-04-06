@@ -34,8 +34,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class Contact extends Mergable<Contact> implements ActionListener, DocumentListener, ChangeListener, Comparable<Contact> {
 
 	public static void test() {
@@ -629,70 +627,74 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	public boolean conflictsWith(Contact c2) {
 		if (name!=null && !name.isCompatibleWith(c2.name)) {
-//			System.out.println("name conflict");
+			System.out.println("name conflict ("+name+" - "+c2.name+")");
 			return true;
 		}
 		if (birthday != null && !birthday.isCompatibleWith(c2.birthday)) {
-//			System.out.println("bday conflict");
+			System.out.println("bday conflict ("+birthday+" - "+c2.birthday+")");
 			return true;
 		}
 		if (different(formattedName, c2.formattedName)) {
-			//System.out.println("formatted name conflict");
+			System.out.println("formatted name conflict ("+formattedName+" - "+c2.formattedName+")");
 			return true;
 		}
 		if (different(anniversary, c2.anniversary)) {
-			//System.out.println("anniversary conflict");
+			System.out.println("anniversary conflict ("+anniversary+" - "+c2.anniversary+")");
 			return true;
 		}
 		if (!labels.isEmpty() && !c2.labels.isEmpty() && !labels.equals(c2.labels)) {
-			//System.out.println("labels conflict");
+			System.out.println("labels conflict ("+labels+" - "+c2.labels+")");
 			return true;
 		}
 		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) {
-			//System.out.println("titles conflict");
+			System.out.println("titles conflict ("+titles+" - "+c2.titles+")");
 			return true;
 		}
 		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) {
-			//System.out.println("roles conflict");
+			System.out.println("roles conflict ("+roles+" - "+c2.roles+")");
 			return true;
 		}
 		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getSimplePhoneNumbers().equals(c2.getSimplePhoneNumbers())) {
-			//System.out.println("phones conflict");
-			return true;
+			TreeSet<String> nums1 = getSimplePhoneNumbers();
+			TreeSet<String> num2 = c2.getSimplePhoneNumbers();
+			if (!nums1.containsAll(num2) && !num2.containsAll(nums1)){
+				System.out.println("phones conflict ("+getSimplePhoneNumbers()+" - "+c2.getSimplePhoneNumbers()+")");
+				return true;
+			}
 		}
 		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) {
-			//	System.out.println("mails conflict");
+			System.out.println("mails conflict ("+getMailAdresses()+" - "+c2.getMailAdresses()+")");
 			return true;
 		}
 		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) {
-			//System.out.println("addresses conflict");
+			System.out.println("addresses conflict ("+getAdressData()+" - "+c2.getAdressData()+")");
 			return true;
 		}
 		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls)) {
-			//System.out.println("urls conflict");
+			System.out.println("urls conflict ("+urls+" - "+c2.urls+")");
 			return true;
 		}
 		if (!nicks.isEmpty() && !c2.nicks.isEmpty() && !nicks.equals(c2.nicks)) {
-			//System.out.println("nicknames conflict");
+			System.out.println("nicknames conflict ("+nicks+" - "+c2.nicks+")");
 			return true;
 		}
 		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes)) {
-			//	System.out.println("notes conflict");
+			System.out.println("notes conflict ("+notes+" - "+c2.notes+")");
 			return true;
 		}
 		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) {
-			//	System.out.println("organizations conflict");
+			System.out.println("organizations conflict ("+orgs+" - "+c2.orgs+")");
 			return true;
 		}
 		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos)) {
-			//	System.out.println("photo conflict");
+			System.out.println("photo conflict ("+photos+" - "+c2.photos+")");
 			return true;
 		}
 		for (Entry<Integer, String> cc:customContent.entrySet()){
 			Integer key = cc.getKey();
 			String val = c2.customContent.get(key);
 			if (val!=null && !val.equals(cc.getValue())){
-				//System.out.println("Custom content conflict!");
+				System.out.println("Custom content conflict ("+cc.getValue()+" - "+val+")");
 				return true;
 			}
 		}
@@ -806,7 +808,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		markForRewrite();
 	}
 
-	public TreeSet<String> messengerNicks() throws UnknownObjectException {
+	public TreeSet<String> messengerNicks() {
 		TreeSet<String> ids = new TreeSet<String>();
 		for (Messenger m : this.messengers) {
 			ids.add(m.nick());
@@ -1614,9 +1616,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private String getMessengerAssociation(Contact contact) {
-		throw new NotImplementedException();
-		// TODO Auto-generated method stub
-//		return null;
+		TreeSet<String> nicks1 = this.messengerNicks();
+		TreeSet<String> nicks2 = contact.messengerNicks();
+		for (String nick : nicks1) {
+			if (nicks2.contains(nick)) return nick;
+		}
+		return null;
 	}
 
 	private String getNameAssociation(Contact contact) {
