@@ -169,6 +169,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()));
 		} catch (Exception e) {
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(this, _("Error during server communication!"));
 		}
 		setVisible(false);
 		System.exit(0);
