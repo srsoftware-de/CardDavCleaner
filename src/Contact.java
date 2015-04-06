@@ -996,12 +996,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			}
 		}
 
-		if (shorter) {
-			sb.append("CUSTOM...\n");
-		} else {
-			for (Entry<Integer, String> c : customContent.entrySet()) {
-				sb.append("CUSTOM" + c.getKey()+":" +c.getValue()+ "\n");
-			}
+		for (Entry<Integer, String> c : customContent.entrySet()) {
+			sb.append("CUSTOM" + c.getKey()+":" +c.getValue()+ "\n");
 		}
 	}
 

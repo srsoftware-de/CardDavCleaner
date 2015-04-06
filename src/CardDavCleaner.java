@@ -93,7 +93,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				return false;
 			}
 		} else {
-			System.out.println("auto merge "+contact.uid()+" with "+contact2.uid());
+			System.out.println(_("auto merge # with #",new Object[]{ contact.uid(), contact2.uid()}));
 		}
 		return contact.mergeWith(contact2);
 	}
@@ -235,7 +235,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					break;
 				}
 			}
-			System.out.println(contacts.size()+" contacts...");
+			System.out.println(_("# contacts...",contacts.size()));
 		} while (repeat);
 	}
 
@@ -255,7 +255,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 						continue;
 					}
 					if (contact1.isSameAs(contact2)){
-						System.out.println("\nMarked "+contact2.uid()+" for removal: duplicate of "+contact1.uid()+".");
+						System.out.println("\n"+_("Marked # for removal: duplicate of #.",new Object[] { contact2.uid(), contact1.uid() }));
 						contact2.setCustom(1, _("Duplicate"));
 						deleteList.add(contact2);
 						contacts.remove(contact2);
@@ -562,9 +562,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			BufferedReader in = new BufferedReader(new InputStreamReader(content));
 			String line;
 			TreeSet<String> contacts = new TreeSet<String>();
-			int counter=0;
 			while ((line = in.readLine()) != null) {
-				if (++counter > 3000) break;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();

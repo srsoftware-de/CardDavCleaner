@@ -20,6 +20,7 @@ public class TranslationDE extends Translation{
 		trans.put("add URL", "URL hinzufügen");
 		trans.put("Adress", "Adresse");
 		trans.put("Adresses", "Adressen");
+		trans.put("auto merge # with #", "Automatische Zusammenführung von # und #");
 		trans.put("BDAY format invalid: #","ungültiges format des Geburtstags-Eintrags: #");
 		trans.put("birtday", "Geburtstag");
 		trans.put("Birthday entry does not start with BDAY: \"#\"", "Geburtstags-Eintrag started nicht mit BDAY: \"#\"");
@@ -28,6 +29,7 @@ public class TranslationDE extends Translation{
 		trans.put("Cell Phone", "Handy");
 		trans.put("Certificate Information", "Zertifikat-Informationen");
 		trans.put("City", "Ort");
+		trans.put("# contacts...", "# Kontakte...");
 		trans.put("Custom", "Benutzerdefiniert");
 		trans.put("cloned contact", "geklonter Kontakt");
 		trans.put(">> clone this contact >>", ">> diesen Kontakt klonen >>");
@@ -64,6 +66,7 @@ public class TranslationDE extends Translation{
 		trans.put("LABEL does not contain colon: #","LABEL enthält keinen Doppelpunkt: #");
 		trans.put("LABEL does not start with \"LABEL\": #", "LABEL beginnt nicht \"LABEL\": #");
 		trans.put("Location", "Ort");
+		trans.put("Marked # for removal: duplicate of #.", "# zum löschen markiert: Dupplikat von #");
 		trans.put("MD5 hashing...", "Erzeuge MD5-Hash...");
 		trans.put("<html>Merging and cleaning aborted! Goodbye!","<html>Zusammenführen und Bereinigen der Kontakte abgebrochen! Auf Wiedersehen!");
 		trans.put("<html>Merging the following two contacts:<br>&nbsp;", "<html>Führe die folgenden zwei Kontakte zusammen:<br>&nbsp;");
