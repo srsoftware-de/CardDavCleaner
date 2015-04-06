@@ -213,7 +213,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			Integer opt = j.showSaveDialog(this);
 			if (opt==JFileChooser.APPROVE_OPTION){
 				backupPath=j.getSelectedFile();
-				backupPathLabel.setText(_("Backup wil be written to #",backupPath));
+				backupPathLabel.setText(" "+_("Backup wil be written to #",backupPath));
 			}
 		}
 	}
@@ -380,19 +380,23 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		serverPanel.add(new JLabel(_("<html>Some programs cannot handle fields defined by the vCard standard.<br>To apply workarounds, select programs you use from the follwing list:")));
 		thunderbirdBox = new JCheckBox(_("Mozilla Thunderbird"));
 		serverPanel.add(thunderbirdBox);		
+		
+		HorizontalPanel bar=new HorizontalPanel();
 		startButton = new JButton(_("start"));
 		startButton.addActionListener(this);
-		serverPanel.add(startButton);
 		progressBar = new JProgressBar();
 		progressBar.setPreferredSize(new Dimension(800, 32));
 		progressBar.setStringPainted(true);
 		progressBar.setString(_("Ready."));
-		serverPanel.add(progressBar);
+		bar.add(progressBar);
+		bar.add(startButton);
+		bar.scale();
+		serverPanel.add(bar);
 		serverPanel.scale();
 		
 		
 		HorizontalPanel backupPanel = new HorizontalPanel(_("Backup settings"));
-		backupPathLabel = new JLabel(_("No Backup defined.")+"                                                                 ");
+		backupPathLabel = new JLabel(" "+_("No Backup defined.")+"                                                                 ");
 		backupPathButton=new JButton(_("Select Backup Location"));
 		backupPathButton.addActionListener(this);
 		backupPanel.add(backupPathButton);
@@ -433,8 +437,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws IOException
 	 */
 	private void deleteUselessContacts(String host, TreeSet<Contact> deleteList) throws IOException {
+		int count=deleteList.size();
+		int index=0;
+		progressBar.setMaximum(count);
 		for (Contact c : deleteList) {
-			System.out.println(_("Deleting #", c.vcfName()));
+			index++;
+			progressBar.setValue(index);
+			progressBar.setString(_("Deleting #", c.vcfName())+" - "+index+"/"+count);
 			deleteContact(new URL(host + "/" + c.vcfName()));
 		}
 	}
@@ -472,9 +481,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws IOException
 	 */
 	private void putMergedContacts(String host, TreeSet<Contact> writeList) throws IOException {
+		int count=writeList.size();		
+		int index=0;
+		progressBar.setMaximum(count);
 		for (Contact c : writeList) {
-
-			System.out.println(_("Uploading #", c.vcfName()));
+			index++;
+			progressBar.setValue(index);
+			progressBar.setString(_("Uploading #", c.vcfName())+" - "+index+"/"+count);
 
 			byte[] data = c.getBytes();
 			URL putUrl = new URL(host + "/" + c.vcfName());
@@ -642,8 +655,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		TreeSet<Contact> writeList = getWriteList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())) {
 			if (confirmLists(writeList, deleteList)) {
-				// putMergedContacts(host, writeList);
-				// deleteUselessContacts(host, deleteList);
+				putMergedContacts(host, writeList);
+				deleteUselessContacts(host, deleteList);
 				JOptionPane.showMessageDialog(null, _("<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!"));
 			} else {
 				JOptionPane.showMessageDialog(null, _("<html>Merging and cleaning aborted! Goodbye!"));
