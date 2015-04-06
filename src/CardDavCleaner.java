@@ -354,8 +354,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		mainPanel.add(serverField = new InputField(_("Server + Path to addressbook:"), false));
 		mainPanel.add(userField = new InputField(_("User:"), false));
 		mainPanel.add(passwordField = new InputField(_("Password:"), true));
-		thunderbirdBox = new JCheckBox(_("<html>I use the program Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)"));
-		mainPanel.add(thunderbirdBox);
+		mainPanel.add(new JLabel(_("<html>Some programs cannot handle fields defined by the vCard standard.<br>To apply workarounds, select programs you use from the follwing list:")));
+		thunderbirdBox = new JCheckBox(_("Mozilla Thunderbird"));
+		mainPanel.add(thunderbirdBox);		
 		JButton startButton = new JButton(_("start"));
 		startButton.addActionListener(this);
 		mainPanel.add(startButton);
@@ -585,9 +586,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			BufferedReader in = new BufferedReader(new InputStreamReader(content));
 			String line;
 			TreeSet<String> contacts = new TreeSet<String>();
-			int count = 0;
 			while ((line = in.readLine()) != null) {
-				// if (++count>4096) break;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();

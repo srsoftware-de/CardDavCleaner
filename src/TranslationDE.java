@@ -62,7 +62,6 @@ public class TranslationDE extends Translation{
 		trans.put("Home Phone", "Festnetz/zu Hause");
 		trans.put("Hour", "Stunde");
 		trans.put("Invalid Contact", "ungültiger/beschädigter Kontakt");
-		trans.put("<html>I use the program Thunderbird with this address book.<br>(This is important, as thunderbird only allows a limited number of phone numbers, email addresses, etc.)","<html>Ich benutze das Programm Thunderbird mit diesem Adressbuch.<br>(Das ist wichtig, da Thunderbird nur eine begrenzte Anzahl an Telefonnummern, Email-Adressen, etc. erlaubt.)");
 		trans.put("LABEL does not contain colon: #","LABEL enthält keinen Doppelpunkt: #");
 		trans.put("LABEL does not start with \"LABEL\": #", "LABEL beginnt nicht \"LABEL\": #");
 		trans.put("Location", "Ort");
@@ -129,6 +128,7 @@ public class TranslationDE extends Translation{
 		trans.put("start", "Start");
 		trans.put("State", "Staat");
 		trans.put("Street Adress", "Straße");
+		trans.put("<html>Some programs cannot handle fields defined by the vCard standard.<br>To apply workarounds, select programs you use from the follwing list:","<html>Manche Programme unterstützen nicht alle Felder des vCard-Standards.<br>Zum Aktivieren von Anpassungen, Markieren Sie von Ihnen genutzte Programme in der Liste:");		
 		trans.put("Sorry, i was not able to establish a secure connection to this server. I will quit now.", "Es tut mir leid, aber ich konnte keine Sichere Verbindung zum Server aufbauen. Programm wird jetzt beendet.");
 		trans.put("<html>Sorry! Unfortunateley, i was not able to write a file to the WebDAV server.<br>But don't worry, i created a <b>Backup</b> of the file at #", "<html>Verzeihung! Leider kontte ich eine Datei nicht zum WebDAV server senden.<br>Aber keine Angst, ich habe ein <b>Backup</b> der Datei unter # gespeichert!");
 		trans.put("...success!", "...erfolgreich!");
