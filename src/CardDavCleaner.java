@@ -19,6 +19,7 @@ import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -64,8 +65,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @return true if contacts have been merged
 	 * @throws InvalidAssignmentException the assignment variable does not contain 2 values
 	 */
-	private static boolean mergeInteractively(Contact contact, Contact contact2,String[] association) throws InvalidAssignmentException {
+	private boolean mergeInteractively(Contact contact, Contact contact2,String[] association) throws InvalidAssignmentException {
 		if (contact.conflictsWith(contact2)){
+			if (blackListed(contact,contact2)){
+				return false;
+			}
 			if (association.length != 2) {
 				System.out.println(association);
 				throw new InvalidAssignmentException("Invalid association: "+association);
@@ -85,7 +89,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			int decision = JOptionPane.showConfirmDialog(null, vp, _("Please decide!"), JOptionPane.YES_NO_CANCEL_OPTION);
 			if (decision == JOptionPane.CANCEL_OPTION) System.exit(0);
 			if (decision == JOptionPane.NO_OPTION){
-				return false;
+				addToBlackList(contact,contact2);
 			}
 		} else {
 			System.out.println("auto merge "+contact.uid()+" with "+contact2.uid());
@@ -93,7 +97,30 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		return contact.mergeWith(contact2);
 	}
 
-	
+	private boolean blackListed(Contact contact, Contact contact2) {
+		TreeSet<Contact> listForContact = blackList.get(contact);
+		if (listForContact==null) return false;
+		return listForContact.contains(contact2);
+	}
+
+	TreeMap<Contact, TreeSet<Contact>> blackList = new TreeMap<Contact, TreeSet<Contact>>();	
+	private void addToBlackList(Contact contact, Contact contact2) {
+		// mapping contact => contact2
+		TreeSet<Contact> listForContact = blackList.get(contact);
+		if (listForContact==null){
+			listForContact=new TreeSet<Contact>();
+			blackList.put(contact, listForContact);
+		}
+		listForContact.add(contact2);
+		// mapping contact2 => contact
+		listForContact = blackList.get(contact2);
+		if (listForContact==null){
+			listForContact=new TreeSet<Contact>();
+			blackList.put(contact2, listForContact);
+		}
+		listForContact.add(contact);
+	}
+
 	private static void test() {
 		MD5Hash.test();
 		Tests.test();
@@ -194,6 +221,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					String[] association = contact1.getAssociationWith(contact2);
 					if (association != null && mergeInteractively(contact1,contact2,association)){
 						deleteList.add(contact2);
+						contact2.setCustom(1, _("Merged into other contact"));
 						contacts.remove(contact1);
 						repeat=true;
 					}
@@ -226,6 +254,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					}
 					if (contact1.isSameAs(contact2)){
 						System.out.println("\nMarked "+contact2.uid()+" for removal: duplicate of "+contact1.uid()+".");
+						contact2.setCustom(1, _("Duplicate"));
 						deleteList.add(contact2);
 						contacts.remove(contact2);
 						repeat=true;
@@ -452,6 +481,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					if (contact.isEmpty()) {
 						contact.clearFields();
 						deleteList.add(contact);
+						contact.setCustom(1, _("empty contact"));
 						System.out.println(_("Warning: skipping empty contact # (Contains nothing but a name)", contact.vcfName()));
 					} else {
 						contacts.add(contact);
@@ -477,6 +507,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			case 0:
 				if (contact.edited()) {
 					if (contact.isEmpty()) {
+						contact.setCustom(1, _("emtpy contact"));
 						deleteList.add(contact);
 					} else {
 						contact.markForRewrite();

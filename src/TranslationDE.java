@@ -37,6 +37,7 @@ public class TranslationDE extends Translation{
 		trans.put("Delete this contact", "Diesen Kontakt löschen");
 		trans.put("Deleting #", "# wird gelöscht");
 		trans.put("Do you trust this certificate/website?", "Vertrauen Sie diesem Zertifikat/dieser Webseite?");
+		trans.put("Duplicate", "Duplikat");
 		trans.put("drop clone", "Kopie verwerfen");
 		trans.put("Edit contact", "Kontakt bearbeiten");
 		trans.put("Edit manually", "bearbeiten");		
@@ -44,6 +45,7 @@ public class TranslationDE extends Translation{
 		trans.put("Email","E-Mail");
 		trans.put("Email Adresses", "Emailadresse");
 		trans.put("Empty certificate chain supplied!", "Es wurde eine leere Zertifikatkette übergeben!");
+		trans.put("empty contact", "leerer Kontakt");
 		trans.put("Exception when setting up the key trust management.", "Beim Erzeugen der Schlüssel-Test-Funktionen ist ein Fehler aufgetreten.");
 		trans.put("Extended", "erweitert");
 		trans.put("Extended Adress", "Adresszusatz");
@@ -70,6 +72,7 @@ public class TranslationDE extends Translation{
 		trans.put("Messenger adress does not start with \"IMPP:\": #", "Messengeradresse fängt nicht mit \"IMPP:\" an: #");
 		trans.put("Messenger \"#\" has no known type!", "Messenger \"#\" hat unbekannten Typ!");
 		trans.put("Messengers", "Chat-/Mitteilungsprogramme");
+		trans.put("Merged into other contact", "In anderen Kontakt übernommen");
 		trans.put("Middle Name", "mittlerer Name");
 		trans.put("Month of birth", "Geburtsmonat");
 		trans.put("name", "Name");

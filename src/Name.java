@@ -434,10 +434,10 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 		return first;
 	}
 	public String main(){
-		return first+" "+middle+" "+family;
+		return ((first==null)?"":first+" ")+((middle==null)?"":middle+" ")+((family==null)?"":family);
 	}
 	public String full(){
-		return prefix+" "+main()+" "+suffix;
+		return ((prefix==null)?"":prefix+" ")+main()+((suffix==null)?"":" "+suffix);
 	}
 	public void insertUpdate(DocumentEvent arg0) {
 		update();
