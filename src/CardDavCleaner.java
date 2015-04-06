@@ -71,7 +71,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				return false;
 			}
 			if (association.length != 2) {
-				System.out.println(association);
+				System.err.println(association);
 				throw new InvalidAssignmentException("Invalid association: "+association);
 			}
 			VerticalPanel vp = new VerticalPanel();
@@ -90,6 +90,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			if (decision == JOptionPane.CANCEL_OPTION) System.exit(0);
 			if (decision == JOptionPane.NO_OPTION){
 				addToBlackList(contact,contact2);
+				return false;
 			}
 		} else {
 			System.out.println("auto merge "+contact.uid()+" with "+contact2.uid());
@@ -220,9 +221,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					}
 					String[] association = contact1.getAssociationWith(contact2);
 					if (association != null && mergeInteractively(contact1,contact2,association)){
-						deleteList.add(contact2);
 						contact2.setCustom(1, _("Merged into other contact"));
-						contacts.remove(contact1);
+						deleteList.add(contact2);
+						contacts.remove(contact2);
 						repeat=true;
 					}
 					if (repeat){
