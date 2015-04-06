@@ -67,14 +67,14 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @return true if contacts have been merged
 	 * @throws InvalidAssignmentException the assignment variable does not contain 2 values
 	 */
-	private boolean mergeInteractively(Contact contact, Contact contact2,String[] association) throws InvalidAssignmentException {
-		if (contact.conflictsWith(contact2)){
-			if (blackListed(contact,contact2)){
+	private boolean mergeInteractively(Contact contact, Contact contact2, String[] association) throws InvalidAssignmentException {
+		if (contact.conflictsWith(contact2)) {
+			if (blackListed(contact, contact2)) {
 				return false;
 			}
 			if (association.length != 2) {
 				System.err.println(association);
-				throw new InvalidAssignmentException("Invalid association: "+association);
+				throw new InvalidAssignmentException("Invalid association: " + association);
 			}
 			VerticalPanel vp = new VerticalPanel();
 			vp.add(new JLabel(_("<html>The # \"<b>#</b>\" is used by both following contacts:", new Object[] { association[0], association[1] })));
@@ -90,35 +90,36 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			vp.scale();
 			int decision = JOptionPane.showConfirmDialog(null, vp, _("Please decide!"), JOptionPane.YES_NO_CANCEL_OPTION);
 			if (decision == JOptionPane.CANCEL_OPTION) System.exit(0);
-			if (decision == JOptionPane.NO_OPTION){
-				addToBlackList(contact,contact2);
+			if (decision == JOptionPane.NO_OPTION) {
+				addToBlackList(contact, contact2);
 				return false;
 			}
 		} else {
-			System.out.println(_("auto merge # with #",new Object[]{ contact.uid(), contact2.uid()}));
+			System.out.println(_("auto merge # with #", new Object[] { contact.uid(), contact2.uid() }));
 		}
 		return contact.mergeWith(contact2);
 	}
 
 	private boolean blackListed(Contact contact, Contact contact2) {
 		TreeSet<Contact> listForContact = blackList.get(contact);
-		if (listForContact==null) return false;
+		if (listForContact == null) return false;
 		return listForContact.contains(contact2);
 	}
 
-	TreeMap<Contact, TreeSet<Contact>> blackList = new TreeMap<Contact, TreeSet<Contact>>();	
+	TreeMap<Contact, TreeSet<Contact>> blackList = new TreeMap<Contact, TreeSet<Contact>>();
+
 	private void addToBlackList(Contact contact, Contact contact2) {
 		// mapping contact => contact2
 		TreeSet<Contact> listForContact = blackList.get(contact);
-		if (listForContact==null){
-			listForContact=new TreeSet<Contact>();
+		if (listForContact == null) {
+			listForContact = new TreeSet<Contact>();
 			blackList.put(contact, listForContact);
 		}
 		listForContact.add(contact2);
 		// mapping contact2 => contact
 		listForContact = blackList.get(contact2);
-		if (listForContact==null){
-			listForContact=new TreeSet<Contact>();
+		if (listForContact == null) {
+			listForContact = new TreeSet<Contact>();
 			blackList.put(contact2, listForContact);
 		}
 		listForContact.add(contact);
@@ -163,13 +164,15 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		createComponents();
 		setVisible(true);
 	}
-	
-	private class cleaningThread extends Thread{
+
+	private class cleaningThread extends Thread {
 		private Component owner;
+
 		public cleaningThread(Component owner) {
-			this.owner=owner;
+			this.owner = owner;
 		}
-		public void run() {			
+
+		public void run() {
 			try {
 				startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()));
 			} catch (Exception e) {
@@ -187,7 +190,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * 
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
-	public void actionPerformed(ActionEvent arg0) {		
+	public void actionPerformed(ActionEvent arg0) {
 		((JButton) arg0.getSource()).setEnabled(false);
 		cleaningThread cleaningThread = new cleaningThread(this);
 		cleaningThread.start();
@@ -213,14 +216,14 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 		Vector<Contact> contacts = readContacts(host, contactNames);
 
-		//TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
-		
+		// TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
+
 		// next: mark duplicates for removal
 		markDuplicatesForRemoval(contacts);
-		
-		// next: find associations between contacts and do an interactive merge 
+
+		// next: find associations between contacts and do an interactive merge
 		mergeAssociated(contacts);
-		
+
 		if (thunderbirdBox.isSelected()) {
 			thunderbirdDistibute(contacts);
 		}
@@ -230,78 +233,60 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private void mergeAssociated(Vector<Contact> contacts) throws InvalidAssignmentException {
-		boolean repeat;
-		int val=0;
-		do {
-			repeat = false;
-			int num=contacts.size();
-			progressBar.setValue(val);
+		int num = contacts.size();
+		int index1 = 0;
+		while (index1 < num) {
+			progressBar.setValue(index1);
+			progressBar.setString(_("performing interactive contage merge...") + index1 + "/" + num);
 			progressBar.setMaximum(num);
-			progressBar.setString(_("performing interactive contage merge...")+val+"/"+num);
-			int prog=0;
-			for (Contact contact1:contacts){
-				prog++;
-				if (prog>val){
-					val=prog;
-					progressBar.setValue(val);
-				}					
-				for (Contact contact2:contacts){
-					if (contact1 == contact2) {
-						continue;
-					}
+			Contact contact1 = contacts.get(index1);
+
+			int index2 = index1 + 1;
+			while (index2 < num) {
+				Contact contact2 = contacts.get(index2);
+				if (contact1 != contact2) {
 					String[] association = contact1.getAssociationWith(contact2);
-					if (association != null && mergeInteractively(contact1,contact2,association)){
+					if (association != null && mergeInteractively(contact1, contact2, association)) {
 						contact2.setCustom(1, _("Merged into other contact"));
 						deleteList.add(contact2);
-						contacts.remove(contact2);
-						repeat=true;
-					}
-					if (repeat){
-						break;
+						contacts.remove(index2);
+						num--;
+						index2--;
 					}
 				}
-				if (repeat){
-					break;
-				}
+				index2++;
 			}
-		} while (repeat);
+			index1++;
+		}
 	}
 
 	private void markDuplicatesForRemoval(Vector<Contact> contacts) {
-		boolean repeat;
-		progressBar.setString(_("Searching for duplicates..."));
-		int val=0;
-		do {
-			repeat = false;
-			progressBar.setMaximum(contacts.size());			
-			int prog=0;
-			for (Contact contact1:contacts){
-				prog++;
-				if (prog>val){
-					val=prog;
-					progressBar.setValue(val);
-				}
-				for (Contact contact2:contacts){					
-					if (contact1 == contact2){
-						continue;
-					}
-					if (contact1.isSameAs(contact2)){
-						System.out.println(_("Marked # for removal: duplicate of #.",new Object[] { contact2.uid(), contact1.uid() })+"\n");
+		int num = contacts.size();
+		int index1 = 0;
+		while (index1 < num) {
+			progressBar.setValue(index1);
+			progressBar.setString(_("Searching for duplicates...") + index1 + "/" + num);
+			progressBar.setMaximum(contacts.size());
+			Contact contact1 = contacts.get(index1);
+			
+			int index2 = index1 + 1;
+			while (index2 < num) {
+				Contact contact2 = contacts.get(index2);
+				if (contact1 != contact2) {
+					if (contact1.isSameAs(contact2)) {
+						System.out.println(_("Marked # for removal: duplicate of #.", new Object[] { contact2.uid(), contact1.uid() }) + "\n");
 						contact2.setCustom(1, _("Duplicate"));
 						deleteList.add(contact2);
-						contacts.remove(contact2);
-						repeat=true;
-					}
-				
-					if (repeat){
-						break;
+						contacts.remove(index2);
+						num--;
+						index2--;
 					}
 				}
-				if (repeat){
-					break;
-				}
+				index2++;
 			}
-		} while (repeat);
+			index1++;
+		}
+
 	}
 
 	private void thunderbirdDistibute(Vector<Contact> contacts) {
@@ -374,8 +359,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		JButton startButton = new JButton(_("start"));
 		startButton.addActionListener(this);
 		mainPanel.add(startButton);
-		progressBar=new JProgressBar();
-		progressBar.setPreferredSize(new Dimension(800,32));
+		progressBar = new JProgressBar();
+		progressBar.setPreferredSize(new Dimension(800, 32));
 		progressBar.setStringPainted(true);
 		progressBar.setString(_("Ready."));
 		mainPanel.add(progressBar);
@@ -432,6 +417,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private TreeSet<Contact> getWriteList(Vector<Contact> contacts) {
+		progressBar.setString(_("Reconciling changes..."));
 		TreeSet<Contact> result = new TreeSet<Contact>();
 		for (Contact contact : contacts) {
 			if (contact.shallBeRewritten()) {
@@ -599,9 +585,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			BufferedReader in = new BufferedReader(new InputStreamReader(content));
 			String line;
 			TreeSet<String> contacts = new TreeSet<String>();
-			int count=0;
+			int count = 0;
 			while ((line = in.readLine()) != null) {
-//				if (++count>4096) break;
+				// if (++count>4096) break;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();
@@ -620,8 +606,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		TreeSet<Contact> writeList = getWriteList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())) {
 			if (confirmLists(writeList, deleteList)) {
-				//putMergedContacts(host, writeList);
-				//deleteUselessContacts(host, deleteList);
+				// putMergedContacts(host, writeList);
+				// deleteUselessContacts(host, deleteList);
 				JOptionPane.showMessageDialog(null, _("<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!"));
 			} else {
 				JOptionPane.showMessageDialog(null, _("<html>Merging and cleaning aborted! Goodbye!"));

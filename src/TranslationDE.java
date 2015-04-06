@@ -113,6 +113,7 @@ public class TranslationDE extends Translation{
 		trans.put("Prefix", "Präfix");
 		trans.put("reading contact #/#: #", "lese Kontakt #/#: #");
 		trans.put("reading list of contacts...", "Lade Liste der Kontakte...");
+		trans.put("Reconciling changes...", "Veränderungen werden zusammengefasst...");
 		trans.put("Region", "Region/Bundesland");
 		trans.put("Role", "Rolle/Stellung");
 		trans.put("Roles", "Rollen");
