@@ -66,7 +66,7 @@ public class TranslationDE extends Translation{
 		trans.put("LABEL does not contain colon: #","LABEL enthält keinen Doppelpunkt: #");
 		trans.put("LABEL does not start with \"LABEL\": #", "LABEL beginnt nicht \"LABEL\": #");
 		trans.put("Location", "Ort");
-		trans.put("Marked # for removal: duplicate of #.", "# zum löschen markiert: Dupplikat von #");
+		trans.put("Marked # for removal: duplicate of #.", "# zum Löschen vorgemerkt: Dupplikat von #");
 		trans.put("MD5 hashing...", "Erzeuge MD5-Hash...");
 		trans.put("<html>Merging and cleaning aborted! Goodbye!","<html>Zusammenführen und Bereinigen der Kontakte abgebrochen! Auf Wiedersehen!");
 		trans.put("<html>Merging the following two contacts:<br>&nbsp;", "<html>Führe die folgenden zwei Kontakte zusammen:<br>&nbsp;");
@@ -111,10 +111,12 @@ public class TranslationDE extends Translation{
 		trans.put("Preferred Phone", "bevorzugte Nummer");
 		trans.put("Prefix", "Präfix");
 		trans.put("reading contact #/#: #", "lese Kontakt #/#: #");
+		trans.put("reading list of contacts...", "Lade Liste der Kontakte...");
 		trans.put("Region", "Region/Bundesland");
 		trans.put("Role", "Rolle/Stellung");
 		trans.put("Roles", "Rollen");
 		trans.put("<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!", "<html>Prüfen, Zusammenführen und Bereinigen <i>erfolgreich</i> durchgeführt! Auf Wiedersehen!");
+		trans.put("Searching for duplicates...", "Suche nach doppelten Kontakten...");
 		trans.put("Second", "Sekunde");
 		trans.put("Serial Number", "Seriennnummer");
 		trans.put("Server responded with CODE #", "Server hat mit CODE # geantwortet");

@@ -1,3 +1,4 @@
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +31,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -153,10 +155,31 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private TreeSet<Contact> deleteList = new TreeSet<Contact>();
 
+	private JProgressBar progressBar;
+
 	public CardDavCleaner() {
 		super(_("SRSoftware CardDAV cleaner"));
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		createComponents();
 		setVisible(true);
+	}
+	
+	private class cleaningThread extends Thread{
+		private Component owner;
+		public cleaningThread(Component owner) {
+			this.owner=owner;
+		}
+		public void run() {			
+			try {
+				startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()));
+			} catch (Exception e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(owner, _("Error during server communication!"));
+			}
+			setVisible(false);
+			System.exit(0);
+
+		}
 	}
 
 	/*
@@ -164,15 +187,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * 
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
-	public void actionPerformed(ActionEvent arg0) {
-		try {
-			startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(this, _("Error during server communication!"));
-		}
-		setVisible(false);
-		System.exit(0);
+	public void actionPerformed(ActionEvent arg0) {		
+		((JButton) arg0.getSource()).setEnabled(false);
+		cleaningThread cleaningThread = new cleaningThread(this);
+		cleaningThread.start();
 	}
 
 	private String _(String key, int response) {
@@ -198,7 +216,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		//TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
 		
 		// next: mark duplicates for removal
-		margDuplicatesForRemoval(contacts);
+		markDuplicatesForRemoval(contacts);
 		
 		// next: find associations between contacts and do an interactive merge 
 		mergeAssociated(contacts);
@@ -239,23 +257,26 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		} while (repeat);
 	}
 
-	private void margDuplicatesForRemoval(Vector<Contact> contacts) {
+	private void markDuplicatesForRemoval(Vector<Contact> contacts) {
 		boolean repeat;
+		progressBar.setString(_("Searching for duplicates..."));
+		int val=0;
 		do {
 			repeat = false;
-			int num=1+(contacts.size()/100);
+			progressBar.setMaximum(contacts.size());			
 			int prog=0;
 			for (Contact contact1:contacts){
-				if (++prog % num == 0){
-					System.out.print('□');
+				prog++;
+				if (prog>val){
+					val=prog;
+					progressBar.setValue(val);
 				}
-				for (Contact contact2:contacts){
-					
+				for (Contact contact2:contacts){					
 					if (contact1 == contact2){
 						continue;
 					}
 					if (contact1.isSameAs(contact2)){
-						System.out.println("\n"+_("Marked # for removal: duplicate of #.",new Object[] { contact2.uid(), contact1.uid() }));
+						System.out.println(_("Marked # for removal: duplicate of #.",new Object[] { contact2.uid(), contact1.uid() })+"\n");
 						contact2.setCustom(1, _("Duplicate"));
 						deleteList.add(contact2);
 						contacts.remove(contact2);
@@ -271,7 +292,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				}
 			}
 		} while (repeat);
-		System.out.println();
 	}
 
 	private void thunderbirdDistibute(Vector<Contact> contacts) {
@@ -344,7 +364,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		JButton startButton = new JButton(_("start"));
 		startButton.addActionListener(this);
 		mainPanel.add(startButton);
-
+		progressBar=new JProgressBar();
+		progressBar.setPreferredSize(new Dimension(800,32));
+		progressBar.setStringPainted(true);
+		progressBar.setString(_("Ready."));
+		mainPanel.add(progressBar);
 		mainPanel.scale();
 		add(mainPanel);
 		pack();
@@ -471,11 +495,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private Vector<Contact> readContacts(String host, Set<String> contactNamess) throws IOException, AlreadyBoundException {
 		int total = contactNamess.size();
+		progressBar.setMaximum(total);
 		int counter = 0;
 		Vector<Contact> contacts = new Vector<Contact>();
 		// Next: read all contacts, remember contacts that contain nothing but a name
 		for (String contactName : contactNamess) {
-			System.out.println(_("reading contact #/#: #", new Object[] { ++counter, total, contactName }));
+			progressBar.setString(_("reading contact #/#: #", new Object[] { ++counter, total, contactName }));
+			progressBar.setValue(counter);
 			try {
 				Contact contact = new Contact(host, contactName);
 				do {
@@ -542,6 +568,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws KeyStoreException
 	 */
 	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+		progressBar.setString(_("reading list of contacts..."));
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
 				return new PasswordAuthentication(user, password.toCharArray());
@@ -562,7 +589,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			BufferedReader in = new BufferedReader(new InputStreamReader(content));
 			String line;
 			TreeSet<String> contacts = new TreeSet<String>();
+			int count=0;
 			while ((line = in.readLine()) != null) {
+				if (++count>4096) break;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();
