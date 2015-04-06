@@ -459,10 +459,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		parse(data);
 	}
 
-	public Contact(String directory, String name) throws UnknownObjectException, IOException, InvalidFormatException {
+	public Contact(String directory, String name, File backupPath) throws UnknownObjectException, IOException, InvalidFormatException {
 		vcfName = name;
 		URL url = new URL(directory + name);
-		parse(url);
+		parse(url,backupPath);
 	}
 
 	public void actionPerformed(ActionEvent evt) {
@@ -1296,16 +1296,26 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		parse(new Vector<String>(Arrays.asList(lineArray)));
 	}
 
-	private void parse(URL url) throws IOException, UnknownObjectException, InvalidFormatException {
+	private void parse(URL url, File backupPath) throws IOException, UnknownObjectException, InvalidFormatException {
 		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
+		BufferedWriter out = null;
+		if (backupPath!=null){			
+			out=new BufferedWriter(new FileWriter(new File(backupPath,vcfName())));
+		}
 		Vector<String> lines = new Vector<String>();
 		String line;
 		while ((line = in.readLine()) != null) {
 			lines.add(line);
+			if (out!=null){
+				out.write(line+"\n");
+			}
 		}
 		in.close();
+		if (out!=null){
+			out.close();
+		}
 		content.close();
 		connection.disconnect();
 		parse(lines);

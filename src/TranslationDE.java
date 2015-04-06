@@ -21,6 +21,8 @@ public class TranslationDE extends Translation{
 		trans.put("Adress", "Adresse");
 		trans.put("Adresses", "Adressen");
 		trans.put("auto merge # with #", "Automatische Zusammenführung von # und #");
+		trans.put("Backup wil be written to #", "Sicherung wird nach # geschrieben");
+		trans.put("Backup settings", "Sicherungseinstellungen");
 		trans.put("BDAY format invalid: #","ungültiges format des Geburtstags-Eintrags: #");
 		trans.put("birtday", "Geburtstag");
 		trans.put("Birthday entry does not start with BDAY: \"#\"", "Geburtstags-Eintrag started nicht mit BDAY: \"#\"");
@@ -84,6 +86,7 @@ public class TranslationDE extends Translation{
 		trans.put("Nickname entry does not start with \"NICKNAME\": #", "Nickname-Eintrag started nicht als \"NICKNAME\": #");
 		trans.put("Nicknames", "Nicknames/Rufnamen");
 		trans.put("No", "Nein");
+		trans.put("No Backup defined.", "Kein Backup vorgesehen.");
 		trans.put("No authType given!", "Type der Authentifizierung wurde nicht angegeben!");
 		trans.put("No data given", "fehlender Datensatz");
 		trans.put("Note", "Notiz/Anmerkung");
@@ -119,6 +122,7 @@ public class TranslationDE extends Translation{
 		trans.put("<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!", "<html>Prüfen, Zusammenführen und Bereinigen <i>erfolgreich</i> durchgeführt! Auf Wiedersehen!");
 		trans.put("Searching for duplicates...", "Suche nach doppelten Kontakten...");
 		trans.put("Second", "Sekunde");
+		trans.put("Select Backup Location", "Ziel des Backups auswählen");
 		trans.put("Serial Number", "Seriennnummer");
 		trans.put("Server responded with CODE #", "Server hat mit CODE # geantwortet");
 		trans.put("Server settings", "Servereinstellungen");

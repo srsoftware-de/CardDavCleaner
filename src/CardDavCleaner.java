@@ -28,6 +28,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -158,6 +159,14 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private JProgressBar progressBar;
 
+	private JButton startButton;
+
+	private JButton backupPathButton;
+
+	private File backupPath=null;
+
+	private JLabel backupPathLabel;
+
 	public CardDavCleaner() {
 		super(_("SRSoftware CardDAV cleaner"));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -174,7 +183,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 		public void run() {
 			try {
-				startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()));
+				startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()),backupPath);
 			} catch (Exception e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(owner, _("Error during server communication!"));
@@ -191,9 +200,22 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent arg0) {
-		((JButton) arg0.getSource()).setEnabled(false);
-		cleaningThread cleaningThread = new cleaningThread(this);
-		cleaningThread.start();
+		Object src=arg0.getSource();
+		if (src==startButton){
+			startButton.setEnabled(false);
+			backupPathButton.setEnabled(false);
+			cleaningThread cleaningThread = new cleaningThread(this);
+			cleaningThread.start();			
+		}
+		if (src==backupPathButton){
+			JFileChooser j = new JFileChooser();
+			j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			Integer opt = j.showSaveDialog(this);
+			if (opt==JFileChooser.APPROVE_OPTION){
+				backupPath=j.getSelectedFile();
+				backupPathLabel.setText(_("Backup wil be written to #",backupPath));
+			}
+		}
 	}
 
 	private String _(String key, int response) {
@@ -205,6 +227,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * 
 	 * @param host the hostname
 	 * @param contactNames the list of contact file names
+	 * @param backupPath 
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws UnknownObjectException
@@ -212,9 +235,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws InvalidAssignmentException
 	 * @throws ToMuchEntriesForThunderbirdException
 	 */
-	private void cleanContacts(String host, Set<String> contactNames) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
+	private void cleanContacts(String host, Set<String> contactNames, File backupPath) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
 
-		Vector<Contact> contacts = readContacts(host, contactNames);
+		Vector<Contact> contacts = readContacts(host, contactNames,backupPath);
 
 		// TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
 
@@ -348,23 +371,36 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * creates all the components for the server login form
 	 */
 	private void createComponents() {
-
-		VerticalPanel mainPanel = new VerticalPanel(_("Server settings"));
-
-		mainPanel.add(serverField = new InputField(_("Server + Path to addressbook:"), false));
-		mainPanel.add(userField = new InputField(_("User:"), false));
-		mainPanel.add(passwordField = new InputField(_("Password:"), true));
-		mainPanel.add(new JLabel(_("<html>Some programs cannot handle fields defined by the vCard standard.<br>To apply workarounds, select programs you use from the follwing list:")));
+		VerticalPanel mainPanel = new VerticalPanel();
+		
+		VerticalPanel serverPanel = new VerticalPanel(_("Server settings"));
+		serverPanel.add(serverField = new InputField(_("Server + Path to addressbook:"), false));
+		serverPanel.add(userField = new InputField(_("User:"), false));
+		serverPanel.add(passwordField = new InputField(_("Password:"), true));
+		serverPanel.add(new JLabel(_("<html>Some programs cannot handle fields defined by the vCard standard.<br>To apply workarounds, select programs you use from the follwing list:")));
 		thunderbirdBox = new JCheckBox(_("Mozilla Thunderbird"));
-		mainPanel.add(thunderbirdBox);		
-		JButton startButton = new JButton(_("start"));
+		serverPanel.add(thunderbirdBox);		
+		startButton = new JButton(_("start"));
 		startButton.addActionListener(this);
-		mainPanel.add(startButton);
+		serverPanel.add(startButton);
 		progressBar = new JProgressBar();
 		progressBar.setPreferredSize(new Dimension(800, 32));
 		progressBar.setStringPainted(true);
 		progressBar.setString(_("Ready."));
-		mainPanel.add(progressBar);
+		serverPanel.add(progressBar);
+		serverPanel.scale();
+		
+		
+		HorizontalPanel backupPanel = new HorizontalPanel(_("Backup settings"));
+		backupPathLabel = new JLabel(_("No Backup defined.")+"                                                                 ");
+		backupPathButton=new JButton(_("Select Backup Location"));
+		backupPathButton.addActionListener(this);
+		backupPanel.add(backupPathButton);
+		backupPanel.add(backupPathLabel);
+		backupPanel.scale();		
+		
+		mainPanel.add(backupPanel);
+		mainPanel.add(serverPanel);
 		mainPanel.scale();
 		add(mainPanel);
 		pack();
@@ -490,7 +526,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 	}
 
-	private Vector<Contact> readContacts(String host, Set<String> contactNamess) throws IOException, AlreadyBoundException {
+	private Vector<Contact> readContacts(String host, Set<String> contactNamess, File backupPath) throws IOException, AlreadyBoundException {
 		int total = contactNamess.size();
 		progressBar.setMaximum(total);
 		int counter = 0;
@@ -500,7 +536,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			progressBar.setString(_("reading contact #/#: #", new Object[] { ++counter, total, contactName }));
 			progressBar.setValue(counter);
 			try {
-				Contact contact = new Contact(host, contactName);
+				Contact contact = new Contact(host, contactName,backupPath);
 				do {
 					if (skipInvalidContact(contact)) break;
 					;
@@ -555,6 +591,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @param host the server hostname
 	 * @param user the username used to log in
 	 * @param password the password corrosponding to the username
+	 * @param backupPath 
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws UnknownObjectException
@@ -564,7 +601,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws KeyManagementException
 	 * @throws KeyStoreException
 	 */
-	private void startCleaning(String host, final String user, final String password) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+	private void startCleaning(String host, final String user, final String password, File backupPath) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
 		progressBar.setString(_("reading list of contacts..."));
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
@@ -592,7 +629,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			in.close();
 			content.close();
 			connection.disconnect();
-			cleanContacts(host, contacts);
+			cleanContacts(host, contacts,backupPath);
 		} catch (SSLHandshakeException ve) {
 			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
 		} catch (ToMuchEntriesForThunderbirdException e) {
