@@ -535,7 +535,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					throw new UnexpectedException(_("Server responded with CODE ", response));
 				}
 			}
-			System.out.println(_("...success!"));
 		}
 	}
 
