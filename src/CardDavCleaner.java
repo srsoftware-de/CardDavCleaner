@@ -231,9 +231,20 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private void mergeAssociated(Vector<Contact> contacts) throws InvalidAssignmentException {
 		boolean repeat;
+		int val=0;
 		do {
 			repeat = false;
+			int num=contacts.size();
+			progressBar.setValue(val);
+			progressBar.setMaximum(num);
+			progressBar.setString(_("performing interactive contage merge...")+val+"/"+num);
+			int prog=0;
 			for (Contact contact1:contacts){
+				prog++;
+				if (prog>val){
+					val=prog;
+					progressBar.setValue(val);
+				}					
 				for (Contact contact2:contacts){
 					if (contact1 == contact2) {
 						continue;
@@ -253,7 +264,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 					break;
 				}
 			}
-			System.out.println(_("# contacts...",contacts.size()));
 		} while (repeat);
 	}
 
@@ -591,7 +601,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			TreeSet<String> contacts = new TreeSet<String>();
 			int count=0;
 			while ((line = in.readLine()) != null) {
-				if (++count>4096) break;
+//				if (++count>4096) break;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();

@@ -100,6 +100,7 @@ public class TranslationDE extends Translation{
 		trans.put("Organizations", "Unternehmen");
 		trans.put("Organization entry does not start with \"ORG:\": #", "Unternehmen-Eintrag beginnt nicht mit \"ORG:\": #");
 		trans.put("Password:","Passwort:");
+		trans.put("performing interactive contage merge...", "Kontakte werden interaktiv zusammengeführt...");
 		trans.put("Please confirm", "Bitte bestätigen");
 		trans.put("Please decide!","Bitte entscheiden!");
 		trans.put("Please select","Bitte wählen");
