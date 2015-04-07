@@ -37,8 +37,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class Contact extends Mergable<Contact> implements ActionListener, DocumentListener, ChangeListener, Comparable<Contact> {
 
 	public static void test() {
@@ -1795,7 +1793,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					for (int i=0;i<count;i++){
 						grid.add(new JCheckBox());					
 					}			
-					grid.add(new JCheckBox(_(c)));						
+					grid.add(new JCheckBox(_(c), phone.is(c)));						
 				}
 			}
 		}
@@ -1824,7 +1822,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		private MergableList<Nickname> nicks = new MergableList<Nickname>(); */
 		
 		JOptionPane.showConfirmDialog(null, grid);
-		throw new NotImplementedException();
 	}
 
 	private static JCheckBox activeCheckBox(String suffix) {

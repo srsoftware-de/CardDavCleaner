@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.security.InvalidParameterException;
+import java.util.TreeSet;
 
 import javax.swing.JCheckBox;
 import javax.swing.event.ChangeEvent;
@@ -225,6 +226,54 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 
 	}
 
+	public static enum Category {
+		HOME{
+			@Override
+			public String toString() {				
+				return "home";
+			}
+		},
+		WORK{
+			@Override
+			public String toString() {				
+				return "work";
+			}
+		}, 
+		CELL{
+			@Override
+			public String toString() {				
+				return "cell";
+			}
+		}, 
+		FAX{
+			@Override
+			public String toString() {				
+				return "fax";
+			}
+		}, 
+		VOICE{
+			@Override
+			public String toString() {				
+				return "voice";
+			}
+		}, 
+		PAGER{
+			@Override
+			public String toString() {				
+				return "pager";
+			}
+		}, 
+		PREFERED{
+			@Override
+			public String toString() {				
+				return "prefered";
+			}
+		};
+		
+		public abstract String toString();
+
+	};
+	
 	private static String _(String text) {
 		return Translations.get(text);
 	}
@@ -233,31 +282,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		return Translations.get(key, insert);
 	}
 
-	private boolean fax = false;
-	private boolean home = false;
-	private boolean cell = false;
-	private boolean work = false;
-	private boolean voice = false;
-	private boolean pager = false;
-	private boolean preffered = false;
-
-	public static enum Category {
-		HOME("home"), 
-		WORK("work"), 
-		CELL("cell"), 
-		FAX("fax"), 
-		VOICE("voice"), 
-		PAGER("pager"), 
-		PREFERED("prefered");
-		
-		private final String v;
-		Category(String c){
-			v=c;
-		}
-		public String toString(){
-			return v;
-		}
-	};
+	private TreeSet<Category> categories=new TreeSet<Category>();
 
 	private String number;
 	private boolean invalid = false;
@@ -272,62 +297,62 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		while (!line.startsWith(":")) {
 			String upper = line.toUpperCase();
 			if (upper.startsWith("TYPE=FAX")) {
-				fax = true;
+				categories.add(Category.FAX);
 				line = line.substring(8);
 				continue;
 			}
 			if (upper.startsWith("TYPE=PREF") || upper.startsWith("PREF=1")) {
-				preffered = true;
+				categories.add(Category.PREFERED);
 				line = line.substring(9);
 				continue;
 			}
 			if (upper.startsWith("TYPE=HOME")) {
-				home = true;
+				categories.add(Category.HOME);
 				line = line.substring(9);
 				continue;
 			}
 			if (upper.startsWith("\\,HOME")) {
-				home = true;
+				categories.add(Category.HOME);
 				line = line.substring(6);
 				continue;
 			}
 			if (upper.startsWith("TYPE=CELL")) {
-				cell = true;
+				categories.add(Category.CELL);
 				line = line.substring(9);
 				continue;
 			}
 			if (upper.startsWith("\\,CELL")) {
-				cell = true;
+				categories.add(Category.CELL);
 				line = line.substring(6);
 				continue;
 			}
 			if (upper.startsWith("TYPE=WORK")) {
-				work = true;
+				categories.add(Category.WORK);
 				line = line.substring(9);
 				continue;
 			}
 			if (upper.startsWith("\\,WORK")) {
-				work = true;
+				categories.add(Category.WORK);
 				line = line.substring(6);
 				continue;
 			}
 			if (upper.startsWith("TYPE=VOICE")) {
-				voice = true;
+				categories.add(Category.VOICE);
 				line = line.substring(10);
 				continue;
 			}
 			if (upper.startsWith("\\,VOICE")) {
-				voice = true;
+				categories.add(Category.VOICE);
 				line = line.substring(7);
 				continue;
 			}
 			if (upper.startsWith("TYPE=PAGER")) {
-				pager = true;
+				categories.add(Category.PAGER);
 				line = line.substring(10);
 				continue;
 			}
 			if (upper.startsWith("\\,PAGER")) {
-				pager = true;
+				categories.add(Category.PAGER);
 				line = line.substring(7);
 				continue;
 			}
@@ -340,14 +365,8 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		readPhone(line.substring(1));
 	}
 
-	public String category() {
-		if (home) return "home";
-		if (work) return "work";
-		if (fax) return "fax";
-		if (cell) return "cell";
-		if (voice) return "voice";
-		if (pager) return "pager";
-		return "empty category";
+	public TreeSet<Category> categories() {
+		return new TreeSet<Category>(categories);
 	}
 
 	public void changedUpdate(DocumentEvent arg0) {
@@ -366,19 +385,19 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		form.add(numField = new InputField(_("Number"), number));
 		numField.addChangeListener(this);
 
-		form.add(prefBox = new JCheckBox(_("Preferred Phone"), home));
+		form.add(prefBox = new JCheckBox(_("Preferred Phone"), isPreferedPhone()));
 		prefBox.addChangeListener(this);
-		form.add(homeBox = new JCheckBox(_("Home Phone"), home));
+		form.add(homeBox = new JCheckBox(_("Home Phone"), isHomePhone()));
 		homeBox.addChangeListener(this);
-		form.add(voiceBox = new JCheckBox(_("Voice Phone"), voice));
+		form.add(voiceBox = new JCheckBox(_("Voice Phone"), isVoice()));
 		voiceBox.addChangeListener(this);
-		form.add(workBox = new JCheckBox(_("Work Phone"), work));
+		form.add(workBox = new JCheckBox(_("Work Phone"), isWorkPhone()));
 		workBox.addChangeListener(this);
-		form.add(cellBox = new JCheckBox(_("Cell Phone"), cell));
+		form.add(cellBox = new JCheckBox(_("Cell Phone"), isCellPhone()));
 		cellBox.addChangeListener(this);
-		form.add(faxBox = new JCheckBox(_("Pager"), pager));
+		form.add(faxBox = new JCheckBox(_("Fax"), isFax()));
 		faxBox.addChangeListener(this);
-		form.add(pagerBox = new JCheckBox(_("Pager"), pager));
+		form.add(pagerBox = new JCheckBox(_("Pager"), isPager()));
 		pagerBox.addChangeListener(this);
 		form.scale();
 		return form;
@@ -389,7 +408,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 
 	public boolean isCellPhone() {
-		return cell;
+		return categories.contains(Category.CELL);
 	}
 
 	@Override
@@ -406,40 +425,39 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 
 	public boolean isFax() {
-		return fax;
+		return categories.contains(Category.FAX);
 	}
 
 	public boolean isPager() {
-		return pager;
+		return categories.contains(Category.PAGER);
 	}
 
 	public boolean isHomePhone() {
-		return home;
+		return categories.contains(Category.HOME);
+	}
+	
+	public boolean isPreferedPhone(){
+		return categories.contains(Category.PREFERED);
 	}
 
-	public boolean isInvalid() {
-		return invalid;
-	}
 
 	public boolean isVoice() {
-		return voice;
+		return categories.contains(Category.VOICE);
 	}
 
 	public boolean isWorkPhone() {
-		return work;
+		return categories.contains(Category.WORK);
+		}
+
+	public boolean isInvalid() {
+		return invalid;
 	}
 
 	@Override
 	public boolean mergeWith(Phone other) {
 		if (!isCompatibleWith(other)) return false;
 		number = mergeNumber(simpleNumber(), other.simpleNumber());
-		if (other.preffered) preffered = true;
-		if (other.home) home = true;
-		if (other.work) work = true;
-		if (other.cell) cell = true;
-		if (other.fax) fax = true;
-		if (other.pager) pager = true;
-		if (other.voice) voice = true;
+		categories.addAll(other.categories);
 		return true;
 	}
 
@@ -449,60 +467,6 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 
 	public void removeUpdate(DocumentEvent arg0) {
 		update();
-	}
-
-	public void setCell() {
-		home = false;
-		work = false;
-		fax = false;
-		cell = true;
-		voice = false;
-		pager = false;
-	}
-
-	public void setFax() {
-		home = false;
-		work = false;
-		fax = true;
-		cell = false;
-		voice = false;
-		pager = false;
-	}
-
-	public void setHome() {
-		home = true;
-		work = false;
-		fax = false;
-		cell = false;
-		voice = false;
-		pager = false;
-	}
-
-	public void setVoice() {
-		home = false;
-		work = false;
-		fax = false;
-		cell = false;
-		voice = true;
-		pager = false;
-	}
-
-	public void setWork() {
-		home = false;
-		work = true;
-		fax = false;
-		cell = false;
-		voice = false;
-		pager = false;
-	}
-
-	public void setPager() {
-		home = false;
-		work = false;
-		fax = false;
-		cell = false;
-		voice = false;
-		pager = true;
 	}
 
 	public String simpleNumber() {
@@ -536,13 +500,13 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("TEL");
-		if (preffered) sb.append(";PREF=1");
-		if (fax) sb.append(";TYPE=FAX");
-		if (home) sb.append(";TYPE=HOME");
-		if (cell) sb.append(";TYPE=CELL");
-		if (work) sb.append(";TYPE=WORK");
-		if (voice) sb.append(";TYPE=VOICE");
-		if (pager) sb.append(";TYPE=PAGER");
+		if (isPreferedPhone()) sb.append(";PREF=1");
+		if (isFax()) sb.append(";TYPE=FAX");
+		if (isHomePhone()) sb.append(";TYPE=HOME");
+		if (isCellPhone()) sb.append(";TYPE=CELL");
+		if (isWorkPhone()) sb.append(";TYPE=WORK");
+		if (isVoice()) sb.append(";TYPE=VOICE");
+		if (isPager()) sb.append(";TYPE=PAGER");
 		sb.append(':');
 		if (number != null) sb.append(number);
 		return sb.toString();
@@ -571,13 +535,27 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	private void update() {
 		invalid = false;
 		readPhone(numField.getText());
-		home = homeBox.isSelected();
-		work = workBox.isSelected();
-		voice = voiceBox.isSelected();
-		cell = cellBox.isSelected();
-		fax = faxBox.isSelected();
-		pager = pagerBox.isSelected();
-		preffered = prefBox.isSelected();
+		if (homeBox.isSelected()){
+			categories.add(Category.HOME);
+		}
+		if (workBox.isSelected()){
+			categories.add(Category.WORK);
+		}
+		if (voiceBox.isSelected()){
+			categories.add(Category.VOICE);
+		}
+		if (cellBox.isSelected()){
+			categories.add(Category.CELL);
+		}
+		if (faxBox.isSelected()){
+			categories.add(Category.FAX);
+		}
+		if (pagerBox.isSelected()){
+			categories.add(Category.PAGER);
+		}
+		if (prefBox.isSelected()){
+			categories.add(Category.PREFERED);
+		}
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
@@ -591,5 +569,9 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		} catch (Exception e) {
 			throw new CloneNotSupportedException(e.getMessage());
 		}
+	}
+
+	public boolean is(Category c) {
+		return categories.contains(c);
 	}
 }
