@@ -1,4 +1,5 @@
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 
 public class Thunderbird extends Client {
@@ -28,5 +29,13 @@ public class Thunderbird extends Client {
 
 	public Thunderbird() {
 		super("Thunderbird", home_work(), home_work_cell_fax_pager(), home_work(), home_work(), tb_messengers(), 1, 1, Integer.MAX_VALUE, 1);
+	}
+	
+	@Override
+	public TreeSet<Problem> problemsWith(Contact c) {
+		TreeSet<Problem> result = super.problemsWith(c);
+		// TODO: implement
+		result.add(Problem.EMAIL);
+		return result;
 	}
 }

@@ -1,4 +1,5 @@
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 
 public class Client {
@@ -7,6 +8,11 @@ public class Client {
 	int maxNicknames;
 	int maxLabels;
 	public String name;
+	
+	public static enum Problem {
+		EMAIL,PHONE,ORGANIZATION;
+	}
+
 
 	public Client(String name,
 								TreeMap<String,Integer> addresses,
@@ -27,5 +33,9 @@ public class Client {
 		maxMessengers=messengers;
 		maxNicknames=nicknames;
 		maxLabels=labels;
-	}	
+	}
+	
+	public TreeSet<Problem> problemsWith(Contact c){
+		return new TreeSet<Problem>();
+	}
 }

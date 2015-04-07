@@ -34,7 +34,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
-
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class CardDavCleaner extends JFrame implements ActionListener {
@@ -312,8 +311,37 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	}
 
-	private void thunderbirdDistibute(Vector<Contact> contacts) {
-		// TODO Auto-generated method stub
+	private void thunderbirdDistibute(Vector<Contact> contacts) throws UnknownObjectException, InvalidFormatException {
+		int i=0;
+		
+		Thunderbird thunderbird=new Thunderbird();
+		
+		while (i<contacts.size()){
+			Contact contact=contacts.get(i);
+			TreeSet<Contact> newContacts=resolveCollisions(contact,thunderbird);			
+			contacts.addAll(newContacts);
+			i++;
+		}
+		throw new NotImplementedException();
+	}
+
+	private TreeSet<Contact> resolveCollisions(Contact contact, Thunderbird thunderbird) throws UnknownObjectException, InvalidFormatException {
+		TreeSet<Contact> result=new TreeSet<Contact>();
+		while (true) {
+			TreeSet<Client.Problem> problems = thunderbird.problemsWith(contact);
+			if (problems.isEmpty()) {
+				break;
+			}
+			result.add(new Contact(contact.name().toString()));
+			showResolveDialog(contact,result);
+		}
+		return result;
+	}
+
+	private void showResolveDialog(Contact contact, TreeSet<Contact> result) {
+		// TODO : implement
+		System.out.println(contact);
+		System.out.println(result);
 		throw new NotImplementedException();
 	}
 
@@ -654,8 +682,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		TreeSet<Contact> writeList = getWriteList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())) {
 			if (confirmLists(writeList, deleteList)) {
-				putMergedContacts(host, writeList);
-				deleteUselessContacts(host, deleteList);
+				//putMergedContacts(host, writeList);
+				//deleteUselessContacts(host, deleteList);
 				JOptionPane.showMessageDialog(null, _("<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!"));
 			} else {
 				JOptionPane.showMessageDialog(null, _("<html>Merging and cleaning aborted! Goodbye!"));
