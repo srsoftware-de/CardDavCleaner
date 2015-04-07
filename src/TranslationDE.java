@@ -40,6 +40,7 @@ public class TranslationDE extends Translation{
 		trans.put("Day of birth", "<html>Geburts<b>tag");
 		trans.put("Delete this contact", "Diesen Kontakt löschen");
 		trans.put("Deleting #", "# wird gelöscht");
+		trans.put("Distribute Fields", "Felder verteilen");
 		trans.put("Do you trust this certificate/website?", "Vertrauen Sie diesem Zertifikat/dieser Webseite?");
 		trans.put("Duplicate", "Duplikat");
 		trans.put("drop clone", "Kopie verwerfen");
@@ -82,6 +83,7 @@ public class TranslationDE extends Translation{
 		trans.put("name", "Name");
 		trans.put("Name does not start with \"N:\": #", "Name beginnt nicht mit \"N:\": #");
 		trans.put("Name with more than 5 parts found:", "Name mit mehr als 5 teilen gefunden:");
+		trans.put("<html>New<br>Contact #", "<html>Neuer<br>Kontakt #");
 		trans.put("Nickname", "Nickname/Rufname");
 		trans.put("Nickname entry does not start with \"NICKNAME\": #", "Nickname-Eintrag started nicht als \"NICKNAME\": #");
 		trans.put("Nicknames", "Nicknames/Rufnamen");
@@ -101,6 +103,7 @@ public class TranslationDE extends Translation{
 		trans.put("Organizational Unit", "Abteilung");
 		trans.put("Organizations", "Unternehmen");
 		trans.put("Organization entry does not start with \"ORG:\": #", "Unternehmen-Eintrag beginnt nicht mit \"ORG:\": #");
+		trans.put("<html>Original<br>Contact", "<html>Ursprünglicher<br>Kontakt");
 		trans.put("Password:","Passwort:");
 		trans.put("performing interactive contage merge...", "Kontakte werden interaktiv zusammengeführt...");
 		trans.put("Please confirm", "Bitte bestätigen");

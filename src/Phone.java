@@ -230,43 +230,43 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		HOME{
 			@Override
 			public String toString() {				
-				return "home";
+				return "Home";
 			}
 		},
 		WORK{
 			@Override
 			public String toString() {				
-				return "work";
+				return "Work";
 			}
 		}, 
 		CELL{
 			@Override
 			public String toString() {				
-				return "cell";
+				return "Cell Phone";
 			}
 		}, 
 		FAX{
 			@Override
 			public String toString() {				
-				return "fax";
+				return "Fax";
 			}
 		}, 
 		VOICE{
 			@Override
 			public String toString() {				
-				return "voice";
+				return "Voice";
 			}
 		}, 
 		PAGER{
 			@Override
 			public String toString() {				
-				return "pager";
+				return "Pager";
 			}
 		}, 
 		PREFERED{
 			@Override
 			public String toString() {				
-				return "prefered";
+				return "Preferred Phone";
 			}
 		};
 		

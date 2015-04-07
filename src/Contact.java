@@ -1,4 +1,5 @@
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -1665,7 +1666,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	public void showResolveDialog(TreeSet<Contact> additionalContacts, TreeSet<Problem.Type> problems) throws UnknownObjectException, InvalidFormatException {
-		// TODO : implement
+		final Contact base=this.clone();
 		if (additionalContacts.isEmpty()){
 			additionalContacts.add(new Contact(name.toString()));
 		}
@@ -1714,10 +1715,22 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		
 		if (formattedName!=null){
-			for (int i=0;i<count;i++){
-				grid.add(new JCheckBox());					
+			for (final Contact additionalContact:additionalContacts){
+				grid.add(activeBox(new Action() {					
+					@Override
+					public void change(JCheckBox origin) {
+						additionalContact.formattedName=origin.isSelected()?formattedName:null;
+						System.out.println(additionalContact);
+					}
+				}));
 			}
-			grid.add(new JCheckBox("FN:"+formattedName));
+			grid.add(activeBox("FN:"+formattedName,new Action() {					
+				@Override
+				public void change(JCheckBox origin) {
+					base.formattedName=origin.isSelected()?formattedName:null;
+					System.out.println(base);
+				}
+			}));
 		}
 		
 		if (birthday!=null){
@@ -1785,15 +1798,21 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		if (phones!=null && !phones.isEmpty()){
 			for (Phone phone:phones){
+				grid.add(new JLabel(phone.simpleNumber()));
 				for (int i=0;i<count;i++){
 					grid.add(new JLabel());					
 				}
-				grid.add(new JLabel(phone.simpleNumber()));
-				for (Phone.Category c:Phone.Category.values()){
-					for (int i=0;i<count;i++){
-						grid.add(new JCheckBox());					
+				for (Phone.Category category:Phone.Category.values()){
+					for (Contact additionalContact:additionalContacts){
+						grid.add(activeBox(new Action() {
+							
+							@Override
+							public void change(JCheckBox origin) {
+								// TODO implement
+							}
+						}));					
 					}			
-					grid.add(new JCheckBox(_(c), phone.is(c)));						
+					grid.add(new JCheckBox(_(category), phone.is(category)));						
 				}
 			}
 		}
@@ -1814,14 +1833,60 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			}
 		}
 		
-/*	private boolean htmlMail;
-		private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
-		private MergableList<Url> urls = new MergableList<Url>();
-		private MergableList<Organization> orgs = new MergableList<Organization>();
-		private MergableList<Messenger> messengers = new MergableList<Messenger>();
-		private MergableList<Nickname> nicks = new MergableList<Nickname>(); */
+		if (urls!=null && !urls.isEmpty()){
+			for (Url url:urls){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox(url.toString()));
+			}
+		}
 		
-		JOptionPane.showConfirmDialog(null, grid);
+		if (orgs!=null && !orgs.isEmpty()){
+			for (Organization org:orgs){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox(org.toString()));
+			}
+		}
+		
+		if (messengers!=null && !messengers.isEmpty()){
+			for (Messenger messenger:messengers){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox(messenger.toString()));
+			}
+		}
+
+		if (nicks!=null && !nicks.isEmpty()){
+			for (Nickname nick:nicks){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox(nick.toString()));
+			}
+		}
+
+// TODO: implement this for	private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
+		
+		JOptionPane.showConfirmDialog(null, grid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
+	}
+
+	private Component activeBox(Object text, final Action action) {		
+		final JCheckBox box=text==null?new JCheckBox():new JCheckBox(text.toString(),true);		
+		box.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				action.change(box);				
+			}
+		});
+		return box;
+	}
+
+	private Component activeBox(Action action) {
+		return activeBox(null,action);
 	}
 
 	private static JCheckBox activeCheckBox(String suffix) {

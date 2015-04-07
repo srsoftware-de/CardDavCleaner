@@ -1,6 +1,5 @@
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -33,7 +32,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
@@ -335,8 +333,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			if (problems.isEmpty()) {
 				break;
 			}
-			additionalContacts.add(new Contact(contact.name().toString()));
 			contact.showResolveDialog(additionalContacts,problems);
+			return new TreeSet<Contact>(); // TODO: remove. This is for tests only
 		}
 		return additionalContacts;
 	}
