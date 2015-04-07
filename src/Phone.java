@@ -118,7 +118,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (num == comp) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -138,7 +138,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -152,25 +152,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 						comp++;
 					}
 					String concat = (a.simpleNumber() + ":" + b.simpleNumber());
-					if (concat.equals("01707705281:notaphonenumber") ||
-							concat.equals("01707705281:0123456") ||
-							concat.equals("01707705281:23456") ||
-							concat.equals("01707705281:528177777") ||
-							concat.equals("notaphonenumber:01707705281") ||
-							concat.equals("notaphonenumber:0123456") ||
-							concat.equals("notaphonenumber:23456") ||
-							concat.equals("notaphonenumber:5281") ||
-							concat.equals("notaphonenumber:528177777") ||
-							concat.equals("0123456:01707705281") || 
-							concat.equals("0123456:notaphonenumber") || 
-							concat.equals("0123456:528177777") || 
-							concat.equals("23456:01707705281") || 
-							concat.equals("23456:notaphonenumber") ||
-							concat.equals("23456:528177777") || 
-							concat.equals("528177777:01707705281") ||
-							concat.equals("528177777:notaphonenumber") ||
-							concat.equals("528177777:0123456") || 
-							concat.equals("528177777:23456")) {
+					if (concat.equals("01707705281:notaphonenumber") || concat.equals("01707705281:0123456") || concat.equals("01707705281:23456") || concat.equals("01707705281:528177777") || concat.equals("notaphonenumber:01707705281") || concat.equals("notaphonenumber:0123456") || concat.equals("notaphonenumber:23456") || concat.equals("notaphonenumber:5281") || concat.equals("notaphonenumber:528177777") || concat.equals("0123456:01707705281") || concat.equals("0123456:notaphonenumber") || concat.equals("0123456:528177777") || concat.equals("23456:01707705281") || concat.equals("23456:notaphonenumber") || concat.equals("23456:528177777") || concat.equals("528177777:01707705281") || concat.equals("528177777:notaphonenumber") || concat.equals("528177777:0123456") || concat.equals("528177777:23456")) {
 						num--;
 					}
 				}
@@ -178,7 +160,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -196,7 +178,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -231,7 +213,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 		} catch (UnknownObjectException e) {
@@ -242,9 +224,11 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		}
 
 	}
-	private static String _(String text) { 
+
+	private static String _(String text) {
 		return Translations.get(text);
-	}	
+	}
+
 	private static String _(String key, Object insert) {
 		return Translations.get(key, insert);
 	}
@@ -256,6 +240,25 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	private boolean voice = false;
 	private boolean pager = false;
 	private boolean preffered = false;
+
+	public static enum Category {
+		HOME("home"), 
+		WORK("work"), 
+		CELL("cell"), 
+		FAX("fax"), 
+		VOICE("voice"), 
+		PAGER("pager"), 
+		PREFERED("prefered");
+		
+		private final String v;
+		Category(String c){
+			v=c;
+		}
+		public String toString(){
+			return v;
+		}
+	};
+
 	private String number;
 	private boolean invalid = false;
 
@@ -264,7 +267,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	private JCheckBox homeBox, voiceBox, workBox, cellBox, faxBox, prefBox, pagerBox;
 
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
-		if (content == null || !content.startsWith("TEL")) throw new InvalidFormatException(_("Phone enty does not start with \"TEL\": #",content));
+		if (content == null || !content.startsWith("TEL")) throw new InvalidFormatException(_("Phone enty does not start with \"TEL\": #", content));
 		String line = content.substring(3);
 		while (!line.startsWith(":")) {
 			String upper = line.toUpperCase();
@@ -273,7 +276,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 				line = line.substring(8);
 				continue;
 			}
-			if (upper.startsWith("TYPE=PREF")||upper.startsWith("PREF=1")) {
+			if (upper.startsWith("TYPE=PREF") || upper.startsWith("PREF=1")) {
 				preffered = true;
 				line = line.substring(9);
 				continue;
@@ -430,7 +433,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	public boolean mergeWith(Phone other) {
 		if (!isCompatibleWith(other)) return false;
 		number = mergeNumber(simpleNumber(), other.simpleNumber());
-		if (other.preffered) preffered=true;
+		if (other.preffered) preffered = true;
 		if (other.home) home = true;
 		if (other.work) work = true;
 		if (other.cell) cell = true;
@@ -550,7 +553,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		if (num2 == null || num2.isEmpty()) return num1;
 		if (num1.endsWith(num2)) return num1;
 		if (num2.endsWith(num1)) return num2;
-		throw new InvalidParameterException(_("Trying to merge \"#\" with \"#\"!",new Object[]{num1,num2}));
+		throw new InvalidParameterException(_("Trying to merge \"#\" with \"#\"!", new Object[] { num1, num2 }));
 	}
 
 	private void readPhone(String line) {

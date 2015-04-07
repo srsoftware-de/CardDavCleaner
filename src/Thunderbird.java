@@ -32,10 +32,10 @@ public class Thunderbird extends Client {
 	}
 	
 	@Override
-	public TreeSet<Problem> problemsWith(Contact c) {
-		TreeSet<Problem> result = super.problemsWith(c);
+	public TreeSet<Problem.Type> problemsWith(Contact c) {
+		TreeSet<Problem.Type> result = super.problemsWith(c);
 		// TODO: implement
-		result.add(Problem.EMAIL);
+		result.add(Problem.Type.EMAIL);
 		return result;
 	}
 }

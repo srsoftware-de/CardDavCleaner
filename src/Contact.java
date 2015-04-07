@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -24,15 +25,19 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Contact extends Mergable<Contact> implements ActionListener, DocumentListener, ChangeListener, Comparable<Contact> {
 
@@ -390,8 +395,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	}
 
-	private static String _(String text) {
-		return Translations.get(text);
+	private static String _(Object text) {
+		return Translations.get(text.toString());
 	}
 
 	private static String _(String key, Object insert) {
@@ -401,6 +406,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	// private String revision;
 	// private String productId;
+	
 	private Name name;
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
 	private Birthday birthday;
@@ -1658,5 +1664,177 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	
 	public String uid(){
 		return uid;
+	}
+
+	public void showResolveDialog(TreeSet<Contact> additionalContacts, TreeSet<Problem.Type> problems) throws UnknownObjectException, InvalidFormatException {
+		// TODO : implement
+		if (additionalContacts.isEmpty()){
+			additionalContacts.add(new Contact(name.toString()));
+		}
+		System.out.println(this);
+		System.out.println(additionalContacts);
+		
+		int count = additionalContacts.size();
+		GridLayout gridLayout=new GridLayout(0,1+count);
+		JPanel grid=new JPanel(gridLayout);
+		
+		for (int i=0;i<count;i++){
+			grid.add(new JLabel(_("<html>New<br>Contact #",i+1)));					
+		}		
+		grid.add(new JLabel(_("<html>Original<br>Contact")));
+		if (name!=null){
+			if (name.prefix()!=null){
+				for (int i=0;i<count;i++){					
+					grid.add(activeCheckBox());					
+				}
+				grid.add(activeCheckBox(name.prefix()));
+			}
+			if (name.first()!=null){
+				for (int i=0;i<count;i++){
+					grid.add(activeCheckBox());					
+				}
+				grid.add(activeCheckBox(name.first()));
+			}
+			if (name.middle()!=null){
+				for (int i=0;i<count;i++){
+					grid.add(activeCheckBox());					
+				}
+				grid.add(activeCheckBox(name.middle()));
+			}
+			if (name.last()!=null){
+				for (int i=0;i<count;i++){
+					grid.add(activeCheckBox());					
+				}
+				grid.add(activeCheckBox(name.last()));
+			}
+			if (name.suffix()!=null){
+				for (int i=0;i<count;i++){
+					grid.add(activeCheckBox());					
+				}
+				grid.add(activeCheckBox(name.suffix()));
+			}
+		}
+		
+		if (formattedName!=null){
+			for (int i=0;i<count;i++){
+				grid.add(new JCheckBox());					
+			}
+			grid.add(new JCheckBox("FN:"+formattedName));
+		}
+		
+		if (birthday!=null){
+			for (int i=0;i<count;i++){
+				grid.add(new JCheckBox());					
+			}			
+			grid.add(new JCheckBox(birthday.toString()));
+		}
+		
+		if (anniversary!=null){
+			for (int i=0;i<count;i++){
+				grid.add(new JCheckBox());					
+			}			
+			grid.add(new JCheckBox("ANNIVERSARY:"+anniversary));
+		}
+
+		if (titles!=null && !titles.isEmpty()){
+			for (String title:titles){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox("TITLE:"+title));
+			}
+		}
+		if (roles!=null && !roles.isEmpty()){
+			for (String role:roles){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox("ROLE:"+role));
+			}
+		}
+		if (notes!=null && !notes.isEmpty()){
+			for (String note:notes){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox("note:"+note));
+			}
+		}
+		if (photos!=null && !photos.isEmpty()){
+			for (String photo:photos){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox(_("Photo")));
+			}
+		}
+		if (categories!=null && !categories.isEmpty()){
+			for (String category:categories){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox("CATEGORY:"+category));
+			}
+		}
+		if (labels!=null && !labels.isEmpty()){
+			for (Label label:labels){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox(label.toString()));
+			}
+		}
+
+		if (phones!=null && !phones.isEmpty()){
+			for (Phone phone:phones){
+				for (int i=0;i<count;i++){
+					grid.add(new JLabel());					
+				}
+				grid.add(new JLabel(phone.simpleNumber()));
+				for (Phone.Category c:Phone.Category.values()){
+					for (int i=0;i<count;i++){
+						grid.add(new JCheckBox());					
+					}			
+					grid.add(new JCheckBox(_(c)));						
+				}
+			}
+		}
+		if (adresses!=null && !adresses.isEmpty()){
+			for (Adress adress:adresses){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox(adress.toString()));
+			}
+		}
+		if (mails!=null && !mails.isEmpty()){
+			for (Email mail:mails){
+				for (int i=0;i<count;i++){
+					grid.add(new JCheckBox());					
+				}			
+				grid.add(new JCheckBox(mail.toString()));
+			}
+		}
+		
+/*	private boolean htmlMail;
+		private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
+		private MergableList<Url> urls = new MergableList<Url>();
+		private MergableList<Organization> orgs = new MergableList<Organization>();
+		private MergableList<Messenger> messengers = new MergableList<Messenger>();
+		private MergableList<Nickname> nicks = new MergableList<Nickname>(); */
+		
+		JOptionPane.showConfirmDialog(null, grid);
+		throw new NotImplementedException();
+	}
+
+	private static JCheckBox activeCheckBox(String suffix) {
+		JCheckBox result=(suffix==null)?(new JCheckBox()):(new JCheckBox(suffix));
+		result.setSelected(true);
+		result.setEnabled(false);
+		return result;
+	}
+
+	private static JCheckBox activeCheckBox() {
+		return activeCheckBox(null);
 	}
 }

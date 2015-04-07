@@ -1,5 +1,6 @@
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -32,8 +33,10 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class CardDavCleaner extends JFrame implements ActionListener {
@@ -326,23 +329,16 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private TreeSet<Contact> resolveCollisions(Contact contact, Thunderbird thunderbird) throws UnknownObjectException, InvalidFormatException {
-		TreeSet<Contact> result=new TreeSet<Contact>();
+		TreeSet<Contact> additionalContacts=new TreeSet<Contact>();
 		while (true) {
-			TreeSet<Client.Problem> problems = thunderbird.problemsWith(contact);
+			TreeSet<Problem.Type> problems = thunderbird.problemsWith(contact);
 			if (problems.isEmpty()) {
 				break;
 			}
-			result.add(new Contact(contact.name().toString()));
-			showResolveDialog(contact,result);
+			additionalContacts.add(new Contact(contact.name().toString()));
+			contact.showResolveDialog(additionalContacts,problems);
 		}
-		return result;
-	}
-
-	private void showResolveDialog(Contact contact, TreeSet<Contact> result) {
-		// TODO : implement
-		System.out.println(contact);
-		System.out.println(result);
-		throw new NotImplementedException();
+		return additionalContacts;
 	}
 
 	/**
