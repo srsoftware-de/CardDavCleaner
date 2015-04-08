@@ -263,7 +263,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		AIM {
 			@Override
 			public String toString() {
-				return "Aim";
+				return "AIM";
 			}
 		},
 		ICQ {
@@ -287,13 +287,13 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		SKYPE {
 			@Override
 			public String toString() {
-				return "Skype";
+				return "SKYPE";
 			}
 		},
 		FACEBOOK {
 			@Override
 			public String toString() {
-				return "Facebook";
+				return "FACEBOOK";
 			}
 		};
 
@@ -370,17 +370,17 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		if (isInvalid()) form.setBackground(Color.red);
 		form.add(nickField = new InputField(_("Nickname"), nick));
 		nickField.addEditListener(this);
-		form.add(aimBox = new JCheckBox(_("AIM"), categories.contains("aim")));
+		form.add(aimBox = new JCheckBox(_("AIM"), categories.contains(Category.AIM)));
 		aimBox.addChangeListener(this);
-		form.add(icqBox = new JCheckBox(_("ICQ"), categories.contains("icq")));
+		form.add(icqBox = new JCheckBox(_("ICQ"), categories.contains(Category.ICQ)));
 		icqBox.addChangeListener(this);
-		form.add(skypeBox = new JCheckBox(_("Skype"), categories.contains("skype")));
+		form.add(skypeBox = new JCheckBox(_("Skype"), categories.contains(Category.SKYPE)));
 		skypeBox.addChangeListener(this);
-		form.add(msnBox = new JCheckBox(_("MSN"), categories.contains("msn")));
+		form.add(msnBox = new JCheckBox(_("MSN"), categories.contains(Category.MSN)));
 		msnBox.addChangeListener(this);
-		form.add(sipBox = new JCheckBox(_("SIP"), categories.contains("sip")));
+		form.add(sipBox = new JCheckBox(_("SIP"), categories.contains(Category.SIP)));
 		sipBox.addChangeListener(this);
-		form.add(facebookBox = new JCheckBox(_("Facebook"), categories.contains("facebook")));
+		form.add(facebookBox = new JCheckBox(_("Facebook"), categories.contains(Category.FACEBOOK)));
 		facebookBox.addChangeListener(this);
 		form.scale();
 		return form;
@@ -467,7 +467,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			return "IMPP:" + id() + "\nX-" + id();
 		} catch (UnknownObjectException e) {
 			e.printStackTrace();
-			return null;
+			return "null";
 		}
 	}
 

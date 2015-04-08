@@ -576,10 +576,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		if (source == newMessengerButton) {
 			try {
 				System.out.println("newMessengerButton");
-				Messenger newMessenger = new Messenger("IMPP::");
+				Messenger newMessenger = new Messenger("IMPP:ICQ:nickname");
+				System.out.println(newMessenger);
 				VerticalPanel newMessengerForm = newMessenger.editForm();
 				messengerForm.insertCompoundBefore(newMessengerButton, newMessengerForm);
+				System.out.println(messengers);
+				System.out.println(messengers.size());
 				messengers.add(newMessenger);
+				System.out.println();
+				System.out.println(messengers);
+				System.out.println(messengers.size());
 				rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
