@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import javax.swing.JCheckBox;
@@ -228,16 +229,45 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		}
 
 	}
+	
+	public static enum Category {
+		HOME{
+			@Override
+			public String toString() {				
+				return "Home";
+			}
+		},
+		WORK{
+			@Override
+			public String toString() {				
+				return "Work";
+			}
+		}, 
+		MOBILE{
+			@Override
+			public String toString() {				
+				return "Mobile";
+			}
+		}, 
+		INTERNET{
+			@Override
+			public String toString() {				
+				return "Internet";
+			}
+		};
+		
+		public abstract String toString();
+
+	};
+
 	private static String _(String text) { 
 		return Translations.get(text);
 	}
 	private static String _(String key, Object insert) {
 		return Translations.get(key, insert);
 	}
-	private boolean work=false;
-	private boolean home=false;
-	private boolean internet=false;
-	private boolean mobile=false;
+	
+	private TreeSet<Category> categories=new TreeSet<Category>();
 	private String adress=null;
 
 	private boolean invalid=false;
@@ -256,32 +286,32 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		while(!line.startsWith(":")){
 			String upper = line.toUpperCase();
 			if (upper.startsWith("TYPE=WORK")){
-				work=true;
+				categories.add(Category.WORK);
 				line=line.substring(9);
 				continue;
 			}
 			if (upper.startsWith("TYPE=HOME")){
-				home=true;
+				categories.add(Category.HOME);
 				line=line.substring(9);
 				continue;
 			} 
 			if (upper.startsWith("TYPE=INTERNET")){
-				internet=true;
+				categories.add(Category.INTERNET);
 				line=line.substring(13);
 				continue;
 			} 
 			if (upper.startsWith("TYPE=X-INTERNET")){
-				internet=true;
+				categories.add(Category.INTERNET);
 				line=line.substring(15);
 				continue;
 			} 
 			if (upper.startsWith("TYPE=MOBILE")){
-				mobile=true;
+				categories.add(Category.MOBILE);
 				line=line.substring(11);
 				continue;
 			} 
 			if (upper.startsWith("TYPE=X-MOBILE")){
-				mobile=true;
+				categories.add(Category.MOBILE);
 				line=line.substring(13);
 				continue;
 			} 
@@ -299,10 +329,8 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		return adress;
 	}
 
-	public String category() {
-		if (work) return "work";
-		if (home) return "home";
-		return "no category";
+	public TreeSet<Category>categories() {
+		return new TreeSet<Email.Category>(categories);
 	}
 
 	public void changedUpdate(DocumentEvent e) {
@@ -322,13 +350,13 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		form.add(adressBox=new InputField(_("Adress"),adress));
 		adressBox.addChangeListener(this);
 		
-		form.add(homeBox=new JCheckBox(_("Home"),home));
+		form.add(homeBox=new JCheckBox(_("Home"),isHomeMail()));
 		homeBox.addChangeListener(this);
-		form.add(workBox=new JCheckBox(_("Work"),work));
+		form.add(workBox=new JCheckBox(_("Work"),isWorkMail()));
 		workBox.addChangeListener(this);
-		form.add(mobileBox=new JCheckBox(_("Mobile"),mobile));
+		form.add(mobileBox=new JCheckBox(_("Mobile"),isMobileMail()));
 		mobileBox.addChangeListener(this);
-		form.add(internetBox=new JCheckBox(_("Internet"),internet));
+		form.add(internetBox=new JCheckBox(_("Internet"),isInternetMail()));
 		internetBox.addChangeListener(this);
 		form.scale();
 		return form;
@@ -347,39 +375,39 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 	public boolean isEmpty() {
 		return adress==null || adress.trim().isEmpty();
 	}
+	
+	private boolean isMobileMail() {
+		return categories.contains(Category.MOBILE);
+	}
+
 
 	public boolean isHomeMail() {
-		return home;
+		return categories.contains(Category.HOME);
 	}
 	
 	public boolean isInternetMail(){
-		return internet;
+		return categories.contains(Category.INTERNET);
 	}
 
+
+	public boolean isWorkMail() {
+		return categories.contains(Category.WORK);
+	}
+	
 	public boolean isInvalid() {		
 		return invalid;
 	}
 
-	public boolean isWorkMail() {
-		return work;
-	}
-	
 	public void merge(Email mail) throws InvalidAssignmentException {
 		if (!adress.equals(mail.adress)) throw new InvalidAssignmentException(_("Trying to merge two mails with different adresses!"));
-		if (mail.home) home=true;
-		if (mail.work) work=true;
-		if (mail.mobile) mobile=true;
-		if (mail.internet) internet=true;
+		categories.addAll(mail.categories);
 	}
 
 	@Override
   public boolean mergeWith(Email other) {
 		if (!isCompatibleWith(other)) return false;
 		adress=merge(adress,other.adress);
-		if (other.work) work=true;
-		if (other.home) home=true;
-		if (other.mobile) mobile=true;
-		if (other.internet) internet=true;
+		categories.addAll(other.categories);
 	  return true;
   }
 
@@ -387,7 +415,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		update();		
 	}
 
-	public void setHome() {
+	/*public void setHome() {
 		work=false;
 		home=true;
 		internet=false;		
@@ -403,7 +431,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		work=true;
 		home=false;
 		internet=false;
-	}
+	}*/
 
 	public void stateChanged(ChangeEvent arg0) {
 		update();
@@ -412,10 +440,10 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
 		sb.append("EMAIL");
-		if (home) sb.append(";TYPE=HOME");
-		if (work) sb.append(";TYPE=WORK");
-		if (mobile) sb.append(";TYPE=MOBILE");
-		if (internet) sb.append(";TYPE=INTERNET");
+		if (categories.contains(Category.HOME)) sb.append(";TYPE=HOME");
+		if (categories.contains(Category.WORK)) sb.append(";TYPE=WORK");
+		if (categories.contains(Category.MOBILE)) sb.append(";TYPE=MOBILE");
+		if (categories.contains(Category.INTERNET)) sb.append(";TYPE=INTERNET");
 		sb.append(":");
 		if (adress!=null)	sb.append(adress);
 		return sb.toString();
@@ -440,10 +468,19 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 
 	private void update() {
 		readAddr(adressBox.getText());
-		home=homeBox.isSelected();
-		work=workBox.isSelected();
-		mobile=mobileBox.isSelected();
-		internet=internetBox.isSelected();
+		
+		if (homeBox.isSelected()){
+			categories.add(Category.HOME);
+		}
+		if (workBox.isSelected()){
+			categories.add(Category.WORK);
+		}
+		if (mobileBox.isSelected()){
+			categories.add(Category.MOBILE);
+		}
+		if(internetBox.isSelected()){
+			categories.add(Category.INTERNET);
+		}
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
@@ -456,6 +493,9 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		} catch (Exception e) {
 			throw new CloneNotSupportedException(e.getMessage());
 		}
+	}
+	public boolean is(Category c) {
+		return categories.contains(c);
 	}
 
 }

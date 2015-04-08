@@ -1826,10 +1826,22 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		if (mails!=null && !mails.isEmpty()){
 			for (Email mail:mails){
+				grid.add(new JLabel(mail.address()));
 				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
-				grid.add(new JCheckBox(mail.toString()));
+					grid.add(new JLabel());					
+				}
+				for (Email.Category category:Email.Category.values()){
+					for (Contact additionalContact:additionalContacts){
+						grid.add(activeBox(new Action() {
+							
+							@Override
+							public void change(JCheckBox origin) {
+								// TODO implement
+							}
+						}));					
+					}			
+					grid.add(new JCheckBox(_(category), mail.is(category)));						
+				}
 			}
 		}
 		
