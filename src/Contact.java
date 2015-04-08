@@ -575,6 +575,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		if (source == newMessengerButton) {
 			try {
+				System.out.println("newMessengerButton");
 				Messenger newMessenger = new Messenger("IMPP::");
 				VerticalPanel newMessengerForm = newMessenger.editForm();
 				messengerForm.insertCompoundBefore(newMessengerButton, newMessengerForm);
