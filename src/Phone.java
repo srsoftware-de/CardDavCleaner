@@ -563,7 +563,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		}
 	}
 
-	protected Object clone() throws CloneNotSupportedException {
+	protected Phone clone() throws CloneNotSupportedException {
 		try {
 			return new Phone(this.toString());
 		} catch (Exception e) {
@@ -573,5 +573,24 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 
 	public boolean is(Category c) {
 		return categories.contains(c);
+	}
+
+	/**
+	 * @param cloneCategories if set to false, categories of the ancestor will not be copied to the new phone
+	 * @return a clone of thins phone
+	 * @throws CloneNotSupportedException 
+	 */
+	public Phone clone(boolean cloneCategories) throws CloneNotSupportedException {
+		Phone result=clone();
+		result.categories.clear();
+		return result;
+	}
+
+	public void addCategory(Category category) {
+		categories.add(category);
+	}
+
+	public void removeCategory(Category category) {
+		categories.remove(category);
 	}
 }

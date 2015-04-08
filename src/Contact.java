@@ -1797,22 +1797,64 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 
 		if (phones!=null && !phones.isEmpty()){
-			for (Phone phone:phones){
+			for (final Phone phone:phones){
 				grid.add(new JLabel(phone.simpleNumber()));
 				for (int i=0;i<count;i++){
 					grid.add(new JLabel());					
 				}
-				for (Phone.Category category:Phone.Category.values()){
-					for (Contact additionalContact:additionalContacts){
+				for (final Phone.Category category:Phone.Category.values()){
+					for (final Contact additionalContact:additionalContacts){
 						grid.add(activeBox(new Action() {
 							
 							@Override
-							public void change(JCheckBox origin) {
-								// TODO implement
+							public void change(JCheckBox box) { // TODO:  place code contained in this block in separate methods
+								Phone additionalContactPhone=additionalContact.getPhone(phone.simpleNumber());
+								if (box.isSelected()){
+									if (additionalContactPhone == null){
+										try {
+											additionalContactPhone=phone.clone(false);
+											additionalContact.addPhone(additionalContactPhone);
+										} catch (CloneNotSupportedException e) {
+											e.printStackTrace();
+										}
+									}
+									additionalContactPhone.addCategory(category);
+								} else {
+									if (additionalContactPhone != null){
+										additionalContactPhone.removeCategory(category);
+										if (additionalContactPhone.categories().isEmpty()){
+											additionalContact.removePhone(additionalContactPhone);
+										}
+									}
+								}
 							}
 						}));					
 					}			
-					grid.add(new JCheckBox(_(category), phone.is(category)));						
+					grid.add(activeBox(_(category),new Action() {
+						
+						@Override
+						public void change(JCheckBox box) {
+							Phone basePhone=base.getPhone(phone.simpleNumber());
+							if (box.isSelected()){
+								if (basePhone == null){
+									try {
+										basePhone=phone.clone(false);
+										base.addPhone(basePhone);
+									} catch (CloneNotSupportedException e) {
+										e.printStackTrace();
+									}
+								}
+								basePhone.addCategory(category);
+							} else {
+								if (basePhone != null){
+									basePhone.removeCategory(category);
+									if (basePhone.categories().isEmpty()){
+										base.removePhone(basePhone);
+									}
+								}
+							}
+						}
+					}));						
 				}
 			}
 		}
@@ -1886,6 +1928,23 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		JOptionPane.showConfirmDialog(null, grid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
 	}
 
+	protected void removePhone(Phone phone) {
+		phones.remove(phone);
+	}
+
+	protected void addPhone(Phone phone) {
+		phones.add(phone);
+	}
+
+	protected Phone getPhone(String simpleNumber) {
+		for (Phone p:phones){
+			if (p.simpleNumber().equals(simpleNumber)){
+				return p;
+			}
+		}
+		return null;
+	}
+
 	private Component activeBox(Object text, final Action action) {		
 		final JCheckBox box=text==null?new JCheckBox():new JCheckBox(text.toString(),true);		
 		box.addActionListener(new ActionListener() {
@@ -1896,7 +1955,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		});
 		return box;
 	}
-
+	
 	private Component activeBox(Action action) {
 		return activeBox(null,action);
 	}
