@@ -405,7 +405,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
 	// private String revision;
 	// private String productId;
-	
+
 	private Name name;
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
 	private Birthday birthday;
@@ -419,7 +419,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private TreeSet<String> notes = new TreeSet<String>();
 	private TreeSet<String> photos = new TreeSet<String>();
 	private TreeSet<String> categories = new TreeSet<String>();
-	private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
+	private TreeMap<Integer, String> customContent = new TreeMap<Integer, String>();
 	private MergableList<Label> labels = new MergableList<Label>();
 	private MergableList<Phone> phones = new MergableList<Phone>();
 	private MergableList<Adress> adresses = new MergableList<Adress>();
@@ -434,12 +434,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	/* form elements */
 	private JScrollPane scroll;
 	private InputField formattedField, anniversaryField;
-	private VerticalPanel form, titleForm, nickForm,roleForm,customForm;
-	private JButton newMailButton, newPhoneButton,newTitleButton,newNickButton,newRoleButton,newCustomButton;
-	private HorizontalPanel mailForm,phoneForm,adressForm;
+	private VerticalPanel form, titleForm, nickForm, roleForm, customForm;
+	private JButton newMailButton, newPhoneButton, newTitleButton, newNickButton, newRoleButton, newCustomButton;
+	private HorizontalPanel mailForm, phoneForm, adressForm;
 	private JButton birthdayButton;
 	private JButton newAdressButton;
-	
+
 	private VerticalPanel urlForm;
 	private JButton newUrlButton;
 	private HorizontalPanel orgForm;
@@ -448,7 +448,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private JButton newMessengerButton;
 	private VerticalPanel categoryForm;
 	private JButton newCategoryButton;
-	private Vector<CustomField> titleFields,customFields;
+	private Vector<CustomField> titleFields, customFields;
 	private Vector<CategoryField> categoryFields;
 	private Vector<RoleField> roleFields;
 	private Vector<NoteField> noteFields;
@@ -467,7 +467,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	public Contact(String directory, String name, File backupPath) throws UnknownObjectException, IOException, InvalidFormatException {
 		vcfName = name;
 		URL url = new URL(directory + name);
-		parse(url,backupPath);
+		parse(url, backupPath);
 	}
 
 	public void actionPerformed(ActionEvent evt) {
@@ -631,75 +631,75 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	public boolean conflictsWith(Contact c2) {
-		if (name!=null && !name.isCompatibleWith(c2.name)) {
-			System.out.println("name conflict ("+name+" - "+c2.name+")");
+		if (name != null && !name.isCompatibleWith(c2.name)) {
+			System.out.println("name conflict (" + name + " - " + c2.name + ")");
 			return true;
 		}
 		if (birthday != null && !birthday.isCompatibleWith(c2.birthday)) {
-			System.out.println("bday conflict ("+birthday+" - "+c2.birthday+")");
+			System.out.println("bday conflict (" + birthday + " - " + c2.birthday + ")");
 			return true;
 		}
 		if (different(formattedName, c2.formattedName)) {
-			System.out.println("formatted name conflict ("+formattedName+" - "+c2.formattedName+")");
+			System.out.println("formatted name conflict (" + formattedName + " - " + c2.formattedName + ")");
 			return true;
 		}
 		if (different(anniversary, c2.anniversary)) {
-			System.out.println("anniversary conflict ("+anniversary+" - "+c2.anniversary+")");
+			System.out.println("anniversary conflict (" + anniversary + " - " + c2.anniversary + ")");
 			return true;
 		}
 		if (!labels.isEmpty() && !c2.labels.isEmpty() && !labels.equals(c2.labels)) {
-			System.out.println("labels conflict ("+labels+" - "+c2.labels+")");
+			System.out.println("labels conflict (" + labels + " - " + c2.labels + ")");
 			return true;
 		}
 		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) {
-			System.out.println("titles conflict ("+titles+" - "+c2.titles+")");
+			System.out.println("titles conflict (" + titles + " - " + c2.titles + ")");
 			return true;
 		}
 		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) {
-			System.out.println("roles conflict ("+roles+" - "+c2.roles+")");
+			System.out.println("roles conflict (" + roles + " - " + c2.roles + ")");
 			return true;
 		}
 		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getSimplePhoneNumbers().equals(c2.getSimplePhoneNumbers())) {
 			TreeSet<String> nums1 = getSimplePhoneNumbers();
 			TreeSet<String> num2 = c2.getSimplePhoneNumbers();
-			if (!nums1.containsAll(num2) && !num2.containsAll(nums1)){
-				System.out.println("phones conflict ("+getSimplePhoneNumbers()+" - "+c2.getSimplePhoneNumbers()+")");
+			if (!nums1.containsAll(num2) && !num2.containsAll(nums1)) {
+				System.out.println("phones conflict (" + getSimplePhoneNumbers() + " - " + c2.getSimplePhoneNumbers() + ")");
 				return true;
 			}
 		}
 		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) {
-			System.out.println("mails conflict ("+getMailAdresses()+" - "+c2.getMailAdresses()+")");
+			System.out.println("mails conflict (" + getMailAdresses() + " - " + c2.getMailAdresses() + ")");
 			return true;
 		}
 		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) {
-			System.out.println("addresses conflict ("+getAdressData()+" - "+c2.getAdressData()+")");
+			System.out.println("addresses conflict (" + getAdressData() + " - " + c2.getAdressData() + ")");
 			return true;
 		}
 		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls)) {
-			System.out.println("urls conflict ("+urls+" - "+c2.urls+")");
+			System.out.println("urls conflict (" + urls + " - " + c2.urls + ")");
 			return true;
 		}
 		if (!nicks.isEmpty() && !c2.nicks.isEmpty() && !nicks.equals(c2.nicks)) {
-			System.out.println("nicknames conflict ("+nicks+" - "+c2.nicks+")");
+			System.out.println("nicknames conflict (" + nicks + " - " + c2.nicks + ")");
 			return true;
 		}
 		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes)) {
-			System.out.println("notes conflict ("+notes+" - "+c2.notes+")");
+			System.out.println("notes conflict (" + notes + " - " + c2.notes + ")");
 			return true;
 		}
 		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) {
-			System.out.println("organizations conflict ("+orgs+" - "+c2.orgs+")");
+			System.out.println("organizations conflict (" + orgs + " - " + c2.orgs + ")");
 			return true;
 		}
 		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos)) {
-			System.out.println("photo conflict ("+photos+" - "+c2.photos+")");
+			System.out.println("photo conflict (" + photos + " - " + c2.photos + ")");
 			return true;
 		}
-		for (Entry<Integer, String> cc:customContent.entrySet()){
+		for (Entry<Integer, String> cc : customContent.entrySet()) {
 			Integer key = cc.getKey();
 			String val = c2.customContent.get(key);
-			if (val!=null && !val.equals(cc.getValue())){
-				System.out.println("Custom content conflict ("+cc.getValue()+" - "+val+")");
+			if (val != null && !val.equals(cc.getValue())) {
+				System.out.println("Custom content conflict (" + cc.getValue() + " - " + val + ")");
 				return true;
 			}
 		}
@@ -1002,7 +1002,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 
 		for (Entry<Integer, String> c : customContent.entrySet()) {
-			sb.append("CUSTOM" + c.getKey()+":" +c.getValue()+ "\n");
+			sb.append("CUSTOM" + c.getKey() + ":" + c.getValue() + "\n");
 		}
 	}
 
@@ -1183,7 +1183,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		customForm = new VerticalPanel(_("Custom"));
 		customFields = new Vector<CustomField>();
 		for (Entry<Integer, String> cc : customContent.entrySet()) {
-			CustomField customField = new CustomField(_("Custom")+cc.getKey(), cc.getValue());
+			CustomField customField = new CustomField(_("Custom") + cc.getKey(), cc.getValue());
 			customField.addEditListener(this);
 			customForm.add(customField);
 			customFields.add(customField);
@@ -1193,7 +1193,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		customForm.scale();
 		form.add(customForm);
 
-		
 		form.scale();
 		return form;
 	}
@@ -1306,19 +1305,19 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		InputStream content = (InputStream) connection.getInputStream();
 		BufferedReader in = new BufferedReader(new InputStreamReader(content));
 		BufferedWriter out = null;
-		if (backupPath!=null){			
-			out=new BufferedWriter(new FileWriter(new File(backupPath,vcfName())));
+		if (backupPath != null) {
+			out = new BufferedWriter(new FileWriter(new File(backupPath, vcfName())));
 		}
 		Vector<String> lines = new Vector<String>();
 		String line;
 		while ((line = in.readLine()) != null) {
 			lines.add(line);
-			if (out!=null){
-				out.write(line+"\n");
+			if (out != null) {
+				out.write(line + "\n");
 			}
 		}
 		in.close();
-		if (out!=null){
+		if (out != null) {
 			out.close();
 		}
 		content.close();
@@ -1364,7 +1363,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (line.startsWith("CATEGORIES:") && (known = true)) readCategories(line.substring(11));
 			if (line.startsWith("X-MOZILLA-HTML:") && (known = true)) readMailFormat(line.substring(15));
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
-			if (line.startsWith("CUSTOM")&& (known = true)) readCustom(line.substring(6));
+			if (line.startsWith("CUSTOM") && (known = true)) readCustom(line.substring(6));
 			if (!known) {
 				throw new UnknownObjectException(_("unknown entry/instruction found in vcard #: '#'", new Object[] { vcfName, line }));
 			}
@@ -1373,11 +1372,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private void readCustom(String s) {
-		Integer index=Integer.parseInt(""+s.charAt(0));
+		Integer index = Integer.parseInt("" + s.charAt(0));
 		customContent.put(index, s.substring(1));
 	}
-	
-	public void setCustom(int i,String text){
+
+	public void setCustom(int i, String text) {
 		customContent.put(i, text);
 	}
 
@@ -1636,7 +1635,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	private String getNameAssociation(Contact contact) {
-		if (this.name==null || contact.name==null) return null;
+		if (this.name == null || contact.name == null) return null;
 		if (this.name.canonical().equals(contact.name.canonical())) {
 			return name.main();
 		}
@@ -1660,159 +1659,342 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		return null;
 	}
-	
-	public String uid(){
+
+	public String uid() {
 		return uid;
 	}
 
 	public void showResolveDialog(TreeSet<Contact> additionalContacts, TreeSet<Problem.Type> problems) throws UnknownObjectException, InvalidFormatException {
-		final Contact base=this.clone();
-		if (additionalContacts.isEmpty()){
+		final Contact base = this.clone();
+		if (additionalContacts.isEmpty()) {
 			additionalContacts.add(new Contact(name.toString()));
 		}
 		System.out.println(this);
 		System.out.println(additionalContacts);
-		
+
 		int count = additionalContacts.size();
-		GridLayout gridLayout=new GridLayout(0,1+count);
-		JPanel grid=new JPanel(gridLayout);
-		
-		for (int i=0;i<count;i++){
-			grid.add(new JLabel(_("<html>New<br>Contact #",i+1)));					
-		}		
+		GridLayout gridLayout = new GridLayout(0, 1 + count);
+		JPanel grid = new JPanel(gridLayout);
+
+		for (int i = 0; i < count; i++) {
+			grid.add(new JLabel(_("<html>New<br>Contact #", i + 1)));
+		}
 		grid.add(new JLabel(_("<html>Original<br>Contact")));
-		if (name!=null){
-			if (name.prefix()!=null){
-				for (int i=0;i<count;i++){					
-					grid.add(activeCheckBox());					
+		if (name != null) {
+			if (name.prefix() != null) {
+				for (int i = 0; i < count; i++) {
+					grid.add(activeCheckBox());
 				}
 				grid.add(activeCheckBox(name.prefix()));
 			}
-			if (name.first()!=null){
-				for (int i=0;i<count;i++){
-					grid.add(activeCheckBox());					
+			if (name.first() != null) {
+				for (int i = 0; i < count; i++) {
+					grid.add(activeCheckBox());
 				}
 				grid.add(activeCheckBox(name.first()));
 			}
-			if (name.middle()!=null){
-				for (int i=0;i<count;i++){
-					grid.add(activeCheckBox());					
+			if (name.middle() != null) {
+				for (int i = 0; i < count; i++) {
+					grid.add(activeCheckBox());
 				}
 				grid.add(activeCheckBox(name.middle()));
 			}
-			if (name.last()!=null){
-				for (int i=0;i<count;i++){
-					grid.add(activeCheckBox());					
+			if (name.last() != null) {
+				for (int i = 0; i < count; i++) {
+					grid.add(activeCheckBox());
 				}
 				grid.add(activeCheckBox(name.last()));
 			}
-			if (name.suffix()!=null){
-				for (int i=0;i<count;i++){
-					grid.add(activeCheckBox());					
+			if (name.suffix() != null) {
+				for (int i = 0; i < count; i++) {
+					grid.add(activeCheckBox());
 				}
 				grid.add(activeCheckBox(name.suffix()));
 			}
 		}
-		
-		if (formattedName!=null){
-			for (final Contact additionalContact:additionalContacts){
-				grid.add(activeBox(new Action() {					
+
+		if (formattedName != null) {
+			for (final Contact additionalContact : additionalContacts) {
+				grid.add(activeBox(new Action() {
 					@Override
 					public void change(JCheckBox origin) {
-						additionalContact.formattedName=origin.isSelected()?formattedName:null;
+						additionalContact.formattedName = origin.isSelected() ? formattedName : null;
 						System.out.println(additionalContact);
 					}
 				}));
 			}
-			grid.add(activeBox("FN:"+formattedName,new Action() {					
+			grid.add(activeBox("FN:" + formattedName, new Action() {
 				@Override
 				public void change(JCheckBox origin) {
-					base.formattedName=origin.isSelected()?formattedName:null;
+					base.formattedName = origin.isSelected() ? formattedName : null;
 					System.out.println(base);
 				}
 			}));
 		}
-		
-		if (birthday!=null){
-			for (int i=0;i<count;i++){
-				grid.add(new JCheckBox());					
-			}			
+
+		if (birthday != null) {
+			for (int i = 0; i < count; i++) {
+				grid.add(new JCheckBox());
+			}
 			grid.add(new JCheckBox(birthday.toString()));
 		}
-		
-		if (anniversary!=null){
-			for (int i=0;i<count;i++){
-				grid.add(new JCheckBox());					
-			}			
-			grid.add(new JCheckBox("ANNIVERSARY:"+anniversary));
+
+		if (anniversary != null) {
+			for (int i = 0; i < count; i++) {
+				grid.add(new JCheckBox());
+			}
+			grid.add(new JCheckBox("ANNIVERSARY:" + anniversary));
 		}
 
-		if (titles!=null && !titles.isEmpty()){
-			for (String title:titles){
-				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
-				grid.add(new JCheckBox("TITLE:"+title));
+		if (titles != null && !titles.isEmpty()) {
+			for (String title : titles) {
+				for (int i = 0; i < count; i++) {
+					grid.add(new JCheckBox());
+				}
+				grid.add(new JCheckBox("TITLE:" + title));
 			}
 		}
-		if (roles!=null && !roles.isEmpty()){
-			for (String role:roles){
-				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
-				grid.add(new JCheckBox("ROLE:"+role));
+		if (roles != null && !roles.isEmpty()) {
+			for (String role : roles) {
+				for (int i = 0; i < count; i++) {
+					grid.add(new JCheckBox());
+				}
+				grid.add(new JCheckBox("ROLE:" + role));
 			}
 		}
-		if (notes!=null && !notes.isEmpty()){
-			for (String note:notes){
-				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
-				grid.add(new JCheckBox("note:"+note));
+		if (notes != null && !notes.isEmpty()) {
+			for (String note : notes) {
+				for (int i = 0; i < count; i++) {
+					grid.add(new JCheckBox());
+				}
+				grid.add(new JCheckBox("note:" + note));
 			}
 		}
-		if (photos!=null && !photos.isEmpty()){
-			for (String photo:photos){
-				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
+		if (photos != null && !photos.isEmpty()) {
+			for (String photo : photos) {
+				for (int i = 0; i < count; i++) {
+					grid.add(new JCheckBox());
+				}
 				grid.add(new JCheckBox(_("Photo")));
 			}
 		}
-		if (categories!=null && !categories.isEmpty()){
-			for (String category:categories){
-				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
-				grid.add(new JCheckBox("CATEGORY:"+category));
+		if (categories != null && !categories.isEmpty()) {
+			for (String category : categories) {
+				for (int i = 0; i < count; i++) {
+					grid.add(new JCheckBox());
+				}
+				grid.add(new JCheckBox("CATEGORY:" + category));
 			}
 		}
-		if (labels!=null && !labels.isEmpty()){
-			for (Label label:labels){
-				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
+		if (labels != null && !labels.isEmpty()) {
+			for (Label label : labels) {
+				for (int i = 0; i < count; i++) {
+					grid.add(new JCheckBox());
+				}
 				grid.add(new JCheckBox(label.toString()));
 			}
 		}
 
-		if (phones!=null && !phones.isEmpty()){
-			for (final Phone phone:phones){
-				grid.add(new JLabel(phone.simpleNumber()));
-				for (int i=0;i<count;i++){
-					grid.add(new JLabel());					
+		addPhoneSelectors(count, grid, base, additionalContacts);
+
+		addMailSelectors(count,grid,base,additionalContacts);
+
+		if (urls != null && !urls.isEmpty()) {
+			for (Url url : urls) {
+				for (int i = 0; i < count; i++) {
+					grid.add(new JCheckBox());
 				}
-				for (final Phone.Category category:Phone.Category.values()){
-					for (final Contact additionalContact:additionalContacts){
+				grid.add(new JCheckBox(url.toString()));
+			}
+		}
+
+		if (orgs != null && !orgs.isEmpty()) {
+			for (Organization org : orgs) {
+				for (int i = 0; i < count; i++) {
+					grid.add(new JCheckBox());
+				}
+				grid.add(new JCheckBox(org.toString()));
+			}
+		}
+
+		addMessengerSelectors(count,grid,base,additionalContacts);
+
+		if (nicks != null && !nicks.isEmpty()) {
+			for (Nickname nick : nicks) {
+				for (int i = 0; i < count; i++) {
+					grid.add(new JCheckBox());
+				}
+				grid.add(new JCheckBox(nick.toString()));
+			}
+		}
+
+		// TODO: implement this for private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
+
+		JOptionPane.showConfirmDialog(null, grid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
+	}
+	
+	private void addMessengerSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+		if (messengers != null && !messengers.isEmpty()) {
+			for (final Messenger messenger : messengers) {
+				grid.add(new JLabel(messenger.nick()));
+				for (int i = 0; i < count; i++) {
+					grid.add(new JLabel());
+				}
+				for (final Messenger.Category category : Messenger.Category.values()) {
+					for (final Contact additionalContact : additionalContacts) {
 						grid.add(activeBox(new Action() {
-							
+
 							@Override
-							public void change(JCheckBox box) { // TODO:  place code contained in this block in separate methods
-								Phone additionalContactPhone=additionalContact.getPhone(phone.simpleNumber());
-								if (box.isSelected()){
-									if (additionalContactPhone == null){
+							public void change(JCheckBox box) {
+								Messenger additionalContactmessenger = additionalContact.getMessenger(messenger.nick());
+								if (box.isSelected()) {
+									if (additionalContactmessenger == null) {
 										try {
-											additionalContactPhone=phone.clone(false);
+											additionalContactmessenger = messenger.clone(false);
+											additionalContact.addMessenger(additionalContactmessenger);
+										} catch (CloneNotSupportedException e) {
+											e.printStackTrace();
+										}
+									}
+									additionalContactmessenger.addCategory(category);
+								} else {
+									if (additionalContactmessenger != null) {
+										additionalContactmessenger.removeCategory(category);
+										if (additionalContactmessenger.categories().isEmpty()) {
+											additionalContact.removeMessenger(additionalContactmessenger);
+										}
+									}
+								}
+							}
+						}));
+					}
+					grid.add(activeBox(_(category), messenger.categories().contains(category), new Action() {
+
+						@Override
+						public void change(JCheckBox box) {
+							Messenger baseMessenger = base.getMessenger(messenger.nick());
+							if (box.isSelected()) {
+								if (baseMessenger == null) {
+									try {
+										baseMessenger = messenger.clone(false);
+										base.addMessenger(baseMessenger);
+									} catch (CloneNotSupportedException e) {
+										e.printStackTrace();
+									}
+								}
+								baseMessenger.addCategory(category);
+							} else {
+								if (baseMessenger != null) {
+									baseMessenger.removeCategory(category);
+									if (baseMessenger.categories().isEmpty()) {
+										base.removeMessenger(baseMessenger);
+									}
+								}
+							}
+						}
+					}));
+				}
+			}
+		}
+	}
+
+
+
+
+
+	private void addMailSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+		if (mails != null && !mails.isEmpty()) {
+			for (final Email mail : mails) {
+				grid.add(new JLabel(mail.address()));
+				for (int i = 0; i < count; i++) {
+					grid.add(new JLabel());
+				}
+				for (final Email.Category category : Email.Category.values()) {
+					for (final Contact additionalContact : additionalContacts) {
+						grid.add(activeBox(new Action() {
+
+							@Override
+							public void change(JCheckBox box) {
+								Email additionalContactmail = additionalContact.getMail(mail.address());
+								if (box.isSelected()) {
+									if (additionalContactmail == null) {
+										try {
+											additionalContactmail = mail.clone(false);
+											additionalContact.addMail(additionalContactmail);
+										} catch (CloneNotSupportedException e) {
+											e.printStackTrace();
+										}
+									}
+									additionalContactmail.addCategory(category);
+								} else {
+									if (additionalContactmail != null) {
+										additionalContactmail.removeCategory(category);
+										if (additionalContactmail.categories().isEmpty()) {
+											additionalContact.removeMail(additionalContactmail);
+										}
+									}
+								}
+							}
+						}));
+					}
+					grid.add(activeBox(_(category), mail.categories().contains(category), new Action() {
+
+						@Override
+						public void change(JCheckBox box) {
+							Email basemail = base.getMail(mail.address());
+							if (box.isSelected()) {
+								if (basemail == null) {
+									try {
+										basemail = mail.clone(false);
+										base.addMail(basemail);
+									} catch (CloneNotSupportedException e) {
+										e.printStackTrace();
+									}
+								}
+								basemail.addCategory(category);
+							} else {
+								if (basemail != null) {
+									basemail.removeCategory(category);
+									if (basemail.categories().isEmpty()) {
+										base.removeMail(basemail);
+									}
+								}
+							}
+						}
+					}));
+				}
+			}
+		}
+	}
+
+
+
+	protected void removeMail(Email mail) {
+		mails.remove(mail);
+	}
+
+	protected void addMail(Email email) {
+		mails.add(email);
+	}
+
+	private void addPhoneSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+		if (phones != null && !phones.isEmpty()) {
+			for (final Phone phone : phones) {
+				grid.add(new JLabel(phone.simpleNumber()));
+				for (int i = 0; i < count; i++) {
+					grid.add(new JLabel());
+				}
+				for (final Phone.Category category : Phone.Category.values()) {
+					for (final Contact additionalContact : additionalContacts) {
+						grid.add(activeBox(new Action() {
+
+							@Override
+							public void change(JCheckBox box) {
+								Phone additionalContactPhone = additionalContact.getPhone(phone.simpleNumber());
+								if (box.isSelected()) {
+									if (additionalContactPhone == null) {
+										try {
+											additionalContactPhone = phone.clone(false);
 											additionalContact.addPhone(additionalContactPhone);
 										} catch (CloneNotSupportedException e) {
 											e.printStackTrace();
@@ -1820,25 +2002,25 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 									}
 									additionalContactPhone.addCategory(category);
 								} else {
-									if (additionalContactPhone != null){
+									if (additionalContactPhone != null) {
 										additionalContactPhone.removeCategory(category);
-										if (additionalContactPhone.categories().isEmpty()){
+										if (additionalContactPhone.categories().isEmpty()) {
 											additionalContact.removePhone(additionalContactPhone);
 										}
 									}
 								}
 							}
-						}));					
-					}			
-					grid.add(activeBox(_(category),new Action() {
-						
+						}));
+					}
+					grid.add(activeBox(_(category), phone.categories().contains(category), new Action() {
+
 						@Override
 						public void change(JCheckBox box) {
-							Phone basePhone=base.getPhone(phone.simpleNumber());
-							if (box.isSelected()){
-								if (basePhone == null){
+							Phone basePhone = base.getPhone(phone.simpleNumber());
+							if (box.isSelected()) {
+								if (basePhone == null) {
 									try {
-										basePhone=phone.clone(false);
+										basePhone = phone.clone(false);
 										base.addPhone(basePhone);
 									} catch (CloneNotSupportedException e) {
 										e.printStackTrace();
@@ -1846,122 +2028,84 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 								}
 								basePhone.addCategory(category);
 							} else {
-								if (basePhone != null){
+								if (basePhone != null) {
 									basePhone.removeCategory(category);
-									if (basePhone.categories().isEmpty()){
+									if (basePhone.categories().isEmpty()) {
 										base.removePhone(basePhone);
 									}
 								}
 							}
 						}
-					}));						
+					}));
 				}
 			}
 		}
-		if (adresses!=null && !adresses.isEmpty()){
-			for (Adress adress:adresses){
-				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
-				grid.add(new JCheckBox(adress.toString()));
-			}
-		}
-		if (mails!=null && !mails.isEmpty()){
-			for (Email mail:mails){
-				grid.add(new JLabel(mail.address()));
-				for (int i=0;i<count;i++){
-					grid.add(new JLabel());					
-				}
-				for (Email.Category category:Email.Category.values()){
-					for (Contact additionalContact:additionalContacts){
-						grid.add(activeBox(new Action() {
-							
-							@Override
-							public void change(JCheckBox origin) {
-								// TODO implement
-							}
-						}));					
-					}			
-					grid.add(new JCheckBox(_(category), mail.is(category)));						
-				}
-			}
-		}
-		
-		if (urls!=null && !urls.isEmpty()){
-			for (Url url:urls){
-				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
-				grid.add(new JCheckBox(url.toString()));
-			}
-		}
-		
-		if (orgs!=null && !orgs.isEmpty()){
-			for (Organization org:orgs){
-				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
-				grid.add(new JCheckBox(org.toString()));
-			}
-		}
-		
-		if (messengers!=null && !messengers.isEmpty()){
-			for (Messenger messenger:messengers){
-				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
-				grid.add(new JCheckBox(messenger.toString()));
-			}
-		}
-
-		if (nicks!=null && !nicks.isEmpty()){
-			for (Nickname nick:nicks){
-				for (int i=0;i<count;i++){
-					grid.add(new JCheckBox());					
-				}			
-				grid.add(new JCheckBox(nick.toString()));
-			}
-		}
-
-// TODO: implement this for	private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
-		
-		JOptionPane.showConfirmDialog(null, grid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
 	}
 
 	protected void removePhone(Phone phone) {
 		phones.remove(phone);
 	}
+	
+	protected void removeMessenger(Messenger m) {
+		messengers.remove(m);
+	}
 
 	protected void addPhone(Phone phone) {
 		phones.add(phone);
 	}
+	
+	protected void addMessenger(Messenger m) {
+		messengers.add(m);
+	}
 
 	protected Phone getPhone(String simpleNumber) {
-		for (Phone p:phones){
-			if (p.simpleNumber().equals(simpleNumber)){
+		for (Phone p : phones) {
+			if (p.simpleNumber().equals(simpleNumber)) {
 				return p;
 			}
 		}
 		return null;
 	}
+	
+	protected Email getMail(String address) {
+		for (Email e : mails) {
+			if (e.address().equals(address)) {
+				return e;
+			}
+		}
+		return null;
+	}
+	
+	protected Messenger getMessenger(String nick) {
+		for (Messenger m : messengers) {
+			if (m.nick().equals(nick)) {
+				return m;
+			}
+		}
+		return null;
+	}
 
-	private Component activeBox(Object text, final Action action) {		
-		final JCheckBox box=text==null?new JCheckBox():new JCheckBox(text.toString(),true);		
+	private Component activeBox(Object text, final Action action) {
+		return activeBox(text, true, action);
+	}
+
+	private Component activeBox(Object text, boolean selected, final Action action) {
+		final JCheckBox box = text == null ? new JCheckBox() : new JCheckBox(text.toString(), selected);
 		box.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				action.change(box);				
+				action.change(box);
 			}
 		});
 		return box;
 	}
-	
+
 	private Component activeBox(Action action) {
-		return activeBox(null,action);
+		return activeBox(null, action);
 	}
 
 	private static JCheckBox activeCheckBox(String suffix) {
-		JCheckBox result=(suffix==null)?(new JCheckBox()):(new JCheckBox(suffix));
+		JCheckBox result = (suffix == null) ? (new JCheckBox()) : (new JCheckBox(suffix));
 		result.setSelected(true);
 		result.setEnabled(false);
 		return result;

@@ -301,11 +301,17 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 				line = line.substring(8);
 				continue;
 			}
-			if (upper.startsWith("TYPE=PREF") || upper.startsWith("PREF=1")) {
+			if (upper.startsWith("TYPE=PREF")) {
 				categories.add(Category.PREFERED);
 				line = line.substring(9);
 				continue;
 			}
+			if (upper.startsWith("PREF=1")) {
+				categories.add(Category.PREFERED);
+				line = line.substring(6);
+				continue;
+			}
+
 			if (upper.startsWith("TYPE=HOME")) {
 				categories.add(Category.HOME);
 				line = line.substring(9);
