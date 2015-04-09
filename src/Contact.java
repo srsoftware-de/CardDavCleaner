@@ -1686,48 +1686,54 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		HorizontalPanel panel;
 		if (name != null) {
 			VerticalPanel namePanel=new VerticalPanel(_("Name"));
-			panel=new HorizontalPanel();
-			if (name.prefix() != null) {
-				for (int i = 0; i < count; i++) {
+			String part=name.prefix();
+			if (part != null && !part.isEmpty()) {
+				panel=new HorizontalPanel();
+					for (int i = 0; i < count; i++) {
 					panel.add(activeCheckBox());
 				}
-				panel.add(activeCheckBox(name.prefix()));
+				panel.add(activeCheckBox(part));
+				namePanel.add(panel.scale());
 			}
-			namePanel.add(panel.scale());
 			
-			panel=new HorizontalPanel();
-			if (name.first() != null) {
+			part=name.first();
+			if (part != null && !part.isEmpty()) {
+				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
 					panel.add(activeCheckBox());
 				}
-				panel.add(activeCheckBox(name.first()));
+				panel.add(activeCheckBox(part));
+				namePanel.add(panel.scale());
 			}
-			namePanel.add(panel.scale());
 			
-			panel=new HorizontalPanel();
-			if (name.middle() != null) {
+			part=name.middle();
+			if (part != null && !part.isEmpty()) {
+				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
 					panel.add(activeCheckBox());
 				}
-				panel.add(activeCheckBox(name.middle()));
+				panel.add(activeCheckBox(part));
+				namePanel.add(panel.scale());
 			}
-			namePanel.add(panel.scale());
 			
-			panel=new HorizontalPanel();
-			if (name.last() != null) {
+			part=name.last();
+			if (part != null && !part.isEmpty()) {
+				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
 					panel.add(activeCheckBox());
 				}
-				panel.add(activeCheckBox(name.last()));
+				panel.add(activeCheckBox(part));
+				namePanel.add(panel.scale());
 			}
-			namePanel.add(panel.scale());
 			
-			panel=new HorizontalPanel();
-			if (name.suffix() != null) {
+			part=name.suffix();
+			if (part != null && !part.isEmpty()) {
+				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
 					panel.add(activeCheckBox());
 				}
-				panel.add(activeCheckBox(name.suffix()));
+				panel.add(activeCheckBox(part));
+				namePanel.add(panel.scale());
 			}
 			grid.add(namePanel.scale());
 		}
@@ -1792,7 +1798,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				for (int i = 0; i < count; i++) {
 					panel.add(new JCheckBox());
 				}
-				panel.add(new JCheckBox("TITLE:" + title));
+				panel.add(new JCheckBox(title));
 				titlePanel.add(panel.scale());
 			}
 			grid.add(titlePanel.scale());
@@ -1804,7 +1810,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				for (int i = 0; i < count; i++) {
 					panel.add(new JCheckBox());
 				}
-				panel.add(new JCheckBox("ROLE:" + role));
+				panel.add(new JCheckBox(role));
 				rolesPanel.add(panel.scale());
 			}
 			grid.add(rolesPanel.scale());
@@ -1816,7 +1822,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				for (int i = 0; i < count; i++) {
 					panel.add(new JCheckBox());
 				}
-				panel.add(new JCheckBox("note:" + note));
+				panel.add(new JCheckBox(note));
 				notesPanel.add(panel.scale());
 			}
 			grid.add(notesPanel.scale());
@@ -1840,7 +1846,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				for (int i = 0; i < count; i++) {
 					panel.add(new JCheckBox());
 				}
-				panel.add(new JCheckBox("CATEGORY:" + category));
+				panel.add(new JCheckBox(category));
 				categoriesPanel.add(panel.scale());
 			}
 			grid.add(categoriesPanel.scale());
@@ -1879,7 +1885,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				for (int i = 0; i < count; i++) {
 					panel.add(new JCheckBox());
 				}
-				panel.add(new JCheckBox(nick.toString()));
+				panel.add(new JCheckBox(nick.name()));
 				nickPanel.add(panel.scale());
 			}
 			grid.add(nickPanel.scale());
