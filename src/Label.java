@@ -268,7 +268,7 @@ public class Label extends Mergable<Label> implements Comparable<Label>{
 		return result;
 	}
 	
-	protected Object clone() throws CloneNotSupportedException {		
+	protected Label clone() throws CloneNotSupportedException {		
 		try {
 			return new Label(this.toString());
 		} catch (Exception e) {

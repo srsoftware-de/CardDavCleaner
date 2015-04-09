@@ -396,7 +396,7 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 		}
 	}
 
-	protected Object clone() throws CloneNotSupportedException {		
+	protected Nickname clone() throws CloneNotSupportedException {		
 		try {
 			return new Nickname(this.toString());
 		} catch (Exception e) {

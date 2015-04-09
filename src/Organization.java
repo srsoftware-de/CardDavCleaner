@@ -330,7 +330,7 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 		return sb.toString();
 	}
 
-	protected Object clone() throws CloneNotSupportedException {		
+	protected Organization clone() throws CloneNotSupportedException {		
 		try {
 			return new Organization(this.toString());
 		} catch (Exception e) {
