@@ -77,6 +77,7 @@ public class TranslationDE extends Translation{
 		trans.put("Messenger adress does not start with \"IMPP:\": #", "Messengeradresse fängt nicht mit \"IMPP:\" an: #");
 		trans.put("Messenger \"#\" has no known type!", "Messenger \"#\" hat unbekannten Typ!");
 		trans.put("Messengers", "Chat-/Mitteilungsprogramme");
+		trans.put("Messenger :#", "Chat: #");
 		trans.put("Merged into other contact", "In anderen Kontakt übernommen");
 		trans.put("Middle Name", "mittlerer Name");
 		trans.put("Month of birth", "Geburtsmonat");
@@ -110,6 +111,7 @@ public class TranslationDE extends Translation{
 		trans.put("Please decide!","Bitte entscheiden!");
 		trans.put("Please select","Bitte wählen");
 		trans.put("Phone", "Telefon");
+		trans.put("Phone: #", "Telefon: #");
 		trans.put("Phone enty does not start with \"TEL\": #", "Telefon-Eintrag beginntnicht mit \"TEL\": #");
 		trans.put("Phones", "Telefonnummern");
 		trans.put("phone number","Telefonnummer");

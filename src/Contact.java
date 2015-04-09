@@ -393,6 +393,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 
 	}
+	
+	private static Dimension screenDim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 
 	private static String _(Object text) {
 		return Translations.get(text.toString());
@@ -549,7 +551,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		if (source == newUrlButton) {
 			try {
-				Url newUrl = new Url("URL:");
+				Url newUrl = new Url("URL:http://www.srsoftware.de");
 				VerticalPanel newUrlForm = newUrl.editForm();
 				urlForm.insertCompoundBefore(newUrlButton, newUrlForm);
 				urls.add(newUrl);
@@ -562,7 +564,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		if (source == newOrgButton) {
 			try {
-				Organization newOrg = new Organization("ORG:");
+				Organization newOrg = new Organization("ORG:Organization");
 				VerticalPanel newOrgForm = newOrg.editForm();
 				orgForm.insertCompoundBefore(newOrgButton, newOrgForm);
 				orgs.add(newOrg);
@@ -577,15 +579,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			try {
 				System.out.println("newMessengerButton");
 				Messenger newMessenger = new Messenger("IMPP:ICQ:nickname");
-				System.out.println(newMessenger);
 				VerticalPanel newMessengerForm = newMessenger.editForm();
 				messengerForm.insertCompoundBefore(newMessengerButton, newMessengerForm);
-				System.out.println(messengers);
-				System.out.println(messengers.size());
 				messengers.add(newMessenger);
-				System.out.println();
-				System.out.println(messengers);
-				System.out.println(messengers.size());
 				rescale();
 			} catch (UnknownObjectException e) {
 				e.printStackTrace();
@@ -1224,7 +1220,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		outerForm.scale();
 
-		Dimension screenDim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		
 
 		screenDim.setSize(screenDim.getWidth() - 100, screenDim.getHeight() - 100);
 		scroll = new JScrollPane(outerForm);
@@ -1676,8 +1672,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		if (additionalContacts.isEmpty()) {
 			additionalContacts.add(new Contact(name.toString()));
 		}
-		System.out.println(this);
-		System.out.println(additionalContacts);
 
 		int count = additionalContacts.size();
 		GridLayout gridLayout = new GridLayout(0, 1 + count);
@@ -1802,9 +1796,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			}
 		}
 
-		addPhoneSelectors(count, grid, base, additionalContacts);
-
-		addMailSelectors(count,grid,base,additionalContacts);
 
 		if (urls != null && !urls.isEmpty()) {
 			for (Url url : urls) {
@@ -1824,7 +1815,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			}
 		}
 
-		addMessengerSelectors(count,grid,base,additionalContacts);
 
 		if (nicks != null && !nicks.isEmpty()) {
 			for (Nickname nick : nicks) {
@@ -1835,15 +1825,26 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			}
 		}
 
-		// TODO: implement this for private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
+		addPhoneSelectors(count, grid, base, additionalContacts);
 
-		JOptionPane.showConfirmDialog(null, grid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
+		addMailSelectors(count,grid,base,additionalContacts);
+
+		addMessengerSelectors(count,grid,base,additionalContacts);
+		
+		//addUrl
+
+		// TODO: implement this for private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
+		JScrollPane scrollableGrid=new JScrollPane(grid);
+		int height=Math.min(grid.getPreferredSize().height+20, screenDim.height-100);
+		int width=Math.min(grid.getPreferredSize().width+20, screenDim.width-50);
+		scrollableGrid.setPreferredSize(new Dimension(width,height));
+		JOptionPane.showConfirmDialog(null, scrollableGrid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
 	}
 	
 	private void addMessengerSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
 		if (messengers != null && !messengers.isEmpty()) {
 			for (final Messenger messenger : messengers) {
-				grid.add(new JLabel(messenger.nick()));
+				grid.add(new JLabel(_("Messenger: #",messenger.nick())));
 				for (int i = 0; i < count; i++) {
 					grid.add(new JLabel());
 				}
@@ -1912,7 +1913,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private void addMailSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
 		if (mails != null && !mails.isEmpty()) {
 			for (final Email mail : mails) {
-				grid.add(new JLabel(mail.address()));
+				grid.add(new JLabel(_("Email: #",mail.address())));
 				for (int i = 0; i < count; i++) {
 					grid.add(new JLabel());
 				}
@@ -1987,7 +1988,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private void addPhoneSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
 		if (phones != null && !phones.isEmpty()) {
 			for (final Phone phone : phones) {
-				grid.add(new JLabel(phone.simpleNumber()));
+				grid.add(new JLabel(_("Phone: #",phone.simpleNumber())));
 				for (int i = 0; i < count; i++) {
 					grid.add(new JLabel());
 				}

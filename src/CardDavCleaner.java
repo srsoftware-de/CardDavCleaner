@@ -659,7 +659,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			TreeSet<String> contacts = new TreeSet<String>();
 			int count = 0;
 			while ((line = in.readLine()) != null) {
-				if (count++>100) break;
+				count++;
+				if (count<300 || count>312) continue;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();
