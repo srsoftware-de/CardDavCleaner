@@ -47,8 +47,9 @@ public class VerticalPanel extends JPanel {
 		super.add(c);
 	}
 	
-	public void scale(){
+	public VerticalPanel scale(){
 		setPreferredSize(new Dimension(width+offset+offset,height+offset));
+		return this;
 	}
 	
 	public void rescale(){

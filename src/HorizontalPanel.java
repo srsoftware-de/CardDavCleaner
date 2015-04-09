@@ -67,8 +67,9 @@ public class HorizontalPanel extends JPanel {
 	/**
 	 * skaliert das gesamte Panel so, dass alle hinzugefügten Komponenten sichtbar bleiben
 	 */
-	public void scale(){
+	public HorizontalPanel scale(){
 		setPreferredSize(new Dimension(width+offset+offset,height+offset+5));
+		return this;
 	}
 
 	public void insertCompoundBefore(JComponent givenComponent, JComponent newComponent) {

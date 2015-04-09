@@ -1674,49 +1674,68 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 
 		int count = additionalContacts.size();
-		GridLayout gridLayout = new GridLayout(0, 1 + count);
-		JPanel grid = new JPanel(gridLayout);
-
+		VerticalPanel grid = new VerticalPanel();
+		HorizontalPanel overview=new HorizontalPanel();
 		for (int i = 0; i < count; i++) {
-			grid.add(new JLabel(_("<html>New<br>Contact #", i + 1)));
+			overview.add(new JLabel(_("<html>New<br>Contact #", i + 1)));
 		}
-		grid.add(new JLabel(_("<html>Original<br>Contact")));
+		overview.add(new JLabel("   "));		
+		overview.add(new JLabel(_("<html>Original<br>Contact")));
+		grid.add(overview.scale());
+		
+		HorizontalPanel panel;
 		if (name != null) {
+			VerticalPanel namePanel=new VerticalPanel(_("Name"));
+			panel=new HorizontalPanel();
 			if (name.prefix() != null) {
 				for (int i = 0; i < count; i++) {
-					grid.add(activeCheckBox());
+					panel.add(activeCheckBox());
 				}
-				grid.add(activeCheckBox(name.prefix()));
+				panel.add(activeCheckBox(name.prefix()));
 			}
+			namePanel.add(panel.scale());
+			
+			panel=new HorizontalPanel();
 			if (name.first() != null) {
 				for (int i = 0; i < count; i++) {
-					grid.add(activeCheckBox());
+					panel.add(activeCheckBox());
 				}
-				grid.add(activeCheckBox(name.first()));
+				panel.add(activeCheckBox(name.first()));
 			}
+			namePanel.add(panel.scale());
+			
+			panel=new HorizontalPanel();
 			if (name.middle() != null) {
 				for (int i = 0; i < count; i++) {
-					grid.add(activeCheckBox());
+					panel.add(activeCheckBox());
 				}
-				grid.add(activeCheckBox(name.middle()));
+				panel.add(activeCheckBox(name.middle()));
 			}
+			namePanel.add(panel.scale());
+			
+			panel=new HorizontalPanel();
 			if (name.last() != null) {
 				for (int i = 0; i < count; i++) {
-					grid.add(activeCheckBox());
+					panel.add(activeCheckBox());
 				}
-				grid.add(activeCheckBox(name.last()));
+				panel.add(activeCheckBox(name.last()));
 			}
+			namePanel.add(panel.scale());
+			
+			panel=new HorizontalPanel();
 			if (name.suffix() != null) {
 				for (int i = 0; i < count; i++) {
-					grid.add(activeCheckBox());
+					panel.add(activeCheckBox());
 				}
-				grid.add(activeCheckBox(name.suffix()));
+				panel.add(activeCheckBox(name.suffix()));
 			}
+			grid.add(namePanel.scale());
 		}
 
 		if (formattedName != null) {
+			panel=new HorizontalPanel(_("formatted name"));
 			for (final Contact additionalContact : additionalContacts) {
-				grid.add(activeBox(new Action() {
+				panel.add(activeBox(new Action() {
 					@Override
 					public void change(JCheckBox origin) {
 						additionalContact.formattedName = origin.isSelected() ? formattedName : null;
@@ -1724,95 +1743,146 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					}
 				}));
 			}
-			grid.add(activeBox("FN:" + formattedName, new Action() {
+			panel.add(activeBox(formattedName, new Action() {
 				@Override
 				public void change(JCheckBox origin) {
 					base.formattedName = origin.isSelected() ? formattedName : null;
 					System.out.println(base);
 				}
 			}));
+			grid.add(panel.scale());
 		}
 
 		if (birthday != null) {
+			panel=new HorizontalPanel(_("birthday"));
 			for (int i = 0; i < count; i++) {
-				grid.add(new JCheckBox());
+				panel.add(activeBox(new Action() {
+					
+					@Override
+					public void change(JCheckBox origin) {
+						// TODO Auto-generated method stub
+						
+					}
+				}));
 			}
-			grid.add(new JCheckBox(birthday.toString()));
+			panel.add(activeBox(birthday.toString(), false, new Action() {
+				
+				@Override
+				public void change(JCheckBox origin) {
+					// TODO Auto-generated method stub
+					
+				}
+			}));
+			grid.add(panel.scale());
 		}
 
 		if (anniversary != null) {
+			panel=new HorizontalPanel(_("Anniversary"));
 			for (int i = 0; i < count; i++) {
-				grid.add(new JCheckBox());
+				panel.add(new JCheckBox());
 			}
-			grid.add(new JCheckBox("ANNIVERSARY:" + anniversary));
+			panel.add(new JCheckBox(anniversary));
+			grid.add(panel.scale());
 		}
 
 		if (titles != null && !titles.isEmpty()) {
+			VerticalPanel titlePanel = new VerticalPanel(_("Titles"));			
 			for (String title : titles) {
+				panel = new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
-					grid.add(new JCheckBox());
+					panel.add(new JCheckBox());
 				}
-				grid.add(new JCheckBox("TITLE:" + title));
+				panel.add(new JCheckBox("TITLE:" + title));
+				titlePanel.add(panel.scale());
 			}
+			grid.add(titlePanel.scale());
 		}
 		if (roles != null && !roles.isEmpty()) {
+			VerticalPanel rolesPanel = new VerticalPanel(_("Roles"));
 			for (String role : roles) {
+				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
-					grid.add(new JCheckBox());
+					panel.add(new JCheckBox());
 				}
-				grid.add(new JCheckBox("ROLE:" + role));
+				panel.add(new JCheckBox("ROLE:" + role));
+				rolesPanel.add(panel.scale());
 			}
+			grid.add(rolesPanel.scale());
 		}
 		if (notes != null && !notes.isEmpty()) {
+			VerticalPanel notesPanel=new VerticalPanel(_("notes"));
 			for (String note : notes) {
+				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
-					grid.add(new JCheckBox());
+					panel.add(new JCheckBox());
 				}
-				grid.add(new JCheckBox("note:" + note));
+				panel.add(new JCheckBox("note:" + note));
+				notesPanel.add(panel.scale());
 			}
+			grid.add(notesPanel.scale());
 		}
 		if (photos != null && !photos.isEmpty()) {
+			VerticalPanel photoPanel=new VerticalPanel(_("Photos"));
 			for (String photo : photos) {
+				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
-					grid.add(new JCheckBox());
+					panel.add(new JCheckBox());
 				}
-				grid.add(new JCheckBox(_("Photo")));
+				panel.add(new JCheckBox(_("Photo")));
+				photoPanel.add(panel.scale());
 			}
+			grid.add(photoPanel.scale());
 		}
 		if (categories != null && !categories.isEmpty()) {
+			VerticalPanel categoriesPanel=new VerticalPanel(_("Categories"));
 			for (String category : categories) {
+				panel=new  HorizontalPanel();
 				for (int i = 0; i < count; i++) {
-					grid.add(new JCheckBox());
+					panel.add(new JCheckBox());
 				}
-				grid.add(new JCheckBox("CATEGORY:" + category));
+				panel.add(new JCheckBox("CATEGORY:" + category));
+				categoriesPanel.add(panel.scale());
 			}
+			grid.add(categoriesPanel.scale());
 		}
 		if (labels != null && !labels.isEmpty()) {
+			VerticalPanel labelPanel=new VerticalPanel(_("Labels"));
 			for (Label label : labels) {
+				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
-					grid.add(new JCheckBox());
+					panel.add(new JCheckBox());
 				}
-				grid.add(new JCheckBox(label.toString()));
+				panel.add(new JCheckBox(label.toString()));
+				labelPanel.add(panel.scale());
 			}
+			grid.add(labelPanel.scale());
 		}
 
 		if (orgs != null && !orgs.isEmpty()) {
+			VerticalPanel orgsPanel=new VerticalPanel(_("Organizations"));
 			for (Organization org : orgs) {
+				panel = new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
-					grid.add(new JCheckBox());
+					panel.add(new JCheckBox());
 				}
-				grid.add(new JCheckBox(org.toString()));
+				panel.add(new JCheckBox(org.toString()));
+				orgsPanel.add(panel.scale());
 			}
+			grid.add(orgsPanel.scale());
 		}
 
 
 		if (nicks != null && !nicks.isEmpty()) {
+			VerticalPanel nickPanel=new VerticalPanel(_("Nicknames"));
 			for (Nickname nick : nicks) {
+				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
-					grid.add(new JCheckBox());
+					panel.add(new JCheckBox());
 				}
-				grid.add(new JCheckBox(nick.toString()));
+				panel.add(new JCheckBox(nick.toString()));
+				nickPanel.add(panel.scale());
 			}
+			grid.add(nickPanel.scale());
 		}
 
 		addPhoneSelectors(count, grid, base, additionalContacts);
@@ -1826,7 +1896,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		
 
 		// TODO: implement this for private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
-		JScrollPane scrollableGrid=new JScrollPane(grid);
+		JScrollPane scrollableGrid=new JScrollPane(grid.scale());
 		int height=Math.min(grid.getPreferredSize().height+20, screenDim.height-100);
 		int width=Math.min(grid.getPreferredSize().width+20, screenDim.width-50);
 		scrollableGrid.setPreferredSize(new Dimension(width,height));
@@ -2037,16 +2107,15 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 
 
-	private void addPhoneSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	private void addPhoneSelectors(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
 		if (phones != null && !phones.isEmpty()) {
+			HorizontalPanel panel;
 			for (final Phone phone : phones) {
-				for (int i = 0; i < count; i++) {
-					grid.add(new JLabel());
-				}
-				grid.add(new JLabel(_("Phone: #",phone.simpleNumber())));
+				VerticalPanel phonePanel=new VerticalPanel(_("Phone: #",phone.simpleNumber()));
 				for (final Phone.Category category : Phone.Category.values()) {
+					panel=new HorizontalPanel();
 					for (final Contact additionalContact : additionalContacts) {
-						grid.add(activeBox(new Action() {
+						panel.add(activeBox(new Action() {
 
 							@Override
 							public void change(JCheckBox box) {
@@ -2072,7 +2141,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 							}
 						}));
 					}
-					grid.add(activeBox(_(category), phone.categories().contains(category), new Action() {
+					panel.add(activeBox(_(category), phone.categories().contains(category), new Action() {
 
 						@Override
 						public void change(JCheckBox box) {
@@ -2097,7 +2166,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 							}
 						}
 					}));
+					phonePanel.add(panel.scale());
 				}
+				grid.add(phonePanel.scale());
 			}
 		}
 	}
@@ -2171,12 +2242,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return null;
 	}
 
-	private Component activeBox(Object text, final Action action) {
+	private JCheckBox activeBox(Object text, final Action action) {
 		return activeBox(text, true, action);
 	}
 
-	private Component activeBox(Object text, boolean selected, final Action action) {
-		final JCheckBox box = text == null ? new JCheckBox() : new JCheckBox(text.toString(), selected);
+	private JCheckBox activeBox(Object text, boolean selected, final Action action) {
+		final JCheckBox box = (text == null) ? new JCheckBox() : new JCheckBox(text.toString(), selected);
 		box.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -2186,7 +2257,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return box;
 	}
 
-	private Component activeBox(Action action) {
+	private JCheckBox activeBox(Action action) {
 		return activeBox(null, action);
 	}
 
