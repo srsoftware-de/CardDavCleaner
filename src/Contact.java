@@ -1222,12 +1222,14 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		outerForm.scale();
 
+		int height=Math.min(outerForm.getPreferredSize().height+20, screenDim.height-100);
+		int width=Math.min(outerForm.getPreferredSize().width+20, screenDim.width-50);
 		
 
-		screenDim.setSize(screenDim.getWidth() - 100, screenDim.getHeight() - 100);
+		//screenDim.setSize(screenDim.getWidth() - 100, screenDim.getHeight() - 100);
 		scroll = new JScrollPane(outerForm);
 
-		scroll.setPreferredSize(screenDim);
+		scroll.setPreferredSize(new Dimension(width,height));
 		scroll.setSize(scroll.getPreferredSize());
 
 		return scroll;
@@ -1677,6 +1679,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		int count = additionalContacts.size();
 		VerticalPanel grid = new VerticalPanel();
+		for (Client.ProblemType problem:problems){
+			JLabel label = new JLabel(problem.toString());
+			label.setBackground(Color.orange);
+			
+			grid.add(label);
+		}
 		HorizontalPanel overview=new HorizontalPanel();
 		for (int i = 0; i < count; i++) {
 			overview.add(new JLabel(_("<html>New<br>Contact #", i + 1)));
@@ -1710,6 +1718,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		int width=Math.min(grid.getPreferredSize().width+20, screenDim.width-50);
 		scrollableGrid.setPreferredSize(new Dimension(width,height));
 		JOptionPane.showConfirmDialog(null, scrollableGrid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
+		// TODO: alter original contact, too
 	}
 	
 	private void addTitlesSelector(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
