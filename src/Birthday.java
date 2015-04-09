@@ -717,12 +717,15 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 		return form;
 	}
 
-	protected Object clone() throws CloneNotSupportedException {		
+	protected Birthday clone() throws CloneNotSupportedException {		
 		try {
 			return new Birthday(this.toString());
 		} catch (Exception e) {
 			throw new CloneNotSupportedException(e.getMessage());
 		}
 	}
+	public String format(String format) {
+	  return format.replace("Y", year).replace("m", month).replace("d", day);
+  }
 
 }

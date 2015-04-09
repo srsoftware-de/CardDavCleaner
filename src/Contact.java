@@ -1683,100 +1683,54 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		overview.add(new JLabel(_("<html>Original<br>Contact")));
 		grid.add(overview.scale());
 		
+		addNameSelectors(count, grid, base, additionalContacts);
+
 		HorizontalPanel panel;
-		if (name != null) {
-			VerticalPanel namePanel=new VerticalPanel(_("Name"));
-			String part=name.prefix();
-			if (part != null && !part.isEmpty()) {
-				panel=new HorizontalPanel();
-					for (int i = 0; i < count; i++) {
-					panel.add(activeCheckBox());
-				}
-				panel.add(activeCheckBox(part));
-				namePanel.add(panel.scale());
-			}
-			
-			part=name.first();
-			if (part != null && !part.isEmpty()) {
-				panel=new HorizontalPanel();
-				for (int i = 0; i < count; i++) {
-					panel.add(activeCheckBox());
-				}
-				panel.add(activeCheckBox(part));
-				namePanel.add(panel.scale());
-			}
-			
-			part=name.middle();
-			if (part != null && !part.isEmpty()) {
-				panel=new HorizontalPanel();
-				for (int i = 0; i < count; i++) {
-					panel.add(activeCheckBox());
-				}
-				panel.add(activeCheckBox(part));
-				namePanel.add(panel.scale());
-			}
-			
-			part=name.last();
-			if (part != null && !part.isEmpty()) {
-				panel=new HorizontalPanel();
-				for (int i = 0; i < count; i++) {
-					panel.add(activeCheckBox());
-				}
-				panel.add(activeCheckBox(part));
-				namePanel.add(panel.scale());
-			}
-			
-			part=name.suffix();
-			if (part != null && !part.isEmpty()) {
-				panel=new HorizontalPanel();
-				for (int i = 0; i < count; i++) {
-					panel.add(activeCheckBox());
-				}
-				panel.add(activeCheckBox(part));
-				namePanel.add(panel.scale());
-			}
-			grid.add(namePanel.scale());
-		}
-
-		if (formattedName != null) {
-			panel=new HorizontalPanel(_("formatted name"));
-			for (final Contact additionalContact : additionalContacts) {
-				panel.add(activeBox(new Action() {
-					@Override
-					public void change(JCheckBox origin) {
-						additionalContact.formattedName = origin.isSelected() ? formattedName : null;
-						System.out.println(additionalContact);
-					}
-				}));
-			}
-			panel.add(activeBox(formattedName, new Action() {
-				@Override
-				public void change(JCheckBox origin) {
-					base.formattedName = origin.isSelected() ? formattedName : null;
-					System.out.println(base);
-				}
-			}));
-			grid.add(panel.scale());
-		}
-
+		
 		if (birthday != null) {
 			panel=new HorizontalPanel(_("birthday"));
-			for (int i = 0; i < count; i++) {
+			for (final Contact additionalContact:additionalContacts) {
 				panel.add(activeBox(new Action() {
-					
+
 					@Override
-					public void change(JCheckBox origin) {
-						// TODO Auto-generated method stub
-						
+					public void change(JCheckBox box) {
+						Birthday additionalContactBirthday = additionalContact.birthday();
+						if (box.isSelected()) {
+							if (additionalContactBirthday == null) {
+								try {
+									additionalContactBirthday = birthday.clone();
+									additionalContact.setBirthday(additionalContactBirthday);
+								} catch (CloneNotSupportedException e) {
+									e.printStackTrace();
+								}
+							}
+						} else {
+							if (additionalContactBirthday != null) {
+								additionalContact.unsetBirthday();
+							}
+						}
 					}
 				}));
 			}
-			panel.add(activeBox(birthday.toString(), false, new Action() {
-				
+			panel.add(activeBox(birthday.format("Y/m/d"), new Action() {
+
 				@Override
-				public void change(JCheckBox origin) {
-					// TODO Auto-generated method stub
-					
+				public void change(JCheckBox box) {
+					Birthday baseBirthday = base.birthday();
+					if (box.isSelected()) {
+						if (baseBirthday == null) {
+							try {
+								baseBirthday = birthday.clone();
+								base.setBirthday(baseBirthday);
+							} catch (CloneNotSupportedException e) {
+								e.printStackTrace();
+							}
+						}
+					} else {
+						if (baseBirthday != null) {
+							base.unsetBirthday();
+						}
+					}
 				}
 			}));
 			grid.add(panel.scale());
@@ -1909,6 +1863,92 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		JOptionPane.showConfirmDialog(null, scrollableGrid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
 	}
 	
+	protected void unsetBirthday() {
+		birthday=null;
+  }
+
+	protected void setBirthday(Birthday b) {
+	  birthday=b;	  
+  }
+
+	private void addNameSelectors(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+		HorizontalPanel panel;
+		if (name != null) {
+			VerticalPanel namePanel=new VerticalPanel(_("Name"));
+			String part=name.prefix();
+			if (part != null && !part.isEmpty()) {
+				panel=new HorizontalPanel();
+					for (int i = 0; i < count; i++) {
+					panel.add(activeCheckBox());
+				}
+				panel.add(activeCheckBox(part));
+				namePanel.add(panel.scale());
+			}
+			
+			part=name.first();
+			if (part != null && !part.isEmpty()) {
+				panel=new HorizontalPanel();
+				for (int i = 0; i < count; i++) {
+					panel.add(activeCheckBox());
+				}
+				panel.add(activeCheckBox(part));
+				namePanel.add(panel.scale());
+			}
+			
+			part=name.middle();
+			if (part != null && !part.isEmpty()) {
+				panel=new HorizontalPanel();
+				for (int i = 0; i < count; i++) {
+					panel.add(activeCheckBox());
+				}
+				panel.add(activeCheckBox(part));
+				namePanel.add(panel.scale());
+			}
+			
+			part=name.last();
+			if (part != null && !part.isEmpty()) {
+				panel=new HorizontalPanel();
+				for (int i = 0; i < count; i++) {
+					panel.add(activeCheckBox());
+				}
+				panel.add(activeCheckBox(part));
+				namePanel.add(panel.scale());
+			}
+			
+			part=name.suffix();
+			if (part != null && !part.isEmpty()) {
+				panel=new HorizontalPanel();
+				for (int i = 0; i < count; i++) {
+					panel.add(activeCheckBox());
+				}
+				panel.add(activeCheckBox(part));
+				namePanel.add(panel.scale());
+			}
+			grid.add(namePanel.scale());
+		}
+
+		if (formattedName != null) {
+			panel=new HorizontalPanel(_("formatted name"));
+			for (final Contact additionalContact : additionalContacts) {
+				panel.add(activeBox(new Action() {
+					@Override
+					public void change(JCheckBox origin) {
+						additionalContact.formattedName = origin.isSelected() ? formattedName : null;
+						System.out.println(additionalContact);
+					}
+				}));
+			}
+			panel.add(activeBox(formattedName, new Action() {
+				@Override
+				public void change(JCheckBox origin) {
+					base.formattedName = origin.isSelected() ? formattedName : null;
+					System.out.println(base);
+				}
+			}));
+			grid.add(panel.scale());
+		}
+  }
+
 	private void addUrlSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
 		if (urls != null && !urls.isEmpty()) {
 			for (final Url url : urls) {

@@ -334,7 +334,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				break;
 			}
 			contact.showResolveDialog(additionalContacts,problems);
-			return new TreeSet<Contact>(); // TODO: remove. This is for tests only
+			System.out.println(contact);
+			System.out.println(additionalContacts);
+			//return new TreeSet<Contact>(); // TODO: remove. This is for tests only
 		}
 		return additionalContacts;
 	}
