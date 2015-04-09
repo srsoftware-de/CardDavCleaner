@@ -1796,16 +1796,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			}
 		}
 
-
-		if (urls != null && !urls.isEmpty()) {
-			for (Url url : urls) {
-				for (int i = 0; i < count; i++) {
-					grid.add(new JCheckBox());
-				}
-				grid.add(new JCheckBox(url.toString()));
-			}
-		}
-
 		if (orgs != null && !orgs.isEmpty()) {
 			for (Organization org : orgs) {
 				for (int i = 0; i < count; i++) {
@@ -1846,10 +1836,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private void addUrlSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
 		if (urls != null && !urls.isEmpty()) {
 			for (final Url url : urls) {
-				grid.add(new JLabel(_("Url: #",url.address())));
 				for (int i = 0; i < count; i++) {
 					grid.add(new JLabel());
 				}
+				grid.add(new JLabel(_("Url: #",url.address())));
 				for (final Url.Category category : Url.Category.values()) {
 					for (final Contact additionalContact : additionalContacts) {
 						grid.add(activeBox(new Action() {
@@ -1913,10 +1903,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private void addMessengerSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
 		if (messengers != null && !messengers.isEmpty()) {
 			for (final Messenger messenger : messengers) {
-				grid.add(new JLabel(_("Messenger: #",messenger.nick())));
 				for (int i = 0; i < count; i++) {
 					grid.add(new JLabel());
 				}
+				grid.add(new JLabel(_("Messenger: #",messenger.nick())));
 				for (final Messenger.Category category : Messenger.Category.values()) {
 					for (final Contact additionalContact : additionalContacts) {
 						grid.add(activeBox(new Action() {
@@ -1982,10 +1972,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private void addMailSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
 		if (mails != null && !mails.isEmpty()) {
 			for (final Email mail : mails) {
-				grid.add(new JLabel(_("Email: #",mail.address())));
 				for (int i = 0; i < count; i++) {
 					grid.add(new JLabel());
 				}
+				grid.add(new JLabel(_("Email: #",mail.address())));
 				for (final Email.Category category : Email.Category.values()) {
 					for (final Contact additionalContact : additionalContacts) {
 						grid.add(activeBox(new Action() {
@@ -2050,10 +2040,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private void addPhoneSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
 		if (phones != null && !phones.isEmpty()) {
 			for (final Phone phone : phones) {
-				grid.add(new JLabel(_("Phone: #",phone.simpleNumber())));
 				for (int i = 0; i < count; i++) {
 					grid.add(new JLabel());
 				}
+				grid.add(new JLabel(_("Phone: #",phone.simpleNumber())));
 				for (final Phone.Category category : Phone.Category.values()) {
 					for (final Contact additionalContact : additionalContacts) {
 						grid.add(activeBox(new Action() {
