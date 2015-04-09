@@ -1831,7 +1831,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		addMessengerSelectors(count,grid,base,additionalContacts);
 		
-		//addUrl
+		addUrlSelectors(count,grid,base,additionalContacts);
+
+		
 
 		// TODO: implement this for private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
 		JScrollPane scrollableGrid=new JScrollPane(grid);
@@ -1841,6 +1843,73 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		JOptionPane.showConfirmDialog(null, scrollableGrid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
 	}
 	
+	private void addUrlSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+		if (urls != null && !urls.isEmpty()) {
+			for (final Url url : urls) {
+				grid.add(new JLabel(_("Url: #",url.address())));
+				for (int i = 0; i < count; i++) {
+					grid.add(new JLabel());
+				}
+				for (final Url.Category category : Url.Category.values()) {
+					for (final Contact additionalContact : additionalContacts) {
+						grid.add(activeBox(new Action() {
+
+							@Override
+							public void change(JCheckBox box) {
+								Url additionalContactUrl = additionalContact.getUrl(url.address());
+								if (box.isSelected()) {
+									if (additionalContactUrl == null) {
+										try {
+											additionalContactUrl = url.clone(false);
+											additionalContact.addUrl(additionalContactUrl);
+										} catch (CloneNotSupportedException e) {
+											e.printStackTrace();
+										}
+									}
+									additionalContactUrl.addCategory(category);
+								} else {
+									if (additionalContactUrl != null) {
+										additionalContactUrl.removeCategory(category);
+										if (additionalContactUrl.categories().isEmpty()) {
+											additionalContact.removeUrl(additionalContactUrl);
+										}
+									}
+								}
+							}
+						}));
+					}
+					grid.add(activeBox(_(category), url.categories().contains(category), new Action() {
+
+						@Override
+						public void change(JCheckBox box) {
+							Url baseUrl = base.getUrl(url.address());
+							if (box.isSelected()) {
+								if (baseUrl == null) {
+									try {
+										baseUrl = url.clone(false);
+										base.addUrl(baseUrl);
+									} catch (CloneNotSupportedException e) {
+										e.printStackTrace();
+									}
+								}
+								baseUrl.addCategory(category);
+							} else {
+								if (baseUrl != null) {
+									baseUrl.removeCategory(category);
+									if (baseUrl.categories().isEmpty()) {
+										base.removeUrl(baseUrl);
+									}
+								}
+							}
+						}
+					}));
+				}
+			}
+		}
+	}
+	
+
+
 	private void addMessengerSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
 		if (messengers != null && !messengers.isEmpty()) {
 			for (final Messenger messenger : messengers) {
@@ -1977,13 +2046,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 
 
-	protected void removeMail(Email mail) {
-		mails.remove(mail);
-	}
-
-	protected void addMail(Email email) {
-		mails.add(email);
-	}
 
 	private void addPhoneSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
 		if (phones != null && !phones.isEmpty()) {
@@ -2057,6 +2119,22 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	protected void removeMessenger(Messenger m) {
 		messengers.remove(m);
 	}
+	
+	protected void removeMail(Email mail) {
+		mails.remove(mail);
+	}
+
+	protected void removeUrl(Url url) {
+		urls.remove(url);
+	}
+
+	protected void addMail(Email email) {
+		mails.add(email);
+	}
+	
+	protected void addUrl(Url url) {
+		urls.add(url);
+	}
 
 	protected void addPhone(Phone phone) {
 		phones.add(phone);
@@ -2083,6 +2161,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		return null;
 	}
+	
+	protected Url getUrl(String address) {
+		for (Url u : urls) {
+			if (u.address().equals(address)) {
+				return u;
+			}
+		}
+		return null;
+	}
+
 	
 	protected Messenger getMessenger(String nick) {
 		for (Messenger m : messengers) {
