@@ -1,4 +1,5 @@
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 
@@ -103,5 +104,13 @@ public class HorizontalPanel extends JPanel {
 	
 	public void rescale(){
 		insertCompoundBefore(null, null);
+	}
+	
+	@Override
+	public void setBackground(Color bg) {
+	  super.setBackground(bg);
+	  for (Component c:super.getComponents()){
+	  	c.setBackground(bg);
+	  }
 	}
 }
