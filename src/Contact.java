@@ -1716,7 +1716,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		scrollableGrid.setPreferredSize(new Dimension(width,height));
 		
 		String []options = new String[] {_("Update!"),_("Add another clone"),_("Cancel")};
-//		JOptionPane.showConfirmDialog(null, scrollableGrid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
 		return JOptionPane.showOptionDialog(null, scrollableGrid, _("Distribute Fields"), 0, JOptionPane.QUESTION_MESSAGE, null, options, 0);
 	}
 	

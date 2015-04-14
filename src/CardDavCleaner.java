@@ -35,8 +35,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -2875331857455588061L;
