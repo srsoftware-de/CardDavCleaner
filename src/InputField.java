@@ -90,7 +90,6 @@ public class InputField extends HorizontalPanel implements DocumentListener, Foc
 
 	@Override
   public void focusGained(FocusEvent arg0) {
-	  // TODO Auto-generated method stub
 	  result.selectAll();
   }
 

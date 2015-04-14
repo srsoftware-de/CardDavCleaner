@@ -1693,9 +1693,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		overview.add(new JLabel(_("<html>Original<br>Contact")));
 		grid.add(overview.scale());
 		
-		addNameSelectors(count, grid, backupContact, additionalContacts);
-		addBDaySelector(count, grid, backupContact, additionalContacts);
-		addAnniversarySelector(count, grid, backupContact, additionalContacts);
+		addNameSelectors(count, grid, backupContact, additionalContacts,client,problems);
+		addBDaySelector(count, grid, backupContact, additionalContacts,client,problems);
+		addAnniversarySelector(count, grid, backupContact, additionalContacts,client,problems);
 		addTitlesSelector(count, grid, backupContact, additionalContacts);
 		addRolesSelector(count, grid, backupContact, additionalContacts);
 		addNotesSelector(count, grid, backupContact, additionalContacts);
@@ -2057,8 +2057,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 	
-	private void addAnniversarySelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
-		HorizontalPanel panel;
+	private void addAnniversarySelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
+		final HorizontalPanel panel;
 		if (backup.anniversary != null) {
 			panel=new HorizontalPanel(_("anniversary"));
 			for (final Contact additionalContact:additionalContacts) {
@@ -2071,6 +2071,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						} else {
 							additionalContact.anniversary=null;;
 						}
+						checkValidity(additionalContacts,client,Problem.Type.BIRTHDAY,panel);
 					}
 				}));
 			}
@@ -2083,14 +2084,18 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					} else {
 						anniversary=null;
 					}
+					checkValidity(additionalContacts,client,Problem.Type.ANNIVERSARY,panel);
 				}
 			}));
+			if (problems.contains(Problem.Type.ANNIVERSARY)){
+				panel.setBackground(Color.ORANGE);
+			}
 			grid.add(panel.scale());
 		}
   }
 
-	private void addBDaySelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
-		HorizontalPanel panel;
+	private void addBDaySelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
+		final HorizontalPanel panel;
 		if (backup.birthday != null) {
 			panel=new HorizontalPanel(_("birthday"));
 			for (final Contact additionalContact:additionalContacts) {
@@ -2107,6 +2112,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						} else {
 							additionalContact.birthday=null;
 						}
+						checkValidity(additionalContacts,client,Problem.Type.BIRTHDAY,panel);
 					}
 				}));
 			}
@@ -2125,8 +2131,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					} else {
 						birthday=null;
 					}
+					checkValidity(additionalContacts,client,Problem.Type.BIRTHDAY,panel);
 				}
 			}));
+			if (problems.contains(Problem.Type.BIRTHDAY)){
+				panel.setBackground(Color.ORANGE);
+			}
 			grid.add(panel.scale());
 		}
   }
@@ -2139,7 +2149,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	  birthday=b;	  
   }
 
-	private void addNameSelectors(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
+	private void addNameSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		HorizontalPanel panel;
 		if (backup.name != null) {
 			VerticalPanel namePanel=new VerticalPanel(_("Name"));
@@ -2196,22 +2206,27 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 
 		if (backup.formattedName != null) {
-			panel=new HorizontalPanel(_("formatted name"));
+			final HorizontalPanel fNamePanel=new HorizontalPanel(_("formatted name"));
 			for (final Contact additionalContact : additionalContacts) {
-				panel.add(activeBox(new Action() {
+				fNamePanel.add(activeBox(new Action() {
 					@Override
 					public void change(JCheckBox origin) {
 						additionalContact.formattedName = origin.isSelected() ? backup.formattedName : null;
+						checkValidity(additionalContacts,client,Problem.Type.FORMATTEDNAME,fNamePanel);
 					}
 				}));
 			}
-			panel.add(activeBox(formattedName, new Action() {
+			fNamePanel.add(activeBox(formattedName, new Action() {
 				@Override
 				public void change(JCheckBox origin) {
 					formattedName = origin.isSelected() ? backup.formattedName : null;
+					checkValidity(additionalContacts,client,Problem.Type.FORMATTEDNAME,fNamePanel);
 				}
 			}));
-			grid.add(panel.scale());
+			if (problems.contains(Problem.Type.FORMATTEDNAME)){
+				fNamePanel.setBackground(Color.ORANGE);
+			}
+			grid.add(fNamePanel.scale());
 		}
   }
 

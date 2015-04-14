@@ -1,3 +1,4 @@
+import java.util.Collection;
 import java.util.TreeMap;
 
 
@@ -43,6 +44,7 @@ public class Client {
 		result.addAll(addressProblemsWith(c));
 		result.addAll(messengerProblemsWith(c));
 		result.addAll(urlProblemsWith(c));
+
 		if (c.orgCount()>maxOrgs){
 			result.add(new Problem(Problem.Type.ORGS,_("# can manage only have # organizations.", new Object[] { name,maxOrgs } )));
 		}
