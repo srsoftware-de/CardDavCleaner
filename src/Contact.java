@@ -1686,7 +1686,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 		HorizontalPanel overview=new HorizontalPanel();
 		for (int i = 0; i < count; i++) {
-			overview.add(new JLabel(_("<html>New<br>Contact #", i + 1)));
+			overview.add(new JLabel(_("<html>New<br>Contact #", i + 1)+" "));
 		}
 		overview.add(new JLabel("   "));		
 		overview.add(new JLabel(_("<html>Original<br>Contact")));

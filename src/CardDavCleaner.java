@@ -38,6 +38,8 @@ import javax.swing.JScrollPane;
 public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -2875331857455588061L;
+	private static Dimension screenDim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+
 
 	public static void main(String[] args) {
 		System.setProperty("jsse.enableSNIExtension", "false");
@@ -376,11 +378,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 		VerticalPanel delList = new VerticalPanel();
 		for (Contact c : deleteList)
-			delList.add(new JLabel("<html><br>" + c.toString(true).replace("\n", "<br>")));
+		delList.add(new JLabel("<html><br>" + c.toString(true).replace("<","&lt;").replace(">", "&gt;").replace("\n", "<br>")));
 		delList.scale();
 
 		JScrollPane sp = new JScrollPane(delList);
-		sp.setPreferredSize(new Dimension(300, 300));
+		sp.setPreferredSize(new Dimension(screenDim.width/2-70, screenDim.height-160));
 		sp.setSize(sp.getPreferredSize());
 		deleteListPanel.add(sp);
 		deleteListPanel.scale();
@@ -390,11 +392,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 		VerticalPanel wrList = new VerticalPanel();
 		for (Contact c : writeList)
-			wrList.add(new JLabel("<html><br>" + c.toString(true).replace("\n", "<br>")));
+			wrList.add(new JLabel("<html><br>" + c.toString(true).replace("<","&lt;").replace(">", "&gt;").replace("\n", "<br>")));
 		wrList.scale();
 
 		JScrollPane sp2 = new JScrollPane(wrList);
-		sp2.setPreferredSize(new Dimension(300, 300));
+		sp2.setPreferredSize(new Dimension(screenDim.width/2-70, screenDim.height-160));
 		sp2.setSize(sp2.getPreferredSize());
 		writeListPanel.add(sp2);
 		writeListPanel.scale();
@@ -595,7 +597,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				Contact contact = new Contact(host, contactName,backupPath);
 				do {
 					if (skipInvalidContact(contact)) break;
-					;
 					if (contact.isEmpty()) {
 						contact.clearFields();
 						deleteList.add(contact);
@@ -679,10 +680,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			BufferedReader in = new BufferedReader(new InputStreamReader(content));
 			String line;
 			TreeSet<String> contacts = new TreeSet<String>();
-			//int count = 0;
+			int count = 0;
 			while ((line = in.readLine()) != null) {
-				//count++;
-				//if (/*count<300 ||*/ count>312 ) continue;
+				count++;
+				if (/*count<300 ||*/ count>312 ) continue;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();
