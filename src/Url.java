@@ -4,6 +4,7 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import javax.swing.JCheckBox;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -262,7 +263,7 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 	
 	public VerticalPanel editForm() {
 		form=new VerticalPanel(_("Web Adress"));
-		if (invalid) form.setBackground(Color.red);
+		if (invalid) form.setBackground(Color.orange);
 		if (isEmpty()) form.setBackground(Color.yellow);
 		form.add(urlField=new InputField(_("URL"),url));
 		urlField.addEditListener(this);
@@ -344,7 +345,7 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(invalid?Color.red:Color.green);
+			form.setBackground(invalid?Color.orange:UIManager.getColor ( "Panel.background" ));
 		}	
 	}
 	

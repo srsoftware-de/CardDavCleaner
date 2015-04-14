@@ -6,6 +6,7 @@ public class TranslationDE extends Translation{
 		TreeMap<String,String> trans=new TreeMap<String, String>();
 		trans.put("Abort program", "Programmausführung abbrechen");
 		trans.put("add adress", "Adresse hinzufügen");
+		trans.put("Add another clone", "Weiteren Klon hinzufügen");
 		trans.put("add birthday", "Geburtstag hinzufügen");
 		trans.put("add categories", "Kategorie hinzufügen");
 		trans.put("add custom field", "Benutzerdefiniertes Feld hinzufügen");
@@ -26,6 +27,7 @@ public class TranslationDE extends Translation{
 		trans.put("BDAY format invalid: #","ungültiges format des Geburtstags-Eintrags: #");
 		trans.put("birtday", "Geburtstag");
 		trans.put("Birthday entry does not start with BDAY: \"#\"", "Geburtstags-Eintrag started nicht mit BDAY: \"#\"");
+		trans.put("Cancel", "Abbrechen");
 		trans.put("# can manage only have # organizations.", "# kann maximal # Organisationen verwalten.");
 		trans.put("# can manage only have # nicknames.", "# kann maximal # Rufnamen verwalten.");
 		trans.put("# can manage only # labels.", "# kann maximal # Labels verwalten.");
@@ -34,8 +36,6 @@ public class TranslationDE extends Translation{
 		trans.put("# can manage only # addresses with category \"#\"","# kann maximal # Adressen der Kategorie \"#\" verwalten.");
 		trans.put("# can manage only # phone numbers with category \"#\"","# kann maximal # Nummern der Kategorie \"#\" verwalten.");
 		trans.put("# can manage only # email adresses with category \"#\"","# kann maximal # E-Mail-Adressen der Kategorie \"#\" verwalten.");
-		trans.put("", "");
-		trans.put("", "");
 		trans.put("Categories", "Kategorien");
 		trans.put("Category", "Kategorie");
 		trans.put("Cell Phone", "Handy");
@@ -116,6 +116,7 @@ public class TranslationDE extends Translation{
 		trans.put("Organization entry does not start with \"ORG:\": #", "Unternehmen-Eintrag beginnt nicht mit \"ORG:\": #");
 		trans.put("<html>Original<br>Contact", "<html>Ursprünglicher<br>Kontakt");
 		trans.put("Password:","Passwort:");
+		trans.put("Patching contacts for # compatibility...", "Bearbeite Kontakte für Kompatibilität mit #...");
 		trans.put("performing interactive contage merge...", "Kontakte werden interaktiv zusammengeführt...");
 		trans.put("Please confirm", "Bitte bestätigen");
 		trans.put("Please decide!","Bitte entscheiden!");
@@ -165,6 +166,7 @@ public class TranslationDE extends Translation{
 		trans.put("Trying to merge \"#\" with \"#\"!", "Versuch, \"#\" und \"#\" zu mischen!");
 		trans.put("unknown entry/instruction found in vcard #: '#'", "Unbekannte Anweisung/Eintrag in vcard # gefunden: '#'");
 		trans.put("Uploading #", "Lade # hoch");
+		trans.put("Update!", "Aktualisieren!");
 		trans.put("User:","Benutzer:");
 		trans.put("Using # as #, as '#' is already used by another #.", "Setze # als #, da '#' schon von einer anderen # verwendet wird.");
 		trans.put("Validity period", "Gültigkeitszeitraum");

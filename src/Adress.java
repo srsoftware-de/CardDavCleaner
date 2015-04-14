@@ -3,6 +3,7 @@ import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
 
 import javax.swing.JCheckBox;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -597,7 +598,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(Color.green);
+			form.setBackground(UIManager.getColor ( "Panel.background" ));
 		}
 	}
 

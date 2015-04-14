@@ -3,6 +3,7 @@ import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
 
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -532,7 +533,7 @@ public class Name extends Mergable<Name> implements DocumentListener, Comparable
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(Color.green);
+			form.setBackground(UIManager.getColor ( "Panel.background" ));
 		}
 	}
 

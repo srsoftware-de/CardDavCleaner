@@ -4,6 +4,7 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import javax.swing.JCheckBox;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -324,7 +325,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 	public VerticalPanel editForm() {
 		form = new VerticalPanel(_("Email"));
 
-		if (invalid) form.setBackground(Color.red);
+		if (invalid) form.setBackground(Color.orange);
 		if (isEmpty()) form.setBackground(Color.yellow);
 
 		form.add(adressBox = new InputField(_("Adress"), adress));
@@ -452,7 +453,7 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(invalid ? Color.red : Color.green);
+			form.setBackground(invalid ? Color.orange : UIManager.getColor ( "Panel.background" ));
 		}
 	}
 

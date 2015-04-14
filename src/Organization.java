@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -318,7 +319,7 @@ public class Organization extends Mergable<Organization> implements ChangeListen
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(Color.green);
+			form.setBackground(UIManager.getColor ( "Panel.background" ));
 		}	
 	}
 	public String toString() {

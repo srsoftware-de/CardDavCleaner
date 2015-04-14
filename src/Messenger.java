@@ -3,6 +3,7 @@ import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
 
 import javax.swing.JCheckBox;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -367,7 +368,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 
 	public VerticalPanel editForm() {
 		form = new VerticalPanel(_("Messenger"));
-		if (isInvalid()) form.setBackground(Color.red);
+		if (isInvalid()) form.setBackground(Color.orange);
 		form.add(nickField = new InputField(_("Nickname"), nick));
 		nickField.addEditListener(this);
 		form.add(aimBox = new JCheckBox(_("AIM"), categories.contains(Category.AIM)));
@@ -458,7 +459,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(isInvalid() ? Color.red : Color.green);
+			form.setBackground(isInvalid() ? Color.orange : UIManager.getColor ( "Panel.background" ));
 		}
 	}
 

@@ -406,6 +406,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		vp.add(listsPanel);
 		vp.add(new JLabel(_("<html>No data has been modified on the server <b>until now</b>. Continue?")));
 		vp.scale();
+		//TODO: Adjust size to better use screen dimensions
 		int decision = JOptionPane.showConfirmDialog(null, vp, _("Please confirm"), JOptionPane.YES_NO_OPTION);
 		return decision == JOptionPane.YES_OPTION;
 	}
