@@ -1702,14 +1702,14 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		addPhotosSelector(count, grid, backupContact, additionalContacts);
 		addCategoriesSelector(count, grid, backupContact, additionalContacts);
 		addLabelsSelector(count, grid, backupContact, additionalContacts,client,problems);
-		addOrgsSelector(count, grid, backupContact, additionalContacts);
+		addOrgsSelector(count, grid, backupContact, additionalContacts,client,problems);
 		addAddressSelectors(count, grid, backupContact, additionalContacts);
 		addNicknamesSelector(count, grid, backupContact, additionalContacts);
 		addPhoneSelectors(count, grid, backupContact, additionalContacts,client,problems);
-		addMailSelectors(count,grid,backupContact,additionalContacts);
+		addMailSelectors(count,grid,backupContact,additionalContacts,client,problems);
 		addMessengerSelectors(count,grid,backupContact,additionalContacts);
 		addUrlSelectors(count,grid,backupContact,additionalContacts);
-
+		// TODO: implement coloring and update check for other panels
 		
 
 		// TODO: implement this for private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
@@ -1889,7 +1889,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
   }
 	
 	protected void checkValidity(TreeSet<Contact> additionalContacts, Client client,Problem.Type problemType, JPanel panel) {
-		TreeSet<Problem> problems = client.problemsWith(this);
+		ProblemSet problems = client.problemsWith(this);
 		for (Contact c:additionalContacts){
 			problems.addAll(client.problemsWith(c));
 		}
@@ -1900,10 +1900,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 
-	private void addOrgsSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
+	private void addOrgsSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		HorizontalPanel panel;
 		if (backup.orgs != null && !backup.orgs.isEmpty()) {
-			VerticalPanel orgPanel = new VerticalPanel(_("Orgs"));			
+			final VerticalPanel orgPanel = new VerticalPanel(_("Orgs"));			
 			for (final Organization org : backup.orgs) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
@@ -1920,6 +1920,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 							} else {
 								additionalContact.orgs.remove(org);
 							}
+							checkValidity(additionalContacts,client,Problem.Type.ORGS,orgPanel);
 						}
 					}));
 				}
@@ -1936,9 +1937,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						} else {
 							orgs.remove(org);
 						}
+						checkValidity(additionalContacts,client,Problem.Type.ORGS,orgPanel);
 					}
 				}));
 				orgPanel.add(panel.scale());
+			}
+			if (problems.contains(Problem.Type.ORGS)){
+				orgPanel.setBackground(Color.ORANGE);
 			}
 			grid.add(orgPanel.scale());
 		}
@@ -2344,79 +2349,162 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 
 
-
-
-	private void addMailSelectors(int count, JPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
+	private void addMailSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		if (backup.mails != null && !backup.mails.isEmpty()) {
+			final VerticalPanel mailsPanel=new VerticalPanel();
+			HorizontalPanel panel;
 			for (final Email mail : backup.mails) {
-				for (int i = 0; i < count; i++) {
-					grid.add(new JLabel());
-				}
-				grid.add(new JLabel(_("Email: #",mail.address())));
+				final VerticalPanel mailPanel=new VerticalPanel(_("Mail"));
+				mailPanel.add(new JLabel(mail.address()));
 				for (final Email.Category category : Email.Category.values()) {
+					panel=new HorizontalPanel();
 					for (final Contact additionalContact : additionalContacts) {
-						grid.add(activeBox(new Action() {
+						panel.add(activeBox(new Action() {
 
 							@Override
 							public void change(JCheckBox box) {
-								Email additionalContactmail = additionalContact.getMail(mail.address());
+								Email additionalContactEmail = additionalContact.getMail(mail.address());
 								if (box.isSelected()) {
-									if (additionalContactmail == null) {
+									if (additionalContactEmail == null) {
 										try {
-											additionalContactmail = mail.clone(false);
-											additionalContact.addMail(additionalContactmail);
+											additionalContactEmail = mail.clone(false);
+											additionalContact.addMail(additionalContactEmail);
 										} catch (CloneNotSupportedException e) {
 											e.printStackTrace();
 										}
 									}
-									additionalContactmail.addCategory(category);
+									additionalContactEmail.addCategory(category);
 								} else {
-									if (additionalContactmail != null) {
-										additionalContactmail.removeCategory(category);
-										if (additionalContactmail.categories().isEmpty()) {
-											additionalContact.removeMail(additionalContactmail);
+									if (additionalContactEmail != null) {
+										additionalContactEmail.removeCategory(category);
+										if (additionalContactEmail.categories().isEmpty()) {
+											additionalContact.removeMail(additionalContactEmail);
 										}
 									}
 								}
+								checkValidity(additionalContacts,client,Problem.Type.EMAIL,mailsPanel);
 							}
 						}));
 					}
-					grid.add(activeBox(_(category), mail.categories().contains(category), new Action() {
+					panel.add(activeBox(_(category), mail.categories().contains(category), new Action() {
 
 						@Override
 						public void change(JCheckBox box) {
-							Email basemail = getMail(mail.address());
+							Email baseMail = getMail(mail.address());
 							if (box.isSelected()) {
-								if (basemail == null) {
+								if (baseMail == null) {
 									try {
-										basemail = mail.clone(false);
-										addMail(basemail);
+										baseMail = mail.clone(false);
+										addMail(baseMail);
 									} catch (CloneNotSupportedException e) {
 										e.printStackTrace();
 									}
 								}
-								basemail.addCategory(category);
+								baseMail.addCategory(category);
 							} else {
-								if (basemail != null) {
-									basemail.removeCategory(category);
-									if (basemail.categories().isEmpty()) {
-										removeMail(basemail);
+								if (baseMail != null) {
+									baseMail.removeCategory(category);
+									if (baseMail.categories().isEmpty()) {
+										removeMail(baseMail);
 									}
 								}
 							}
+							checkValidity(additionalContacts,client,Problem.Type.EMAIL,mailsPanel);
 						}
 					}));
+					mailPanel.add(panel.scale());
 				}
+				mailsPanel.add(mailPanel.scale());
 			}
+			if (problems.contains(Problem.Type.EMAIL)){
+				mailsPanel.setBackground(Color.ORANGE);
+			}
+			grid.add(mailsPanel.scale());
 		}
 	}
 
 
+
+
+	private void addPhoneSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
+		if (backup.phones != null && !backup.phones.isEmpty()) {
+			HorizontalPanel panel;
+			final VerticalPanel phonesPanel=new VerticalPanel();
+			for (final Phone phone : backup.phones) {
+				final VerticalPanel phonePanel=new VerticalPanel(_("Phone: #",phone.simpleNumber()));
+				for (final Phone.Category category : Phone.Category.values()) {
+					panel=new HorizontalPanel();
+					for (final Contact additionalContact : additionalContacts) {
+						panel.add(activeBox(new Action() {
+
+							@Override
+							public void change(JCheckBox box) {
+								Phone additionalContactPhone = additionalContact.getPhone(phone.simpleNumber());
+								if (box.isSelected()) {
+									if (additionalContactPhone == null) {
+										try {
+											additionalContactPhone = phone.clone(false);
+											additionalContact.addPhone(additionalContactPhone);
+										} catch (CloneNotSupportedException e) {
+											e.printStackTrace();
+										}
+									}
+									additionalContactPhone.addCategory(category);
+								} else {
+									if (additionalContactPhone != null) {
+										additionalContactPhone.removeCategory(category);
+										if (additionalContactPhone.categories().isEmpty()) {
+											additionalContact.removePhone(additionalContactPhone);
+										}
+									}
+								}
+								checkValidity(additionalContacts,client,Problem.Type.PHONE,phonesPanel);
+							}
+						}));
+					}
+					panel.add(activeBox(_(category), phone.categories().contains(category), new Action() {
+
+						@Override
+						public void change(JCheckBox box) {
+							Phone basePhone = getPhone(phone.simpleNumber());
+							if (box.isSelected()) {
+								if (basePhone == null) {
+									try {
+										basePhone = phone.clone(false);
+										addPhone(basePhone);
+									} catch (CloneNotSupportedException e) {
+										e.printStackTrace();
+									}
+								}
+								basePhone.addCategory(category);
+							} else {
+								if (basePhone != null) {
+									basePhone.removeCategory(category);
+									if (basePhone.categories().isEmpty()) {
+										removePhone(basePhone);
+									}
+								}
+							}
+							checkValidity(additionalContacts,client,Problem.Type.PHONE,phonesPanel);
+						}
+					}));
+					phonePanel.add(panel.scale());
+				}
+				phonesPanel.add(phonePanel.scale());
+			}
+			if (problems.contains(Problem.Type.PHONE)){
+				phonesPanel.setBackground(Color.ORANGE);
+			}
+			grid.add(phonesPanel.scale());
+		}
+	}
+	
 	private void addAddressSelectors(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
 		if (backup.adresses != null && !backup.adresses.isEmpty()) {
 			HorizontalPanel panel;
 			for (final Adress address : backup.adresses) {
-				VerticalPanel addressPanel=new VerticalPanel(_("Address: #",address.canonical()));
+				VerticalPanel addressPanel=new VerticalPanel(_("Address"));
+				addressPanel.add(new JLabel(address.canonical()));
 				for (final Adress.Category category : Adress.Category.values()) {
 					panel=new HorizontalPanel();
 					for (final Contact additionalContact : additionalContacts) {
@@ -2482,73 +2570,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 
 
-	private void addPhoneSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, TreeSet<Problem> problems) {
-		if (backup.phones != null && !backup.phones.isEmpty()) {
-			HorizontalPanel panel;
-			for (final Phone phone : backup.phones) {
-				final VerticalPanel phonePanel=new VerticalPanel(_("Phone: #",phone.simpleNumber()));
-				for (final Phone.Category category : Phone.Category.values()) {
-					panel=new HorizontalPanel();
-					for (final Contact additionalContact : additionalContacts) {
-						panel.add(activeBox(new Action() {
-
-							@Override
-							public void change(JCheckBox box) {
-								Phone additionalContactPhone = additionalContact.getPhone(phone.simpleNumber());
-								if (box.isSelected()) {
-									if (additionalContactPhone == null) {
-										try {
-											additionalContactPhone = phone.clone(false);
-											additionalContact.addPhone(additionalContactPhone);
-										} catch (CloneNotSupportedException e) {
-											e.printStackTrace();
-										}
-									}
-									additionalContactPhone.addCategory(category);
-								} else {
-									if (additionalContactPhone != null) {
-										additionalContactPhone.removeCategory(category);
-										if (additionalContactPhone.categories().isEmpty()) {
-											additionalContact.removePhone(additionalContactPhone);
-										}
-									}
-								}
-								checkValidity(additionalContacts,client,Problem.Type.PHONE,phonePanel);
-							}
-						}));
-					}
-					panel.add(activeBox(_(category), phone.categories().contains(category), new Action() {
-
-						@Override
-						public void change(JCheckBox box) {
-							Phone basePhone = getPhone(phone.simpleNumber());
-							if (box.isSelected()) {
-								if (basePhone == null) {
-									try {
-										basePhone = phone.clone(false);
-										addPhone(basePhone);
-									} catch (CloneNotSupportedException e) {
-										e.printStackTrace();
-									}
-								}
-								basePhone.addCategory(category);
-							} else {
-								if (basePhone != null) {
-									basePhone.removeCategory(category);
-									if (basePhone.categories().isEmpty()) {
-										removePhone(basePhone);
-									}
-								}
-							}
-							checkValidity(additionalContacts,client,Problem.Type.PHONE,phonePanel);
-						}
-					}));
-					phonePanel.add(panel.scale());
-				}
-				grid.add(phonePanel.scale());
-			}
-		}
-	}
+	
 
 	protected void removePhone(Phone phone) {
 		phones.remove(phone);

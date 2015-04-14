@@ -311,12 +311,15 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	}
 
-		int i=0;
-		private void thunderbirdDistibute(Vector<Contact> contacts) throws UnknownObjectException, InvalidFormatException {
+	private void thunderbirdDistibute(Vector<Contact> contacts) throws UnknownObjectException, InvalidFormatException {
 		
 		Thunderbird thunderbird=new Thunderbird();
-		
+		int i=0;		
 		while (i<contacts.size()){
+			progressBar.setValue(i);
+			progressBar.setString(_("Patching contacts for # compatibility...",thunderbird.name) + i + "/" + contacts.size());
+			progressBar.setMaximum(contacts.size());
+
 			Contact contact=contacts.get(i);
 			TreeSet<Contact> newContacts=resolveCollisions(contact,thunderbird);			
 			contacts.addAll(newContacts);
@@ -333,7 +336,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				break;
 			}
 			contact.showResolveDialog(additionalContacts,client,problems);
-			//return new TreeSet<Contact>(); // TODO: remove. This is for tests only
+			// TODO: return additionalContacts only if needed
+			// TODO: option to add additional contact
 		}
 		return additionalContacts;
 	}

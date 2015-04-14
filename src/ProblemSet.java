@@ -5,6 +5,10 @@ public class ProblemSet extends TreeSet<Problem> {
 
   private static final long serialVersionUID = -4760514549652427552L;
 
+  public ProblemSet() {
+	  super(ObjectComparator.get());
+  }
+  
 	public boolean contains(Problem p) {
 	  return super.contains(p);
 	}

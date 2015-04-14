@@ -1,6 +1,4 @@
-import java.util.Collection;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 
 public class Client {
@@ -57,14 +55,14 @@ public class Client {
 		return result;
 	}
 
-	private Collection<Problem> urlProblemsWith(Contact c) {
-	  TreeSet<Problem> result = new TreeSet<Problem>();
+	private ProblemSet urlProblemsWith(Contact c) {
+		ProblemSet result = new ProblemSet();
 	  TreeMap<Url.Category, Integer> counter = new TreeMap<Url.Category, Integer>(urlLimit);
 	  for (Url url:c.urls()){
 	  	for (Url.Category cat:url.categories()){
 	  		Integer count = counter.get(cat);
-	  		if (count==null||count==null) {
-	  			result.add(new Problem(Problem.Type.URLS,_("# can manage only # urls with category \"#\"", new Object[] { name,urlLimit.get(cat),cat} )));
+	  		if (count==null||count==0) {
+	  			result.add(new Problem(Problem.Type.URLS,_("# can manage only # urls with category \"#\"", new Object[] { name,urlLimit.get(cat),_(cat)} )));
 	  		} else {
 	  			counter.put(cat, count-1);
 	  		}
@@ -74,14 +72,14 @@ public class Client {
   }
 
 
-	private Collection<Problem> messengerProblemsWith(Contact c) {
-	  TreeSet<Problem> result = new TreeSet<Problem>();
+	private ProblemSet messengerProblemsWith(Contact c) {
+		ProblemSet result = new ProblemSet();
 	  TreeMap<Messenger.Category, Integer> counter = new TreeMap<Messenger.Category, Integer>(messengerLimit);
 	  for (Messenger mess:c.messengers()){
 	  	for (Messenger.Category cat:mess.categories()){
 	  		Integer count = counter.get(cat);
-	  		if (count==null||count==null) {
-	  			result.add(new Problem(Problem.Type.MESSENGER,_("# can manage only # messengers with category \"#\"", new Object[] { name,messengerLimit.get(cat),cat} )));
+	  		if (count==null||count==0) {
+	  			result.add(new Problem(Problem.Type.MESSENGER,_("# can manage only # messengers with category \"#\"", new Object[] { name,messengerLimit.get(cat),_(cat)} )));
 	  		} else {
 	  			counter.put(cat, count-1);
 	  		}
@@ -91,14 +89,14 @@ public class Client {
   }
 
 
-	private Collection<Problem> addressProblemsWith(Contact c) {
-	  TreeSet<Problem> result = new TreeSet<Problem>();
+	private ProblemSet addressProblemsWith(Contact c) {
+		ProblemSet result = new ProblemSet();
 	  TreeMap<Adress.Category, Integer> counter = new TreeMap<Adress.Category, Integer>(addressLimit);
 	  for (Adress address:c.addresses()){
 	  	for (Adress.Category cat:address.categories()){
 	  		Integer count = counter.get(cat);
-	  		if (count==null||count==null) {
-	  			result.add(new Problem(Problem.Type.ADDRESSES,_("# can manage only # addresses with category \"#\"", new Object[] { name,addressLimit.get(cat),cat} )));
+	  		if (count==null||count==0) {
+	  			result.add(new Problem(Problem.Type.ADDRESSES,_("# can manage only # addresses with category \"#\"", new Object[] { name,addressLimit.get(cat),_(cat)} )));
 	  		} else {
 	  			counter.put(cat, count-1);
 	  		}
@@ -108,14 +106,14 @@ public class Client {
   }
 
 
-	private Collection<Problem> phoneProblemsWith(Contact c) {
-	  TreeSet<Problem> result = new TreeSet<Problem>();
+	private ProblemSet phoneProblemsWith(Contact c) {
+		ProblemSet result = new ProblemSet();
 	  TreeMap<Phone.Category, Integer> counter = new TreeMap<Phone.Category, Integer>(phonesLimit);
 	  for (Phone phone:c.phones()){
 	  	for (Phone.Category cat:phone.categories()){
 	  		Integer count = counter.get(cat);
-	  		if (count==null||count==null) {
-	  			result.add(new Problem(Problem.Type.PHONE,_("# can manage only # phone numbers with category \"#\"", new Object[] { name,phonesLimit.get(cat),cat} )));
+	  		if (count==null||count==0) {
+	  			result.add(new Problem(Problem.Type.PHONE,_("# can manage only # phone numbers with category \"#\"", new Object[] { name,phonesLimit.get(cat),_(cat)} )));
 	  		} else {
 	  			counter.put(cat, count-1);
 	  		}
@@ -125,14 +123,14 @@ public class Client {
   }
 
 
-	private TreeSet<Problem> mailProblemsWith(Contact c) {
-	  TreeSet<Problem> result = new TreeSet<Problem>();
+	private ProblemSet mailProblemsWith(Contact c) {
+	  ProblemSet result = new ProblemSet();
 	  TreeMap<Email.Category, Integer> counter = new TreeMap<Email.Category, Integer>(mailLimit);
 	  for (Email mail:c.mails()){
 	  	for (Email.Category cat:mail.categories()){
 	  		Integer count = counter.get(cat);
-	  		if (count==null||count==null) {
-	  			result.add(new Problem(Problem.Type.EMAIL,_("# can manage only # email adresses with category \"#\"", new Object[] { name,mailLimit.get(cat),cat} )));
+	  		if (count==null||count==0) {
+	  			result.add(new Problem(Problem.Type.EMAIL,_("# can manage only # email adresses with category \"#\"", new Object[] { name,mailLimit.get(cat),_(cat)} )));
 	  		} else {
 	  			counter.put(cat, count-1);
 	  		}
@@ -143,5 +141,9 @@ public class Client {
 	
 	private static String _(String key, Object insert) {
 		return Translations.get(key, insert);
+	}
+	
+	private static String _(Object key) {
+		return Translations.get(key.toString());
 	}
 }
