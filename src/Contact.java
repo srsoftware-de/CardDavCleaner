@@ -1696,9 +1696,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		addNameSelectors(count, grid, backupContact, additionalContacts,client,problems);
 		addBDaySelector(count, grid, backupContact, additionalContacts,client,problems);
 		addAnniversarySelector(count, grid, backupContact, additionalContacts,client,problems);
-		addTitlesSelector(count, grid, backupContact, additionalContacts);
-		addRolesSelector(count, grid, backupContact, additionalContacts);
-		addNotesSelector(count, grid, backupContact, additionalContacts);
+		addTitlesSelector(count, grid, backupContact, additionalContacts,client,problems);
+		addRolesSelector(count, grid, backupContact, additionalContacts,client,problems);
+		addNotesSelector(count, grid, backupContact, additionalContacts,client,problems);
 		addPhotosSelector(count, grid, backupContact, additionalContacts);
 		addCategoriesSelector(count, grid, backupContact, additionalContacts);
 		addLabelsSelector(count, grid, backupContact, additionalContacts,client,problems);
@@ -1722,10 +1722,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		
 	}
 	
-	private void addTitlesSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
+	private void addTitlesSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		HorizontalPanel panel;
 		if (backup.titles != null && !backup.titles.isEmpty()) {
-			VerticalPanel titlePanel = new VerticalPanel(_("Titles"));			
+			final VerticalPanel titlePanel = new VerticalPanel(_("Titles"));			
 			for (final String title : backup.titles) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
@@ -1738,6 +1738,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 							} else {
 								additionalContact.titles.remove(title);
 							}
+							checkValidity(additionalContacts,client,Problem.Type.TITLE,titlePanel);
 						}
 					}));
 				}
@@ -1750,9 +1751,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						} else {
 							titles.remove(title);
 						}
+						checkValidity(additionalContacts,client,Problem.Type.TITLE,titlePanel);
 					}
 				}));
 				titlePanel.add(panel.scale());
+			}
+			if (problems.contains(Problem.Type.TITLE)){
+				titlePanel.setBackground(Color.ORANGE);
 			}
 			grid.add(titlePanel.scale());
 		}
@@ -1840,9 +1845,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	
 	// TODO: this method has not been tested
 	private void addLabelsSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
-		HorizontalPanel panel;
 		if (labels != null && !labels.isEmpty()) {
 			final VerticalPanel labelPanel = new VerticalPanel(_("Labels"));
+			HorizontalPanel panel;
 			for (final Label label : backup.labels) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
@@ -1949,10 +1954,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 	
-	private void addNotesSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
-		HorizontalPanel panel;
+	private void addNotesSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		if (backup.notes != null && !backup.notes.isEmpty()) {
-			VerticalPanel notePanel = new VerticalPanel(_("Notes"));			
+			final VerticalPanel notePanel = new VerticalPanel(_("Notes"));			
+			HorizontalPanel panel;
 			for (final String note : backup.notes) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
@@ -1965,6 +1970,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 							} else {
 								additionalContact.notes.remove(note);
 							}
+							checkValidity(additionalContacts,client,Problem.Type.ROLES,notePanel);
 						}
 					}));
 				}
@@ -1977,9 +1983,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						} else {
 							notes.remove(note);
 						}
+						checkValidity(additionalContacts,client,Problem.Type.ROLES,notePanel);
 					}
 				}));
 				notePanel.add(panel.scale());
+			}
+			if (problems.contains(Problem.Type.NOTES)){
+				notePanel.setBackground(Color.ORANGE);
 			}
 			grid.add(notePanel.scale());
 		}
@@ -2021,10 +2031,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 	
-	private void addRolesSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
-		HorizontalPanel panel;
+	private void addRolesSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		if (backup.roles != null && !backup.roles.isEmpty()) {
-			VerticalPanel rolePanel = new VerticalPanel(_("Roles"));			
+			final VerticalPanel rolePanel = new VerticalPanel(_("Roles"));			
+			HorizontalPanel panel;
 			for (final String role : backup.roles) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
@@ -2037,6 +2047,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 							} else {
 								additionalContact.roles.remove(role);
 							}
+							checkValidity(additionalContacts,client,Problem.Type.ROLES,rolePanel);
 						}
 					}));
 				}
@@ -2049,9 +2060,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						} else {
 							roles.remove(role);
 						}
+						checkValidity(additionalContacts,client,Problem.Type.ROLES,rolePanel);
 					}
 				}));
 				rolePanel.add(panel.scale());
+			}
+			if (problems.contains(Problem.Type.ROLES)){
+				rolePanel.setBackground(Color.ORANGE);
 			}
 			grid.add(rolePanel.scale());
 		}
@@ -2071,7 +2086,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						} else {
 							additionalContact.anniversary=null;;
 						}
-						checkValidity(additionalContacts,client,Problem.Type.BIRTHDAY,panel);
+						checkValidity(additionalContacts,client,Problem.Type.ANNIVERSARY,panel);
 					}
 				}));
 			}

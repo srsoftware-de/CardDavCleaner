@@ -3,7 +3,23 @@
 
 public class Problem {
 	public static enum Type{
-		EMAIL, PHONE, ORGS, NICKNAMES, LABELS, FAX, VOICE, PAGER, PREFERED, ADDRESSES,MESSENGER,URLS, FORMATTEDNAME, BIRTHDAY, ANNIVERSARY;
+		ADDRESSES,
+		ANNIVERSARY, 
+		BIRTHDAY, 
+		EMAIL,
+		FAX, 
+		FORMATTEDNAME, 
+		LABELS, 
+		MESSENGER,
+		NICKNAMES,
+		NOTES,
+		ORGS,
+		PAGER, 
+		PHONE,
+		ROLES,
+		TITLE,
+		URLS, 
+		VOICE; 
 	}
 
 	private Type type;
@@ -45,9 +61,6 @@ public class Problem {
 			break;
 		case PAGER:
 			result=_(result,"PAGER");
-			break;
-		case PREFERED:
-			result=_(result,"PREFERED");
 			break;
 
 		default:
