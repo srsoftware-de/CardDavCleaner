@@ -326,16 +326,14 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		throw new NotImplementedException();
 	}
 
-	private TreeSet<Contact> resolveCollisions(Contact contact, Thunderbird thunderbird) throws UnknownObjectException, InvalidFormatException {
+	private TreeSet<Contact> resolveCollisions(Contact contact, Client client) throws UnknownObjectException, InvalidFormatException {
 		TreeSet<Contact> additionalContacts=new TreeSet<Contact>();
 		while (true) {
-			TreeSet<Client.ProblemType> problems = thunderbird.problemsWith(contact);
+			TreeSet<Client.ProblemType> problems = client.problemsWith(contact);
 			if (problems.isEmpty()) {
 				break;
 			}
-			contact.showResolveDialog(additionalContacts,problems);
-			System.out.println(contact);
-			System.out.println(additionalContacts);
+			contact.showResolveDialog(additionalContacts,client,problems);
 			//return new TreeSet<Contact>(); // TODO: remove. This is for tests only
 		}
 		return additionalContacts;
@@ -659,10 +657,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			BufferedReader in = new BufferedReader(new InputStreamReader(content));
 			String line;
 			TreeSet<String> contacts = new TreeSet<String>();
-			//int count = 0;
+			int count = 0;
 			while ((line = in.readLine()) != null) {
-				//count++;
-				//if (count<300 || count>312) continue;
+				count++;
+				if (/*count<300 ||*/ count>312 ) continue;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();
