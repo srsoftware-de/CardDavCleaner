@@ -1,8 +1,10 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import javax.swing.JCheckBox;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -193,14 +195,31 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 		}
 
 	}	
+	
+	public static enum Category {
+		HOME {
+			@Override
+			public String toString() {
+				return "HOME";
+			}
+		},
+		WORK {
+			@Override
+			public String toString() {
+				return "WORK";
+			}
+		};
+
+		public abstract String toString();
+
+	};
+	
 	private static String _(String text) { 
 		return Translations.get(text);
 	}
 	private static String _(String key, Object insert) {
 		return Translations.get(key, insert);
 	}	
-	private boolean home=false;	
-	private boolean work=false;
 	private boolean invalid=false;
 	private String url;
 	private InputField urlField;
@@ -208,6 +227,7 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 	private JCheckBox workBox;
 	private VerticalPanel form;
 	private Pattern ptr = Pattern.compile("^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]");
+	private TreeSet<Category> categories=new TreeSet<Url.Category>();
 	
 	public Url(String content) throws UnknownObjectException, InvalidFormatException {
 		if (content==null||!content.startsWith("URL")) throw new InvalidFormatException(_("Url does not start with \"URL\": #",content));
@@ -218,17 +238,17 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 				continue;
 			}
 			if (line.toUpperCase().startsWith("TYPE=HOME")){
-				home=true;
+				categories.add(Category.HOME);
 				line=line.substring(9);
 				continue;
 			} 
 			if (line.toUpperCase().startsWith("TYPE=WORK")){
-				work=true;
+				categories.add(Category.WORK);
 				line=line.substring(9);
 				continue;
 			} 
 			if (line.toUpperCase().startsWith("WORK=")){
-				work=true;
+				categories.add(Category.WORK);
 				line=line.substring(5);
 				continue;
 			} 
@@ -243,13 +263,13 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 	
 	public VerticalPanel editForm() {
 		form=new VerticalPanel(_("Web Adress"));
-		if (invalid) form.setBackground(Color.red);
+		if (invalid) form.setBackground(Color.orange);
 		if (isEmpty()) form.setBackground(Color.yellow);
 		form.add(urlField=new InputField(_("URL"),url));
 		urlField.addEditListener(this);
-		form.add(homeBox=new JCheckBox(_("Home"),home));
+		form.add(homeBox=new JCheckBox(_("Home"),categories.contains(Category.HOME)));
 		homeBox.addChangeListener(this);
-		form.add(workBox=new JCheckBox(_("Work"),work));
+		form.add(workBox=new JCheckBox(_("Work"),categories.contains(Category.WORK)));
 		workBox.addChangeListener(this);
 		form.scale();
 		return form;
@@ -269,8 +289,7 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
   public boolean mergeWith(Url other) {
 		if (!isCompatibleWith(other)) return false;
 		url=merge(url, other.url);
-		if (other.home) home=true;
-		if (other.work) work=true;
+		categories.addAll(other.categories);
 	  return true;
   }
 
@@ -281,11 +300,15 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 	public String toString() {
 		StringBuffer sb=new StringBuffer();
 		sb.append("URL");
-		if (home) sb.append(";TYPE=HOME");
-		if (work) sb.append(";TYPE=WORK");
+		if (categories.contains(Category.HOME)) sb.append(";TYPE=HOME");
+		if (categories.contains(Category.WORK)) sb.append(";TYPE=WORK");
 		sb.append(":");
 		if (url!=null)sb.append(url);
 		return sb.toString();
+	}
+	
+	public String address(){
+		return url;
 	}
 	
 	private void checkValidity() {
@@ -313,20 +336,45 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 
 	private void update(){
 		readUrl(urlField.getText());
-		home=homeBox.isSelected();
-		work=workBox.isSelected();
+		if (homeBox.isSelected()){
+			categories.add(Category.HOME);
+		}
+		if (workBox.isSelected()){
+			categories.add(Category.WORK);
+		}
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(invalid?Color.red:Color.green);
+			form.setBackground(invalid?Color.orange:UIManager.getColor ( "Panel.background" ));
 		}	
 	}
 	
-	protected Object clone() throws CloneNotSupportedException {		
+	protected Url clone() throws CloneNotSupportedException {		
 		try {
 			return new Url(this.toString());
 		} catch (Exception e) {
 			throw new CloneNotSupportedException(e.getMessage());
 		}
+	}
+	
+	/**
+	 * @param cloneCategories if set to false, categories of the ancestor will not be copied to the new Url
+	 * @return a clone of thins url
+	 * @throws CloneNotSupportedException
+	 */
+	public Url clone(boolean cloneCategories) throws CloneNotSupportedException {
+		Url result = clone();
+		result.categories.clear();
+		return result;
+	}
+	
+	public void addCategory(Category category) {
+		categories.add(category);
+	}
+	public void removeCategory(Category category) {
+		categories.remove(category);
+	}
+	public TreeSet<Category> categories() {
+		return new TreeSet<Url.Category>(categories);
 	}
 }

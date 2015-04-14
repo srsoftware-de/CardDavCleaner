@@ -3,6 +3,7 @@ import java.util.Calendar;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -450,13 +451,13 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 	public void checkInvalidity() {
 		invalid = false;
 		if (year != null) {
-			if (yearField != null) yearField.setBackground(Color.red);
+			if (yearField != null) yearField.setBackground(Color.orange);
 			try {
 				int y = Integer.parseInt(year);
 				if (y <= Calendar.getInstance().get(Calendar.YEAR)) {
 					if (y < 100) year = "19" + y;
 					if (y < 10) year = "190" + y;
-					if (yearField != null) yearField.setBackground(Color.green);
+					if (yearField != null) yearField.setBackground(UIManager.getColor ( "Panel.background" ));
 				} else {
 					invalid = true;
 				}
@@ -467,12 +468,12 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 		if (yearField != null && (year == null || year.isEmpty())) yearField.setBackground(Color.yellow);
 
 		if (month != null) {
-			if (monthField != null) monthField.setBackground(Color.red);
+			if (monthField != null) monthField.setBackground(Color.orange);
 			try {
 				int m = Integer.parseInt(month);
 				if (m < 13) {
 					if (m < 10) month = "0" + m;
-					if (monthField != null) monthField.setBackground(Color.green);
+					if (monthField != null) monthField.setBackground(UIManager.getColor ( "Panel.background" ));
 				} else {
 					invalid = true;
 				}
@@ -483,12 +484,12 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 		if (monthField != null && (month == null || month.isEmpty())) monthField.setBackground(Color.yellow);
 
 		if (day != null) {
-			if (dayField != null) dayField.setBackground(Color.red);
+			if (dayField != null) dayField.setBackground(Color.orange);
 			try {
 				int d = Integer.parseInt(day);
 				if (d < 32) {
 					if (d < 10) day = "0" + d;
-					if (dayField != null) dayField.setBackground(Color.green);
+					if (dayField != null) dayField.setBackground(UIManager.getColor ( "Panel.background" ));
 				} else {
 					invalid = true;
 				}
@@ -499,12 +500,12 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 		if (dayField != null && (day == null || day.isEmpty())) dayField.setBackground(Color.yellow);
 
 		if (hour != null) {
-			if (hourField != null) hourField.setBackground(Color.red);
+			if (hourField != null) hourField.setBackground(Color.orange);
 			try {
 				int h = Integer.parseInt(hour);
 				if (h < 24) {
 					if (h < 10) hour = "0" + h;
-					if (hourField != null) hourField.setBackground(Color.green);
+					if (hourField != null) hourField.setBackground(UIManager.getColor ( "Panel.background" ));
 				} else {
 					invalid = true;
 				}
@@ -515,12 +516,12 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 		if (hourField != null && (hour == null || hour.isEmpty())) hourField.setBackground(Color.yellow);
 
 		if (minute != null) {
-			if (minuteField != null) minuteField.setBackground(Color.red);
+			if (minuteField != null) minuteField.setBackground(Color.orange);
 			try {
 				int m = Integer.parseInt(minute);
 				if (m < 60) {
 					if (m < 10) minute = "0" + m;
-					if (minuteField != null) minuteField.setBackground(Color.green);
+					if (minuteField != null) minuteField.setBackground(UIManager.getColor ( "Panel.background" ));
 				} else {
 					invalid = true;
 				}
@@ -531,12 +532,12 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 		if (minuteField != null && (minute == null || minute.isEmpty())) minuteField.setBackground(Color.yellow);
 
 		if (second != null) {
-			if (secondField != null) secondField.setBackground(Color.red);
+			if (secondField != null) secondField.setBackground(Color.orange);
 			try {
 				int m = Integer.parseInt(second);
 				if (m < 60) {
 					if (m < 10) second = "0" + m;
-					if (secondField != null) secondField.setBackground(Color.green);
+					if (secondField != null) secondField.setBackground(UIManager.getColor ( "Panel.background" ));
 				} else {
 					invalid = true;
 				}
@@ -694,7 +695,7 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 
 	private JComponent dateForm() {
 		HorizontalPanel dateForm = new HorizontalPanel();
-		if (invalid) dateForm.setBackground(Color.red);
+		if (invalid) dateForm.setBackground(Color.orange);
 		dateForm.add(yearField = new InputField(_("Year of birth"), year));
 		yearField.addEditListener(this);
 		dateForm.add(monthField = new InputField(_("Month of birth"), month));
@@ -717,12 +718,15 @@ public class Birthday extends Mergable<Birthday> implements ChangeListener, Comp
 		return form;
 	}
 
-	protected Object clone() throws CloneNotSupportedException {		
+	protected Birthday clone() throws CloneNotSupportedException {		
 		try {
 			return new Birthday(this.toString());
 		} catch (Exception e) {
 			throw new CloneNotSupportedException(e.getMessage());
 		}
 	}
+	public String format(String format) {
+	  return format.replace("Y", year).replace("m", month).replace("d", day);
+  }
 
 }

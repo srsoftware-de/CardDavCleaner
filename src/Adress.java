@@ -1,7 +1,9 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
+import java.util.TreeSet;
 
 import javax.swing.JCheckBox;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -378,6 +380,23 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 		}
 	}
 
+	public static enum Category {
+		HOME {
+			@Override
+			public String toString() {
+				return "Home";
+			}
+		},
+		WORK {
+			@Override
+			public String toString() {
+				return "Work";
+			}
+		};
+
+		public abstract String toString();
+	};
+	
 	private static String _(String text) { 
 		return Translations.get(text);
 	}
@@ -385,8 +404,9 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 		return Translations.get(key, insert);
 	}
 
-	private boolean home = false;
-	private boolean work = false;
+
+	
+	private TreeSet<Category> categories = new TreeSet<Adress.Category>();
 	//private boolean invalid = false;
 	private String extendedAdress;
 	private String streetAdress;
@@ -406,12 +426,12 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 		while (!line.startsWith(":")) {
 			String upper = line.toUpperCase();
 			if (upper.startsWith(";TYPE=HOME")) {
-				home = true;
+				categories.add(Category.HOME);
 				line = line.substring(10);
 				continue;
 			}
 			if (upper.startsWith(";TYPE=WORK")) {
-				work = true;
+				categories.add(Category.WORK);
 				line = line.substring(10);
 				continue;
 			}
@@ -468,9 +488,9 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 		countryField.addChangeListener(this);
 		form.add(postBoxField = new InputField(_("Post Office Box"), postOfficeBox));
 		postBoxField.addChangeListener(this);
-		form.add(homeBox = new JCheckBox(_("Home Adress"), home));
+		form.add(homeBox = new JCheckBox(_("Home Adress"), categories.contains(Category.HOME)));
 		homeBox.addChangeListener(this);
-		form.add(workBox = new JCheckBox(_("Work Adress"), work));
+		form.add(workBox = new JCheckBox(_("Work Adress"), categories.contains(Category.WORK)));
 		workBox.addChangeListener(this);
 		form.scale();
 		return form;
@@ -504,8 +524,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 		city = merge(city, adr2.city);
 		region = merge(region, adr2.region);
 		country = merge(country, adr2.country);
-		if (adr2.home) home = true;
-		if (adr2.work) work = true;
+		categories.addAll(adr2.categories);
 		return true;
 	}
 
@@ -520,8 +539,8 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("ADR");
-		if (home) sb.append(";TYPE=HOME");
-		if (work) sb.append(";TYPE=WORK");
+		if (categories.contains(Category.HOME)) sb.append(";TYPE=HOME");
+		if (categories.contains(Category.WORK)) sb.append(";TYPE=WORK");
 		sb.append(':');
 		sb.append(canonical());
 		return sb.toString();
@@ -569,22 +588,45 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 	}
 
 	private void update() {
-		home = homeBox.isSelected();
-		work = workBox.isSelected();
+		if (homeBox.isSelected()){
+			categories.add(Category.HOME);
+		}
+		if (workBox.isSelected()){
+			categories.add(Category.WORK);
+		}
 		readAddr(postBoxField.getText() + ";" + extendedField.getText() + ";" + streetField.getText() + ";" + cityField.getText() + ";" + regionField.getText() + ";" + zipField.getText() + ";" + countryField.getText());
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(Color.green);
+			form.setBackground(UIManager.getColor ( "Panel.background" ));
 		}
 	}
 
 	@Override
-	protected Object clone() throws CloneNotSupportedException {		
+	protected Adress clone() throws CloneNotSupportedException {		
 		try {
 			return new Adress(this.toString());
 		} catch (Exception e) {
 			throw new CloneNotSupportedException(e.getMessage());
 		}
 	}
+	
+	public TreeSet<Category> categories(){
+		return new TreeSet<Adress.Category>(categories);
+	}
+
+	public Adress clone(boolean b) throws CloneNotSupportedException {
+		Adress result=clone();
+		result.categories.clear();
+	  return result;
+  }
+
+	public void addCategory(Category category) {
+		categories.add(category);
+  }
+	
+	public void removeCategory(Category category) {
+		categories.remove(category);
+  }
+
 }

@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 
 import javax.swing.JCheckBox;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -269,7 +270,7 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 	
 	public VerticalPanel editForm() {
 		form=new VerticalPanel(_("Nickname"));
-		if (invalid) form.setBackground(Color.red);
+		if (invalid) form.setBackground(Color.orange);
 		if (isEmpty()) form.setBackground(Color.yellow);
 		
 		form.add(nickField=new InputField(_("Nickname"),nick));
@@ -392,11 +393,11 @@ public class Nickname extends Mergable<Nickname> implements DocumentListener, Ch
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(invalid?Color.red:Color.green);
+			form.setBackground(invalid?Color.orange:UIManager.getColor ( "Panel.background" ));
 		}
 	}
 
-	protected Object clone() throws CloneNotSupportedException {		
+	protected Nickname clone() throws CloneNotSupportedException {		
 		try {
 			return new Nickname(this.toString());
 		} catch (Exception e) {

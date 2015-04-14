@@ -1,8 +1,10 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.security.InvalidParameterException;
+import java.util.TreeSet;
 
 import javax.swing.JCheckBox;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -118,7 +120,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (num == comp) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -138,7 +140,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -152,25 +154,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 						comp++;
 					}
 					String concat = (a.simpleNumber() + ":" + b.simpleNumber());
-					if (concat.equals("01707705281:notaphonenumber") ||
-							concat.equals("01707705281:0123456") ||
-							concat.equals("01707705281:23456") ||
-							concat.equals("01707705281:528177777") ||
-							concat.equals("notaphonenumber:01707705281") ||
-							concat.equals("notaphonenumber:0123456") ||
-							concat.equals("notaphonenumber:23456") ||
-							concat.equals("notaphonenumber:5281") ||
-							concat.equals("notaphonenumber:528177777") ||
-							concat.equals("0123456:01707705281") || 
-							concat.equals("0123456:notaphonenumber") || 
-							concat.equals("0123456:528177777") || 
-							concat.equals("23456:01707705281") || 
-							concat.equals("23456:notaphonenumber") ||
-							concat.equals("23456:528177777") || 
-							concat.equals("528177777:01707705281") ||
-							concat.equals("528177777:notaphonenumber") ||
-							concat.equals("528177777:0123456") || 
-							concat.equals("528177777:23456")) {
+					if (concat.equals("01707705281:notaphonenumber") || concat.equals("01707705281:0123456") || concat.equals("01707705281:23456") || concat.equals("01707705281:528177777") || concat.equals("notaphonenumber:01707705281") || concat.equals("notaphonenumber:0123456") || concat.equals("notaphonenumber:23456") || concat.equals("notaphonenumber:5281") || concat.equals("notaphonenumber:528177777") || concat.equals("0123456:01707705281") || concat.equals("0123456:notaphonenumber") || concat.equals("0123456:528177777") || concat.equals("23456:01707705281") || concat.equals("23456:notaphonenumber") || concat.equals("23456:528177777") || concat.equals("528177777:01707705281") || concat.equals("528177777:notaphonenumber") || concat.equals("528177777:0123456") || concat.equals("528177777:23456")) {
 						num--;
 					}
 				}
@@ -178,7 +162,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -196,7 +180,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 
@@ -231,7 +215,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (comp == num) {
 				System.out.println(_("ok"));
 			} else {
-				System.err.println(_("#/# => failed",new Object[]{num,comp}));
+				System.err.println(_("#/# => failed", new Object[] { num, comp }));
 				System.exit(-1);
 			}
 		} catch (UnknownObjectException e) {
@@ -242,78 +226,140 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		}
 
 	}
-	private static String _(String text) { 
+
+	public static enum Category {
+		HOME{
+			@Override
+			public String toString() {				
+				return "Home";
+			}
+		},
+		WORK{
+			@Override
+			public String toString() {				
+				return "Work";
+			}
+		}, 
+		CELL{
+			@Override
+			public String toString() {				
+				return "Cell Phone";
+			}
+		}, 
+		FAX{
+			@Override
+			public String toString() {				
+				return "Fax";
+			}
+		}, 
+		VOICE{
+			@Override
+			public String toString() {				
+				return "Voice";
+			}
+		}, 
+		PAGER{
+			@Override
+			public String toString() {				
+				return "Pager";
+			}
+		}, 
+		PREFERED{
+			@Override
+			public String toString() {				
+				return "Preferred Phone";
+			}
+		};
+		
+		public abstract String toString();
+
+	};
+	
+	private static String _(String text) {
 		return Translations.get(text);
-	}	
+	}
+
 	private static String _(String key, Object insert) {
 		return Translations.get(key, insert);
 	}
 
-	private boolean fax = false;
-	private boolean home = false;
-	private boolean cell = false;
-	private boolean work = false;
-	private boolean voice = false;
-	private boolean preffered = false;
+	private TreeSet<Category> categories=new TreeSet<Category>();
+
 	private String number;
 	private boolean invalid = false;
 
 	private InputField numField;
 	VerticalPanel form;
-	private JCheckBox homeBox, voiceBox, workBox, cellBox, faxBox, prefBox;
+	private JCheckBox homeBox, voiceBox, workBox, cellBox, faxBox, prefBox, pagerBox;
 
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
-		if (content == null || !content.startsWith("TEL")) throw new InvalidFormatException(_("Phone enty does not start with \"TEL\": #",content));
+		if (content == null || !content.startsWith("TEL")) throw new InvalidFormatException(_("Phone enty does not start with \"TEL\": #", content));
 		String line = content.substring(3);
 		while (!line.startsWith(":")) {
 			String upper = line.toUpperCase();
 			if (upper.startsWith("TYPE=FAX")) {
-				fax = true;
+				categories.add(Category.FAX);
 				line = line.substring(8);
 				continue;
 			}
-			if (upper.startsWith("TYPE=PREF")||upper.startsWith("PREF=1")) {
-				preffered = true;
+			if (upper.startsWith("TYPE=PREF")) {
+				categories.add(Category.PREFERED);
 				line = line.substring(9);
 				continue;
 			}
+			if (upper.startsWith("PREF=1")) {
+				categories.add(Category.PREFERED);
+				line = line.substring(6);
+				continue;
+			}
+
 			if (upper.startsWith("TYPE=HOME")) {
-				home = true;
+				categories.add(Category.HOME);
 				line = line.substring(9);
 				continue;
 			}
 			if (upper.startsWith("\\,HOME")) {
-				home = true;
+				categories.add(Category.HOME);
 				line = line.substring(6);
 				continue;
 			}
 			if (upper.startsWith("TYPE=CELL")) {
-				cell = true;
+				categories.add(Category.CELL);
 				line = line.substring(9);
 				continue;
 			}
 			if (upper.startsWith("\\,CELL")) {
-				cell = true;
+				categories.add(Category.CELL);
 				line = line.substring(6);
 				continue;
 			}
 			if (upper.startsWith("TYPE=WORK")) {
-				work = true;
+				categories.add(Category.WORK);
 				line = line.substring(9);
 				continue;
 			}
 			if (upper.startsWith("\\,WORK")) {
-				work = true;
+				categories.add(Category.WORK);
 				line = line.substring(6);
 				continue;
 			}
 			if (upper.startsWith("TYPE=VOICE")) {
-				voice = true;
+				categories.add(Category.VOICE);
 				line = line.substring(10);
 				continue;
 			}
 			if (upper.startsWith("\\,VOICE")) {
-				voice = true;
+				categories.add(Category.VOICE);
+				line = line.substring(7);
+				continue;
+			}
+			if (upper.startsWith("TYPE=PAGER")) {
+				categories.add(Category.PAGER);
+				line = line.substring(10);
+				continue;
+			}
+			if (upper.startsWith("\\,PAGER")) {
+				categories.add(Category.PAGER);
 				line = line.substring(7);
 				continue;
 			}
@@ -326,13 +372,8 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		readPhone(line.substring(1));
 	}
 
-	public String category() {
-		if (home) return "home";
-		if (work) return "work";
-		if (fax) return "fax";
-		if (cell) return "cell";
-		if (voice) return "voice";
-		return "empty category";
+	public TreeSet<Category> categories() {
+		return new TreeSet<Category>(categories);
 	}
 
 	public void changedUpdate(DocumentEvent arg0) {
@@ -345,24 +386,26 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 
 	public VerticalPanel editForm() {
 		form = new VerticalPanel(_("Phone"));
-		if (invalid) form.setBackground(Color.red);
+		if (invalid) form.setBackground(Color.orange);
 		if (isEmpty()) form.setBackground(Color.yellow);
 
 		form.add(numField = new InputField(_("Number"), number));
 		numField.addChangeListener(this);
 
-		form.add(prefBox = new JCheckBox(_("Preferred Phone"), home));
+		form.add(prefBox = new JCheckBox(_("Preferred Phone"), isPreferedPhone()));
 		prefBox.addChangeListener(this);
-		form.add(homeBox = new JCheckBox(_("Home Phone"), home));
+		form.add(homeBox = new JCheckBox(_("Home Phone"), isHomePhone()));
 		homeBox.addChangeListener(this);
-		form.add(voiceBox = new JCheckBox(_("Voice Phone"), voice));
+		form.add(voiceBox = new JCheckBox(_("Voice Phone"), isVoice()));
 		voiceBox.addChangeListener(this);
-		form.add(workBox = new JCheckBox(_("Work Phone"), work));
+		form.add(workBox = new JCheckBox(_("Work Phone"), isWorkPhone()));
 		workBox.addChangeListener(this);
-		form.add(cellBox = new JCheckBox(_("Cell Phone"), cell));
+		form.add(cellBox = new JCheckBox(_("Cell Phone"), isCellPhone()));
 		cellBox.addChangeListener(this);
-		form.add(faxBox = new JCheckBox(_("Fax"), fax));
+		form.add(faxBox = new JCheckBox(_("Fax"), isFax()));
 		faxBox.addChangeListener(this);
+		form.add(pagerBox = new JCheckBox(_("Pager"), isPager()));
+		pagerBox.addChangeListener(this);
 		form.scale();
 		return form;
 	}
@@ -372,7 +415,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 
 	public boolean isCellPhone() {
-		return cell;
+		return categories.contains(Category.CELL);
 	}
 
 	@Override
@@ -389,35 +432,39 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 
 	public boolean isFax() {
-		return fax;
+		return categories.contains(Category.FAX);
+	}
+
+	public boolean isPager() {
+		return categories.contains(Category.PAGER);
 	}
 
 	public boolean isHomePhone() {
-		return home;
+		return categories.contains(Category.HOME);
+	}
+	
+	public boolean isPreferedPhone(){
+		return categories.contains(Category.PREFERED);
 	}
 
-	public boolean isInvalid() {
-		return invalid;
-	}
 
 	public boolean isVoice() {
-		return voice;
+		return categories.contains(Category.VOICE);
 	}
 
 	public boolean isWorkPhone() {
-		return work;
+		return categories.contains(Category.WORK);
+		}
+
+	public boolean isInvalid() {
+		return invalid;
 	}
 
 	@Override
 	public boolean mergeWith(Phone other) {
 		if (!isCompatibleWith(other)) return false;
 		number = mergeNumber(simpleNumber(), other.simpleNumber());
-		if (other.preffered) preffered=true;
-		if (other.home) home = true;
-		if (other.work) work = true;
-		if (other.cell) cell = true;
-		if (other.fax) fax = true;
-		if (other.voice) voice = true;
+		categories.addAll(other.categories);
 		return true;
 	}
 
@@ -427,46 +474,6 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 
 	public void removeUpdate(DocumentEvent arg0) {
 		update();
-	}
-
-	public void setCell() {
-		home = false;
-		work = false;
-		fax = false;
-		cell = true;
-		voice = false;
-	}
-
-	public void setFax() {
-		home = false;
-		work = false;
-		fax = true;
-		cell = false;
-		voice = false;
-	}
-
-	public void setHome() {
-		home = true;
-		work = false;
-		fax = false;
-		cell = false;
-		voice = false;
-	}
-
-	public void setVoice() {
-		home = false;
-		work = false;
-		fax = false;
-		cell = false;
-		voice = true;
-	}
-
-	public void setWork() {
-		home = false;
-		work = true;
-		fax = false;
-		cell = false;
-		voice = false;
 	}
 
 	public String simpleNumber() {
@@ -500,12 +507,13 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("TEL");
-		if (preffered) sb.append(";PREF=1");
-		if (fax) sb.append(";TYPE=FAX");
-		if (home) sb.append(";TYPE=HOME");
-		if (cell) sb.append(";TYPE=CELL");
-		if (work) sb.append(";TYPE=WORK");
-		if (voice) sb.append(";TYPE=VOICE");
+		if (isPreferedPhone()) sb.append(";PREF=1");
+		if (isFax()) sb.append(";TYPE=FAX");
+		if (isHomePhone()) sb.append(";TYPE=HOME");
+		if (isCellPhone()) sb.append(";TYPE=CELL");
+		if (isWorkPhone()) sb.append(";TYPE=WORK");
+		if (isVoice()) sb.append(";TYPE=VOICE");
+		if (isPager()) sb.append(";TYPE=PAGER");
 		sb.append(':');
 		if (number != null) sb.append(number);
 		return sb.toString();
@@ -516,7 +524,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		if (num2 == null || num2.isEmpty()) return num1;
 		if (num1.endsWith(num2)) return num1;
 		if (num2.endsWith(num1)) return num2;
-		throw new InvalidParameterException(_("Trying to merge \"#\" with \"#\"!",new Object[]{num1,num2}));
+		throw new InvalidParameterException(_("Trying to merge \"#\" with \"#\"!", new Object[] { num1, num2 }));
 	}
 
 	private void readPhone(String line) {
@@ -534,24 +542,62 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	private void update() {
 		invalid = false;
 		readPhone(numField.getText());
-		home = homeBox.isSelected();
-		work = workBox.isSelected();
-		voice = voiceBox.isSelected();
-		cell = cellBox.isSelected();
-		fax = faxBox.isSelected();
-		preffered = prefBox.isSelected();
+		if (homeBox.isSelected()){
+			categories.add(Category.HOME);
+		}
+		if (workBox.isSelected()){
+			categories.add(Category.WORK);
+		}
+		if (voiceBox.isSelected()){
+			categories.add(Category.VOICE);
+		}
+		if (cellBox.isSelected()){
+			categories.add(Category.CELL);
+		}
+		if (faxBox.isSelected()){
+			categories.add(Category.FAX);
+		}
+		if (pagerBox.isSelected()){
+			categories.add(Category.PAGER);
+		}
+		if (prefBox.isSelected()){
+			categories.add(Category.PREFERED);
+		}
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {
-			form.setBackground(invalid ? Color.red : Color.green);
+			form.setBackground(invalid ? Color.orange : UIManager.getColor ( "Panel.background" ));
 		}
 	}
 
-	protected Object clone() throws CloneNotSupportedException {
+	protected Phone clone() throws CloneNotSupportedException {
 		try {
 			return new Phone(this.toString());
 		} catch (Exception e) {
 			throw new CloneNotSupportedException(e.getMessage());
 		}
+	}
+
+	public boolean is(Category c) {
+		return categories.contains(c);
+	}
+
+	/**
+	 * @param cloneCategories if set to false, categories of the ancestor will not be copied to the new phone
+	 * @return a clone of thins phone
+	 * @throws CloneNotSupportedException 
+	 */
+	public Phone clone(boolean cloneCategories) throws CloneNotSupportedException {
+		Phone result=clone();
+		result.categories.clear();
+		return result;
+	}
+
+	public void addCategory(Category category) {
+		categories.add(category);
+	}
+
+	public void removeCategory(Category category) {
+		categories.remove(category);
 	}
 }

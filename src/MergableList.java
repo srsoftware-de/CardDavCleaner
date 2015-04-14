@@ -315,7 +315,11 @@ public class MergableList<Type extends Mergable<Type>> implements SortedSet<Type
 	public String toString(){
 		return set.toString();
 	}
-
+	
+	public boolean equals(MergableList<Type> list2) {
+		return this.toString().equals(list2.toString());
+	}
+	
 	public void update(){
 		TreeSet<Type> newSet = new TreeSet<Type>();
 		for (Type element:set){

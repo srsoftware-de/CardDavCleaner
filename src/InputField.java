@@ -1,3 +1,5 @@
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.TreeSet;
 
 import javax.swing.JLabel;
@@ -9,7 +11,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 
-public class InputField extends HorizontalPanel implements DocumentListener {
+public class InputField extends HorizontalPanel implements DocumentListener, FocusListener {
 
   private static final long serialVersionUID = -3739363092163085626L;
 	/**
@@ -25,8 +27,9 @@ public class InputField extends HorizontalPanel implements DocumentListener {
 	
 	public InputField(String caption,boolean password) {
 		add(new JLabel(caption + " "));
-		result = password?(new JPasswordField(50)):(new JTextField(50));		
-		add(result);
+		result = password?(new JPasswordField(50)):(new JTextField(50));
+		result.addFocusListener(this);
+		add(result);		
 		scale();		
 	}
 
@@ -37,6 +40,7 @@ public class InputField extends HorizontalPanel implements DocumentListener {
 		} else {
 			result=new JTextField(defaultValue+"   ");
 		}
+		result.addFocusListener(this);
 		add(result);
 		scale();
 		if (defaultValue!=null && !defaultValue.isEmpty()) {
@@ -83,4 +87,15 @@ public class InputField extends HorizontalPanel implements DocumentListener {
 			}
 		}
 	}
+
+	@Override
+  public void focusGained(FocusEvent arg0) {
+	  result.selectAll();
+  }
+
+	@Override
+  public void focusLost(FocusEvent arg0) {
+		result.select(0, 0);
+	  
+  }
 }

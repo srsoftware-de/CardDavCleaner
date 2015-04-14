@@ -1,4 +1,5 @@
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 
@@ -47,8 +48,9 @@ public class VerticalPanel extends JPanel {
 		super.add(c);
 	}
 	
-	public void scale(){
+	public VerticalPanel scale(){
 		setPreferredSize(new Dimension(width+offset+offset,height+offset));
+		return this;
 	}
 	
 	public void rescale(){
@@ -82,5 +84,13 @@ public class VerticalPanel extends JPanel {
 		}
 		scale();
 		this.repaint();
+	}
+	
+	@Override
+	public void setBackground(Color bg) {
+	  super.setBackground(bg);
+	  for (Component c:super.getComponents()){
+	  	c.setBackground(bg);
+	  }
 	}
 }
