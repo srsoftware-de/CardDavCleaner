@@ -1534,7 +1534,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			String cat = cf.getText().trim();
 			if (cat != null && !cat.isEmpty()) {
 				categories.add(cat);
-				cf.setBackground(Color.green);
+				cf.setBackground(UIManager.getColor ( "Panel.background" ));
 			} else {
 				cf.setBackground(Color.yellow);
 			}
@@ -1547,7 +1547,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			String note = nf.getText().trim();
 			if (note != null && !note.isEmpty()) {
 				notes.add(note);
-				nf.setBackground(Color.green);
+				nf.setBackground(UIManager.getColor ( "Panel.background" ));
 			} else {
 				nf.setBackground(Color.yellow);
 			}
@@ -1560,7 +1560,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			String role = rf.getText().trim();
 			if (role != null && !role.isEmpty()) {
 				roles.add(role);
-				rf.setBackground(Color.green);
+				rf.setBackground(UIManager.getColor ( "Panel.background" ));
 			} else {
 				rf.setBackground(Color.yellow);
 			}
@@ -1573,7 +1573,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			String title = tf.getText().trim();
 			if (title != null && !title.isEmpty()) {
 				titles.add(title);
-				tf.setBackground(Color.green);
+				tf.setBackground(UIManager.getColor ( "Panel.background" ));
 			} else {
 				tf.setBackground(Color.yellow);
 			}
@@ -1671,7 +1671,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return uid;
 	}
 
-	public void showResolveDialog(TreeSet<Contact> additionalContacts, Client client, ProblemSet problems) throws UnknownObjectException, InvalidFormatException {
+	public int showResolveDialog(TreeSet<Contact> additionalContacts, Client client, ProblemSet problems) throws UnknownObjectException, InvalidFormatException {
 		final Contact backupContact = this.clone();
 		if (additionalContacts.isEmpty()) {
 			additionalContacts.add(new Contact(name.toString()));
@@ -1682,7 +1682,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		for (Problem problem:problems){
 			JLabel label = new JLabel(_(problem.toString()));
 			label.setForeground(Color.red);
-			label.setBackground(Color.yellow);			
 			grid.add(label);
 		}
 		HorizontalPanel overview=new HorizontalPanel();
@@ -1709,15 +1708,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		addMailSelectors(count,grid,backupContact,additionalContacts,client,problems);
 		addMessengerSelectors(count,grid,backupContact,additionalContacts,client,problems);
 		addUrlSelectors(count,grid,backupContact,additionalContacts,client,problems);
-		// TODO: implement coloring and update check for other panels
-		
 
 		// TODO: implement this for private TreeMap<Integer,String> customContent = new TreeMap<Integer,String>();
 		JScrollPane scrollableGrid=new JScrollPane(grid.scale());
 		int height=Math.min(grid.getPreferredSize().height+20, screenDim.height-100);
 		int width=Math.min(grid.getPreferredSize().width+20, screenDim.width-50);
 		scrollableGrid.setPreferredSize(new Dimension(width,height));
-		JOptionPane.showConfirmDialog(null, scrollableGrid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
+		
+		String []options = new String[] {_("Update!"),_("Add another clone"),_("Cancel")};
+//		JOptionPane.showConfirmDialog(null, scrollableGrid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
+		return JOptionPane.showOptionDialog(null, scrollableGrid, _("Distribute Fields"), 0, JOptionPane.QUESTION_MESSAGE, null, options, 0);
 		// TODO: alter original contact, too
 		
 	}
@@ -1984,7 +1984,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		if (problems.contains(problemType)){
 			panel.setBackground(Color.orange);
 		} else {
-			panel.setBackground(Color.green);
+			panel.setBackground(UIManager.getColor ( "Panel.background" ));
 		}
   }
 
@@ -2337,7 +2337,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		if (backup.urls != null && !backup.urls.isEmpty()) {
 			final VerticalPanel urlsPanel=new VerticalPanel();
 			for (final Url url : backup.urls) {
-				final VerticalPanel urlPanel=new VerticalPanel(_("Url: #",url.address()));
+				final VerticalPanel urlPanel=new VerticalPanel(_("Url"));
+				urlPanel.add(new JLabel(url.address()));
 				HorizontalPanel panel;
 				for (final Url.Category category : Url.Category.values()) {
 					panel=new HorizontalPanel();

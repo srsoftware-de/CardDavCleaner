@@ -242,12 +242,12 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 				continue;
 			} 
 			if (line.toUpperCase().startsWith("TYPE=WORK")){
-				categories.add(Category.HOME);
+				categories.add(Category.WORK);
 				line=line.substring(9);
 				continue;
 			} 
 			if (line.toUpperCase().startsWith("WORK=")){
-				categories.add(Category.HOME);
+				categories.add(Category.WORK);
 				line=line.substring(5);
 				continue;
 			} 

@@ -321,25 +321,46 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			progressBar.setMaximum(contacts.size());
 
 			Contact contact=contacts.get(i);
-			TreeSet<Contact> newContacts=resolveCollisions(contact,thunderbird);			
+			TreeSet<Contact> newContacts=resolveCollisions(contact,thunderbird);
 			contacts.addAll(newContacts);
 			i++;
 		}
-		throw new NotImplementedException();
 	}
 
 	private TreeSet<Contact> resolveCollisions(Contact contact, Client client) throws UnknownObjectException, InvalidFormatException {
 		TreeSet<Contact> additionalContacts=new TreeSet<Contact>();
 		while (true) {
 			ProblemSet problems = client.problemsWith(contact);
+			for (Contact clone:additionalContacts){
+				problems.addAll(client.problemsWith(clone));
+			}
 			if (problems.isEmpty()) {
 				break;
 			}
-			contact.showResolveDialog(additionalContacts,client,problems);
+			int res=contact.showResolveDialog(additionalContacts,client,problems);
+			switch (res) {
+			case 0:
+				break;
+			case 1:
+				additionalContacts.add(new Contact(contact.name().toString()));
+				break;
+			default:
+				System.exit(-1);
+			}
 			// TODO: return additionalContacts only if needed
 			// TODO: option to add additional contact
 		}
-		return additionalContacts;
+		if (additionalContacts.isEmpty()){
+			return additionalContacts;
+		}
+		TreeSet<Contact> result=new TreeSet<Contact>();
+		for (Contact clone:additionalContacts){
+			if (!clone.isEmpty()){
+				result.add(clone);
+			}
+		}
+		System.out.println(result);
+		return result;
 	}
 
 	/**
