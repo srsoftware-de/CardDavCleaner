@@ -343,7 +343,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			case 1:
 				additionalContacts.add(new Contact(contact.name().toString()));
 				break;
+			case -1:
+				// Window closed, no changes
+				break;
 			default:
+				System.out.println(res);
 				System.exit(-1);
 			}
 		}
@@ -693,8 +697,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		TreeSet<Contact> writeList = getWriteList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())) {
 			if (confirmLists(writeList, deleteList)) {
-				// putMergedContacts(host, writeList);
-				// deleteUselessContacts(host, deleteList);
+				putMergedContacts(host, writeList);
+				deleteUselessContacts(host, deleteList);
 				JOptionPane.showMessageDialog(null, _("<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!"));
 			} else {
 				JOptionPane.showMessageDialog(null, _("<html>Merging and cleaning aborted! Goodbye!"));
