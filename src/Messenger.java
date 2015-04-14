@@ -33,8 +33,8 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print(_("Messenger creation test (empty ICQ)..."));
 			testCase = "IMPP:icq:";
 			Messenger eICQ = new Messenger(testCase);
-			if (eICQ.toString().equals(testCase) && !eICQ.isInvalid()) {
-				System.out.println(_("ok."));
+			if (eICQ.toString().equals(testCase.toUpperCase()+"\nX-ICQ:") && !eICQ.isInvalid()) {
+				System.out.println(_("ok."));				
 			} else {
 				System.err.println(_("failed: #", eICQ));
 				System.exit(-1);
@@ -43,7 +43,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print(_("Messenger creation test (empty Skype)..."));
 			testCase = "IMPP:skype:";
 			Messenger eSkype = new Messenger(testCase);
-			if (eSkype.toString().equals(testCase) && !eSkype.isInvalid()) {
+			if (eSkype.toString().equals(testCase.toUpperCase()+"\nX-SKYPE:") && !eSkype.isInvalid()) {
 				System.out.println(_("ok."));
 			} else {
 				System.err.println(_("failed: #", eSkype));
@@ -53,7 +53,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print(_("Messenger creation test (empty MSN)..."));
 			testCase = "IMPP:msn:";
 			Messenger eMSN = new Messenger(testCase);
-			if (eMSN.toString().equals(testCase) && !eMSN.isInvalid()) {
+			if (eMSN.toString().equals(testCase.toUpperCase()+"\nX-MSN:") && !eMSN.isInvalid()) {
 				System.out.println(_("ok."));
 			} else {
 				System.err.println(_("failed: #", eMSN));
@@ -63,7 +63,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print(_("Messenger creation test (empty AIM)..."));
 			testCase = "IMPP:aim:";
 			Messenger eAIM = new Messenger(testCase);
-			if (eAIM.toString().equals(testCase) && !eAIM.isInvalid()) {
+			if (eAIM.toString().equals(testCase.toUpperCase()+"\nX-AIM:") && !eAIM.isInvalid()) {
 				System.out.println(_("ok."));
 			} else {
 				System.err.println(_("failed: #", eAIM));
@@ -73,7 +73,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print(_("Messenger creation test (empty Facebook)..."));
 			testCase = "IMPP:facebook:";
 			Messenger eFB = new Messenger(testCase);
-			if (eFB.toString().equals(testCase) && !eFB.isInvalid()) {
+			if (eFB.toString().equals(testCase.toUpperCase()+"\nX-FACEBOOK:") && !eFB.isInvalid()) {
 				System.out.println(_("ok."));
 			} else {
 				System.err.println(_("failed: #", eFB));
@@ -83,7 +83,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print(_("Messenger creation test (ICQ)..."));
 			testCase = "IMPP:icq:123456";
 			Messenger icq = new Messenger(testCase);
-			if (icq.toString().equals(testCase) && !icq.isInvalid()) {
+			if (icq.toString().equals(testCase.toUpperCase()+"\nX-ICQ:123456") && !icq.isInvalid()) {
 				System.out.println(_("ok."));
 			} else {
 				System.err.println(_("failed: #", icq));
@@ -93,7 +93,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print(_("Messenger creation test (Skype)..."));
 			testCase = "IMPP:skype:test";
 			Messenger skype = new Messenger(testCase);
-			if (skype.toString().equals(testCase) && !skype.isInvalid()) {
+			if (skype.toString().equals("IMPP:SKYPE:test\nX-SKYPE:test") && !skype.isInvalid()) {
 				System.out.println(_("ok."));
 			} else {
 				System.err.println(_("failed: #", skype));
@@ -103,7 +103,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print(_("Messenger creation test (MSN)..."));
 			testCase = "IMPP:msn:test@example.com";
 			Messenger msn = new Messenger(testCase);
-			if (msn.toString().equals(testCase) && !msn.isInvalid()) {
+			if (msn.toString().equals("IMPP:MSN:test@example.com\nX-MSN:test@example.com") && !msn.isInvalid()) {
 				System.out.println(_("ok."));
 			} else {
 				System.err.println(_("failed: #", msn));
@@ -113,7 +113,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print(_("Messenger creation test (AIM)..."));
 			testCase = "IMPP:aim:test@example.com";
 			Messenger aim = new Messenger(testCase);
-			if (aim.toString().equals(testCase) && !aim.isInvalid()) {
+			if (aim.toString().equals("IMPP:AIM:test@example.com\nX-AIM:test@example.com") && !aim.isInvalid()) {
 				System.out.println(_("ok."));
 			} else {
 				System.err.println(_("failed: #", aim));
@@ -123,7 +123,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 			System.out.print(_("Messenger creation test (Facebook)..."));
 			testCase = "IMPP:facebook:toast@example.com";
 			Messenger fb = new Messenger(testCase);
-			if (fb.toString().equals(testCase) && !fb.isInvalid()) {
+			if (fb.toString().equals("IMPP:FACEBOOK:toast@example.com\nX-FACEBOOK:toast@example.com") && !fb.isInvalid()) {
 				System.out.println(_("ok."));
 			} else {
 				System.err.println(_("failed: #", fb));
@@ -180,7 +180,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 					if (a.isCompatibleWith(b)) {
 						comp++;
 					} else {
-						String concat = (a + "" + b).replace("IMPP:", "").replace("icq", "").replace("skype", "").replace("msn", "").replace("aim", "").replace("facebook", "").replaceFirst(":", "");
+						String concat = (a + "" + b).replace("IMPP:", "").replace("ICQ", "").replace("SKYPE", "").replace("MSN", "").replace("AIM", "").replace("FACEBOOK", "").replaceFirst(":", "").replace("X-:", "").replace("\n", "").replace("123456123456", "123456").replace("testtest","test").replace("test@example.comtest@example.com", "test@example.com").replace("toast@example.comtoast@example.com", "toast@example.com");
 						if (concat.equals("123456:test") || concat.equals("123456:test@example.com") || concat.equals("123456:toast@example.com") || concat.equals("test:123456") || concat.equals("test:test@example.com") || concat.equals("test:toast@example.com") || concat.equals("test@example.com:123456") || concat.equals("test@example.com:test") || concat.equals("test@example.com:toast@example.com") || concat.equals("toast@example.com:123456") || concat.equals("toast@example.com:test") || concat.equals("toast@example.com:test@example.com")) {
 							comp++;
 						} else {
@@ -481,7 +481,7 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 
 	protected Messenger clone() throws CloneNotSupportedException {
 		try {
-			return new Messenger(this.toString());
+			return new Messenger("IMPP:"+this.id());
 		} catch (Exception e) {
 			throw new CloneNotSupportedException(e.getMessage());
 		}

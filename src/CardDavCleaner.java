@@ -40,7 +40,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private static final long serialVersionUID = -2875331857455588061L;
 	private static Dimension screenDim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 
-
 	public static void main(String[] args) {
 		System.setProperty("jsse.enableSNIExtension", "false");
 		if (args.length > 0 && args[0].equals("--test")) {
@@ -127,28 +126,27 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private static void test() {
-		MD5Hash.test();
-		Tests.test();
-		MergableList.test();
-		Adress.test();
-		Birthday.test();
-		Email.test();
-		Label.test();
-		Messenger.test();
-		Name.test();
-		Nickname.test();
-		Organization.test();
-		Phone.test();
-		Url.test();
-		Contact.test();
 		try {
+			MD5Hash.test();
+			Tests.test();
+			MergableList.test();
+			Adress.test();
+			Birthday.test();
+			Email.test();
+			Label.test();
+			Messenger.test();
+			Name.test();
+			Nickname.test();
+			Organization.test();
+			Phone.test();
+			Url.test();
+			Contact.test();
 			System.out.println("#===================================#");
 			System.out.println(_("| All tests successfully completed! |"));
 			System.out.println("#===================================#");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	InputField serverField, userField, passwordField;
@@ -163,7 +161,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 	private JButton backupPathButton;
 
-	private File backupPath=null;
+	private File backupPath = null;
 
 	private JLabel backupPathLabel;
 
@@ -183,7 +181,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 		public void run() {
 			try {
-				startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()),backupPath);
+				startCleaning(serverField.getText(), userField.getText(), new String(passwordField.getText()), backupPath);
 			} catch (Exception e) {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(owner, _("Error during server communication!"));
@@ -200,20 +198,20 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
 	public void actionPerformed(ActionEvent arg0) {
-		Object src=arg0.getSource();
-		if (src==startButton){
+		Object src = arg0.getSource();
+		if (src == startButton) {
 			startButton.setEnabled(false);
 			backupPathButton.setEnabled(false);
 			cleaningThread cleaningThread = new cleaningThread(this);
-			cleaningThread.start();			
+			cleaningThread.start();
 		}
-		if (src==backupPathButton){
+		if (src == backupPathButton) {
 			JFileChooser j = new JFileChooser();
 			j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			Integer opt = j.showSaveDialog(this);
-			if (opt==JFileChooser.APPROVE_OPTION){
-				backupPath=j.getSelectedFile();
-				backupPathLabel.setText(" "+_("Backup wil be written to #",backupPath));
+			if (opt == JFileChooser.APPROVE_OPTION) {
+				backupPath = j.getSelectedFile();
+				backupPathLabel.setText(" " + _("Backup wil be written to #", backupPath));
 			}
 		}
 	}
@@ -227,7 +225,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * 
 	 * @param host the hostname
 	 * @param contactNames the list of contact file names
-	 * @param backupPath 
+	 * @param backupPath
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws UnknownObjectException
@@ -236,7 +234,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 */
 	private void cleanContacts(String host, Set<String> contactNames, File backupPath) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
 
-		Vector<Contact> contacts = readContacts(host, contactNames,backupPath);
+		Vector<Contact> contacts = readContacts(host, contactNames, backupPath);
 
 		// TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
 
@@ -290,7 +288,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			progressBar.setString(_("Searching for duplicates...") + index1 + "/" + num);
 			progressBar.setMaximum(contacts.size());
 			Contact contact1 = contacts.get(index1);
-			
+
 			int index2 = index1 + 1;
 			while (index2 < num) {
 				Contact contact2 = contacts.get(index2);
@@ -312,32 +310,32 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private void thunderbirdDistibute(Vector<Contact> contacts) throws UnknownObjectException, InvalidFormatException {
-		
-		Thunderbird thunderbird=new Thunderbird();
-		int i=0;		
-		while (i<contacts.size()){
+
+		Thunderbird thunderbird = new Thunderbird();
+		int i = 0;
+		while (i < contacts.size()) {
 			progressBar.setValue(i);
-			progressBar.setString(_("Patching contacts for # compatibility...",thunderbird.name) + i + "/" + contacts.size());
+			progressBar.setString(_("Patching contacts for # compatibility...", thunderbird.name) + i + "/" + contacts.size());
 			progressBar.setMaximum(contacts.size());
 
-			Contact contact=contacts.get(i);
-			TreeSet<Contact> newContacts=resolveCollisions(contact,thunderbird);
+			Contact contact = contacts.get(i);
+			TreeSet<Contact> newContacts = resolveCollisions(contact, thunderbird);
 			contacts.addAll(newContacts);
 			i++;
 		}
 	}
 
 	private TreeSet<Contact> resolveCollisions(Contact contact, Client client) throws UnknownObjectException, InvalidFormatException {
-		TreeSet<Contact> additionalContacts=new TreeSet<Contact>();
+		TreeSet<Contact> additionalContacts = new TreeSet<Contact>();
 		while (true) {
 			ProblemSet problems = client.problemsWith(contact);
-			for (Contact clone:additionalContacts){
+			for (Contact clone : additionalContacts) {
 				problems.addAll(client.problemsWith(clone));
 			}
 			if (problems.isEmpty()) {
 				break;
 			}
-			int res=contact.showResolveDialog(additionalContacts,client,problems);
+			int res = contact.showResolveDialog(additionalContacts, client, problems);
 			switch (res) {
 			case 0:
 				contact.markForRewrite();
@@ -349,13 +347,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 				System.exit(-1);
 			}
 		}
-		if (additionalContacts.isEmpty()){
+		if (additionalContacts.isEmpty()) {
 			return additionalContacts;
 		}
-		TreeSet<Contact> result=new TreeSet<Contact>();
-		for (Contact clone:additionalContacts){
+		TreeSet<Contact> result = new TreeSet<Contact>();
+		for (Contact clone : additionalContacts) {
 			clone.markForRewrite();
-			if (!clone.isEmpty()){
+			if (!clone.isEmpty()) {
 				result.add(clone);
 			}
 		}
@@ -378,11 +376,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 		VerticalPanel delList = new VerticalPanel();
 		for (Contact c : deleteList)
-		delList.add(new JLabel("<html><br>" + c.toString(true).replace("<","&lt;").replace(">", "&gt;").replace("\n", "<br>")));
+			delList.add(new JLabel("<html><br>" + c.toString(true).replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>")));
 		delList.scale();
 
 		JScrollPane sp = new JScrollPane(delList);
-		sp.setPreferredSize(new Dimension(screenDim.width/2-70, screenDim.height-160));
+		sp.setPreferredSize(new Dimension(screenDim.width / 2 - 70, screenDim.height - 160));
 		sp.setSize(sp.getPreferredSize());
 		deleteListPanel.add(sp);
 		deleteListPanel.scale();
@@ -392,11 +390,11 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 		VerticalPanel wrList = new VerticalPanel();
 		for (Contact c : writeList)
-			wrList.add(new JLabel("<html><br>" + c.toString(true).replace("<","&lt;").replace(">", "&gt;").replace("\n", "<br>")));
+			wrList.add(new JLabel("<html><br>" + c.toString(true).replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>")));
 		wrList.scale();
 
 		JScrollPane sp2 = new JScrollPane(wrList);
-		sp2.setPreferredSize(new Dimension(screenDim.width/2-70, screenDim.height-160));
+		sp2.setPreferredSize(new Dimension(screenDim.width / 2 - 70, screenDim.height - 160));
 		sp2.setSize(sp2.getPreferredSize());
 		writeListPanel.add(sp2);
 		writeListPanel.scale();
@@ -408,7 +406,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		vp.add(listsPanel);
 		vp.add(new JLabel(_("<html>No data has been modified on the server <b>until now</b>. Continue?")));
 		vp.scale();
-		//TODO: Adjust size to better use screen dimensions
+		// TODO: Adjust size to better use screen dimensions
 		int decision = JOptionPane.showConfirmDialog(null, vp, _("Please confirm"), JOptionPane.YES_NO_OPTION);
 		return decision == JOptionPane.YES_OPTION;
 	}
@@ -418,16 +416,16 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 */
 	private void createComponents() {
 		VerticalPanel mainPanel = new VerticalPanel();
-		
+
 		VerticalPanel serverPanel = new VerticalPanel(_("Server settings"));
 		serverPanel.add(serverField = new InputField(_("Server + Path to addressbook:"), false));
 		serverPanel.add(userField = new InputField(_("User:"), false));
 		serverPanel.add(passwordField = new InputField(_("Password:"), true));
 		serverPanel.add(new JLabel(_("<html>Some programs cannot handle fields defined by the vCard standard.<br>To apply workarounds, select programs you use from the follwing list:")));
 		thunderbirdBox = new JCheckBox(_("Mozilla Thunderbird"));
-		serverPanel.add(thunderbirdBox);		
-		
-		HorizontalPanel bar=new HorizontalPanel();
+		serverPanel.add(thunderbirdBox);
+
+		HorizontalPanel bar = new HorizontalPanel();
 		startButton = new JButton(_("start"));
 		startButton.addActionListener(this);
 		progressBar = new JProgressBar();
@@ -439,16 +437,15 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		bar.scale();
 		serverPanel.add(bar);
 		serverPanel.scale();
-		
-		
+
 		HorizontalPanel backupPanel = new HorizontalPanel(_("Backup settings"));
-		backupPathLabel = new JLabel(" "+_("No Backup defined.")+"                                                                 ");
-		backupPathButton=new JButton(_("Select Backup Location"));
+		backupPathLabel = new JLabel(" " + _("No Backup defined.") + "                                                                 ");
+		backupPathButton = new JButton(_("Select Backup Location"));
 		backupPathButton.addActionListener(this);
 		backupPanel.add(backupPathButton);
 		backupPanel.add(backupPathLabel);
-		backupPanel.scale();		
-		
+		backupPanel.scale();
+
 		mainPanel.add(backupPanel);
 		mainPanel.add(serverPanel);
 		mainPanel.scale();
@@ -483,13 +480,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws IOException
 	 */
 	private void deleteUselessContacts(String host, TreeSet<Contact> deleteList) throws IOException {
-		int count=deleteList.size();
-		int index=0;
+		int count = deleteList.size();
+		int index = 0;
 		progressBar.setMaximum(count);
 		for (Contact c : deleteList) {
 			index++;
 			progressBar.setValue(index);
-			progressBar.setString(_("Deleting #", c.vcfName())+" - "+index+"/"+count);
+			progressBar.setString(_("Deleting #", c.vcfName()) + " - " + index + "/" + count);
 			deleteContact(new URL(host + "/" + c.vcfName()));
 		}
 	}
@@ -527,13 +524,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws IOException
 	 */
 	private void putMergedContacts(String host, TreeSet<Contact> writeList) throws IOException {
-		int count=writeList.size();		
-		int index=0;
+		int count = writeList.size();
+		int index = 0;
 		progressBar.setMaximum(count);
 		for (Contact c : writeList) {
 			index++;
 			progressBar.setValue(index);
-			progressBar.setString(_("Uploading #", c.vcfName())+" - "+index+"/"+count);
+			progressBar.setString(_("Uploading #", c.vcfName()) + " - " + index + "/" + count);
 
 			byte[] data = c.getBytes();
 			URL putUrl = new URL(host + "/" + c.vcfName());
@@ -594,7 +591,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			progressBar.setString(_("reading contact #/#: #", new Object[] { ++counter, total, contactName }));
 			progressBar.setValue(counter);
 			try {
-				Contact contact = new Contact(host, contactName,backupPath);
+				Contact contact = new Contact(host, contactName, backupPath);
 				do {
 					if (skipInvalidContact(contact)) break;
 					if (contact.isEmpty()) {
@@ -648,7 +645,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @param host the server hostname
 	 * @param user the username used to log in
 	 * @param password the password corrosponding to the username
-	 * @param backupPath 
+	 * @param backupPath
 	 * @throws IOException
 	 * @throws InterruptedException
 	 * @throws UnknownObjectException
@@ -676,20 +673,20 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 		try {
 			connection = (HttpURLConnection) url.openConnection();
-			InputStream content = (InputStream) connection.getInputStream();	
+			InputStream content = (InputStream) connection.getInputStream();
 			BufferedReader in = new BufferedReader(new InputStreamReader(content));
 			String line;
 			TreeSet<String> contacts = new TreeSet<String>();
 			int count = 0;
 			while ((line = in.readLine()) != null) {
 				count++;
-				if (/*count<300 ||*/ count>312 ) continue;
+				if (/* count<300 || */count > 312) continue;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();
 			content.close();
 			connection.disconnect();
-			cleanContacts(host, contacts,backupPath);
+			cleanContacts(host, contacts, backupPath);
 		} catch (SSLHandshakeException ve) {
 			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
 		}
@@ -699,8 +696,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		TreeSet<Contact> writeList = getWriteList(contacts);
 		if (!(writeList.isEmpty() && deleteList.isEmpty())) {
 			if (confirmLists(writeList, deleteList)) {
-				//putMergedContacts(host, writeList);
-				//deleteUselessContacts(host, deleteList);
+				// putMergedContacts(host, writeList);
+				// deleteUselessContacts(host, deleteList);
 				JOptionPane.showMessageDialog(null, _("<html>Scanning, merging and cleaning <i>successfully</i> done! Goodbye!"));
 			} else {
 				JOptionPane.showMessageDialog(null, _("<html>Merging and cleaning aborted! Goodbye!"));

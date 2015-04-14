@@ -113,7 +113,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			System.out.print(_("Contact creation test (name + messenger)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nIMPP:icq:123456\nEND:VCARD\n";
 			Contact messenger = new Contact(testCase);
-			if (messenger.toString(true).equals(testCase) && !messenger.isInvalid()) {
+			if (messenger.toString(true).equals("BEGIN:VCARD\nN:Test;Contact;;;\nIMPP:ICQ:123456\nX-ICQ:123456\nEND:VCARD\n") && !messenger.isInvalid()) {
 				System.out.println(_("ok"));
 			} else {
 				System.err.println(_("failed: #", messenger.toString(true)));
@@ -253,7 +253,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			System.out.print(_("Contact creation test (full)..."));
 			testCase = "BEGIN:VCARD\nFN:Testcard\nN:Test;Contact;;;\nNICKNAME;TYPE=HOME:0perat0r\nCATEGORIES:Family,Work\nTITLE:Prof. Dr. rer. nat.\nORG:SRSoftware GbR;\nIMPP:icq:123456\nROLE:contact for testing\nBDAY;VALUE=DATE-TIME:19910417T123456\nLABEL:a label\nADR;TYPE=HOME:postbox;extended;street;city;region;zip;country\nTEL;TYPE=WORK:9876543210\nEMAIL;TYPE=INTERNET:test@example.com\nURL:www.srsoftware.de\nNOTE:this is a note\nEND:VCARD\n";
 			Contact full = new Contact(testCase);
-			if (full.toString(true).equals(testCase) && !full.isInvalid()) {
+			if (full.toString(true).equals("BEGIN:VCARD\nFN:Testcard\nN:Test;Contact;;;\nNICKNAME;TYPE=HOME:0perat0r\nCATEGORIES:Family,Work\nTITLE:Prof. Dr. rer. nat.\nORG:SRSoftware GbR;\nIMPP:ICQ:123456\nX-ICQ:123456\nROLE:contact for testing\nBDAY;VALUE=DATE-TIME:19910417T123456\nLABEL:a label\nADR;TYPE=HOME:postbox;extended;street;city;region;zip;country\nTEL;TYPE=WORK:9876543210\nEMAIL;TYPE=INTERNET:test@example.com\nURL:www.srsoftware.de\nNOTE:this is a note\nEND:VCARD\n") && !full.isInvalid()) {
 				System.out.println(_("ok"));
 			} else {
 				System.err.println(_("failed: #", full.toString(true)));
@@ -312,6 +312,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						if ((a == formatted && b != formatted) || (a != formatted && b == formatted)) {
 							num--;
 						} else if ((a == bdayyear && b != bdayyear) || (a != bdayyear && b == bdayyear)) {
+							num--;
+						} else if ((a == number && b == full)||(b == number && a == full)){
+							num--;
+						} else if ((a == nick && b == full)||(b == nick && a == full)){
+							num--;
+						} else if ((a == org && b == full)||(b == org && a == full)){
 							num--;
 						}
 
@@ -633,74 +639,74 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	public boolean conflictsWith(Contact c2) {
 		if (name != null && !name.isCompatibleWith(c2.name)) {
-			System.out.println("name conflict (" + name + " - " + c2.name + ")");
+			//System.out.println("name conflict (" + name + " - " + c2.name + ")");
 			return true;
 		}
 		if (birthday != null && !birthday.isCompatibleWith(c2.birthday)) {
-			System.out.println("bday conflict (" + birthday + " - " + c2.birthday + ")");
+			//System.out.println("bday conflict (" + birthday + " - " + c2.birthday + ")");
 			return true;
 		}
 		if (different(formattedName, c2.formattedName)) {
-			System.out.println("formatted name conflict (" + formattedName + " - " + c2.formattedName + ")");
+			//System.out.println("formatted name conflict (" + formattedName + " - " + c2.formattedName + ")");
 			return true;
 		}
 		if (different(anniversary, c2.anniversary)) {
-			System.out.println("anniversary conflict (" + anniversary + " - " + c2.anniversary + ")");
+			//System.out.println("anniversary conflict (" + anniversary + " - " + c2.anniversary + ")");
 			return true;
 		}
 		if (!labels.isEmpty() && !c2.labels.isEmpty() && !labels.equals(c2.labels)) {
-			System.out.println("labels conflict (" + labels + " - " + c2.labels + ")");
+			//System.out.println("labels conflict (" + labels + " - " + c2.labels + ")");
 			return true;
 		}
 		if (!titles.isEmpty() && !c2.titles.isEmpty() && !titles.equals(c2.titles)) {
-			System.out.println("titles conflict (" + titles + " - " + c2.titles + ")");
+			//System.out.println("titles conflict (" + titles + " - " + c2.titles + ")");
 			return true;
 		}
-		if (!roles.isEmpty() && c2.roles.isEmpty() && !roles.equals(c2.roles)) {
-			System.out.println("roles conflict (" + roles + " - " + c2.roles + ")");
+		if (!roles.isEmpty() && !c2.roles.isEmpty() && !roles.equals(c2.roles)) {
+			//System.out.println("roles conflict (" + roles + " - " + c2.roles + ")");
 			return true;
 		}
 		if (!phones.isEmpty() && !c2.phones.isEmpty() && !getSimplePhoneNumbers().equals(c2.getSimplePhoneNumbers())) {
 			TreeSet<String> nums1 = getSimplePhoneNumbers();
 			TreeSet<String> num2 = c2.getSimplePhoneNumbers();
 			if (!nums1.containsAll(num2) && !num2.containsAll(nums1)) {
-				System.out.println("phones conflict (" + getSimplePhoneNumbers() + " - " + c2.getSimplePhoneNumbers() + ")");
+				//System.out.println("phones conflict (" + getSimplePhoneNumbers() + " - " + c2.getSimplePhoneNumbers() + ")");
 				return true;
 			}
 		}
 		if (!mails.isEmpty() && !c2.mails.isEmpty() && !getMailAdresses().equals(c2.getMailAdresses())) {
-			System.out.println("mails conflict (" + getMailAdresses() + " - " + c2.getMailAdresses() + ")");
+			//System.out.println("mails conflict (" + getMailAdresses() + " - " + c2.getMailAdresses() + ")");
 			return true;
 		}
 		if (!adresses.isEmpty() && !c2.adresses.isEmpty() && !getAdressData().equals(c2.getAdressData())) {
-			System.out.println("addresses conflict (" + getAdressData() + " - " + c2.getAdressData() + ")");
+			//System.out.println("addresses conflict (" + getAdressData() + " - " + c2.getAdressData() + ")");
 			return true;
 		}
 		if (!urls.isEmpty() && !c2.urls.isEmpty() && !urls.equals(c2.urls)) {
-			System.out.println("urls conflict (" + urls + " - " + c2.urls + ")");
+			//System.out.println("urls conflict (" + urls + " - " + c2.urls + ")");
 			return true;
 		}
 		if (!nicks.isEmpty() && !c2.nicks.isEmpty() && !nicks.equals(c2.nicks)) {
-			System.out.println("nicknames conflict (" + nicks + " - " + c2.nicks + ")");
+			//System.out.println("nicknames conflict (" + nicks + " - " + c2.nicks + ")");
 			return true;
 		}
 		if (!notes.isEmpty() && !c2.notes.isEmpty() && !notes.equals(c2.notes)) {
-			System.out.println("notes conflict (" + notes + " - " + c2.notes + ")");
+			//System.out.println("notes conflict (" + notes + " - " + c2.notes + ")");
 			return true;
 		}
 		if (!orgs.isEmpty() && !c2.orgs.isEmpty() && !orgs.equals(c2.orgs)) {
-			System.out.println("organizations conflict (" + orgs + " - " + c2.orgs + ")");
+			//System.out.println("organizations conflict (" + orgs + " - " + c2.orgs + ")");
 			return true;
 		}
 		if (!photos.isEmpty() && !c2.photos.isEmpty() && !photos.equals(c2.photos)) {
-			System.out.println("photo conflict (" + photos + " - " + c2.photos + ")");
+			//System.out.println("photo conflict (" + photos + " - " + c2.photos + ")");
 			return true;
 		}
 		for (Entry<Integer, String> cc : customContent.entrySet()) {
 			Integer key = cc.getKey();
 			String val = c2.customContent.get(key);
 			if (val != null && !val.equals(cc.getValue())) {
-				System.out.println("Custom content conflict (" + cc.getValue() + " - " + val + ")");
+				//System.out.println("Custom content conflict (" + cc.getValue() + " - " + val + ")");
 				return true;
 			}
 		}
