@@ -126,7 +126,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	}
 
 	private static void test() {
-		try {
+		try { // TODO: Tests are not up to date.
 			MD5Hash.test();
 			Tests.test();
 			MergableList.test();
@@ -677,10 +677,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			BufferedReader in = new BufferedReader(new InputStreamReader(content));
 			String line;
 			TreeSet<String> contacts = new TreeSet<String>();
-			int count = 0;
 			while ((line = in.readLine()) != null) {
-				count++;
-				if (/* count<300 || */count > 312) continue;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();
