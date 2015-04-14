@@ -1671,8 +1671,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return uid;
 	}
 
-	public void showResolveDialog(TreeSet<Contact> additionalContacts, TreeSet<Client.ProblemType> problems) throws UnknownObjectException, InvalidFormatException {
-		final Contact base = this.clone();
+	public void showResolveDialog(TreeSet<Contact> additionalContacts, Client client, TreeSet<Client.ProblemType> problems) throws UnknownObjectException, InvalidFormatException {
+		final Contact backupContact = this.clone();
 		if (additionalContacts.isEmpty()) {
 			additionalContacts.add(new Contact(name.toString()));
 		}
@@ -1680,9 +1680,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		int count = additionalContacts.size();
 		VerticalPanel grid = new VerticalPanel();
 		for (Client.ProblemType problem:problems){
-			JLabel label = new JLabel(problem.toString());
-			label.setBackground(Color.orange);
-			
+			JLabel label = new JLabel(_(problem.toString()));
+			label.setForeground(Color.red);
+			label.setBackground(Color.yellow);			
 			grid.add(label);
 		}
 		HorizontalPanel overview=new HorizontalPanel();
@@ -1693,22 +1693,22 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		overview.add(new JLabel(_("<html>Original<br>Contact")));
 		grid.add(overview.scale());
 		
-		addNameSelectors(count, grid, base, additionalContacts);
-		addBDaySelector(count, grid, base, additionalContacts);
-		addAnniversarySelector(count, grid, base, additionalContacts);
-		addTitlesSelector(count, grid, base, additionalContacts);
-		addRolesSelector(count, grid, base, additionalContacts);
-		addNotesSelector(count, grid, base, additionalContacts);
-		addPhotosSelector(count, grid, base, additionalContacts);
-		addCategoriesSelector(count, grid, base, additionalContacts);
-		addLabelsSelector(count, grid, base, additionalContacts);
-		addOrgsSelector(count, grid, base, additionalContacts);
-		addAddressSelectors(count, grid, base, additionalContacts);
-		addNicknamesSelector(count, grid, base, additionalContacts);
-		addPhoneSelectors(count, grid, base, additionalContacts);
-		addMailSelectors(count,grid,base,additionalContacts);
-		addMessengerSelectors(count,grid,base,additionalContacts);
-		addUrlSelectors(count,grid,base,additionalContacts);
+		addNameSelectors(count, grid, backupContact, additionalContacts);
+		addBDaySelector(count, grid, backupContact, additionalContacts);
+		addAnniversarySelector(count, grid, backupContact, additionalContacts);
+		addTitlesSelector(count, grid, backupContact, additionalContacts);
+		addRolesSelector(count, grid, backupContact, additionalContacts);
+		addNotesSelector(count, grid, backupContact, additionalContacts);
+		addPhotosSelector(count, grid, backupContact, additionalContacts);
+		addCategoriesSelector(count, grid, backupContact, additionalContacts);
+		addLabelsSelector(count, grid, backupContact, additionalContacts,client,problems);
+		addOrgsSelector(count, grid, backupContact, additionalContacts);
+		addAddressSelectors(count, grid, backupContact, additionalContacts);
+		addNicknamesSelector(count, grid, backupContact, additionalContacts);
+		addPhoneSelectors(count, grid, backupContact, additionalContacts,client,problems);
+		addMailSelectors(count,grid,backupContact,additionalContacts);
+		addMessengerSelectors(count,grid,backupContact,additionalContacts);
+		addUrlSelectors(count,grid,backupContact,additionalContacts);
 
 		
 
@@ -1719,13 +1719,14 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		scrollableGrid.setPreferredSize(new Dimension(width,height));
 		JOptionPane.showConfirmDialog(null, scrollableGrid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
 		// TODO: alter original contact, too
+		
 	}
 	
-	private void addTitlesSelector(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	private void addTitlesSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
 		HorizontalPanel panel;
-		if (titles != null && !titles.isEmpty()) {
+		if (backup.titles != null && !backup.titles.isEmpty()) {
 			VerticalPanel titlePanel = new VerticalPanel(_("Titles"));			
-			for (final String title : titles) {
+			for (final String title : backup.titles) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
 					panel.add(activeBox(new Action() {
@@ -1745,9 +1746,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					@Override
 					public void change(JCheckBox box) {
 						if (box.isSelected()) {
-							base.titles.add(title);
+							titles.add(title);
 						} else {
-							base.titles.remove(title);
+							titles.remove(title);
 						}
 					}
 				}));
@@ -1757,11 +1758,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 	
-	private void addCategoriesSelector(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	private void addCategoriesSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
 		HorizontalPanel panel;
-		if (categories != null && !categories.isEmpty()) {
+		if (backup.categories != null && !backup.categories.isEmpty()) {
 			VerticalPanel categoriePanel = new VerticalPanel(_("Categories"));			
-			for (final String category : categories) {
+			for (final String category : backup.categories) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
 					panel.add(activeBox(new Action() {
@@ -1781,9 +1782,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					@Override
 					public void change(JCheckBox box) {
 						if (box.isSelected()) {
-							base.categories.add(category);
+							categories.add(category);
 						} else {
-							base.categories.remove(category);
+							categories.remove(category);
 						}
 					}
 				}));
@@ -1793,11 +1794,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 	
-	private void addNicknamesSelector(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	private void addNicknamesSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
 		HorizontalPanel panel;
-		if (nicks != null && !nicks.isEmpty()) {
+		if (backup.nicks != null && !backup.nicks.isEmpty()) {
 			VerticalPanel nicknamePanel = new VerticalPanel(_("Nicknames"));			
-			for (final Nickname nickname : nicks) {
+			for (final Nickname nickname : backup.nicks) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
 					panel.add(activeBox(new Action() {
@@ -1822,12 +1823,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					public void change(JCheckBox box) {
 						if (box.isSelected()) {
 							try {
-                base.nicks.add(nickname.clone());
+                nicks.add(nickname.clone());
               } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
               }
 						} else {
-							base.nicks.remove(nickname);
+							nicks.remove(nickname);
 						}
 					}
 				}));
@@ -1838,11 +1839,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
   }
 	
 	// TODO: this method has not been tested
-	private void addLabelsSelector(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	private void addLabelsSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, TreeSet<Client.ProblemType> problems) {
 		HorizontalPanel panel;
 		if (labels != null && !labels.isEmpty()) {
-			VerticalPanel labelPanel = new VerticalPanel(_("Labels"));			
-			for (final Label label : labels) {
+			final VerticalPanel labelPanel = new VerticalPanel(_("Labels"));
+			for (final Label label : backup.labels) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
 					panel.add(activeBox(new Action() {
@@ -1858,6 +1859,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 							} else {
 								additionalContact.labels.remove(label);
 							}
+							checkValidity(additionalContacts,client,Client.ProblemType.LABELS,labelPanel);
 						}
 					}));
 				}
@@ -1867,26 +1869,42 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					public void change(JCheckBox box) {
 						if (box.isSelected()) {
 							try {
-                base.labels.add(label.clone());
+                labels.add(label.clone());
               } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
               }
 						} else {
-							base.labels.remove(label);
+							labels.remove(label);
 						}
+						checkValidity(additionalContacts,client,Client.ProblemType.LABELS,labelPanel);
 					}
 				}));
 				labelPanel.add(panel.scale());
+			}
+			if (problems.contains(Client.ProblemType.LABELS)){
+				labelPanel.setBackground(Color.ORANGE);
 			}
 			grid.add(labelPanel.scale());
 		}
   }
 	
-	private void addOrgsSelector(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	protected void checkValidity(TreeSet<Contact> additionalContacts, Client client,Client.ProblemType prob, JPanel panel) {
+		TreeSet<Client.ProblemType> problems = client.problemsWith(this);
+		for (Contact c:additionalContacts){
+			problems.addAll(client.problemsWith(c));
+		}
+		if (problems.contains(prob)){
+			panel.setBackground(Color.orange);
+		} else {
+			panel.setBackground(Color.green);
+		}
+  }
+
+	private void addOrgsSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
 		HorizontalPanel panel;
-		if (orgs != null && !orgs.isEmpty()) {
+		if (backup.orgs != null && !backup.orgs.isEmpty()) {
 			VerticalPanel orgPanel = new VerticalPanel(_("Orgs"));			
-			for (final Organization org : orgs) {
+			for (final Organization org : backup.orgs) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
 					panel.add(activeBox(new Action() {
@@ -1911,12 +1929,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					public void change(JCheckBox box) {
 						if (box.isSelected()) {
 							try {
-                base.orgs.add(org.clone());
+                orgs.add(org.clone());
               } catch (CloneNotSupportedException e) {
                 e.printStackTrace();
               }
 						} else {
-							base.orgs.remove(org);
+							orgs.remove(org);
 						}
 					}
 				}));
@@ -1926,11 +1944,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 	
-	private void addNotesSelector(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	private void addNotesSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
 		HorizontalPanel panel;
-		if (notes != null && !notes.isEmpty()) {
+		if (backup.notes != null && !backup.notes.isEmpty()) {
 			VerticalPanel notePanel = new VerticalPanel(_("Notes"));			
-			for (final String note : notes) {
+			for (final String note : backup.notes) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
 					panel.add(activeBox(new Action() {
@@ -1950,9 +1968,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					@Override
 					public void change(JCheckBox box) {
 						if (box.isSelected()) {
-							base.notes.add(note);
+							notes.add(note);
 						} else {
-							base.notes.remove(note);
+							notes.remove(note);
 						}
 					}
 				}));
@@ -1962,11 +1980,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 
-	private void addPhotosSelector(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	private void addPhotosSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
 		HorizontalPanel panel;
-		if (photos != null && !photos.isEmpty()) {
+		if (backup.photos != null && !backup.photos.isEmpty()) {
 			VerticalPanel photoPanel = new VerticalPanel(_("Photos"));			
-			for (final String photo : photos) {
+			for (final String photo : backup.photos) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
 					panel.add(activeBox(new Action() {
@@ -1986,9 +2004,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					@Override
 					public void change(JCheckBox box) {
 						if (box.isSelected()) {
-							base.photos.add(photo);
+							photos.add(photo);
 						} else {
-							base.photos.remove(photo);
+							photos.remove(photo);
 						}
 					}
 				}));
@@ -1998,11 +2016,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 	
-	private void addRolesSelector(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	private void addRolesSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
 		HorizontalPanel panel;
-		if (roles != null && !roles.isEmpty()) {
+		if (backup.roles != null && !backup.roles.isEmpty()) {
 			VerticalPanel rolePanel = new VerticalPanel(_("Roles"));			
-			for (final String role : roles) {
+			for (final String role : backup.roles) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
 					panel.add(activeBox(new Action() {
@@ -2022,9 +2040,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					@Override
 					public void change(JCheckBox box) {
 						if (box.isSelected()) {
-							base.roles.add(role);
+							roles.add(role);
 						} else {
-							base.roles.remove(role);
+							roles.remove(role);
 						}
 					}
 				}));
@@ -2034,9 +2052,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 	
-	private void addAnniversarySelector(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	private void addAnniversarySelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
 		HorizontalPanel panel;
-		if (anniversary != null) {
+		if (backup.anniversary != null) {
 			panel=new HorizontalPanel(_("anniversary"));
 			for (final Contact additionalContact:additionalContacts) {
 				panel.add(activeBox(new Action() {
@@ -2044,7 +2062,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 					@Override
 					public void change(JCheckBox box) {
 						if (box.isSelected()) {
-							additionalContact.anniversary=anniversary;
+							additionalContact.anniversary=backup.anniversary;
 						} else {
 							additionalContact.anniversary=null;;
 						}
@@ -2056,9 +2074,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				@Override
 				public void change(JCheckBox box) {
 					if (box.isSelected()) {
-						base.anniversary=anniversary;
+						anniversary=backup.anniversary;
 					} else {
-						base.anniversary=null;
+						anniversary=null;
 					}
 				}
 			}));
@@ -2066,29 +2084,23 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 
-	private void addBDaySelector(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	private void addBDaySelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
 		HorizontalPanel panel;
-		if (birthday != null) {
+		if (backup.birthday != null) {
 			panel=new HorizontalPanel(_("birthday"));
 			for (final Contact additionalContact:additionalContacts) {
 				panel.add(activeBox(new Action() {
 
 					@Override
 					public void change(JCheckBox box) {
-						Birthday additionalContactBirthday = additionalContact.birthday();
 						if (box.isSelected()) {
-							if (additionalContactBirthday == null) {
-								try {
-									additionalContactBirthday = birthday.clone();
-									additionalContact.setBirthday(additionalContactBirthday);
-								} catch (CloneNotSupportedException e) {
-									e.printStackTrace();
-								}
+							try {
+								additionalContact.setBirthday(backup.birthday.clone());
+							} catch (CloneNotSupportedException e) {
+								e.printStackTrace();
 							}
 						} else {
-							if (additionalContactBirthday != null) {
-								additionalContact.unsetBirthday();
-							}
+							additionalContact.birthday=null;
 						}
 					}
 				}));
@@ -2097,20 +2109,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 				@Override
 				public void change(JCheckBox box) {
-					Birthday baseBirthday = base.birthday();
 					if (box.isSelected()) {
-						if (baseBirthday == null) {
+						if (birthday == null) {
 							try {
-								baseBirthday = birthday.clone();
-								base.setBirthday(baseBirthday);
+								birthday=backup.birthday.clone();
 							} catch (CloneNotSupportedException e) {
 								e.printStackTrace();
 							}
 						}
 					} else {
-						if (baseBirthday != null) {
-							base.unsetBirthday();
-						}
+						birthday=null;
 					}
 				}
 			}));
@@ -2126,11 +2134,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	  birthday=b;	  
   }
 
-	private void addNameSelectors(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
+	private void addNameSelectors(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
 		HorizontalPanel panel;
-		if (name != null) {
+		if (backup.name != null) {
 			VerticalPanel namePanel=new VerticalPanel(_("Name"));
-			String part=name.prefix();
+			String part=backup.name.prefix();
 			if (part != null && !part.isEmpty()) {
 				panel=new HorizontalPanel();
 					for (int i = 0; i < count; i++) {
@@ -2140,7 +2148,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				namePanel.add(panel.scale());
 			}
 			
-			part=name.first();
+			part=backup.name.first();
 			if (part != null && !part.isEmpty()) {
 				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
@@ -2150,7 +2158,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				namePanel.add(panel.scale());
 			}
 			
-			part=name.middle();
+			part=backup.name.middle();
 			if (part != null && !part.isEmpty()) {
 				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
@@ -2160,7 +2168,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				namePanel.add(panel.scale());
 			}
 			
-			part=name.last();
+			part=backup.name.last();
 			if (part != null && !part.isEmpty()) {
 				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
@@ -2170,7 +2178,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 				namePanel.add(panel.scale());
 			}
 			
-			part=name.suffix();
+			part=backup.name.suffix();
 			if (part != null && !part.isEmpty()) {
 				panel=new HorizontalPanel();
 				for (int i = 0; i < count; i++) {
@@ -2182,31 +2190,29 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			grid.add(namePanel.scale());
 		}
 
-		if (formattedName != null) {
+		if (backup.formattedName != null) {
 			panel=new HorizontalPanel(_("formatted name"));
 			for (final Contact additionalContact : additionalContacts) {
 				panel.add(activeBox(new Action() {
 					@Override
 					public void change(JCheckBox origin) {
-						additionalContact.formattedName = origin.isSelected() ? formattedName : null;
-						System.out.println(additionalContact);
+						additionalContact.formattedName = origin.isSelected() ? backup.formattedName : null;
 					}
 				}));
 			}
 			panel.add(activeBox(formattedName, new Action() {
 				@Override
 				public void change(JCheckBox origin) {
-					base.formattedName = origin.isSelected() ? formattedName : null;
-					System.out.println(base);
+					formattedName = origin.isSelected() ? backup.formattedName : null;
 				}
 			}));
 			grid.add(panel.scale());
 		}
   }
 
-	private void addUrlSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
-		if (urls != null && !urls.isEmpty()) {
-			for (final Url url : urls) {
+	private void addUrlSelectors(int count, JPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
+		if (backup.urls != null && !backup.urls.isEmpty()) {
+			for (final Url url : backup.urls) {
 				for (int i = 0; i < count; i++) {
 					grid.add(new JLabel());
 				}
@@ -2243,12 +2249,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 						@Override
 						public void change(JCheckBox box) {
-							Url baseUrl = base.getUrl(url.address());
+							Url baseUrl = getUrl(url.address());
 							if (box.isSelected()) {
 								if (baseUrl == null) {
 									try {
 										baseUrl = url.clone(false);
-										base.addUrl(baseUrl);
+										addUrl(baseUrl);
 									} catch (CloneNotSupportedException e) {
 										e.printStackTrace();
 									}
@@ -2258,7 +2264,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 								if (baseUrl != null) {
 									baseUrl.removeCategory(category);
 									if (baseUrl.categories().isEmpty()) {
-										base.removeUrl(baseUrl);
+										removeUrl(baseUrl);
 									}
 								}
 							}
@@ -2271,9 +2277,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	
 
 
-	private void addMessengerSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
-		if (messengers != null && !messengers.isEmpty()) {
-			for (final Messenger messenger : messengers) {
+	private void addMessengerSelectors(int count, JPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
+		if (backup.messengers != null && !backup.messengers.isEmpty()) {
+			for (final Messenger messenger : backup.messengers) {
 				for (int i = 0; i < count; i++) {
 					grid.add(new JLabel());
 				}
@@ -2310,12 +2316,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 						@Override
 						public void change(JCheckBox box) {
-							Messenger baseMessenger = base.getMessenger(messenger.nick());
+							Messenger baseMessenger = getMessenger(messenger.nick());
 							if (box.isSelected()) {
 								if (baseMessenger == null) {
 									try {
 										baseMessenger = messenger.clone(false);
-										base.addMessenger(baseMessenger);
+										addMessenger(baseMessenger);
 									} catch (CloneNotSupportedException e) {
 										e.printStackTrace();
 									}
@@ -2325,7 +2331,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 								if (baseMessenger != null) {
 									baseMessenger.removeCategory(category);
 									if (baseMessenger.categories().isEmpty()) {
-										base.removeMessenger(baseMessenger);
+										removeMessenger(baseMessenger);
 									}
 								}
 							}
@@ -2340,9 +2346,9 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 
 
-	private void addMailSelectors(int count, JPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
-		if (mails != null && !mails.isEmpty()) {
-			for (final Email mail : mails) {
+	private void addMailSelectors(int count, JPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
+		if (backup.mails != null && !backup.mails.isEmpty()) {
+			for (final Email mail : backup.mails) {
 				for (int i = 0; i < count; i++) {
 					grid.add(new JLabel());
 				}
@@ -2379,12 +2385,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 						@Override
 						public void change(JCheckBox box) {
-							Email basemail = base.getMail(mail.address());
+							Email basemail = getMail(mail.address());
 							if (box.isSelected()) {
 								if (basemail == null) {
 									try {
 										basemail = mail.clone(false);
-										base.addMail(basemail);
+										addMail(basemail);
 									} catch (CloneNotSupportedException e) {
 										e.printStackTrace();
 									}
@@ -2394,7 +2400,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 								if (basemail != null) {
 									basemail.removeCategory(category);
 									if (basemail.categories().isEmpty()) {
-										base.removeMail(basemail);
+										removeMail(basemail);
 									}
 								}
 							}
@@ -2406,10 +2412,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 
-	private void addAddressSelectors(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
-		if (adresses != null && !adresses.isEmpty()) {
+	private void addAddressSelectors(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
+		if (backup.adresses != null && !backup.adresses.isEmpty()) {
 			HorizontalPanel panel;
-			for (final Adress address : adresses) {
+			for (final Adress address : backup.adresses) {
 				VerticalPanel addressPanel=new VerticalPanel(_("Address: #",address.canonical()));
 				for (final Adress.Category category : Adress.Category.values()) {
 					panel=new HorizontalPanel();
@@ -2444,12 +2450,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 						@Override
 						public void change(JCheckBox box) {
-							Adress baseAddress = base.getAddress(address.canonical());
+							Adress baseAddress = getAddress(address.canonical());
 							if (box.isSelected()) {
 								if (baseAddress == null) {
 									try {
 										baseAddress = address.clone(false);
-										base.addAddress(baseAddress);
+										addAddress(baseAddress);
 									} catch (CloneNotSupportedException e) {
 										e.printStackTrace();
 									}
@@ -2459,7 +2465,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 								if (baseAddress != null) {
 									baseAddress.removeCategory(category);
 									if (baseAddress.categories().isEmpty()) {
-										base.removeAddress(baseAddress);
+										removeAddress(baseAddress);
 									}
 								}
 							}
@@ -2476,11 +2482,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 
 
-	private void addPhoneSelectors(int count, VerticalPanel grid, final Contact base, TreeSet<Contact> additionalContacts) {
-		if (phones != null && !phones.isEmpty()) {
+	private void addPhoneSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, TreeSet<Client.ProblemType> problems) {
+		if (backup.phones != null && !backup.phones.isEmpty()) {
 			HorizontalPanel panel;
-			for (final Phone phone : phones) {
-				VerticalPanel phonePanel=new VerticalPanel(_("Phone: #",phone.simpleNumber()));
+			for (final Phone phone : backup.phones) {
+				final VerticalPanel phonePanel=new VerticalPanel(_("Phone: #",phone.simpleNumber()));
 				for (final Phone.Category category : Phone.Category.values()) {
 					panel=new HorizontalPanel();
 					for (final Contact additionalContact : additionalContacts) {
@@ -2507,6 +2513,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 										}
 									}
 								}
+								checkValidity(additionalContacts,client,Client.ProblemType.PHONE,phonePanel);
 							}
 						}));
 					}
@@ -2514,12 +2521,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 						@Override
 						public void change(JCheckBox box) {
-							Phone basePhone = base.getPhone(phone.simpleNumber());
+							Phone basePhone = getPhone(phone.simpleNumber());
 							if (box.isSelected()) {
 								if (basePhone == null) {
 									try {
 										basePhone = phone.clone(false);
-										base.addPhone(basePhone);
+										addPhone(basePhone);
 									} catch (CloneNotSupportedException e) {
 										e.printStackTrace();
 									}
@@ -2529,10 +2536,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 								if (basePhone != null) {
 									basePhone.removeCategory(category);
 									if (basePhone.categories().isEmpty()) {
-										base.removePhone(basePhone);
+										removePhone(basePhone);
 									}
 								}
 							}
+							checkValidity(additionalContacts,client,Client.ProblemType.PHONE,phonePanel);
 						}
 					}));
 					phonePanel.add(panel.scale());
