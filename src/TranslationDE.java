@@ -26,6 +26,16 @@ public class TranslationDE extends Translation{
 		trans.put("BDAY format invalid: #","ungültiges format des Geburtstags-Eintrags: #");
 		trans.put("birtday", "Geburtstag");
 		trans.put("Birthday entry does not start with BDAY: \"#\"", "Geburtstags-Eintrag started nicht mit BDAY: \"#\"");
+		trans.put("# can manage only have # organizations.", "# kann maximal # Organisationen verwalten.");
+		trans.put("# can manage only have # nicknames.", "# kann maximal # Rufnamen verwalten.");
+		trans.put("# can manage only # labels.", "# kann maximal # Labels verwalten.");
+		trans.put("# can manage only # messengers with category \"#\"","# kann maximal # Messenger der Kategorie \"#\" verwalten.");
+		trans.put("# can manage only # urls with category \"#\"","# kann maximal # URLs der Kategorie \"#\" verwalten.");
+		trans.put("# can manage only # addresses with category \"#\"","# kann maximal # Adressen der Kategorie \"#\" verwalten.");
+		trans.put("# can manage only # phone numbers with category \"#\"","# kann maximal # Nummern der Kategorie \"#\" verwalten.");
+		trans.put("# can manage only # email adresses with category \"#\"","# kann maximal # E-Mail-Adressen der Kategorie \"#\" verwalten.");
+		trans.put("", "");
+		trans.put("", "");
 		trans.put("Categories", "Kategorien");
 		trans.put("Category", "Kategorie");
 		trans.put("Cell Phone", "Handy");
@@ -118,6 +128,7 @@ public class TranslationDE extends Translation{
 		trans.put("Post Office Box", "Postfach");
 		trans.put("Preferred Phone", "bevorzugte Nummer");
 		trans.put("Prefix", "Präfix");
+		trans.put("Problem with #:", "Problem mit #:");
 		trans.put("reading contact #/#: #", "lese Kontakt #/#: #");
 		trans.put("reading list of contacts...", "Lade Liste der Kontakte...");
 		trans.put("Reconciling changes...", "Veränderungen werden zusammengefasst...");

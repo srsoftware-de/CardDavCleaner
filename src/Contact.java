@@ -1671,7 +1671,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		return uid;
 	}
 
-	public void showResolveDialog(TreeSet<Contact> additionalContacts, Client client, TreeSet<Client.ProblemType> problems) throws UnknownObjectException, InvalidFormatException {
+	public void showResolveDialog(TreeSet<Contact> additionalContacts, Client client, ProblemSet problems) throws UnknownObjectException, InvalidFormatException {
 		final Contact backupContact = this.clone();
 		if (additionalContacts.isEmpty()) {
 			additionalContacts.add(new Contact(name.toString()));
@@ -1679,7 +1679,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 		int count = additionalContacts.size();
 		VerticalPanel grid = new VerticalPanel();
-		for (Client.ProblemType problem:problems){
+		for (Problem problem:problems){
 			JLabel label = new JLabel(_(problem.toString()));
 			label.setForeground(Color.red);
 			label.setBackground(Color.yellow);			
@@ -1839,7 +1839,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
   }
 	
 	// TODO: this method has not been tested
-	private void addLabelsSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, TreeSet<Client.ProblemType> problems) {
+	private void addLabelsSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		HorizontalPanel panel;
 		if (labels != null && !labels.isEmpty()) {
 			final VerticalPanel labelPanel = new VerticalPanel(_("Labels"));
@@ -1859,7 +1859,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 							} else {
 								additionalContact.labels.remove(label);
 							}
-							checkValidity(additionalContacts,client,Client.ProblemType.LABELS,labelPanel);
+							checkValidity(additionalContacts,client,Problem.Type.LABELS,labelPanel);
 						}
 					}));
 				}
@@ -1876,24 +1876,24 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						} else {
 							labels.remove(label);
 						}
-						checkValidity(additionalContacts,client,Client.ProblemType.LABELS,labelPanel);
+						checkValidity(additionalContacts,client,Problem.Type.LABELS,labelPanel);
 					}
 				}));
 				labelPanel.add(panel.scale());
 			}
-			if (problems.contains(Client.ProblemType.LABELS)){
+			if (problems.contains(Problem.Type.LABELS)){
 				labelPanel.setBackground(Color.ORANGE);
 			}
 			grid.add(labelPanel.scale());
 		}
   }
 	
-	protected void checkValidity(TreeSet<Contact> additionalContacts, Client client,Client.ProblemType prob, JPanel panel) {
-		TreeSet<Client.ProblemType> problems = client.problemsWith(this);
+	protected void checkValidity(TreeSet<Contact> additionalContacts, Client client,Problem.Type problemType, JPanel panel) {
+		TreeSet<Problem> problems = client.problemsWith(this);
 		for (Contact c:additionalContacts){
 			problems.addAll(client.problemsWith(c));
 		}
-		if (problems.contains(prob)){
+		if (problems.contains(problemType)){
 			panel.setBackground(Color.orange);
 		} else {
 			panel.setBackground(Color.green);
@@ -2482,7 +2482,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 
 
-	private void addPhoneSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, TreeSet<Client.ProblemType> problems) {
+	private void addPhoneSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, TreeSet<Problem> problems) {
 		if (backup.phones != null && !backup.phones.isEmpty()) {
 			HorizontalPanel panel;
 			for (final Phone phone : backup.phones) {
@@ -2513,7 +2513,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 										}
 									}
 								}
-								checkValidity(additionalContacts,client,Client.ProblemType.PHONE,phonePanel);
+								checkValidity(additionalContacts,client,Problem.Type.PHONE,phonePanel);
 							}
 						}));
 					}
@@ -2540,7 +2540,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 									}
 								}
 							}
-							checkValidity(additionalContacts,client,Client.ProblemType.PHONE,phonePanel);
+							checkValidity(additionalContacts,client,Problem.Type.PHONE,phonePanel);
 						}
 					}));
 					phonePanel.add(panel.scale());

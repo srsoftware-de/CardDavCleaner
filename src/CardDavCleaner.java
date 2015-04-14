@@ -233,9 +233,8 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws UnknownObjectException
 	 * @throws AlreadyBoundException
 	 * @throws InvalidAssignmentException
-	 * @throws ToMuchEntriesForThunderbirdException
 	 */
-	private void cleanContacts(String host, Set<String> contactNames, File backupPath) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException, ToMuchEntriesForThunderbirdException {
+	private void cleanContacts(String host, Set<String> contactNames, File backupPath) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
 
 		Vector<Contact> contacts = readContacts(host, contactNames,backupPath);
 
@@ -329,7 +328,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private TreeSet<Contact> resolveCollisions(Contact contact, Client client) throws UnknownObjectException, InvalidFormatException {
 		TreeSet<Contact> additionalContacts=new TreeSet<Contact>();
 		while (true) {
-			TreeSet<Client.ProblemType> problems = client.problemsWith(contact);
+			ProblemSet problems = client.problemsWith(contact);
 			if (problems.isEmpty()) {
 				break;
 			}
@@ -657,10 +656,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			BufferedReader in = new BufferedReader(new InputStreamReader(content));
 			String line;
 			TreeSet<String> contacts = new TreeSet<String>();
-			int count = 0;
+			//int count = 0;
 			while ((line = in.readLine()) != null) {
-				count++;
-				if (/*count<300 ||*/ count>312 ) continue;
+				//count++;
+				//if (/*count<300 ||*/ count>312 ) continue;
 				if (line.contains(".vcf")) contacts.add(extractContactName(line));
 			}
 			in.close();
@@ -669,9 +668,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			cleanContacts(host, contacts,backupPath);
 		} catch (SSLHandshakeException ve) {
 			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
-		} catch (ToMuchEntriesForThunderbirdException e) {
-			JOptionPane.showMessageDialog(this, _("<html>#<br>Will abort operation now.", e.getMessage()));
-			System.exit(-1);
 		}
 	}
 
