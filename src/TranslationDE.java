@@ -148,6 +148,7 @@ public class TranslationDE extends Translation{
 		trans.put("This website uses a certificate, which is not in your list of trusted certificates!", "Diese Webseite verwendet ein Zertifikat, welches sich nicht in Ihrer Liste der vertrauenswürdigen Zertifikate befindet!");
 		trans.put("Title", "Titel");
 		trans.put("Titles", "Titel");
+		trans.put("Too many labels!", "Zu viele Labels!");
 		trans.put("Trying to merge two mails with different adresses!", "Versuch, zwei verschiedene Mailadressen zu mischen!");
 		trans.put("Trying to merge two nicknames with different strings!", "Versuch, zwei Rufnamen mit unterschiedlichen Texten zu mischen!");
 		trans.put("Trying to merge \"#\" with \"#\"!", "Versuch, \"#\" und \"#\" zu mischen!");
