@@ -340,6 +340,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			int res=contact.showResolveDialog(additionalContacts,client,problems);
 			switch (res) {
 			case 0:
+				contact.markForRewrite();
 				break;
 			case 1:
 				additionalContacts.add(new Contact(contact.name().toString()));
@@ -347,19 +348,17 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			default:
 				System.exit(-1);
 			}
-			// TODO: return additionalContacts only if needed
-			// TODO: option to add additional contact
 		}
 		if (additionalContacts.isEmpty()){
 			return additionalContacts;
 		}
 		TreeSet<Contact> result=new TreeSet<Contact>();
 		for (Contact clone:additionalContacts){
+			clone.markForRewrite();
 			if (!clone.isEmpty()){
 				result.add(clone);
 			}
 		}
-		System.out.println(result);
 		return result;
 	}
 

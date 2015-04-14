@@ -1718,8 +1718,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		String []options = new String[] {_("Update!"),_("Add another clone"),_("Cancel")};
 //		JOptionPane.showConfirmDialog(null, scrollableGrid, _("Distribute Fields"), JOptionPane.OK_CANCEL_OPTION);
 		return JOptionPane.showOptionDialog(null, scrollableGrid, _("Distribute Fields"), 0, JOptionPane.QUESTION_MESSAGE, null, options, 0);
-		// TODO: alter original contact, too
-		
 	}
 	
 	private void addMessengerSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
