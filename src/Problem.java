@@ -5,7 +5,8 @@ public class Problem {
 	public static enum Type{
 		ADDRESSES,
 		ANNIVERSARY, 
-		BIRTHDAY, 
+		BIRTHDAY,
+		CATEGORIES,
 		EMAIL,
 		FAX, 
 		FORMATTEDNAME, 
@@ -16,6 +17,7 @@ public class Problem {
 		ORGS,
 		PAGER, 
 		PHONE,
+		PHOTO,
 		ROLES,
 		TITLE,
 		URLS, 

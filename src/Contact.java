@@ -1699,16 +1699,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		addTitlesSelector(count, grid, backupContact, additionalContacts,client,problems);
 		addRolesSelector(count, grid, backupContact, additionalContacts,client,problems);
 		addNotesSelector(count, grid, backupContact, additionalContacts,client,problems);
-		addPhotosSelector(count, grid, backupContact, additionalContacts);
-		addCategoriesSelector(count, grid, backupContact, additionalContacts);
+		addPhotosSelector(count, grid, backupContact, additionalContacts,client,problems);
+		addCategoriesSelector(count, grid, backupContact, additionalContacts,client,problems);
 		addLabelsSelector(count, grid, backupContact, additionalContacts,client,problems);
 		addOrgsSelector(count, grid, backupContact, additionalContacts,client,problems);
-		addAddressSelectors(count, grid, backupContact, additionalContacts);
-		addNicknamesSelector(count, grid, backupContact, additionalContacts);
+		addAddressSelectors(count, grid, backupContact, additionalContacts,client,problems);
+		addNicknamesSelector(count, grid, backupContact, additionalContacts,client,problems);
 		addPhoneSelectors(count, grid, backupContact, additionalContacts,client,problems);
 		addMailSelectors(count,grid,backupContact,additionalContacts,client,problems);
-		addMessengerSelectors(count,grid,backupContact,additionalContacts);
-		addUrlSelectors(count,grid,backupContact,additionalContacts);
+		addMessengerSelectors(count,grid,backupContact,additionalContacts,client,problems);
+		addUrlSelectors(count,grid,backupContact,additionalContacts,client,problems);
 		// TODO: implement coloring and update check for other panels
 		
 
@@ -1722,6 +1722,79 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		
 	}
 	
+	private void addMessengerSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
+		if (backup.messengers != null && !backup.messengers.isEmpty()) {
+			final VerticalPanel messengersPanel=new VerticalPanel();
+			for (final Messenger messenger : backup.messengers) {
+				final VerticalPanel messengerPanel=new VerticalPanel(_("Messenger: #",messenger.nick()));
+				HorizontalPanel panel;
+				for (final Messenger.Category category : Messenger.Category.values()) {
+					panel=new HorizontalPanel();
+					for (final Contact additionalContact : additionalContacts) {
+						panel.add(activeBox(new Action() {
+
+							@Override
+							public void change(JCheckBox box) {
+								Messenger additionalContactMessenger = additionalContact.getMessenger(messenger.nick());
+								if (box.isSelected()) {
+									if (additionalContactMessenger == null) {
+										try {
+											additionalContactMessenger = messenger.clone(false);
+											additionalContact.addMessenger(additionalContactMessenger);
+										} catch (CloneNotSupportedException e) {
+											e.printStackTrace();
+										}
+									}
+									additionalContactMessenger.addCategory(category);
+								} else {
+									if (additionalContactMessenger != null) {
+										additionalContactMessenger.removeCategory(category);
+										if (additionalContactMessenger.categories().isEmpty()) {
+											additionalContact.removeMessenger(additionalContactMessenger);
+										}
+									}
+								}
+								checkValidity(additionalContacts,client,Problem.Type.MESSENGER,messengersPanel);
+							}
+						}));
+					}
+					panel.add(activeBox(_(category), messenger.categories().contains(category), new Action() {
+
+						@Override
+						public void change(JCheckBox box) {
+							Messenger baseMessenger = getMessenger(messenger.nick());
+							if (box.isSelected()) {
+								if (baseMessenger == null) {
+									try {
+										baseMessenger = messenger.clone(false);
+										addMessenger(baseMessenger);
+									} catch (CloneNotSupportedException e) {
+										e.printStackTrace();
+									}
+								}
+								baseMessenger.addCategory(category);
+							} else {
+								if (baseMessenger != null) {
+									baseMessenger.removeCategory(category);
+									if (baseMessenger.categories().isEmpty()) {
+										removeMessenger(baseMessenger);
+									}
+								}
+							}
+							checkValidity(additionalContacts,client,Problem.Type.MESSENGER,messengersPanel);
+						}
+					}));
+					messengerPanel.add(panel.scale());
+				}
+				messengersPanel.add(messengerPanel.scale());
+			}
+			if (problems.contains(Problem.Type.MESSENGER)){
+				messengersPanel.setBackground(Color.ORANGE);
+			}
+			grid.add(messengersPanel.scale());
+		}
+	}
+
 	private void addTitlesSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		HorizontalPanel panel;
 		if (backup.titles != null && !backup.titles.isEmpty()) {
@@ -1763,10 +1836,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 	
-	private void addCategoriesSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
-		HorizontalPanel panel;
+	private void addCategoriesSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		if (backup.categories != null && !backup.categories.isEmpty()) {
-			VerticalPanel categoriePanel = new VerticalPanel(_("Categories"));			
+			final VerticalPanel categoriePanel = new VerticalPanel(_("Categories"));			
+			HorizontalPanel panel;
 			for (final String category : backup.categories) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
@@ -1779,6 +1852,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 							} else {
 								additionalContact.categories.remove(category);
 							}
+							checkValidity(additionalContacts, client, Problem.Type.CATEGORIES, categoriePanel);
 						}
 					}));
 				}
@@ -1791,18 +1865,22 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						} else {
 							categories.remove(category);
 						}
+						checkValidity(additionalContacts, client, Problem.Type.CATEGORIES, categoriePanel);
 					}
 				}));
 				categoriePanel.add(panel.scale());
+			}
+			if (problems.contains(Problem.Type.CATEGORIES)){
+				categoriePanel.setBackground(Color.ORANGE);
 			}
 			grid.add(categoriePanel.scale());
 		}
   }
 	
-	private void addNicknamesSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
+	private void addNicknamesSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		HorizontalPanel panel;
 		if (backup.nicks != null && !backup.nicks.isEmpty()) {
-			VerticalPanel nicknamePanel = new VerticalPanel(_("Nicknames"));			
+			final VerticalPanel nicknamePanel = new VerticalPanel(_("Nicknames"));			
 			for (final Nickname nickname : backup.nicks) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
@@ -1819,6 +1897,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 							} else {
 								additionalContact.nicks.remove(nickname);
 							}
+							checkValidity(additionalContacts,client,Problem.Type.NICKNAMES,nicknamePanel);
 						}
 					}));
 				}
@@ -1835,9 +1914,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						} else {
 							nicks.remove(nickname);
 						}
+						checkValidity(additionalContacts,client,Problem.Type.NICKNAMES,nicknamePanel);
 					}
 				}));
 				nicknamePanel.add(panel.scale());
+			}
+			if (problems.contains(Problem.Type.NICKNAMES)){
+				nicknamePanel.setBackground(Color.ORANGE);
 			}
 			grid.add(nicknamePanel.scale());
 		}
@@ -1995,10 +2078,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 
-	private void addPhotosSelector(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
-		HorizontalPanel panel;
+	private void addPhotosSelector(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		if (backup.photos != null && !backup.photos.isEmpty()) {
-			VerticalPanel photoPanel = new VerticalPanel(_("Photos"));			
+			final VerticalPanel photoPanel = new VerticalPanel(_("Photos"));			
+			HorizontalPanel panel;
 			for (final String photo : backup.photos) {
 				panel = new HorizontalPanel();
 				for (final Contact additionalContact:additionalContacts) {
@@ -2011,6 +2094,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 							} else {
 								additionalContact.photos.remove(photo);
 							}
+							checkValidity(additionalContacts, client, Problem.Type.PHOTO, photoPanel);
 						}
 					}));
 				}
@@ -2023,9 +2107,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 						} else {
 							photos.remove(photo);
 						}
+						checkValidity(additionalContacts, client, Problem.Type.PHOTO, photoPanel);
 					}
 				}));
 				photoPanel.add(panel.scale());
+			}
+			if (problems.contains(Problem.Type.NOTES)){
+				photoPanel.setBackground(Color.ORANGE);
 			}
 			grid.add(photoPanel.scale());
 		}
@@ -2245,16 +2333,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
   }
 
-	private void addUrlSelectors(int count, JPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
+	private void addUrlSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		if (backup.urls != null && !backup.urls.isEmpty()) {
+			final VerticalPanel urlsPanel=new VerticalPanel();
 			for (final Url url : backup.urls) {
-				for (int i = 0; i < count; i++) {
-					grid.add(new JLabel());
-				}
-				grid.add(new JLabel(_("Url: #",url.address())));
+				final VerticalPanel urlPanel=new VerticalPanel(_("Url: #",url.address()));
+				HorizontalPanel panel;
 				for (final Url.Category category : Url.Category.values()) {
+					panel=new HorizontalPanel();
 					for (final Contact additionalContact : additionalContacts) {
-						grid.add(activeBox(new Action() {
+						panel.add(activeBox(new Action() {
 
 							@Override
 							public void change(JCheckBox box) {
@@ -2277,10 +2365,11 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 										}
 									}
 								}
+								checkValidity(additionalContacts,client,Problem.Type.URLS,urlsPanel);
 							}
 						}));
 					}
-					grid.add(activeBox(_(category), url.categories().contains(category), new Action() {
+					panel.add(activeBox(_(category), url.categories().contains(category), new Action() {
 
 						@Override
 						public void change(JCheckBox box) {
@@ -2303,79 +2392,22 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 									}
 								}
 							}
+							checkValidity(additionalContacts,client,Problem.Type.URLS,urlsPanel);
 						}
 					}));
+					urlPanel.add(panel.scale());
 				}
+				urlsPanel.add(urlPanel.scale());
 			}
+			if (problems.contains(Problem.Type.URLS)){
+				urlsPanel.setBackground(Color.ORANGE);
+			}
+			grid.add(urlsPanel.scale());
 		}
 	}
 	
 
 
-	private void addMessengerSelectors(int count, JPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
-		if (backup.messengers != null && !backup.messengers.isEmpty()) {
-			for (final Messenger messenger : backup.messengers) {
-				for (int i = 0; i < count; i++) {
-					grid.add(new JLabel());
-				}
-				grid.add(new JLabel(_("Messenger: #",messenger.nick())));
-				for (final Messenger.Category category : Messenger.Category.values()) {
-					for (final Contact additionalContact : additionalContacts) {
-						grid.add(activeBox(new Action() {
-
-							@Override
-							public void change(JCheckBox box) {
-								Messenger additionalContactmessenger = additionalContact.getMessenger(messenger.nick());
-								if (box.isSelected()) {
-									if (additionalContactmessenger == null) {
-										try {
-											additionalContactmessenger = messenger.clone(false);
-											additionalContact.addMessenger(additionalContactmessenger);
-										} catch (CloneNotSupportedException e) {
-											e.printStackTrace();
-										}
-									}
-									additionalContactmessenger.addCategory(category);
-								} else {
-									if (additionalContactmessenger != null) {
-										additionalContactmessenger.removeCategory(category);
-										if (additionalContactmessenger.categories().isEmpty()) {
-											additionalContact.removeMessenger(additionalContactmessenger);
-										}
-									}
-								}
-							}
-						}));
-					}
-					grid.add(activeBox(_(category), messenger.categories().contains(category), new Action() {
-
-						@Override
-						public void change(JCheckBox box) {
-							Messenger baseMessenger = getMessenger(messenger.nick());
-							if (box.isSelected()) {
-								if (baseMessenger == null) {
-									try {
-										baseMessenger = messenger.clone(false);
-										addMessenger(baseMessenger);
-									} catch (CloneNotSupportedException e) {
-										e.printStackTrace();
-									}
-								}
-								baseMessenger.addCategory(category);
-							} else {
-								if (baseMessenger != null) {
-									baseMessenger.removeCategory(category);
-									if (baseMessenger.categories().isEmpty()) {
-										removeMessenger(baseMessenger);
-									}
-								}
-							}
-						}
-					}));
-				}
-			}
-		}
-	}
 
 
 
@@ -2458,10 +2490,10 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	private void addPhoneSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		if (backup.phones != null && !backup.phones.isEmpty()) {
-			HorizontalPanel panel;
 			final VerticalPanel phonesPanel=new VerticalPanel();
 			for (final Phone phone : backup.phones) {
 				final VerticalPanel phonePanel=new VerticalPanel(_("Phone: #",phone.simpleNumber()));
+				HorizontalPanel panel;
 				for (final Phone.Category category : Phone.Category.values()) {
 					panel=new HorizontalPanel();
 					for (final Contact additionalContact : additionalContacts) {
@@ -2529,11 +2561,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 	}
 	
-	private void addAddressSelectors(int count, VerticalPanel grid, final Contact backup, TreeSet<Contact> additionalContacts) {
+	private void addAddressSelectors(int count, VerticalPanel grid, final Contact backup, final TreeSet<Contact> additionalContacts, final Client client, ProblemSet problems) {
 		if (backup.adresses != null && !backup.adresses.isEmpty()) {
-			HorizontalPanel panel;
+			final VerticalPanel addressesPanel=new VerticalPanel();
 			for (final Adress address : backup.adresses) {
 				VerticalPanel addressPanel=new VerticalPanel(_("Address"));
+				HorizontalPanel panel;
 				addressPanel.add(new JLabel(address.canonical()));
 				for (final Adress.Category category : Adress.Category.values()) {
 					panel=new HorizontalPanel();
@@ -2561,6 +2594,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 										}
 									}
 								}
+								checkValidity(additionalContacts,client,Problem.Type.ADDRESSES,addressesPanel);
 							}
 						}));
 					}
@@ -2587,12 +2621,17 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 									}
 								}
 							}
+							checkValidity(additionalContacts,client,Problem.Type.ADDRESSES,addressesPanel);
 						}
 					}));
 					addressPanel.add(panel.scale());
 				}
-				grid.add(addressPanel.scale());
+				addressesPanel.add(addressPanel.scale());
 			}
+			if (problems.contains(Problem.Type.ADDRESSES)){
+				addressesPanel.setBackground(Color.ORANGE);
+			}
+			grid.add(addressesPanel.scale());
 		}
 	}
 
