@@ -12,7 +12,7 @@ Dieses Programm steht unter der Gnu Public Licence (GPL).
 
 Im jar-Ordner finden Sie eine fertig compilierte Demo-Version, bei der alle Korrekturen nur demonstriert, aber nicht auf den Server zurückübertragen werden. Die Vollversion können Sie entweder selbst kompilieren oder fertig compiliert bei über wwww.srsoftware.de/CardDAVCleaner kaufen.
 
-Dieses Programm befindet sich in der Entwicklung. SRSoftware übernimmt keine Haftung für verlorene Kontaktdaten!
+Dieses Programm befindet sich in der Entwicklung. keawe.de übernimmt keine Haftung für verlorene Kontaktdaten!
 
 
 
@@ -27,7 +27,7 @@ This program is distributed under the GNU General Public License.
 
 In the jar folde you find a compiled demo version, which has all functions but does not save the changed contacts after cleaning. To get a fully functional version, you will have to compile the sources yourself or purchase the full version under wwww.srsoftware.de/CardDAVCleaner .
 
-Please be aware, that this software is under development and may contain errors. SRSoftware is not responsible for the safety of you data!
+Please be aware, that this software is under development and may contain errors. keawe is not responsible for the safety of you data!
 
 
 Running the Program
