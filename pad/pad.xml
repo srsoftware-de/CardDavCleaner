@@ -10,27 +10,27 @@
     <CERTIFICATE_LICENSE></CERTIFICATE_LICENSE>
   </MASTER_PAD_VERSION_INFO>
   <Company_Info>
-    <Company_Name>SRSoftware GbR</Company_Name>
+    <Company_Name>keawe C. & S.Richter GbR</Company_Name>
     <Country>Germany</Country>
     <State_Province>Thuringia</State_Province>
     <City_Town>Gera</City_Town>
     <Zip_Postal_Code>07549</Zip_Postal_Code>
     <Address_1>Keplerstraße 21</Address_1>
     <Address_2></Address_2>
-    <Company_WebSite_URL>http://srsoftware.de</Company_WebSite_URL>
+    <Company_WebSite_URL>http://keawe.de</Company_WebSite_URL>
     <Contact_Info>
       <Contact_First_Name>Stephan</Contact_First_Name>
       <Contact_Last_Name>Richter</Contact_Last_Name>
-      <Contact_Email>info@srsoftware.de</Contact_Email>
+      <Contact_Email>info@keawe.de</Contact_Email>
       <Author_First_Name>Stephan</Author_First_Name>
       <Author_Last_Name>Richter</Author_Last_Name>
-      <Author_Email>s.richter@srsoftware.de</Author_Email>
+      <Author_Email>s.richter@keawe.de</Author_Email>
       <Contact_Phone></Contact_Phone>
     </Contact_Info>
     <Support_Info>
-      <Sales_Email>info@srsoftware.de</Sales_Email>
-      <Support_Email>carddavcleaner@srsoftware.de</Support_Email>
-      <General_Email>info@srsoftware.de</General_Email>
+      <Sales_Email>info@keawe.de</Sales_Email>
+      <Support_Email>carddavcleaner@keawe.de</Support_Email>
+      <General_Email>info@keawe.de</General_Email>
       <Sales_Phone></Sales_Phone>
       <Support_Phone></Support_Phone>
       <General_Phone></General_Phone>
@@ -86,14 +86,14 @@
   </Program_Info>
   <Web_Info>
     <Application_URLs>
-      <Application_Info_URL>https://github.com/SRSoftware/CardDavCleaner</Application_Info_URL>
-      <Application_Order_URL>https://github.com/SRSoftware/CardDavCleaner</Application_Order_URL>
-      <Application_Screenshot_URL>https://raw.github.com/SRSoftware/CardDavCleaner/master/pad/screenshot.jpg</Application_Screenshot_URL>
-      <Application_Icon_URL>https://github.com/SRSoftware/CardDavCleaner/raw/master/pad/icon.gif</Application_Icon_URL>
+      <Application_Info_URL>https://github.com/keawe-software/CardDavCleaner</Application_Info_URL>
+      <Application_Order_URL>https://github.com/keawe-software/CardDavCleaner</Application_Order_URL>
+      <Application_Screenshot_URL>https://raw.github.com/keawe-software/CardDavCleaner/master/pad/screenshot.jpg</Application_Screenshot_URL>
+      <Application_Icon_URL>https://github.com/keawe-software/CardDavCleaner/raw/master/pad/icon.gif</Application_Icon_URL>
       <Application_XML_File_URL>http://repository.appvisor.com/app-ff004293dd02/site-01/CardDAV_cleaner_pad.xml</Application_XML_File_URL>
     </Application_URLs>
     <Download_URLs>
-      <Primary_Download_URL>https://github.com/SRSoftware/CardDavCleaner/raw/master/jar/CardDavCleaner-demo.jar</Primary_Download_URL>
+      <Primary_Download_URL>https://github.com/keawe-software/CardDavCleaner/raw/master/jar/CardDavCleaner-demo.jar</Primary_Download_URL>
       <Secondary_Download_URL></Secondary_Download_URL>
       <Additional_Download_URL_1></Additional_Download_URL_1>
       <Additional_Download_URL_2></Additional_Download_URL_2>
