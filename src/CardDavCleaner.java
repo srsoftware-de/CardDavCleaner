@@ -9,16 +9,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
+import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.rmi.AlreadyBoundException;
 import java.rmi.UnexpectedException;
 import java.rmi.activation.UnknownObjectException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -643,6 +649,44 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		return false;
 	}
 
+	private static final void setRequestMethodUsingWorkaroundForJREBug(final HttpURLConnection httpURLConnection, final String method) {
+		try {
+			httpURLConnection.setRequestMethod(method);
+			// Check whether we are running on a buggy JRE
+		} catch (final ProtocolException pe) {
+			Class<?> connectionClass = httpURLConnection.getClass();
+			Field delegateField = null;
+			try {
+				delegateField = connectionClass.getDeclaredField("delegate");
+				delegateField.setAccessible(true);
+				HttpURLConnection delegateConnection = (HttpURLConnection) delegateField.get(httpURLConnection);
+				setRequestMethodUsingWorkaroundForJREBug(delegateConnection, method);
+			} catch (NoSuchFieldException e) {
+				// Ignore for now, keep going
+			} catch (IllegalArgumentException e) {
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+			try {
+				Field methodField;
+				while (connectionClass != null) {
+					try {
+						methodField = connectionClass.getDeclaredField("method");
+					} catch (NoSuchFieldException e) {
+						connectionClass = connectionClass.getSuperclass();
+						continue;
+					}
+					methodField.setAccessible(true);
+					methodField.set(httpURLConnection, method);
+					break;
+				}
+			} catch (final Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
 	/**
 	 * tries to log in to the server using the given credentials and scans the contacts
 	 * 
@@ -677,17 +721,38 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 		try {
 			connection = (HttpURLConnection) url.openConnection();
-			InputStream content = (InputStream) connection.getInputStream();
-			BufferedReader in = new BufferedReader(new InputStreamReader(content));
+			setRequestMethodUsingWorkaroundForJREBug(connection, "REPORT");
+			connection.setDoOutput(true);
+			connection.setRequestProperty("Content-Type", "application/xml; charset=utf-8");
+			connection.setRequestProperty("Depth", "1");
+			System.out.println(connection.getRequestProperties());
+			connection.connect();
+			OutputStream out = connection.getOutputStream();
+			String request="<card:addressbook-query xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\">\n<d:prop>\n<d:getetag />\n<card:address-data />\n</d:prop>\n</card:addressbook-query>";
+			ByteArrayInputStream in = new ByteArrayInputStream(request.getBytes());
+			int read = -1;
+
+			while ((read = in.read()) != -1)
+				out.write(read);
+			out.close();
+
+			Map<String, List<String>> fields = connection.getHeaderFields();
+			for (Entry<String, List<String>> field:fields.entrySet()){
+				//System.out.println(field);
+			}
+			
+			InputStream content = (InputStream) connection.getInputStream();			
+			BufferedReader response = new BufferedReader(new InputStreamReader(content));
 			String line;
-			TreeSet<String> contacts = new TreeSet<String>();
-			while ((line = in.readLine()) != null) {
-				if (line.contains(".vcf")) contacts.add(extractContactName(line));
+			TreeSet<String> contacts = new TreeSet<String>();			
+			while ((line = response.readLine()) != null) {
+				System.out.println(line);
+				if (line.contains(".vcf")) contacts.add(extractContactName(line));				
 			}
 			in.close();
 			content.close();
 			connection.disconnect();
-			cleanContacts(host, contacts, backupPath);
+			//cleanContacts(host, contacts, backupPath);
 		} catch (SSLHandshakeException ve) {
 			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
 		}
