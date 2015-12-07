@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.security.InvalidParameterException;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 import javax.swing.JCheckBox;
@@ -296,7 +297,6 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 
 	private InputField numField;
 	VerticalPanel form;
-	private JCheckBox homeBox, voiceBox, workBox, cellBox, faxBox, prefBox, pagerBox;
 
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
 		if (content == null || !content.startsWith("TEL")) throw new InvalidFormatException(_("Phone enty does not start with \"TEL\": #", content));
@@ -455,21 +455,23 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 
 		form.add(numField = new InputField(_("Number"), number));
 		numField.addChangeListener(this);
+		
+		for (final Category cat: Category.values()){
+			final JCheckBox box=new JCheckBox(_(cat.toString()), categories.contains(cat));
+			box.addChangeListener(new ChangeListener() {
+				
+				@Override
+				public void stateChanged(ChangeEvent arg0) {
+					if (box.isSelected()){
+						categories.add(cat);
+					} else {
+						categories.remove(cat);
+					}
+				}
+			});
+			form.add(box);				
+		}
 
-		form.add(prefBox = new JCheckBox(_("Preferred Phone"), isPreferedPhone()));
-		prefBox.addChangeListener(this);
-		form.add(homeBox = new JCheckBox(_("Home Phone"), isHomePhone()));
-		homeBox.addChangeListener(this);
-		form.add(voiceBox = new JCheckBox(_("Voice Phone"), isVoice()));
-		voiceBox.addChangeListener(this);
-		form.add(workBox = new JCheckBox(_("Work Phone"), isWorkPhone()));
-		workBox.addChangeListener(this);
-		form.add(cellBox = new JCheckBox(_("Cell Phone"), isCellPhone()));
-		cellBox.addChangeListener(this);
-		form.add(faxBox = new JCheckBox(_("Fax"), isFax()));
-		faxBox.addChangeListener(this);
-		form.add(pagerBox = new JCheckBox(_("Pager"), isPager()));
-		pagerBox.addChangeListener(this);
 		form.scale();
 		return form;
 	}
@@ -565,16 +567,24 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 
 	public void stateChanged(ChangeEvent arg0) {
+		invalid = false;
+		readPhone(numField.getText());
 		update();
 	}
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("TEL");
-		if (isPreferedPhone()) sb.append(";PREF=1");
-		if (isFax()) sb.append(";TYPE=FAX");
-		for (Category cat:categories){
-			sb.append(";TYPE="+cat.toString().toUpperCase());
+		if (!categories.isEmpty()){
+			sb.append(";TYPE=");
+			
+			for (Iterator<Category> it = categories.iterator(); it.hasNext();){
+				Category cat=it.next();
+				sb.append(cat.toString().toUpperCase());
+				if (it.hasNext()){
+					sb.append(',');
+				}
+			}
 		}
 		sb.append(':');
 		if (number != null) sb.append(number);
@@ -602,29 +612,6 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 
 	private void update() {
-		invalid = false;
-		readPhone(numField.getText());
-		if (homeBox.isSelected()){
-			categories.add(Category.HOME);
-		}
-		if (workBox.isSelected()){
-			categories.add(Category.WORK);
-		}
-		if (voiceBox.isSelected()){
-			categories.add(Category.VOICE);
-		}
-		if (cellBox.isSelected()){
-			categories.add(Category.CELL);
-		}
-		if (faxBox.isSelected()){
-			categories.add(Category.FAX);
-		}
-		if (pagerBox.isSelected()){
-			categories.add(Category.PAGER);
-		}
-		if (prefBox.isSelected()){
-			categories.add(Category.PREF);
-		}
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {

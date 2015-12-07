@@ -55,7 +55,7 @@ public class Thunderbird extends Client {
 		result.put(Phone.Category.CELL,1);
 		result.put(Phone.Category.FAX,1);
 		result.put(Phone.Category.PAGER,1);
-		result.put(Phone.Category.PREFERED, 0);
+		result.put(Phone.Category.PREF, 0);
 	  return result;
   }
 
