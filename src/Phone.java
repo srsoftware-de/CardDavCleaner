@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.security.InvalidParameterException;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 import javax.swing.JCheckBox;
@@ -243,7 +244,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		CELL{
 			@Override
 			public String toString() {				
-				return "Cell Phone";
+				return "Cell";
 			}
 		}, 
 		FAX{
@@ -258,16 +259,22 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 				return "Voice";
 			}
 		}, 
+		VIDEO{
+			@Override
+			public String toString() {				
+				return "Video";
+			}
+		}, 
 		PAGER{
 			@Override
 			public String toString() {				
 				return "Pager";
 			}
 		}, 
-		PREFERED{
+		PREF{
 			@Override
 			public String toString() {				
-				return "Preferred Phone";
+				return "Pref";
 			}
 		};
 		
@@ -290,7 +297,6 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 
 	private InputField numField;
 	VerticalPanel form;
-	private JCheckBox homeBox, voiceBox, workBox, cellBox, faxBox, prefBox, pagerBox;
 
 	public Phone(String content) throws UnknownObjectException, InvalidFormatException {
 		if (content == null || !content.startsWith("TEL")) throw new InvalidFormatException(_("Phone enty does not start with \"TEL\": #", content));
@@ -300,71 +306,129 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (upper.startsWith("TYPE=FAX")) {
 				categories.add(Category.FAX);
 				line = line.substring(8);
+				upper= upper.substring(8);
+				continue;
+			}
+			
+			if (upper.startsWith(",FAX")) {
+				categories.add(Category.FAX);
+				line = line.substring(4);
+				upper= upper.substring(4);
 				continue;
 			}
 			if (upper.startsWith("TYPE=PREF")) {
-				categories.add(Category.PREFERED);
+				categories.add(Category.PREF);
 				line = line.substring(9);
+				upper= upper.substring(9);
 				continue;
 			}
 			if (upper.startsWith("PREF=1")) {
-				categories.add(Category.PREFERED);
+				categories.add(Category.PREF);
 				line = line.substring(6);
+				upper= upper.substring(6);
+
+				continue;
+			}
+			if (upper.startsWith(",PREF")) {
+				categories.add(Category.PREF);
+				line = line.substring(5);
+				upper= upper.substring(5);
 				continue;
 			}
 
 			if (upper.startsWith("TYPE=HOME")) {
 				categories.add(Category.HOME);
 				line = line.substring(9);
+				upper= upper.substring(9);
+
 				continue;
 			}
 			if (upper.startsWith("\\,HOME")) {
 				categories.add(Category.HOME);
 				line = line.substring(6);
+				upper= upper.substring(6);
+				continue;
+			}
+			if (upper.startsWith(",HOME")) {
+				categories.add(Category.HOME);
+				line = line.substring(5);
+				upper= upper.substring(5);
 				continue;
 			}
 			if (upper.startsWith("TYPE=CELL")) {
 				categories.add(Category.CELL);
 				line = line.substring(9);
+				upper= upper.substring(9);
 				continue;
 			}
 			if (upper.startsWith("\\,CELL")) {
 				categories.add(Category.CELL);
 				line = line.substring(6);
+				upper= upper.substring(6);
 				continue;
 			}
+			if (upper.startsWith(",CELL")) {
+				categories.add(Category.CELL);
+				line = line.substring(5);
+				upper= upper.substring(5);
+				continue;
+			}
+			
 			if (upper.startsWith("TYPE=WORK")) {
 				categories.add(Category.WORK);
 				line = line.substring(9);
+				upper= upper.substring(9);
 				continue;
 			}
 			if (upper.startsWith("\\,WORK")) {
 				categories.add(Category.WORK);
 				line = line.substring(6);
+				upper= upper.substring(6);
 				continue;
 			}
+			if (upper.startsWith(",WORK")) {
+				categories.add(Category.WORK);
+				line = line.substring(5);
+				upper= upper.substring(5);
+				continue;
+			}
+			if (upper.startsWith(",VIDEO")) {
+				categories.add(Category.VIDEO);
+				line = line.substring(6);
+				upper= upper.substring(6);
+				continue;
+			}
+
 			if (upper.startsWith("TYPE=VOICE")) {
 				categories.add(Category.VOICE);
 				line = line.substring(10);
+				upper= upper.substring(10);
+
 				continue;
 			}
 			if (upper.startsWith("\\,VOICE")) {
 				categories.add(Category.VOICE);
 				line = line.substring(7);
+				upper= upper.substring(7);
+
 				continue;
 			}
 			if (upper.startsWith("TYPE=PAGER")) {
 				categories.add(Category.PAGER);
 				line = line.substring(10);
+				upper= upper.substring(10);
+
 				continue;
 			}
 			if (upper.startsWith("\\,PAGER")) {
 				categories.add(Category.PAGER);
 				line = line.substring(7);
+				upper= upper.substring(7);
 				continue;
 			}
 			if (line.startsWith(";")) {
 				line = line.substring(1);
+				upper= upper.substring(1);
 				continue;
 			}
 			throw new UnknownObjectException(line + " in " + content);
@@ -391,21 +455,23 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 
 		form.add(numField = new InputField(_("Number"), number));
 		numField.addChangeListener(this);
+		
+		for (final Category cat: Category.values()){
+			final JCheckBox box=new JCheckBox(_(cat.toString()), categories.contains(cat));
+			box.addChangeListener(new ChangeListener() {
+				
+				@Override
+				public void stateChanged(ChangeEvent arg0) {
+					if (box.isSelected()){
+						categories.add(cat);
+					} else {
+						categories.remove(cat);
+					}
+				}
+			});
+			form.add(box);				
+		}
 
-		form.add(prefBox = new JCheckBox(_("Preferred Phone"), isPreferedPhone()));
-		prefBox.addChangeListener(this);
-		form.add(homeBox = new JCheckBox(_("Home Phone"), isHomePhone()));
-		homeBox.addChangeListener(this);
-		form.add(voiceBox = new JCheckBox(_("Voice Phone"), isVoice()));
-		voiceBox.addChangeListener(this);
-		form.add(workBox = new JCheckBox(_("Work Phone"), isWorkPhone()));
-		workBox.addChangeListener(this);
-		form.add(cellBox = new JCheckBox(_("Cell Phone"), isCellPhone()));
-		cellBox.addChangeListener(this);
-		form.add(faxBox = new JCheckBox(_("Fax"), isFax()));
-		faxBox.addChangeListener(this);
-		form.add(pagerBox = new JCheckBox(_("Pager"), isPager()));
-		pagerBox.addChangeListener(this);
 		form.scale();
 		return form;
 	}
@@ -434,7 +500,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	public boolean isFax() {
 		return categories.contains(Category.FAX);
 	}
-
+	
 	public boolean isPager() {
 		return categories.contains(Category.PAGER);
 	}
@@ -444,7 +510,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 	
 	public boolean isPreferedPhone(){
-		return categories.contains(Category.PREFERED);
+		return categories.contains(Category.PREF);
 	}
 
 
@@ -501,19 +567,25 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 
 	public void stateChanged(ChangeEvent arg0) {
+		invalid = false;
+		readPhone(numField.getText());
 		update();
 	}
 
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 		sb.append("TEL");
-		if (isPreferedPhone()) sb.append(";PREF=1");
-		if (isFax()) sb.append(";TYPE=FAX");
-		if (isHomePhone()) sb.append(";TYPE=HOME");
-		if (isCellPhone()) sb.append(";TYPE=CELL");
-		if (isWorkPhone()) sb.append(";TYPE=WORK");
-		if (isVoice()) sb.append(";TYPE=VOICE");
-		if (isPager()) sb.append(";TYPE=PAGER");
+		if (!categories.isEmpty()){
+			sb.append(";TYPE=");
+			
+			for (Iterator<Category> it = categories.iterator(); it.hasNext();){
+				Category cat=it.next();
+				sb.append(cat.toString().toUpperCase());
+				if (it.hasNext()){
+					sb.append(',');
+				}
+			}
+		}
 		sb.append(':');
 		if (number != null) sb.append(number);
 		return sb.toString();
@@ -540,29 +612,6 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 
 	private void update() {
-		invalid = false;
-		readPhone(numField.getText());
-		if (homeBox.isSelected()){
-			categories.add(Category.HOME);
-		}
-		if (workBox.isSelected()){
-			categories.add(Category.WORK);
-		}
-		if (voiceBox.isSelected()){
-			categories.add(Category.VOICE);
-		}
-		if (cellBox.isSelected()){
-			categories.add(Category.CELL);
-		}
-		if (faxBox.isSelected()){
-			categories.add(Category.FAX);
-		}
-		if (pagerBox.isSelected()){
-			categories.add(Category.PAGER);
-		}
-		if (prefBox.isSelected()){
-			categories.add(Category.PREFERED);
-		}
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);
 		} else {

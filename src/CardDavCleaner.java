@@ -2,16 +2,17 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.rmi.AlreadyBoundException;
 import java.rmi.UnexpectedException;
@@ -34,6 +35,14 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 public class CardDavCleaner extends JFrame implements ActionListener {
 
@@ -166,7 +175,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private JLabel backupPathLabel;
 
 	public CardDavCleaner() {
-		super(_("SRSoftware CardDAV cleaner"));
+		super(_("Keawe CardDAV cleaner"));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		createComponents();
 		setVisible(true);
@@ -643,6 +652,44 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		return false;
 	}
 
+	private static final void setRequestMethodUsingWorkaroundForJREBug(final HttpURLConnection httpURLConnection, final String method) {
+		try {
+			httpURLConnection.setRequestMethod(method);
+			// Check whether we are running on a buggy JRE
+		} catch (final ProtocolException pe) {
+			Class<?> connectionClass = httpURLConnection.getClass();
+			Field delegateField = null;
+			try {
+				delegateField = connectionClass.getDeclaredField("delegate");
+				delegateField.setAccessible(true);
+				HttpURLConnection delegateConnection = (HttpURLConnection) delegateField.get(httpURLConnection);
+				setRequestMethodUsingWorkaroundForJREBug(delegateConnection, method);
+			} catch (NoSuchFieldException e) {
+				// Ignore for now, keep going
+			} catch (IllegalArgumentException e) {
+				throw new RuntimeException(e);
+			} catch (IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+			try {
+				Field methodField;
+				while (connectionClass != null) {
+					try {
+						methodField = connectionClass.getDeclaredField("method");
+					} catch (NoSuchFieldException e) {
+						connectionClass = connectionClass.getSuperclass();
+						continue;
+					}
+					methodField.setAccessible(true);
+					methodField.set(httpURLConnection, method);
+					break;
+				}
+			} catch (final Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
 	/**
 	 * tries to log in to the server using the given credentials and scans the contacts
 	 * 
@@ -677,12 +724,30 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 		try {
 			connection = (HttpURLConnection) url.openConnection();
-			InputStream content = (InputStream) connection.getInputStream();
-			BufferedReader in = new BufferedReader(new InputStreamReader(content));
-			String line;
+			setRequestMethodUsingWorkaroundForJREBug(connection, "REPORT");
+			connection.setDoOutput(true);
+			connection.setRequestProperty("Content-Type", "application/xml; charset=utf-8");
+			connection.setRequestProperty("Depth", "1");
+			connection.connect();
+			OutputStream out = connection.getOutputStream();
+			String request="<card:addressbook-query xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\" />";
+			ByteArrayInputStream in = new ByteArrayInputStream(request.getBytes());
+			int read = -1;
+
+			while ((read = in.read()) != -1)
+				out.write(read);
+			out.close();
+			
+			InputStream content = (InputStream) connection.getInputStream();			
+			
+			DocumentBuilder dBuilder=DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			Document doc = dBuilder.parse(content);
+			NodeList nList = doc.getElementsByTagName("d:href");
 			TreeSet<String> contacts = new TreeSet<String>();
-			while ((line = in.readLine()) != null) {
-				if (line.contains(".vcf")) contacts.add(extractContactName(line));
+			for (int index=0; index<nList.getLength(); index++){
+				Node node=nList.item(index);
+				String href=node.getTextContent();
+				contacts.add(extractContactName(href));
 			}
 			in.close();
 			content.close();
@@ -690,6 +755,12 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			cleanContacts(host, contacts, backupPath);
 		} catch (SSLHandshakeException ve) {
 			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e){
+			e.printStackTrace();
 		}
 	}
 
