@@ -2,15 +2,11 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.Authenticator;
@@ -18,16 +14,12 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.rmi.AlreadyBoundException;
 import java.rmi.UnexpectedException;
 import java.rmi.activation.UnknownObjectException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -51,8 +43,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 
 public class CardDavCleaner extends JFrame implements ActionListener {
 
@@ -185,7 +175,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private JLabel backupPathLabel;
 
 	public CardDavCleaner() {
-		super(_("SRSoftware CardDAV cleaner"));
+		super(_("Keawe CardDAV cleaner"));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		createComponents();
 		setVisible(true);
@@ -738,7 +728,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			connection.setDoOutput(true);
 			connection.setRequestProperty("Content-Type", "application/xml; charset=utf-8");
 			connection.setRequestProperty("Depth", "1");
-			System.out.println(connection.getRequestProperties());
 			connection.connect();
 			OutputStream out = connection.getOutputStream();
 			String request="<card:addressbook-query xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\" />";
