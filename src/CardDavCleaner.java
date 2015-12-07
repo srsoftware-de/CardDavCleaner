@@ -250,9 +250,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws AlreadyBoundException
 	 * @throws InvalidAssignmentException
 	 */
-	private void cleanContacts(String host, Set<String> contactNames, File backupPath) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
-
-		Vector<Contact> contacts = readContacts(host, contactNames, backupPath);
+	private void cleanContacts(String host, Vector<Contact> contacts, File backupPath) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
 
 		// TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
 
@@ -747,26 +745,36 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			while ((read = in.read()) != -1)
 				out.write(read);
 			out.close();
-
-			Map<String, List<String>> fields = connection.getHeaderFields();
-			for (Entry<String, List<String>> field:fields.entrySet()){
-				//System.out.println(field);
-			}
 			
 			InputStream content = (InputStream) connection.getInputStream();			
 			DocumentBuilder dBuilder=DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document doc = dBuilder.parse(content);
-			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-			NodeList nList = doc.getElementsByTagName("card:address-data");
+			NodeList nList = doc.getElementsByTagName("d:response");
+			Vector<Contact> contacts;
 			for (int index=0; index<nList.getLength(); index++){
-				System.out.println(index);
 				Node node=nList.item(index);
-				System.out.println(node.getTextContent());
+				NodeList children=node.getChildNodes();
+				String href=null;
+				for (int i=0; i<children.getLength(); i++){
+					Node child=children.item(i);
+					String nodeName=child.getNodeName();
+					if (nodeName=="d:href"){
+						href=child.getTextContent();
+						System.out.println(href);
+					} else {
+						System.out.println(child.getNodeName());
+					}
+					
+				}
+				
+				//System.out.println(node.getTextContent());
+				System.exit(-1);
+				//readContacts(host, contactNamess, backupPath)
 			}
 			in.close();
 			content.close();
 			connection.disconnect();
-			cleanContacts(host, contacts, backupPath);
+			//cleanContacts(host, contacts, backupPath);
 		} catch (SSLHandshakeException ve) {
 			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
 		} catch (ParserConfigurationException e) {
