@@ -243,7 +243,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		CELL{
 			@Override
 			public String toString() {				
-				return "Cell Phone";
+				return "Cell";
 			}
 		}, 
 		FAX{
@@ -258,16 +258,22 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 				return "Voice";
 			}
 		}, 
+		VIDEO{
+			@Override
+			public String toString() {				
+				return "Video";
+			}
+		}, 
 		PAGER{
 			@Override
 			public String toString() {				
 				return "Pager";
 			}
 		}, 
-		PREFERED{
+		PREF{
 			@Override
 			public String toString() {				
-				return "Preferred Phone";
+				return "Pref";
 			}
 		};
 		
@@ -300,71 +306,129 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			if (upper.startsWith("TYPE=FAX")) {
 				categories.add(Category.FAX);
 				line = line.substring(8);
+				upper= upper.substring(8);
+				continue;
+			}
+			
+			if (upper.startsWith(",FAX")) {
+				categories.add(Category.FAX);
+				line = line.substring(4);
+				upper= upper.substring(4);
 				continue;
 			}
 			if (upper.startsWith("TYPE=PREF")) {
-				categories.add(Category.PREFERED);
+				categories.add(Category.PREF);
 				line = line.substring(9);
+				upper= upper.substring(9);
 				continue;
 			}
 			if (upper.startsWith("PREF=1")) {
-				categories.add(Category.PREFERED);
+				categories.add(Category.PREF);
 				line = line.substring(6);
+				upper= upper.substring(6);
+
+				continue;
+			}
+			if (upper.startsWith(",PREF")) {
+				categories.add(Category.PREF);
+				line = line.substring(5);
+				upper= upper.substring(5);
 				continue;
 			}
 
 			if (upper.startsWith("TYPE=HOME")) {
 				categories.add(Category.HOME);
 				line = line.substring(9);
+				upper= upper.substring(9);
+
 				continue;
 			}
 			if (upper.startsWith("\\,HOME")) {
 				categories.add(Category.HOME);
 				line = line.substring(6);
+				upper= upper.substring(6);
+				continue;
+			}
+			if (upper.startsWith(",HOME")) {
+				categories.add(Category.HOME);
+				line = line.substring(5);
+				upper= upper.substring(5);
 				continue;
 			}
 			if (upper.startsWith("TYPE=CELL")) {
 				categories.add(Category.CELL);
 				line = line.substring(9);
+				upper= upper.substring(9);
 				continue;
 			}
 			if (upper.startsWith("\\,CELL")) {
 				categories.add(Category.CELL);
 				line = line.substring(6);
+				upper= upper.substring(6);
 				continue;
 			}
+			if (upper.startsWith(",CELL")) {
+				categories.add(Category.CELL);
+				line = line.substring(5);
+				upper= upper.substring(5);
+				continue;
+			}
+			
 			if (upper.startsWith("TYPE=WORK")) {
 				categories.add(Category.WORK);
 				line = line.substring(9);
+				upper= upper.substring(9);
 				continue;
 			}
 			if (upper.startsWith("\\,WORK")) {
 				categories.add(Category.WORK);
 				line = line.substring(6);
+				upper= upper.substring(6);
 				continue;
 			}
+			if (upper.startsWith(",WORK")) {
+				categories.add(Category.WORK);
+				line = line.substring(5);
+				upper= upper.substring(5);
+				continue;
+			}
+			if (upper.startsWith(",VIDEO")) {
+				categories.add(Category.VIDEO);
+				line = line.substring(6);
+				upper= upper.substring(6);
+				continue;
+			}
+
 			if (upper.startsWith("TYPE=VOICE")) {
 				categories.add(Category.VOICE);
 				line = line.substring(10);
+				upper= upper.substring(10);
+
 				continue;
 			}
 			if (upper.startsWith("\\,VOICE")) {
 				categories.add(Category.VOICE);
 				line = line.substring(7);
+				upper= upper.substring(7);
+
 				continue;
 			}
 			if (upper.startsWith("TYPE=PAGER")) {
 				categories.add(Category.PAGER);
 				line = line.substring(10);
+				upper= upper.substring(10);
+
 				continue;
 			}
 			if (upper.startsWith("\\,PAGER")) {
 				categories.add(Category.PAGER);
 				line = line.substring(7);
+				upper= upper.substring(7);
 				continue;
 			}
 			if (line.startsWith(";")) {
 				line = line.substring(1);
+				upper= upper.substring(1);
 				continue;
 			}
 			throw new UnknownObjectException(line + " in " + content);
@@ -434,7 +498,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	public boolean isFax() {
 		return categories.contains(Category.FAX);
 	}
-
+	
 	public boolean isPager() {
 		return categories.contains(Category.PAGER);
 	}
@@ -444,7 +508,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 	}
 	
 	public boolean isPreferedPhone(){
-		return categories.contains(Category.PREFERED);
+		return categories.contains(Category.PREF);
 	}
 
 
@@ -509,11 +573,9 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		sb.append("TEL");
 		if (isPreferedPhone()) sb.append(";PREF=1");
 		if (isFax()) sb.append(";TYPE=FAX");
-		if (isHomePhone()) sb.append(";TYPE=HOME");
-		if (isCellPhone()) sb.append(";TYPE=CELL");
-		if (isWorkPhone()) sb.append(";TYPE=WORK");
-		if (isVoice()) sb.append(";TYPE=VOICE");
-		if (isPager()) sb.append(";TYPE=PAGER");
+		for (Category cat:categories){
+			sb.append(";TYPE="+cat.toString().toUpperCase());
+		}
 		sb.append(':');
 		if (number != null) sb.append(number);
 		return sb.toString();
@@ -561,7 +623,7 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 			categories.add(Category.PAGER);
 		}
 		if (prefBox.isSelected()){
-			categories.add(Category.PREFERED);
+			categories.add(Category.PREF);
 		}
 		if (isEmpty()) {
 			form.setBackground(Color.yellow);

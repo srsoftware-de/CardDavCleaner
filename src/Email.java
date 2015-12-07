@@ -229,6 +229,18 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 				return "Mobile";
 			}
 		},
+		OTHER {
+			@Override
+			public String toString() {
+				return "Other";
+			}
+		},
+		PREFERED{
+			@Override
+			public String toString() {				
+				return "Preferred";
+			}
+		},
 		INTERNET {
 			@Override
 			public String toString() {
@@ -268,35 +280,61 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 			String upper = line.toUpperCase();
 			if (upper.startsWith("TYPE=WORK")) {
 				categories.add(Category.WORK);
-				line = line.substring(9);
+				line = line.substring(9);				
+				upper = upper.substring(9);
+				continue;
+			}
+			if (upper.startsWith(",WORK")) {
+				categories.add(Category.WORK);
+				line = line.substring(5);
+				upper= upper.substring(5);
 				continue;
 			}
 			if (upper.startsWith("TYPE=HOME")) {
 				categories.add(Category.HOME);
 				line = line.substring(9);
+				upper = upper.substring(9);
 				continue;
 			}
 			if (upper.startsWith("TYPE=INTERNET")) {
 				categories.add(Category.INTERNET);
 				line = line.substring(13);
+				upper = upper.substring(13);
 				continue;
 			}
+
+
 			if (upper.startsWith("TYPE=X-INTERNET")) {
 				categories.add(Category.INTERNET);
 				line = line.substring(15);
+				upper = upper.substring(15);
 				continue;
 			}
 			if (upper.startsWith("TYPE=MOBILE")) {
 				categories.add(Category.MOBILE);
 				line = line.substring(11);
+				upper = upper.substring(11);
 				continue;
 			}
-			if (upper.startsWith("TYPE=X-MOBILE")) {
-				categories.add(Category.MOBILE);
-				line = line.substring(13);
+			if (upper.startsWith("TYPE=OTHER")) {
+				categories.add(Category.OTHER);
+				line = line.substring(10);
+				upper = upper.substring(10);
 				continue;
 			}
 
+			if (upper.startsWith("TYPE=X-MOBILE")) {
+				categories.add(Category.MOBILE);
+				line = line.substring(13);
+				upper = upper.substring(13);
+				continue;
+			}
+			if (upper.startsWith(",PREF")) {
+				categories.add(Category.PREFERED);
+				line = line.substring(5);
+				upper= upper.substring(5);
+				continue;
+			}
 			if (line.startsWith(";")) {
 				line = line.substring(1);
 				continue;

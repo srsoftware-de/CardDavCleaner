@@ -92,6 +92,7 @@ public class TranslationDE extends Translation{
 		trans.put("Middle Name", "mittlerer Name");
 		trans.put("Month of birth", "Geburtsmonat");
 		trans.put("name", "Name");
+		trans.put("name (last name, first name)","Name (Nachname, Vorname)");
 		trans.put("Name does not start with \"N:\": #", "Name beginnt nicht mit \"N:\": #");
 		trans.put("Name with more than 5 parts found:", "Name mit mehr als 5 teilen gefunden:");
 		trans.put("<html>New<br>Contact #", "<html>Neuer<br>Kontakt #");

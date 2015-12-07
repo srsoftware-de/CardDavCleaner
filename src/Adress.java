@@ -428,13 +428,22 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			if (upper.startsWith(";TYPE=HOME")) {
 				categories.add(Category.HOME);
 				line = line.substring(10);
+				upper= upper.substring(10);
 				continue;
 			}
 			if (upper.startsWith(";TYPE=WORK")) {
 				categories.add(Category.WORK);
 				line = line.substring(10);
+				upper= upper.substring(10);
 				continue;
 			}
+			if (upper.startsWith(",WORK")) {
+				categories.add(Category.WORK);
+				line = line.substring(5);
+				upper= upper.substring(5);
+				continue;
+			}
+
 			if (line.startsWith(";")) {
 				line = line.substring(1);
 				continue;

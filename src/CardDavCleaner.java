@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -250,7 +251,9 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws AlreadyBoundException
 	 * @throws InvalidAssignmentException
 	 */
-	private void cleanContacts(String host, Vector<Contact> contacts, File backupPath) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
+	private void cleanContacts(String host, Set<String> contactNames, File backupPath) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
+
+		Vector<Contact> contacts = readContacts(host, contactNames, backupPath);
 
 		// TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
 
@@ -738,7 +741,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			System.out.println(connection.getRequestProperties());
 			connection.connect();
 			OutputStream out = connection.getOutputStream();
-			String request="<card:addressbook-query xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\">\n<d:prop>\n<d:getetag />\n<card:address-data />\n</d:prop>\n</card:addressbook-query>";
+			String request="<card:addressbook-query xmlns:d=\"DAV:\" xmlns:card=\"urn:ietf:params:xml:ns:carddav\" />";
 			ByteArrayInputStream in = new ByteArrayInputStream(request.getBytes());
 			int read = -1;
 
@@ -747,39 +750,27 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			out.close();
 			
 			InputStream content = (InputStream) connection.getInputStream();			
+			
 			DocumentBuilder dBuilder=DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document doc = dBuilder.parse(content);
-			NodeList nList = doc.getElementsByTagName("d:response");
-			Vector<Contact> contacts;
+			NodeList nList = doc.getElementsByTagName("d:href");
+			TreeSet<String> contacts = new TreeSet<String>();
 			for (int index=0; index<nList.getLength(); index++){
 				Node node=nList.item(index);
-				NodeList children=node.getChildNodes();
-				String href=null;
-				for (int i=0; i<children.getLength(); i++){
-					Node child=children.item(i);
-					String nodeName=child.getNodeName();
-					if (nodeName=="d:href"){
-						href=child.getTextContent();
-						System.out.println(href);
-					} else {
-						System.out.println(child.getNodeName());
-					}
-					
-				}
-				
-				//System.out.println(node.getTextContent());
-				System.exit(-1);
-				//readContacts(host, contactNamess, backupPath)
+				String href=node.getTextContent();
+				contacts.add(extractContactName(href));
 			}
 			in.close();
 			content.close();
 			connection.disconnect();
-			//cleanContacts(host, contacts, backupPath);
+			cleanContacts(host, contacts, backupPath);
 		} catch (SSLHandshakeException ve) {
 			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
 		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (FileNotFoundException e){
 			e.printStackTrace();
 		}
 	}
