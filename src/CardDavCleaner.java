@@ -3,8 +3,10 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -40,6 +42,16 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl;
 
 public class CardDavCleaner extends JFrame implements ActionListener {
 
@@ -742,19 +754,25 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			}
 			
 			InputStream content = (InputStream) connection.getInputStream();			
-			BufferedReader response = new BufferedReader(new InputStreamReader(content));
-			String line;
-			TreeSet<String> contacts = new TreeSet<String>();			
-			while ((line = response.readLine()) != null) {
-				System.out.println(line);
-				if (line.contains(".vcf")) contacts.add(extractContactName(line));				
+			DocumentBuilder dBuilder=DocumentBuilderFactory.newInstance().newDocumentBuilder();
+			Document doc = dBuilder.parse(content);
+			System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+			NodeList nList = doc.getElementsByTagName("card:address-data");
+			for (int index=0; index<nList.getLength(); index++){
+				System.out.println(index);
+				Node node=nList.item(index);
+				System.out.println(node.getTextContent());
 			}
 			in.close();
 			content.close();
 			connection.disconnect();
-			//cleanContacts(host, contacts, backupPath);
+			cleanContacts(host, contacts, backupPath);
 		} catch (SSLHandshakeException ve) {
 			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
 		}
 	}
 
