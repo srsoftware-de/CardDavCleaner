@@ -1376,6 +1376,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (line.startsWith("CATEGORIES:") && (known = true)) readCategories(line.substring(11));
 			if (line.startsWith("X-MOZILLA-HTML:") && (known = true)) readMailFormat(line.substring(15));
 			if (line.startsWith("X-EVOLUTION-FILE-AS")) known = true; // ignore for now
+			if (line.startsWith("X-THUNDERBIRD-ETAG")) known = true; // ignore for now
 			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
 			if (line.startsWith("CUSTOM") && (known = true)) readCustom(line.substring(6));
 			if (!known) {
