@@ -716,13 +716,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 		if (!host.endsWith("/")) host += "/";
 		URL url = new URL(host);
-
+		
 		HttpURLConnection connection = null;
 		if (host.startsWith("https")) {
 			// here we set a socket factory, which uses our own trust manager
 			HttpsURLConnection.setDefaultSSLSocketFactory(TrustHandler.getSocketFactory());
 		}
-		try {
+		try {			
 			connection = (HttpURLConnection) url.openConnection();
 			setRequestMethodUsingWorkaroundForJREBug(connection, "REPORT");
 			connection.setDoOutput(true);
@@ -754,6 +754,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			connection.disconnect();
 			cleanContacts(host, contacts, backupPath);
 		} catch (SSLHandshakeException ve) {
+			ve.printStackTrace();
 			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
