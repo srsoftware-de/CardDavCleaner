@@ -1438,6 +1438,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			if (line.startsWith("X-ICQ:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
 			if (line.startsWith("X-MOZILLA-HTML:") && (known = true)) readMailFormat(line.substring(15));
 			if (line.startsWith("X-MS-IMADDRESS:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
+			if (line.startsWith("X-PHONETIC-LAST-NAME") && (known = true)) ignoredLines.add(line);
 			if (line.startsWith("X-SKYPE:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
 			if (line.startsWith("X-THUNDERBIRD-ETAG") && (known = true)) ignoredLines.add(line);
 			if (!known) {
