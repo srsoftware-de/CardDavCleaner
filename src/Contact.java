@@ -69,7 +69,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			StringWriter writer = new StringWriter();
 			StringReader reader = new StringReader(testCase);
 			readVCardLines(reader, writer);
-			if (writer.toString().equals("This text\n\rcontains no\n\rcarriage returns")) {
+			if (writer.toString().equals("This text\r\ncontains no\r\ncarriage returns")) {
 				System.out.println(_("ok"));
 			} else {
 				System.err.println(_("failed: #", _("No carriage returns added after newlines!")));
@@ -77,7 +77,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			}
 			
 			System.out.print(_("Contact parser test (folded lines)..."));
-			testCase = "Short line\n\rThis is a rather\n\r  long line with\n\r  two breaks.\n\rSecond short line";
+			testCase = "Short line\n\rThis is a rather\r\n  long line with\r\n  two breaks.\r\nSecond short line";
 			
 			writer = new StringWriter();
 			reader = new StringReader(testCase);
@@ -91,7 +91,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			}
 			
 			System.out.print(_("Contact parser test (folded lines with missing returns)..."));
-			testCase = "Short line\n\rThis is a rather\n  long line with\n  two breaks.\nSecond short line";
+			testCase = "Short line\nThis is a rather\n  long line with\n  two breaks.\nSecond short line";
 			
 			writer = new StringWriter();
 			reader = new StringReader(testCase);
@@ -384,9 +384,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			num = 0;
 			for (Contact c : contacts) {
 				comp++;
-				if (c.toString().equals(c.clone().toString())) {
-					num++;
-				}
+				if (c.toString().equals(c.clone().toString())) num++;
 			}
 			if (comp == num) {
 				System.out.println(_("ok"));
@@ -455,8 +453,6 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	}
 
 	SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd#HHmmss");
-	// private String revision;
-	// private String productId;
 
 	private Name name;
 	private String formattedName; // TODO: eine vcard kann auch mehrere haben!
@@ -480,7 +476,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 	private MergableList<Organization> orgs = new MergableList<Organization>();
 	private MergableList<Messenger> messengers = new MergableList<Messenger>();
 	private MergableList<Nickname> nicks = new MergableList<Nickname>();
-
+	private TreeSet<String> ignoredLines = new TreeSet<String>();
+	
 	private Contact clonedContact;
 
 	/* form elements */
@@ -858,7 +855,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		orgs.addAll(contact.orgs);
 		messengers.addAll(contact.messengers);
 		labels.addAll(contact.labels);
-
+		ignoredLines.addAll(contact.ignoredLines);
 		if (contact.htmlMail) htmlMail = true;
 
 		if (uid == null) uid = contact.uid;
@@ -945,24 +942,13 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			sb.append("PRODID:-//SRSoftware CalDavCleaner\n");
 		}
 
-		if (!shorter) {
-			sb.append(newRevision());
-			sb.append("\n");
-		}
+		if (!shorter) sb.append(newRevision()+"\n");
 
-		if (formattedName != null) {
-			sb.append("FN:");
-			sb.append(formattedName); // required for Version 3
-			sb.append("\n");
-		}
+		if (formattedName != null) sb.append("FN:"+formattedName+"\n"); // required for Version 3
 
-		sb.append(name);// required for Version 3
-		sb.append("\n");
+		sb.append(name+"\n");// required for Version 3
 
-		for (Nickname nick : nicks) {
-			sb.append(nick);
-			sb.append("\n");
-		}
+		for (Nickname nick : nicks) sb.append(nick+"\n");
 
 		if (categories != null && !categories.isEmpty()) {
 			sb.append("CATEGORIES:");
@@ -975,28 +961,15 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			sb.append("\n");
 		}
 
-		for (String title : titles) {
-			sb.append("TITLE:" + title + "\n");
-		}
+		for (String title : titles) sb.append("TITLE:" + title + "\n");
 
-		for (Organization org : orgs) {
-			sb.append(org);
-			sb.append("\n");
-		}
+		for (Organization org : orgs) sb.append(org+"\n");
 
-		for (Messenger messenger : messengers) {
-			sb.append(messenger);
-			sb.append("\n");
-		}
+		for (Messenger messenger : messengers) sb.append(messenger+"\n");
 
-		for (String role : roles) {
-			sb.append("ROLE:" + role + "\n");
-		}
+		for (String role : roles) sb.append("ROLE:" + role + "\n");
 
-		if (birthday != null && !birthday.toString().equals("BDAY:")) {
-			sb.append(birthday);
-			sb.append("\n");
-		}
+		if (birthday != null && !birthday.toString().equals("BDAY:")) sb.append(birthday+"\n");
 
 		if (anniversary != null) {
 			sb.append("ANNIVERSARY:");
@@ -1038,34 +1011,27 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		}
 
 		if (shorter) {
-			for (String note : notes) {
-				sb.append("NOTE:" + ((note.length() > cutLength + 2) ? (note.substring(0, cutLength) + "...") : note) + "\n");
-			}
+			for (String note : notes) sb.append("NOTE:" + ((note.length() > cutLength + 2) ? (note.substring(0, cutLength) + "...") : note) + "\n");
 		} else {
-			for (String note : notes) {
-				sb.append("NOTE:" + note + "\n");
-			}
+			for (String note : notes) sb.append("NOTE:" + note + "\n");
 		}
 
 		if (shorter) {
-			for (String photo : photos) {
-				sb.append(photo.substring(0, 30) + "...\n");
-			}
+			for (String photo : photos) sb.append(photo.substring(0, 30) + "...\n");
 		} else {
-			for (String photo : photos) {
-				sb.append(photo + "\n");
-			}
+			for (String photo : photos) sb.append(photo + "\n");
+			
 		}
 
-		for (Entry<Integer, String> c : customContent.entrySet()) {
-			sb.append("CUSTOM" + c.getKey() + ":" + c.getValue() + "\n");
+		for (Entry<Integer, String> c : customContent.entrySet()) sb.append("CUSTOM" + c.getKey() + ":" + c.getValue() + "\n");
+		
+		if (!shorter) {
+			for (String ignoredLine : ignoredLines) sb.append(ignoredLine+"\n");
 		}
 	}
 
 	public String vcfName() {
-		if (vcfName == null || vcfName.isEmpty()) {
-			generateName();
-		}
+		if (vcfName == null || vcfName.isEmpty()) generateName();
 		return vcfName;
 	}
 
@@ -1374,16 +1340,16 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		int nextToLast=0;
 		int character=0;
 		while ((character = reader.read())!= -1) {
-			if (last == '\n' && character != '\r') { // NL without CR found! Insert CR to comply with RFC 6350
+			if (character=='\n' && last != '\r') { // NL without CR found! Insert CR to comply with RFC 6350
 				if (writer!=null) writer.write('\r');
 				buf.append('\r');
-				nextToLast='\n'; // shift newline 
+				nextToLast=last; // shift newline 
 				last='\r'; // inserted carriage return
 			}
 			
 			if (writer!=null) writer.write(character);
 			
-			if (nextToLast == '\n' && last=='\r') {
+			if (nextToLast == '\r' && last=='\n') {
 				if (character == ' ') { // folded line
 					buf.setLength(buf.length()-2);
 					last=0;
@@ -1420,12 +1386,12 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		InputStream content = connection.getInputStream();
 		
 		InputStreamReader reader = new InputStreamReader(content);
-		FileWriter file = new FileWriter(new File(backupPath, vcfName()));
+		FileWriter file = (backupPath == null)?null:new FileWriter(new File(backupPath, vcfName()));
 
 		Vector<String> lines = readVCardLines(reader,file);
 				
 		reader.close();
-		file.close();
+		if (file != null) file.close();
 		
 		content.close();
 		connection.disconnect();
@@ -1437,36 +1403,47 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			boolean known = false;
 			if (line.equals("BEGIN:VCARD")) known = true;
 			if (line.equals("END:VCARD")) known = true;
-			if (line.startsWith("VERSION:")) known = true;
+			if (line.startsWith("DAVDROID1.")) line = line.substring(10); // groups are not supported, yet!
+			if (line.startsWith("DAVDROID2.")) line = line.substring(10); // groups are not supported, yet!
+			if (line.startsWith("ITEM1.")) line = line.substring(6); // groups are not supported, yet!
+			
 			if (line.startsWith("ADR") && (known = true)) readAdress(line);
 			if (line.startsWith("ANNIVERSARY:") && (known = true)) readAnniversary(line.substring(12));
 			if (line.startsWith("BDAY") && (known = true)) readBirthday(line);
 			if (line.startsWith("CATEGORIES:") && (known = true)) readCategories(line.substring(11));
-			if (line.startsWith("CLASS:")) known = true; // ignore
+			if (line.startsWith("CLASS:") && (known = true)) ignoredLines.add(line);
 			if (line.startsWith("CUSTOM") && (known = true)) readCustom(line.substring(6));
 			if (line.startsWith("EMAIL") && (known = true)) readMail(line);
 			if (line.startsWith("FN:") && (known = true)) readFormattedName(line.substring(3));
-			if (line.startsWith("IMPP:") && (known = true)) readIMPP(line);
+			if (line.startsWith("IMPP") && (known = true)) readIMPP(line);
 			if (line.startsWith("LABEL") && (known = true)) readLabel(line);
+			if (line.startsWith("MAILER:") && (known = true)) ignoredLines.add(line);
 			if (line.startsWith("N:") && (known = true)) readName(line);
 			if (line.startsWith("NICKNAME") && (known = true)) readNick(line);
 			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
 			if (line.startsWith("ORG:") && (known = true)) readOrg(line);
-			if (line.startsWith("PHOTO;") && (known = true)) readPhoto(line);
-			if (line.startsWith("PRODID:")) known = true; // readProductId(line.substring(7));
-			if (line.startsWith("REV:")) known = true;// readRevision(line.substring(4));
+			if (line.startsWith("PHOTO") && (known = true)) readPhoto(line);
+			if (line.startsWith("PRODID:")) known = true;
+			if (line.startsWith("PROFILE:") && (known = true)) ignoredLines.add(line);
+			if (line.startsWith("REV:")) known = true;
 			if (line.startsWith("ROLE:") && (known = true)) readRole(line.substring(5));
 			if (line.startsWith("TEL") && (known = true)) readPhone(line);
 			if (line.startsWith("TITLE:") && (known = true)) readTitle(line.substring(6));
 			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
 			if (line.startsWith("URL") && (known = true)) readUrl(line);
+			if (line.startsWith("VERSION:")) known = true;
 			if (line.startsWith("X-AIM:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
-			if (line.startsWith("X-EVOLUTION-FILE-AS")) known = true; // ignore for now
+			if (line.startsWith("X-ABLABEL") && (known = true)) ignoredLines.add(line);
+			if (line.startsWith("X-EVOLUTION-FILE-AS") && (known = true)) ignoredLines.add(line);
 			if (line.startsWith("X-ICQ:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
 			if (line.startsWith("X-MOZILLA-HTML:") && (known = true)) readMailFormat(line.substring(15));
+			if (line.startsWith("X-MS-IMADDRESS:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
 			if (line.startsWith("X-SKYPE:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
-			if (line.startsWith("X-THUNDERBIRD-ETAG")) known = true; // ignore for now
-			if (!known) throw new UnknownObjectException(_("unknown entry/instruction found in vcard #: '#'", new Object[] { vcfName, line }));
+			if (line.startsWith("X-THUNDERBIRD-ETAG") && (known = true)) ignoredLines.add(line);
+			if (!known) {
+				for (String s:lines) System.err.println(s);
+				throw new UnknownObjectException(_("unknown entry/instruction found in vcard #: '#'", new Object[] { vcfName, line.length()>200 ? line.substring(0, 200):line }));
+			}
 		}
 		changed();
 	}

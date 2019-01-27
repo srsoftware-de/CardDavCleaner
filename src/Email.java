@@ -273,69 +273,44 @@ public class Email extends Mergable<Email> implements DocumentListener, ChangeLi
 		if (content == null || !content.startsWith("EMAIL")) throw new InvalidFormatException("Mail adress does not start with \"EMAIL\"");
 		String line = content.substring(5);
 		while (!line.startsWith(":")) {
-			String upper = line.toUpperCase();
-			if (upper.startsWith("TYPE=WORK")) {
-				categories.add(Category.WORK);
-				line = line.substring(9);				
-				upper = upper.substring(9);
-				continue;
+			while (!line.startsWith(":")) {
+				if (line.toUpperCase().startsWith(";TYPE=")) {
+					line=line.substring(6);
+					do {
+						if (line.charAt(0)==',') line=line.substring(1);
+						if (line.toUpperCase().startsWith("X-")) line = line.substring(2);
+						if (line.toUpperCase().startsWith("HOME")) {
+							categories.add(Category.HOME);
+							line=line.substring(4);
+						}
+						if (line.toUpperCase().startsWith("INTERNET")) {
+							categories.add(Category.INTERNET);
+							line=line.substring(8);
+						}
+						if (line.toUpperCase().startsWith("MOBILE")) {
+							categories.add(Category.MOBILE);
+							line=line.substring(6);
+						}
+						if (line.toUpperCase().startsWith("OTHER")) {
+							categories.add(Category.OTHER);
+							line=line.substring(5);
+						}
+						if (line.toUpperCase().startsWith("PREF")) {
+							categories.add(Category.PREF);
+							line=line.substring(4);
+						}
+						if (line.toUpperCase().startsWith("WORK")) {
+							categories.add(Category.WORK);
+							line=line.substring(4);
+						}
+						if (line.toUpperCase().startsWith("SECONDARY")) line=line.substring(9);
+						
+						if (line.charAt(0)=='\\') line=line.substring(1); // i have seen entries like this: TEL;TYPE=WORK\,CELL:1230456
+					} while (line.charAt(0)==',');
+				} else if (line.toUpperCase().startsWith(";UNKNOWN=TYPE")){
+					line=line.substring(13);
+				} else throw new UnknownObjectException(content+" –– "+line);
 			}
-			if (upper.startsWith(",WORK")) {
-				categories.add(Category.WORK);
-				line = line.substring(5);
-				upper= upper.substring(5);
-				continue;
-			}
-			if (upper.startsWith("TYPE=HOME")) {
-				categories.add(Category.HOME);
-				line = line.substring(9);
-				upper = upper.substring(9);
-				continue;
-			}
-			if (upper.startsWith("TYPE=INTERNET")) {
-				categories.add(Category.INTERNET);
-				line = line.substring(13);
-				upper = upper.substring(13);
-				continue;
-			}
-
-
-			if (upper.startsWith("TYPE=X-INTERNET")) {
-				categories.add(Category.INTERNET);
-				line = line.substring(15);
-				upper = upper.substring(15);
-				continue;
-			}
-			if (upper.startsWith("TYPE=MOBILE")) {
-				categories.add(Category.MOBILE);
-				line = line.substring(11);
-				upper = upper.substring(11);
-				continue;
-			}
-			if (upper.startsWith("TYPE=OTHER")) {
-				categories.add(Category.OTHER);
-				line = line.substring(10);
-				upper = upper.substring(10);
-				continue;
-			}
-
-			if (upper.startsWith("TYPE=X-MOBILE")) {
-				categories.add(Category.MOBILE);
-				line = line.substring(13);
-				upper = upper.substring(13);
-				continue;
-			}
-			if (upper.startsWith(",PREF")) {
-				categories.add(Category.PREF);
-				line = line.substring(5);
-				upper= upper.substring(5);
-				continue;
-			}
-			if (line.startsWith(";")) {
-				line = line.substring(1);
-				continue;
-			}
-			throw new UnknownObjectException(line + " in " + content);
 		}
 		readAddr(line.substring(1));
 	}

@@ -8,7 +8,6 @@ import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-
 public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url> {
 	public static void test() {
 		try {
@@ -20,7 +19,7 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 				System.exit(-1);
 			} catch (InvalidFormatException e) {
 				System.out.println(_("ok"));
-      }
+			}
 
 			System.out.print(_("Url creation test (empty)..."));
 			testCase = "URL:";
@@ -232,34 +231,27 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 	public Url(String content) throws UnknownObjectException, InvalidFormatException {
 		if (content==null||!content.startsWith("URL")) throw new InvalidFormatException(_("Url does not start with \"URL\": #",content));
 		String line = content.substring(3);
-		while(!line.startsWith(":")){
-			if (line.startsWith(";")){
-				line=line.substring(1);
-				continue;
-			}
-			if (line.toUpperCase().startsWith("TYPE=HOME")){
-				categories.add(Category.HOME);
-				line=line.substring(9);
-				continue;
-			} 
-			if (line.toUpperCase().startsWith("TYPE=X-HOME")){
-				categories.add(Category.HOME);
-				line=line.substring(11);
-				continue;
-			} 
-			if (line.toUpperCase().startsWith("TYPE=WORK")){
-				categories.add(Category.WORK);
-				line=line.substring(9);
-				continue;
-			} 
-			if (line.toUpperCase().startsWith("WORK=")){
-				categories.add(Category.WORK);
-				line=line.substring(5);
-				continue;
-			} 
-			throw new UnknownObjectException(line+" in "+content);
+		
+		while (!line.startsWith(":")) {
+			if (line.toUpperCase().startsWith(";TYPE=")) {
+				line=line.substring(6);
+				do {
+					if (line.charAt(0)==',') line=line.substring(1);
+					if (line.toUpperCase().startsWith("X-")) line = line.substring(2);
+					if (line.toUpperCase().startsWith("HOME")) {
+						categories.add(Category.HOME);
+						line=line.substring(4);
+					}
+					if (line.toUpperCase().startsWith("WORK")) {
+						categories.add(Category.WORK);
+						line=line.substring(4);
+					}
+				} while (line.charAt(0)==',');
+			} else if (line.toUpperCase().startsWith(";UNKNOWN=TYPE")){
+				line=line.substring(13);
+			} else throw new UnknownObjectException(content+" : "+line);
 		}
-		readUrl(line.substring(1));		
+		readUrl(line.substring(1));
 	}
 
 	public int compareTo(Url otherUrl) {
@@ -332,9 +324,7 @@ public class Url extends Mergable<Url> implements ChangeListener, Comparable<Url
 
 	private void readUrl(String line) {
 		line=line.trim();
-		if (line.isEmpty()) {
-			line=null;
-		}
+		if (line.isEmpty()) line=null;
 		url = line;
 		checkValidity();
 	}

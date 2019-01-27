@@ -242,7 +242,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws InvalidAssignmentException
 	 */
 	private void cleanContacts(String host, Set<String> contactNames, File backupPath) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
-
 		Vector<Contact> contacts = readContacts(host, contactNames, backupPath);
 
 		// TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
@@ -478,9 +477,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		conn.connect();
 		int response = conn.getResponseCode();
 		conn.disconnect();
-		if (response != 204) {
-			throw new UnexpectedException(_("Server responded with CODE #", response));
-		}
+		if (response != 204) throw new UnexpectedException(_("Server responded with CODE #", response));
 	}
 
 	/**
@@ -520,9 +517,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		progressBar.setString(_("Reconciling changes..."));
 		TreeSet<Contact> result = new TreeSet<Contact>();
 		for (Contact contact : contacts) {
-			if (contact.shallBeRewritten()) {
-				result.add(contact);
-			}
+			if (contact.shallBeRewritten()) result.add(contact);
 		}
 		return result;
 	}
@@ -732,8 +727,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			ByteArrayInputStream in = new ByteArrayInputStream(request.getBytes());
 			int read = -1;
 
-			while ((read = in.read()) != -1)
-				out.write(read);
+			while ((read = in.read()) != -1) out.write(read);
 			out.close();
 			
 			InputStream content = (InputStream) connection.getInputStream();			

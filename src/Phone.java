@@ -302,136 +302,56 @@ public class Phone extends Mergable<Phone> implements DocumentListener, ChangeLi
 		if (content == null || !content.startsWith("TEL")) throw new InvalidFormatException(_("Phone enty does not start with \"TEL\": #", content));
 		String line = content.substring(3);
 		while (!line.startsWith(":")) {
-			String upper = line.toUpperCase();
-			if (upper.startsWith("TYPE=FAX")) {
-				categories.add(Category.FAX);
-				line = line.substring(8);
-				upper= upper.substring(8);
-				continue;
+			while (!line.startsWith(":")) {
+				if (line.toUpperCase().startsWith(";TYPE=")) {
+					line=line.substring(6);
+					do {
+						if (line.charAt(0)==',') line=line.substring(1);
+						if (line.toUpperCase().startsWith("X-")) line = line.substring(2);
+						if (line.toUpperCase().startsWith("CELL")) {
+							categories.add(Category.CELL);
+							line=line.substring(4);
+						}
+						if (line.toUpperCase().startsWith("COMPANY_MAIN")) {
+							categories.add(Category.WORK);
+							line=line.substring(12);
+						}						
+						if (line.toUpperCase().startsWith("FAX")) {
+							categories.add(Category.FAX);
+							line=line.substring(3);
+						}
+						if (line.toUpperCase().startsWith("HOME")) {
+							categories.add(Category.HOME);
+							line=line.substring(4);
+						}
+						if (line.toUpperCase().startsWith("PAGER")) {
+							categories.add(Category.PAGER);
+							line=line.substring(5);
+						}
+						if (line.toUpperCase().startsWith("PREF")) {
+							categories.add(Category.PREF);
+							line=line.substring(4);
+						}
+						if (line.toUpperCase().startsWith("VIDEO")) {
+							categories.add(Category.VIDEO);
+							line=line.substring(5);
+						}
+						if (line.toUpperCase().startsWith("VOICE")) {
+							categories.add(Category.VOICE);
+							line=line.substring(5);
+						}
+						if (line.toUpperCase().startsWith("WORK")) {
+							categories.add(Category.WORK);
+							line=line.substring(4);
+						}
+						if (line.toUpperCase().startsWith("SECONDARY")) line=line.substring(9);
+						
+						if (line.charAt(0)=='\\') line=line.substring(1); // i have seen entries like this: TEL;TYPE=WORK\,CELL:1230456
+					} while (line.charAt(0)==',');
+				} else if (line.toUpperCase().startsWith(";UNKNOWN=TYPE")){
+					line=line.substring(13);
+				} else throw new UnknownObjectException(content+" –– "+line);
 			}
-			
-			if (upper.startsWith(",FAX")) {
-				categories.add(Category.FAX);
-				line = line.substring(4);
-				upper= upper.substring(4);
-				continue;
-			}
-			if (upper.startsWith("TYPE=PREF")) {
-				categories.add(Category.PREF);
-				line = line.substring(9);
-				upper= upper.substring(9);
-				continue;
-			}
-			if (upper.startsWith("PREF=1")) {
-				categories.add(Category.PREF);
-				line = line.substring(6);
-				upper= upper.substring(6);
-
-				continue;
-			}
-			if (upper.startsWith(",PREF")) {
-				categories.add(Category.PREF);
-				line = line.substring(5);
-				upper= upper.substring(5);
-				continue;
-			}
-
-			if (upper.startsWith("TYPE=HOME")) {
-				categories.add(Category.HOME);
-				line = line.substring(9);
-				upper= upper.substring(9);
-
-				continue;
-			}
-			if (upper.startsWith("\\,HOME")) {
-				categories.add(Category.HOME);
-				line = line.substring(6);
-				upper= upper.substring(6);
-				continue;
-			}
-			if (upper.startsWith(",HOME")) {
-				categories.add(Category.HOME);
-				line = line.substring(5);
-				upper= upper.substring(5);
-				continue;
-			}
-			if (upper.startsWith("TYPE=CELL")) {
-				categories.add(Category.CELL);
-				line = line.substring(9);
-				upper= upper.substring(9);
-				continue;
-			}
-			if (upper.startsWith("\\,CELL")) {
-				categories.add(Category.CELL);
-				line = line.substring(6);
-				upper= upper.substring(6);
-				continue;
-			}
-			if (upper.startsWith(",CELL")) {
-				categories.add(Category.CELL);
-				line = line.substring(5);
-				upper= upper.substring(5);
-				continue;
-			}
-			
-			if (upper.startsWith("TYPE=WORK")) {
-				categories.add(Category.WORK);
-				line = line.substring(9);
-				upper= upper.substring(9);
-				continue;
-			}
-			if (upper.startsWith("\\,WORK")) {
-				categories.add(Category.WORK);
-				line = line.substring(6);
-				upper= upper.substring(6);
-				continue;
-			}
-			if (upper.startsWith(",WORK")) {
-				categories.add(Category.WORK);
-				line = line.substring(5);
-				upper= upper.substring(5);
-				continue;
-			}
-			if (upper.startsWith(",VIDEO")) {
-				categories.add(Category.VIDEO);
-				line = line.substring(6);
-				upper= upper.substring(6);
-				continue;
-			}
-
-			if (upper.startsWith("TYPE=VOICE")) {
-				categories.add(Category.VOICE);
-				line = line.substring(10);
-				upper= upper.substring(10);
-
-				continue;
-			}
-			if (upper.startsWith("\\,VOICE")) {
-				categories.add(Category.VOICE);
-				line = line.substring(7);
-				upper= upper.substring(7);
-
-				continue;
-			}
-			if (upper.startsWith("TYPE=PAGER")) {
-				categories.add(Category.PAGER);
-				line = line.substring(10);
-				upper= upper.substring(10);
-
-				continue;
-			}
-			if (upper.startsWith("\\,PAGER")) {
-				categories.add(Category.PAGER);
-				line = line.substring(7);
-				upper= upper.substring(7);
-				continue;
-			}
-			if (line.startsWith(";")) {
-				line = line.substring(1);
-				upper= upper.substring(1);
-				continue;
-			}
-			throw new UnknownObjectException(line + " in " + content);
 		}
 		readPhone(line.substring(1));
 	}
