@@ -10,12 +10,12 @@
     <CERTIFICATE_LICENSE></CERTIFICATE_LICENSE>
   </MASTER_PAD_VERSION_INFO>
   <Company_Info>
-    <Company_Name>keawe C. & S.Richter GbR</Company_Name>
+    <Company_Name>KEAWE – Stephan Richter</Company_Name>
     <Country>Germany</Country>
     <State_Province>Thuringia</State_Province>
-    <City_Town>Gera</City_Town>
-    <Zip_Postal_Code>07549</Zip_Postal_Code>
-    <Address_1>Keplerstraße 21</Address_1>
+    <City_Town>Kospoda</City_Town>
+    <Zip_Postal_Code>07806</Zip_Postal_Code>
+    <Address_1>Burgwitz 4</Address_1>
     <Address_2></Address_2>
     <Company_WebSite_URL>http://keawe.de</Company_WebSite_URL>
     <Contact_Info>
@@ -39,10 +39,10 @@
   </Company_Info>
   <Program_Info>
     <Program_Name>CardDav Cleaner</Program_Name>
-    <Program_Version>1.6</Program_Version>
-    <Program_Release_Month>12</Program_Release_Month>
-    <Program_Release_Day>06</Program_Release_Day>
-    <Program_Release_Year>2015</Program_Release_Year>
+    <Program_Version>1.7</Program_Version>
+    <Program_Release_Month>01</Program_Release_Month>
+    <Program_Release_Day>27</Program_Release_Day>
+    <Program_Release_Year>2018</Program_Release_Year>
     <Program_Cost_Dollars>0</Program_Cost_Dollars>
     <Program_Cost_Other_Code>EUR (Vollversion)</Program_Cost_Other_Code>
     <Program_Cost_Other>Kostenlos / 10</Program_Cost_Other>
