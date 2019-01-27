@@ -1,7 +1,6 @@
 import java.awt.Color;
 import java.rmi.activation.UnknownObjectException;
 import java.util.TreeSet;
-
 import javax.swing.JCheckBox;
 import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
@@ -392,8 +391,13 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 			public String toString() {
 				return "Work";
 			}
+		},
+		PREF {
+			@Override
+			public String toString() {
+				return "Pref";
+			}
 		};
-
 		public abstract String toString();
 	};
 	
@@ -403,8 +407,6 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 	private static String _(String key, Object insert) {
 		return Translations.get(key, insert);
 	}
-
-
 	
 	private TreeSet<Category> categories = new TreeSet<Adress.Category>();
 	//private boolean invalid = false;
@@ -417,42 +419,55 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 	private String country;
 	private VerticalPanel form;
 	private InputField zipField, streetField, extendedField, cityField, regionField, countryField, postBoxField;
-
+	private String label = null;
 	private JCheckBox homeBox, workBox;
 
 	public Adress(String content) throws UnknownObjectException, InvalidFormatException {
 		if (content==null || !content.startsWith("ADR")) throw new InvalidFormatException("Adress does not start with \"ADR;\": " + content);
 		String line = content.substring(3);
 		while (!line.startsWith(":")) {
-			String upper = line.toUpperCase();
-			if (upper.startsWith(";TYPE=HOME")) {
-				categories.add(Category.HOME);
-				line = line.substring(10);
-				upper= upper.substring(10);
-				continue;
-			}
-			if (upper.startsWith(";TYPE=WORK")) {
-				categories.add(Category.WORK);
-				line = line.substring(10);
-				upper= upper.substring(10);
-				continue;
-			}
-			if (upper.startsWith(",WORK")) {
-				categories.add(Category.WORK);
-				line = line.substring(5);
-				upper= upper.substring(5);
-				continue;
-			}
-
-			if (line.startsWith(";")) {
-				line = line.substring(1);
-				continue;
-			}
-			throw new UnknownObjectException(line);
+			if (line.toUpperCase().startsWith(";TYPE=")) {
+				line=line.substring(6);
+				do {
+					if (line.charAt(0)==',') line=line.substring(1);
+					if (line.toUpperCase().startsWith("HOME")) {
+						categories.add(Category.HOME);
+						line=line.substring(4);
+					}
+					if (line.toUpperCase().startsWith("WORK")) {
+						categories.add(Category.WORK);
+						line=line.substring(4);
+					}
+					if (line.toUpperCase().startsWith("PREF")) {
+						categories.add(Category.PREF);
+						line=line.substring(4);
+					}
+					if (line.toUpperCase().startsWith(",LABEL=")) line = ';'+line.substring(1); // fix for a bug: encountered vcard with line "ADR;TYPE=HOME,LABEL=Kantstraße 11,Gera:;;Kantstraße 11\n Gera;;;;"
+				} while (line.charAt(0)==',');
+			} else if (line.toUpperCase().startsWith(";LABEL=")) {
+				line=line.substring(7);
+				line=readLabel(line);
+			} else if (line.toUpperCase().startsWith(";UNKNOWN=LABEL")){
+				line=line.substring(14);
+			} else if (line.toUpperCase().startsWith(";UNKNOWN=TYPE")){
+				line=line.substring(13);
+			} else throw new UnknownObjectException(content+" –– "+line);
 		}
 		readAddr(line.substring(1));
 	}
 	
+	private String readLabel(String line) {
+		boolean inString = false;
+		int index=0;
+		while (index<line.length()) {
+			char c = line.charAt(index);
+			if (c=='"') inString = !inString;
+			if (!inString && c==':') break;
+			index++;
+		}
+		label=line.substring(0, index);
+		return line.substring(index);
+	}
 	public String canonical() {
 		StringBuffer sb = new StringBuffer();
 		if (postOfficeBox != null) sb.append(postOfficeBox);
@@ -550,6 +565,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 		sb.append("ADR");
 		if (categories.contains(Category.HOME)) sb.append(";TYPE=HOME");
 		if (categories.contains(Category.WORK)) sb.append(";TYPE=WORK");
+		if (label!=null) sb.append(";LABEL="+label);
 		sb.append(':');
 		sb.append(canonical());
 		return sb.toString();

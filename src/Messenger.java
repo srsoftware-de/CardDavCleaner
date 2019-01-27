@@ -267,10 +267,22 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 				return "AIM";
 			}
 		},
+		FACEBOOK {
+			@Override
+			public String toString() {
+				return "FACEBOOK";
+			}
+		},
 		ICQ {
 			@Override
 			public String toString() {
 				return "ICQ";
+			}
+		},
+		MS_IM {
+			@Override
+			public String toString() {
+				return "MS-IMADDRESS";
 			}
 		},
 		MSN {
@@ -279,22 +291,16 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 				return "MSN";
 			}
 		},
-		SIP {
-			@Override
-			public String toString() {
-				return "SIP";
-			}
-		},
 		SKYPE {
 			@Override
 			public String toString() {
 				return "SKYPE";
 			}
 		},
-		FACEBOOK {
+		SIP {
 			@Override
 			public String toString() {
-				return "FACEBOOK";
+				return "SIP";
 			}
 		};
 
@@ -323,23 +329,29 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 	private VerticalPanel form;
 
 	public Messenger(String content) throws InvalidFormatException, UnknownObjectException {
-		if (content == null || !content.startsWith("IMPP:")) throw new InvalidFormatException(_("Messenger adress does not start with \"IMPP:\": #", content));
+		if (content == null || !content.startsWith("IMPP")) throw new InvalidFormatException(_("Messenger adress does not start with \"IMPP\": #", content));
 		String line = content.substring(5);
 		while (!line.startsWith(":")) {
+			if (line.toUpperCase().startsWith("UNKNOWN=X-SERVICE-TYPE")) line=line.substring(23);
 			String upper = line.toUpperCase();
-			if (upper.startsWith("ICQ")) {
-				categories.add(Category.ICQ);
-				line = line.substring(3);
-				continue;
-			}
 			if (upper.startsWith("AIM")) {
 				categories.add(Category.AIM);
 				line = line.substring(3);
 				continue;
 			}
-			if (upper.startsWith("SKYPE")) {
-				categories.add(Category.SKYPE);
-				line = line.substring(5);
+			if (upper.startsWith("FACEBOOK")) {
+				categories.add(Category.FACEBOOK);
+				line = line.substring(8);
+				continue;
+			}
+			if (upper.startsWith("ICQ")) {
+				categories.add(Category.ICQ);
+				line = line.substring(3);
+				continue;
+			}
+			if (upper.startsWith("MS-IMADDRESS")) {
+				categories.add(Category.MS_IM);
+				line = line.substring(12);
 				continue;
 			}
 			if (upper.startsWith("MSN")) {
@@ -352,9 +364,9 @@ public class Messenger extends Mergable<Messenger> implements ChangeListener, Co
 				line = line.substring(3);
 				continue;
 			}
-			if (upper.startsWith("FACEBOOK")) {
-				categories.add(Category.FACEBOOK);
-				line = line.substring(8);
+			if (upper.startsWith("SKYPE")) {
+				categories.add(Category.SKYPE);
+				line = line.substring(5);
 				continue;
 			}
 			throw new UnknownObjectException("\"" + line + "\" in " + content);

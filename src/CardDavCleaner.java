@@ -49,7 +49,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private static Dimension screenDim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 
 	public static void main(String[] args) {
-		System.setProperty("jsse.enableSNIExtension", "false");
+		//System.setProperty("jsse.enableSNIExtension", "false");
 		if (args.length > 0 && args[0].equals("--test")) {
 			test();
 		} else {
@@ -224,6 +224,10 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		}
 	}
 
+	private String _(String key, int response) {
+		return Translations.get(key, response);
+	}
+
 	/**
 	 * starts the actual scanning of contacts upon server login
 	 * 
@@ -237,7 +241,6 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	 * @throws InvalidAssignmentException
 	 */
 	private void cleanContacts(String host, Set<String> contactNames, File backupPath) throws IOException, InterruptedException, UnknownObjectException, AlreadyBoundException, InvalidAssignmentException, InvalidFormatException {
-
 		Vector<Contact> contacts = readContacts(host, contactNames, backupPath);
 
 		// TreeMap<Contact, TreeSet<Contact>> blackLists = new TreeMap<Contact, TreeSet<Contact>>();
@@ -248,9 +251,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		// next: find associations between contacts and do an interactive merge
 		mergeAssociated(contacts);
 
-		if (thunderbirdBox.isSelected()) {
-			thunderbirdDistibute(contacts);
-		}
+		if (thunderbirdBox.isSelected()) thunderbirdDistibute(contacts);
 
 		// next: display changes to be made, ask for confirmation
 		writeContacts(host, contacts);
@@ -480,9 +481,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		progressBar.setString(_("Reconciling changes..."));
 		TreeSet<Contact> result = new TreeSet<Contact>();
 		for (Contact contact : contacts) {
-			if (contact.shallBeRewritten()) {
-				result.add(contact);
-			}
+			if (contact.shallBeRewritten()) result.add(contact);
 		}
 		return result;
 	}
@@ -609,13 +608,13 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 
 		if (!host.endsWith("/")) host += "/";
 		URL url = new URL(host);
-
+		
 		HttpURLConnection connection = null;
 		if (host.startsWith("https")) {
 			// here we set a socket factory, which uses our own trust manager
 			HttpsURLConnection.setDefaultSSLSocketFactory(TrustHandler.getSocketFactory());
 		}
-		try {
+		try {			
 			connection = (HttpURLConnection) url.openConnection();
 			setRequestMethodUsingWorkaroundForJREBug(connection, "REPORT");
 			connection.setDoOutput(true);
@@ -627,8 +626,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			ByteArrayInputStream in = new ByteArrayInputStream(request.getBytes());
 			int read = -1;
 
-			while ((read = in.read()) != -1)
-				out.write(read);
+			while ((read = in.read()) != -1) out.write(read);
 			out.close();
 			
 			InputStream content = (InputStream) connection.getInputStream();			
@@ -647,6 +645,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 			connection.disconnect();
 			cleanContacts(host, contacts, backupPath);
 		} catch (SSLHandshakeException ve) {
+			ve.printStackTrace();
 			JOptionPane.showMessageDialog(this, _("Sorry, i was not able to establish a secure connection to this server. I will quit now."));
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
