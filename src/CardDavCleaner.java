@@ -50,7 +50,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 	private static Dimension screenDim = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 
 	public static void main(String[] args) {
-		System.setProperty("jsse.enableSNIExtension", "false");
+		//System.setProperty("jsse.enableSNIExtension", "false");
 		if (args.length > 0 && args[0].equals("--test")) {
 			test();
 		} else {
@@ -253,9 +253,7 @@ public class CardDavCleaner extends JFrame implements ActionListener {
 		// next: find associations between contacts and do an interactive merge
 		mergeAssociated(contacts);
 
-		if (thunderbirdBox.isSelected()) {
-			thunderbirdDistibute(contacts);
-		}
+		if (thunderbirdBox.isSelected()) thunderbirdDistibute(contacts);
 
 		// next: display changes to be made, ask for confirmation
 		writeContacts(host, contacts);

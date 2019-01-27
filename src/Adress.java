@@ -424,6 +424,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 		if (content==null || !content.startsWith("ADR")) throw new InvalidFormatException("Adress does not start with \"ADR;\": " + content);
 		String line = content.substring(3);
 		while (!line.startsWith(":")) {
+			
 			String upper = line.toUpperCase();
 			if (upper.startsWith(";TYPE=HOME")) {
 				categories.add(Category.HOME);
@@ -448,7 +449,7 @@ public class Adress extends Mergable<Adress> implements DocumentListener, Change
 				line = line.substring(1);
 				continue;
 			}
-			throw new UnknownObjectException(line);
+			throw new UnknownObjectException(content+" : "+line);
 		}
 		readAddr(line.substring(1));
 	}

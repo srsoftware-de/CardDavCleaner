@@ -2,13 +2,16 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
@@ -37,7 +40,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 public class Contact extends Mergable<Contact> implements ActionListener, DocumentListener, ChangeListener, Comparable<Contact> {
-
+	
 	public static void test() {
 		try {
 			System.out.print(_("Contact creation test (null)..."));
@@ -59,7 +62,48 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			} catch (InvalidFormatException e) {
 				System.out.println(_("ok"));
 			}
-
+			
+			System.out.print(_("Contact parser test (linebreak without carriage return)..."));
+			testCase = "This text\ncontains no\ncarriage returns";
+			
+			StringWriter writer = new StringWriter();
+			StringReader reader = new StringReader(testCase);
+			readVCardLines(reader, writer);
+			if (writer.toString().equals("This text\n\rcontains no\n\rcarriage returns")) {
+				System.out.println(_("ok"));
+			} else {
+				System.err.println(_("failed: #", _("No carriage returns added after newlines!")));
+				System.exit(-1);
+			}
+			
+			System.out.print(_("Contact parser test (folded lines)..."));
+			testCase = "Short line\n\rThis is a rather\n\r  long line with\n\r  two breaks.\n\rSecond short line";
+			
+			writer = new StringWriter();
+			reader = new StringReader(testCase);
+			Vector<String> lines = readVCardLines(reader, writer);
+			
+			if (lines.get(0).equals("Short line") && lines.get(1).equals("This is a rather long line with two breaks.") && lines.get(2).equals("Second short line")) {
+				System.out.println(_("ok"));
+			} else {
+				System.err.println(_("failed: #", _("Foldes lines not parsed appropriately!")));
+				System.exit(-1);
+			}
+			
+			System.out.print(_("Contact parser test (folded lines with missing returns)..."));
+			testCase = "Short line\n\rThis is a rather\n  long line with\n  two breaks.\nSecond short line";
+			
+			writer = new StringWriter();
+			reader = new StringReader(testCase);
+			lines = readVCardLines(reader, writer);
+			
+			if (lines.get(0).equals("Short line") && lines.get(1).equals("This is a rather long line with two breaks.") && lines.get(2).equals("Second short line")) {
+				System.out.println(_("ok"));
+			} else {
+				System.err.println(_("failed: #", _("Foldes lines not parsed appropriately!")));
+				System.exit(-1);
+			}
+			
 			System.out.print(_("Contact creation test (name only)..."));
 			testCase = "BEGIN:VCARD\nN:Test;Contact;;;\nEND:VCARD\n";
 			Contact name = new Contact(testCase);
@@ -394,6 +438,8 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 			e.printStackTrace();
 		} catch (InvalidFormatException e) {
 			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 	}
@@ -472,8 +518,7 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 
 	public Contact(String directory, String name, File backupPath) throws UnknownObjectException, IOException, InvalidFormatException {
 		vcfName = name;
-		URL url = new URL(directory + name);
-		parse(url, backupPath);
+		readFromUrl(new URL(directory + name), backupPath);
 	}
 
 	public void actionPerformed(ActionEvent evt) {
@@ -1312,76 +1357,116 @@ public class Contact extends Mergable<Contact> implements ActionListener, Docume
 		String[] lineArray = data.split("\n");
 		parse(new Vector<String>(Arrays.asList(lineArray)));
 	}
-
-	private void parse(URL url, File backupPath) throws IOException, UnknownObjectException, InvalidFormatException {
-		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		InputStream content = (InputStream) connection.getInputStream();
-		BufferedReader in = new BufferedReader(new InputStreamReader(content));
-		BufferedWriter out = null;
-		if (backupPath != null) {
-			out = new BufferedWriter(new FileWriter(new File(backupPath, vcfName())));
-		}
+	
+	/**
+	 * Reads lines from a reader handle and writes a copy writer handle.
+	 * In doing so, missing carriage returns are added.
+	 * @param reader the source for reading the lines
+	 * @param writer the destination to which the content shall be cloned
+	 * @return a collection of lines read from the source
+	 * @throws IOException
+	 */
+	private static Vector<String> readVCardLines(Reader reader, Writer writer) throws IOException {
 		Vector<String> lines = new Vector<String>();
-		String line;
-		while ((line = in.readLine()) != null) {
-			lines.add(line);
-			if (out != null) {
-				out.write(line + "\n");
+
+		StringBuffer buf = new StringBuffer();
+		int last=0;
+		int nextToLast=0;
+		int character=0;
+		while ((character = reader.read())!= -1) {
+			if (last == '\n' && character != '\r') { // NL without CR found! Insert CR to comply with RFC 6350
+				if (writer!=null) writer.write('\r');
+				buf.append('\r');
+				nextToLast='\n'; // shift newline 
+				last='\r'; // inserted carriage return
 			}
+			
+			if (writer!=null) writer.write(character);
+			
+			if (nextToLast == '\n' && last=='\r') {
+				if (character == ' ') { // folded line
+					buf.setLength(buf.length()-2);
+					last=0;
+					nextToLast=0;
+					continue;
+				} else { // regular line end
+					String line = buf.toString().trim();
+					if (!line.isEmpty()) lines.add(line);
+					buf.setLength(0);
+				}
+			}
+			
+			
+			buf.append((char)character);
+			nextToLast = last;
+			last = character;
 		}
-		in.close();
-		if (out != null) {
-			out.close();
-		}
+		String line = buf.toString().trim();
+		if (!line.isEmpty()) lines.add(line);
+		
+		return lines;
+	}
+
+	/**
+	 * Loads a contact from an url, reads its contents into lines
+	 * @param url the location of the vcard
+	 * @param backupPath File handle of folder to which a backup shall be written
+	 * @throws IOException
+	 * @throws UnknownObjectException
+	 * @throws InvalidFormatException
+	 */
+	private void readFromUrl(URL url, File backupPath) throws IOException, UnknownObjectException, InvalidFormatException {
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		InputStream content = connection.getInputStream();
+		
+		InputStreamReader reader = new InputStreamReader(content);
+		FileWriter file = new FileWriter(new File(backupPath, vcfName()));
+
+		Vector<String> lines = readVCardLines(reader,file);
+				
+		reader.close();
+		file.close();
+		
 		content.close();
 		connection.disconnect();
 		parse(lines);
 	}
 
 	private void parse(Vector<String> lines) throws UnknownObjectException, InvalidFormatException {
-		for (int index = 0; index < lines.size(); index++) {
-			String line = lines.elementAt(index);
-			while (index + 1 < lines.size() && (lines.elementAt(index + 1).startsWith(" ") || lines.elementAt(index + 1).startsWith("\\n"))) {
-				index++;
-				String dummy = lines.elementAt(index);
-				if (dummy.startsWith(" ")) dummy = dummy.substring(1);
-				line += dummy;
-			}
+		for (String line:lines) {
 			boolean known = false;
 			if (line.equals("BEGIN:VCARD")) known = true;
 			if (line.equals("END:VCARD")) known = true;
 			if (line.startsWith("VERSION:")) known = true;
 			if (line.startsWith("ADR") && (known = true)) readAdress(line);
-			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
-			if (line.startsWith("TEL") && (known = true)) readPhone(line);
-			if (line.startsWith("EMAIL") && (known = true)) readMail(line);
-			if (line.startsWith("NICKNAME") && (known = true)) readNick(line);
-			if (line.startsWith("IMPP:") && (known = true)) readIMPP(line);
-			if (line.startsWith("X-ICQ:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
-			if (line.startsWith("X-AIM:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
-			if (line.startsWith("X-SKYPE:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
-			if (line.startsWith("REV:")) known = true;// readRevision(line.substring(4));
-			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
-			if (line.startsWith("LABEL") && (known = true)) readLabel(line);
-			if (line.startsWith("BDAY") && (known = true)) readBirthday(line);
-			if (line.startsWith("ROLE:") && (known = true)) readRole(line.substring(5));
-			if (line.startsWith("URL") && (known = true)) readUrl(line);
-			if (line.startsWith("PRODID:")) known = true; // readProductId(line.substring(7));
-			if (line.startsWith("N:") && (known = true)) readName(line);
-			if (line.startsWith("FN:") && (known = true)) readFormattedName(line.substring(3));
-			if (line.startsWith("ORG:") && (known = true)) readOrg(line);
-			if (line.startsWith("TITLE:") && (known = true)) readTitle(line.substring(6));
-			if (line.startsWith("PHOTO;") && (known = true)) readPhoto(line);
 			if (line.startsWith("ANNIVERSARY:") && (known = true)) readAnniversary(line.substring(12));
+			if (line.startsWith("BDAY") && (known = true)) readBirthday(line);
 			if (line.startsWith("CATEGORIES:") && (known = true)) readCategories(line.substring(11));
-			if (line.startsWith("X-MOZILLA-HTML:") && (known = true)) readMailFormat(line.substring(15));
-			if (line.startsWith("X-EVOLUTION-FILE-AS")) known = true; // ignore for now
-			if (line.startsWith("X-THUNDERBIRD-ETAG")) known = true; // ignore for now
-			if (line.startsWith(" \\n") && line.trim().equals("\\n")) known = true;
+			if (line.startsWith("CLASS:")) known = true; // ignore
 			if (line.startsWith("CUSTOM") && (known = true)) readCustom(line.substring(6));
-			if (!known) {
-				throw new UnknownObjectException(_("unknown entry/instruction found in vcard #: '#'", new Object[] { vcfName, line }));
-			}
+			if (line.startsWith("EMAIL") && (known = true)) readMail(line);
+			if (line.startsWith("FN:") && (known = true)) readFormattedName(line.substring(3));
+			if (line.startsWith("IMPP:") && (known = true)) readIMPP(line);
+			if (line.startsWith("LABEL") && (known = true)) readLabel(line);
+			if (line.startsWith("N:") && (known = true)) readName(line);
+			if (line.startsWith("NICKNAME") && (known = true)) readNick(line);
+			if (line.startsWith("NOTE:") && (known = true)) readNote(line.substring(5));
+			if (line.startsWith("ORG:") && (known = true)) readOrg(line);
+			if (line.startsWith("PHOTO;") && (known = true)) readPhoto(line);
+			if (line.startsWith("PRODID:")) known = true; // readProductId(line.substring(7));
+			if (line.startsWith("REV:")) known = true;// readRevision(line.substring(4));
+			if (line.startsWith("ROLE:") && (known = true)) readRole(line.substring(5));
+			if (line.startsWith("TEL") && (known = true)) readPhone(line);
+			if (line.startsWith("TITLE:") && (known = true)) readTitle(line.substring(6));
+			if (line.startsWith("UID:") && (known = true)) readUID(line.substring(4));
+			if (line.startsWith("URL") && (known = true)) readUrl(line);
+			if (line.startsWith("X-AIM:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
+			if (line.startsWith("X-EVOLUTION-FILE-AS")) known = true; // ignore for now
+			if (line.startsWith("X-ICQ:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
+			if (line.startsWith("X-MOZILLA-HTML:") && (known = true)) readMailFormat(line.substring(15));
+			if (line.startsWith("X-SKYPE:") && (known = true)) readIMPP(line.replace("X-", "IMPP:"));
+			if (line.startsWith("X-THUNDERBIRD-ETAG")) known = true; // ignore for now
+			if (!known) throw new UnknownObjectException(_("unknown entry/instruction found in vcard #: '#'", new Object[] { vcfName, line }));
 		}
 		changed();
 	}
