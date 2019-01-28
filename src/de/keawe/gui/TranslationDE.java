@@ -20,6 +20,7 @@ public class TranslationDE extends Translation{
 		trans.put("No Backup defined.", "Keine Sicherung geplant.");
 		trans.put("Not initialized", "Nicht initialisiert");
 		trans.put("Optional settings", "Optionale Einstellungen");
+		trans.put("Reading contact #...", "Lese Kontakt #...");
 		trans.put("Ready.", "Bereit.");
 		trans.put("Remove empty contacts", "Leere Kontakte löschen");
 		trans.put("Remove empty fields from contacts", "Leere Felder aus Kontakten löschen");

@@ -7,11 +7,12 @@ public class NameSet {
 
 	private TreeSet<String> names = new TreeSet<String>();
 	
-	public boolean similarTo(NameSet set2) {
-		if (names.isEmpty() || set2.names.isEmpty()) return false;
-		for (String name:names) if (set2.names.contains(name)) return true;
-		for (String name:set2.names) if (names.contains(name)) return true;
-		return false;
+	public TreeSet<String> similarTo(NameSet set2) {
+		TreeSet<String> result = new TreeSet<String>();
+		if (names.isEmpty() || set2.names.isEmpty()) return result;
+		for (String name:names) if (set2.names.contains(name)) result.add(name);
+		for (String name:set2.names) if (names.contains(name)) result.add(name);
+		return result;
 	}
 
 	public void addName(String value){

@@ -10,15 +10,12 @@ import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.security.InvalidParameterException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -97,7 +94,8 @@ public class AddressBook {
 			for (int j=i+1; j<contacts.size(); j++) {
 				Contact a = contacts.get(i);
 				Contact b = contacts.get(j);
-				if (a.similarTo(b)) list.add(new MergeCandidate(contacts.get(i),contacts.get(j)));
+				Vector<Tag> similarities = a.similarTags(b);
+				if (!similarities.isEmpty()) list.add(new MergeCandidate(contacts.get(i),contacts.get(j),similarities));
 			}
 		}
 		if (progressBar != null) {
@@ -162,8 +160,8 @@ public class AddressBook {
 		progressBar.setMaximum(num);
 		for (String fileName : contactList) {
 			index++;
+			if (index>100) break;
 			progressBar.setString(_("Reading contact #...",index+"/"+num));
-			
 			progressBar.setValue(index);
 			VCard card = new VCard(source,fileName);
 			if (backupPath != null) storeBackup(backupPath,card);

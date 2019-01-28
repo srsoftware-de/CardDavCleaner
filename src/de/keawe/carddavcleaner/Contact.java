@@ -1,11 +1,17 @@
 package de.keawe.carddavcleaner;
 
 import java.util.TreeSet;
+import java.util.Vector;
 
 public class Contact {
 
 	private VCard card;
 	private String[] lines;
+	private NameSet canonicalNames = null;
+	private TreeSet<String> canonicalNumbers = null;
+	private TreeSet<String> emails = null;
+	private TreeSet<String> messengers;
+
 
 	public Contact(VCard card) {
 		this.card = card;
@@ -14,70 +20,66 @@ public class Contact {
 	}
 	
 	private TreeSet<String> emails() {
-		TreeSet<String> result = new TreeSet<String>();
-		for (String line : lines) {
-			Tag tag = new Tag(line);
-			if (tag.value().isEmpty()) continue;
-			if (tag.name().toUpperCase().equals("EMAIL")) {
-				result.add(tag.value());
+		if (emails == null) {
+			emails = new TreeSet<String>();
+			for (String line : lines) {
+				Tag tag = new Tag(line);
+				if (tag.value().isEmpty()) continue;
+				if (tag.name().toUpperCase().equals("EMAIL")) emails.add(tag.value());
 			}
 		}
-		return result;
-	}
-	
-	private static TreeSet<String> intersection(TreeSet<String> numbers, TreeSet<String> numbers2) {
-		TreeSet<String> result = new TreeSet<String>();
-		for (String number:numbers) {
-			if (numbers2.contains(number)) result.add(number);
-		}
-		return result;
+		return emails;
 	}
 	
 	private TreeSet<String> messengers() {
-		TreeSet<String> result = new TreeSet<String>();
-		for (String line : lines) {
-			Tag tag = new Tag(line);
-			if (tag.value().isEmpty()) continue;
-			if (tag.name().toUpperCase().equals("IMPP")) {
-				result.add(tag.value());
+		if (messengers  == null) {
+			messengers = new TreeSet<String>();
+			for (String line : lines) {
+				Tag tag = new Tag(line);
+				if (tag.value().isEmpty()) continue;
+				String name = tag.name().toUpperCase();
+				if (name.equals("IMPP")) messengers.add(tag.value());
+				if (name.equals("X-MS-IMADDRESS")) messengers.add(tag.value());
 			}
 		}
-		return result;
+		return messengers;
 	}
 	
 	private NameSet names() {
-		NameSet result = new NameSet();
-		for (String line : lines) {
-			Tag tag = new Tag(line);
-			if (tag.value().isEmpty()) continue;
-			String name=tag.name().toUpperCase();
-			if (name.equals("FN")) {
-				result.addName(tag.value());
-			} else if(name.equals("N")) {
-				result.addName(tag.value().replace(";"," "));
+		if (canonicalNames == null) {
+			canonicalNames = new NameSet();
+			for (String line : lines) {
+				Tag tag = new Tag(line);
+				if (tag.value().isEmpty()) continue;
+				String name=tag.name().toUpperCase();
+				if (name.equals("FN")) canonicalNames.addName(tag.value());
+				if (name.equals("N")) canonicalNames.addName(tag.value().replace(";"," "));
+				if (name.equals("NICKNAME")) canonicalNames.addName(tag.value());
 			}
 		}
-		return result;
+		return canonicalNames;
 	}
 	
 	private TreeSet<String> numbers() {
-		TreeSet<String> result = new TreeSet<String>();
-		for (String line : lines) {
-			Tag tag = new Tag(line);
-			if (tag.value().isEmpty()) continue;
-			if (tag.name().toUpperCase().equals("TEL")) {
-				String val = tag.value().replace(" ","").replace("+49", "0").replace("(","").replace(")", "").replace("/","");
-				for (int i=0; i<val.length();i++) {
-					if (!Character.isDigit(val.charAt(i))) {
-						System.out.println("Found non-digit characters in phone number: "+val);
-						break;
+		if (canonicalNumbers == null) {
+			canonicalNumbers = new TreeSet<String>();
+			for (String line : lines) {
+				Tag tag = new Tag(line);
+				if (tag.value().isEmpty()) continue;
+				if (tag.name().toUpperCase().equals("TEL")) {
+					String val = tag.value().replace(" ","").replace("+49", "0").replace("(","").replace(")", "").replace("/","").replace("-","");;
+					for (int i=0; i<val.length();i++) {
+						if (!Character.isDigit(val.charAt(i))) {
+							System.out.println("Found non-digit characters in phone number: "+val);
+							break;
+						}
 					}
+	
+					canonicalNumbers.add(val);
 				}
-
-				result.add(val);
 			}
 		}
-		return result;
+		return canonicalNumbers;
 	}
 
 	private static StringBuffer fixLineBreaks(StringBuffer buffer) {
@@ -94,15 +96,22 @@ public class Contact {
 		return result;
 	}
 	
-	public boolean similarTo(Contact b) {
-		if (names().similarTo(b.names())) return true;
-		if (!intersection(numbers(),b.numbers()).isEmpty()) return true;
-		if (!intersection(emails(), b.emails()).isEmpty()) return true;
-		if (!intersection(messengers(), b.messengers()).isEmpty()) return true;
-		return false;
+	public Vector<Tag> similarTags(Contact b){
+		Vector<Tag> similarTags = new Vector<Tag>();
+		for (String name: names().similarTo(b.names())) {
+			similarTags.add(new Tag("NAME:"+name));
+		}
+		for (String number : numbers()) {
+			if (b.numbers().contains(number)) similarTags.add(new Tag("TEL:"+number));
+		}
+		for (String email : emails()) {
+			if (b.emails().contains(email)) similarTags.add(new Tag("EMAIL:"+email));
+		}
+		for (String messenger : messengers()) {
+			if (b.messengers().contains(messenger)) similarTags.add(new Tag("IMPP:"+messenger));
+		}
+		return similarTags;
 	}
-
-
 
 	public static boolean test() {
 		boolean error = false;

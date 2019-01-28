@@ -7,8 +7,9 @@ public class Tag {
 	
 	private String group = null;
 	private String name = null;
-	private TreeMap<String,String> params = new TreeMap();
+	private TreeMap<String,String> params = new TreeMap<String, String>();
 	private String value = null;
+	private String line;
 	
 	private void addParam(String substring) {
 		String[] parts = substring.split("=", 2);
@@ -20,6 +21,7 @@ public class Tag {
 	}
 
 	public Tag(String line) {
+		this.line = line;
 		int semicolonPos = line.indexOf(";");
 		int endOfName = (semicolonPos < 0) ? line.indexOf(":") : Math.min(semicolonPos, line.indexOf(":"));
 		name = line.substring(0, endOfName);
@@ -28,6 +30,7 @@ public class Tag {
 			group = name.substring(0,dotIndex);
 			name = name.substring(dotIndex+1);
 		}
+		warnIfUnknown(name);
 		String postFix = line.substring(endOfName);
 		while (postFix.startsWith(";")) postFix = readParam(postFix);
 		if (postFix.startsWith(":")) value = postFix.substring(1).trim();
@@ -204,8 +207,51 @@ public class Tag {
 		return error;
 	}
 	
+	@Override
+	public String toString() {
+		return name()+":"+value();
+	}
+	
 	public String value() {
 		return value;
+	}
+	
+	private void warnIfUnknown(String name) {
+		String [] knownNames = new String[] {
+			"ADR",
+			"BDAY",
+			"BEGIN",
+			"CATEGORIES",
+			"CLASS",
+			"EMAIL",
+			"END",
+			"FN",
+			"IMPP",
+			"LABEL",
+			"MAILER",
+			"N",
+			"NICKNAME",
+			"NOTE",
+			"ORG",
+			"PHOTO",
+			"PRODID",
+			"PROFILE",
+			"REV",
+			"TEL",
+			"TITLE",
+			"UID",
+			"URL",
+			"VERSION",
+			"X-ABLABEL",
+			"X-MOZILLA-HTML",
+			"X-MS-IMADDRESS",
+			"X-THUNDERBIRD-ETAG"
+		};
+		boolean known = false;
+		name = name.toUpperCase();
+		for (int i=0; i<knownNames.length;i++) known |= name.equals(knownNames[i]);
+		if (!known) System.err.println("Encountered unknown tag: "+this.line);
+		if (name.equals("LABEL")) System.out.println(this.line);
 	}
 
 }
