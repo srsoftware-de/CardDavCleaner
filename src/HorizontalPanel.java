@@ -48,9 +48,7 @@ public class HorizontalPanel extends JPanel {
 		this.setLayout(null);
 		width=5;
 		offset=5;
-		if (caption){
-			offset+=15;
-		}
+		if (caption) offset+=15;
 	}
 	
 	/**
@@ -78,9 +76,7 @@ public class HorizontalPanel extends JPanel {
 		super.removeAll();
 		init();
 		for (Component c:oldComps){
-			if (c==givenComponent) {
-				add(newComponent);
-			}
+			if (c==givenComponent) add(newComponent);
 			add((JComponent)c);
 		}
 		scale();
@@ -94,9 +90,7 @@ public class HorizontalPanel extends JPanel {
 		for (Component c:oldComps){
 			if (c==old) {
 				add(replacement);
-			} else {
-				add((JComponent)c);
-			}
+			} else add((JComponent)c);
 		}
 		scale();
 		this.repaint();

@@ -37,15 +37,11 @@ public class InputField extends HorizontalPanel implements DocumentListener, Foc
 		add(new JLabel(caption + " "));
 		if (defaultValue==null || defaultValue.isEmpty()){
 			result=new JTextField(10);
-		} else {
-			result=new JTextField(defaultValue+"   ");
-		}
+		} else result=new JTextField(defaultValue+"   ");
 		result.addFocusListener(this);
 		add(result);
 		scale();
-		if (defaultValue!=null && !defaultValue.isEmpty()) {
-			result.setText(defaultValue);
-		}
+		if (defaultValue!=null && !defaultValue.isEmpty()) result.setText(defaultValue);
 	}
 
 	public InputField(String caption) {
@@ -82,9 +78,7 @@ public class InputField extends HorizontalPanel implements DocumentListener, Foc
 
 	private void edit() {
 		if (editListeners!=null){
-			for (ChangeListener cl:editListeners){
-				cl.stateChanged(new ChangeEvent(this));
-			}
+			for (ChangeListener cl:editListeners) cl.stateChanged(new ChangeEvent(this));
 		}
 	}
 
