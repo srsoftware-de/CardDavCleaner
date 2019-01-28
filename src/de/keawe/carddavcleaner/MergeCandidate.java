@@ -26,4 +26,15 @@ public class MergeCandidate {
 		return sb.toString();
 	}
 
+	public Vector<Tag> similarities() {
+		return similarities;
+	}
+
+	public Contact contactA() {
+		return contactA;
+	}
+
+	public Contact contactB() {
+		return contactB;
+	}
 }

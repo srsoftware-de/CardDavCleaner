@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -191,9 +192,36 @@ public class CardDavCleaner extends JFrame {
 		return bar;
 	}
 	
-	private void proposeMerge(MergeCandidate candidate) {
+	private int proposeMerge(MergeCandidate candidate) {
 		System.out.println("CardDavCleaner.proposeMerge not implemented");
-		System.out.println(candidate);
+
+		
+		Vector<Tag> similarities = candidate.similarities();
+		
+		String text = null;
+		boolean plural = similarities.size()>1;
+		do {
+			Tag t=similarities.remove(0);
+			String tagString = t.name()+" '"+t.value()+"'";
+			if (text == null) {
+				text =  plural ? _(" and ") : "";
+				text += _("# "+(plural?"are":"is")+" used by the following contacts:",tagString);
+			} else text = (similarities.size()>0 ? ", ":"")+ tagString + text;
+		} while (!similarities.isEmpty());
+
+		VerticalPanel vp = new VerticalPanel();
+		vp.add(new JLabel(text));
+		HorizontalPanel hp = new HorizontalPanel();
+		hp.add(new JLabel("<html><br>" + candidate.contactA().card().toString().replace("\n", "&nbsp<br>")));
+		hp.add(new JLabel("<html><br>" + candidate.contactB().card().toString().replace("\n", "<br>")));
+		hp.scale();
+		vp.add(hp);
+		vp.add(new JLabel(_("<html><br>Shall those contacts be <i>merged</i>?")));
+/*		if (contact.birthday() != null && contact2.birthday() != null && !contact.birthday().equals(contact2.birthday())) {
+			vp.add(new JLabel(_("<html><font color=\"red\">Warning! Those contacts contain unequal birth dates!")));
+		}*/
+		vp.scale();
+		return JOptionPane.showConfirmDialog(null, vp, _("Please decide!"), JOptionPane.YES_NO_CANCEL_OPTION);
 	}
 
 	protected void selectBackupPath(JLabel label) {
@@ -223,7 +251,7 @@ public class CardDavCleaner extends JFrame {
 		serverPanel.add(locationPanel());
 		
 		serverPanel.add(addressField = new InputField(_("Location of addressbook:")));
-		addressField.setText("https://eldorado.keawe.de/cloud/remote.php/dav/addressbooks/users/srichter/standard/");
+		addressField.setText("https://example.com");
 		
 		serverPanel.add(userField = new InputField(_("User:"), false));
 		serverPanel.add(passwordField = new InputField(_("Password:"), true));
@@ -250,7 +278,8 @@ public class CardDavCleaner extends JFrame {
 				MergeCandidate candidate;
 				while ((candidate = addressBook.getMergeCandidate()) != null) {
 					progressBar.setValue(progressBar.getValue()+1);
-					proposeMerge(candidate);
+					int decision = proposeMerge(candidate);
+					// TODO: handle decision
 				}
 				if (askForCommit(addressBook)) addressBook.commit();
 			} catch (Exception e) {

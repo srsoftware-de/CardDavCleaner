@@ -16,6 +16,8 @@ public class NameSet {
 	}
 
 	public void addName(String value){
+		value = value.trim();
+		if (value.isEmpty()) return;
 		String[] parts = value.split(" ");
 		Arrays.sort(parts,String.CASE_INSENSITIVE_ORDER);
 		names.add(String.join(" ", parts));

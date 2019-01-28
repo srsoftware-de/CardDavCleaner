@@ -4,7 +4,6 @@ import java.util.TreeMap;
 
 public class Tag {
 
-	
 	private String group = null;
 	private String name = null;
 	private TreeMap<String,String> params = new TreeMap<String, String>();
@@ -237,21 +236,23 @@ public class Tag {
 			"PRODID",
 			"PROFILE",
 			"REV",
+			"ROLE",
 			"TEL",
 			"TITLE",
 			"UID",
 			"URL",
 			"VERSION",
 			"X-ABLABEL",
+			"X-AIM",
 			"X-MOZILLA-HTML",
 			"X-MS-IMADDRESS",
+			"X-PHONETIC-LAST-NAME",
 			"X-THUNDERBIRD-ETAG"
 		};
 		boolean known = false;
 		name = name.toUpperCase();
 		for (int i=0; i<knownNames.length;i++) known |= name.equals(knownNames[i]);
 		if (!known) System.err.println("Encountered unknown tag: "+this.line);
-		if (name.equals("LABEL")) System.out.println(this.line);
 	}
 
 }

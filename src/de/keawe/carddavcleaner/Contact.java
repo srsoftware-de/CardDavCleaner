@@ -39,6 +39,7 @@ public class Contact {
 				if (tag.value().isEmpty()) continue;
 				String name = tag.name().toUpperCase();
 				if (name.equals("IMPP")) messengers.add(tag.value());
+				if (name.equals("X-AIM")) messengers.add(tag.value());
 				if (name.equals("X-MS-IMADDRESS")) messengers.add(tag.value());
 			}
 		}

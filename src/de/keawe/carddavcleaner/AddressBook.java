@@ -160,7 +160,6 @@ public class AddressBook {
 		progressBar.setMaximum(num);
 		for (String fileName : contactList) {
 			index++;
-			if (index>100) break;
 			progressBar.setString(_("Reading contact #...",index+"/"+num));
 			progressBar.setValue(index);
 			VCard card = new VCard(source,fileName);
