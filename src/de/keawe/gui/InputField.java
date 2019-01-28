@@ -1,6 +1,8 @@
 package de.keawe.gui;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.TreeSet;
 
 import javax.swing.JLabel;
@@ -10,6 +12,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import de.keawe.carddavcleaner.CardDavCleaner;
 
 
 public class InputField extends HorizontalPanel implements DocumentListener, FocusListener {
@@ -97,4 +101,26 @@ public class InputField extends HorizontalPanel implements DocumentListener, Foc
 		result.select(0, 0);
 	  
   }
+
+	public void setEnterListener(final CardDavCleaner cardDavCleaner) {
+		result.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) cardDavCleaner.enterPressed();
+			}
+		});
+	}
 }

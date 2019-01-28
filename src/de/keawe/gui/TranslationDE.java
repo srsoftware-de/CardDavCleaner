@@ -12,8 +12,11 @@ public class TranslationDE extends Translation{
 		trans.put("Connecting to address book...", "Verbinde mit Adressbuch...");
 		trans.put("Fix field syntax, if broken", "Syntax von beschädigten Feldern korrigieren");
 		trans.put("Location of addressbook:", "Pfad zum Adressbuch:");
+		trans.put("Location of addressbook is empty", "Pfad zum Adressbuch ist leer");
+		trans.put("Location of addressbook is null", "Pfad zum Adressbuch ist Null");
 		trans.put("Mozilla Thunderbird with default address book", "Mozilla Thunderbird mit Standard-Adressbuch");
 		trans.put("No Backup defined.", "Keine Sicherung geplant.");
+		trans.put("Not initialized", "Nicht initialisiert");
 		trans.put("Optional settings", "Optionale Einstellungen");
 		trans.put("Ready.", "Bereit.");
 		trans.put("Remove empty contacts", "Leere Kontakte löschen");
@@ -21,7 +24,9 @@ public class TranslationDE extends Translation{
 		trans.put("Select Backup Location", "Ort für Sicheurng auswählen");
 		trans.put("Select directory", "Ordner wählen");
 		trans.put("<html>Some programs cannot handle all fields defined by the vCard standard.<br>To apply workarounds, select programs you use from the follwing list:", "<html>Manche Programme unterstützen nicht alle Felder des vCard-Standards.<br>Zum Aktivieren von Anpassungen, markieren Sie von Ihnen genutzte Programme in der Liste:");
+		
 		trans.put("start", "starten");
+		trans.put("There is a problem with your settings: #", "Es gibt ein Problem mit Ihren Einstellungen: #");
 		return trans;
 	}
 }

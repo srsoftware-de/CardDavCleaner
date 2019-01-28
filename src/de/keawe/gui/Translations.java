@@ -17,7 +17,7 @@ public class Translations {
 		System.out.print("Loading translation for "+locale+"...");
 		Translation trans;
 		try {
-			trans = (Translation) Translation.class.getClassLoader().loadClass("Translation"+locale).newInstance();
+			trans = (Translation) Translation.class.getClassLoader().loadClass(Translation.class.getName()+locale).newInstance();
 			System.out.println("success.");
 			return trans;
 		} catch (InstantiationException e) {

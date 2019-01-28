@@ -2,15 +2,20 @@ package de.keawe.carddavcleaner;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+
+import com.sun.corba.se.pept.transport.ContactInfo;
 
 import de.keawe.gui.HorizontalPanel;
 import de.keawe.gui.InputField;
@@ -32,6 +37,15 @@ public class CardDavCleaner extends JFrame {
 	private InputField passwordField;
 	private File backupPath = null;
 	private JProgressBar progressBar;
+	private JCheckBox fixSyntaxOption;
+	private JCheckBox dropEmptyFieldsOption;
+	private JCheckBox dropEmptyContactsOption;
+	
+	private boolean askForCommit(AddressBook addressBook) {
+		// TODO Auto-generated method stub
+		System.out.println("CardDavCleaner.askForCommit not implemented");
+		return false;
+	}
 	
 	private HorizontalPanel backupPanel() {
 		HorizontalPanel backupPanel = new HorizontalPanel(_("Backup settings"));
@@ -72,6 +86,10 @@ public class CardDavCleaner extends JFrame {
 		setVisible(true);
 	}
 	
+	public void enterPressed() {
+		startCleaning();
+	}
+	
 	private JComponent locationPanel() {
 		HorizontalPanel locationPanel = new HorizontalPanel();
 		
@@ -102,15 +120,15 @@ public class CardDavCleaner extends JFrame {
 	private JComponent optionsPanel() {
 		VerticalPanel optionsPanel = new VerticalPanel(_("Optional settings"));
 		
-		JCheckBox fixSyntaxOption = new JCheckBox(_("Fix field syntax, if broken"));
+		fixSyntaxOption = new JCheckBox(_("Fix field syntax, if broken"));
 		fixSyntaxOption.setSelected(true);
 		optionsPanel.add(fixSyntaxOption);
 
-		JCheckBox dropEmptyFieldsOption = new JCheckBox(_("Remove empty fields from contacts"));
+		dropEmptyFieldsOption = new JCheckBox(_("Remove empty fields from contacts"));
 		dropEmptyFieldsOption.setSelected(true);
 		optionsPanel.add(dropEmptyFieldsOption);
 		
-		JCheckBox dropEmptyContactsOption = new JCheckBox(_("Remove empty contacts"));
+		dropEmptyContactsOption = new JCheckBox(_("Remove empty contacts"));
 		dropEmptyContactsOption.setSelected(true);
 		optionsPanel.add(dropEmptyContactsOption);
 		
@@ -143,6 +161,11 @@ public class CardDavCleaner extends JFrame {
 		bar.scale();
 		return bar;
 	}
+	
+	private void proposeMerge(MergeCandidate candidate) {
+		// TODO Auto-generated method stub
+		System.out.println("CardDavCleaner.proposeMerge not implemented");
+	}
 
 	protected void selectBackupPath(JLabel label) {
 		JFileChooser j = new JFileChooser();
@@ -170,18 +193,35 @@ public class CardDavCleaner extends JFrame {
 		
 		serverPanel.add(addressField = new InputField(_("Location of addressbook:")));
 		addressField.setText("https://example.com/cardDAV");
+		
 		serverPanel.add(userField = new InputField(_("User:"), false));
 		serverPanel.add(passwordField = new InputField(_("Password:"), true));
+		
+		addressField.setEnterListener(this);
+		userField.setEnterListener(this);
+		passwordField.setEnterListener(this);
 		return serverPanel.scale();
 	}
 	
 	protected void startCleaning() {
 		progressBar.setString(_("Connecting to address book..."));
 		AddressBook addressBook = new AddressBook(addressField.getText(),userField.getText(),passwordField.getText());
+		if (fixSyntaxOption.isSelected()) addressBook.enableSytaxFixing();
+		if (dropEmptyFieldsOption.isSelected()) addressBook.enableDropEmptyFields();
+		if (dropEmptyContactsOption.isSelected()) addressBook.enableDropEmptyContacts();
+		
+		String problem = addressBook.problem();
+		if (problem == null) {
+			addressBook.loadContacts(backupPath);
+			MergeCandidate candidate;
+			while ((candidate = addressBook.getMergeCandidate()) != null) proposeMerge(candidate);
+			if (askForCommit(addressBook)) addressBook.commit();
+		} else progressBar.setString(_("There is a problem with your settings: #",_(problem)));
 	}
-	
+
 	private static void test() {
 		try {
+			System.out.println("CardDavCleaner.proposeMerge not implemented");
 			System.out.println("#===================================#");
 			System.out.println(_("| All tests successfully completed! |"));
 			System.out.println("#===================================#");
