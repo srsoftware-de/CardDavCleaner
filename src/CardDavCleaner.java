@@ -1,10 +1,12 @@
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
@@ -14,19 +16,24 @@ public class CardDavCleaner extends JFrame {
 	private static String _(String text) {
 		return Translations.get(text);
 	}
+	
+	private static String _(String key, Object insert) {
+		return Translations.get(key, insert);
+	}
 
 	private InputField addressField;
 	private InputField userField;
 	private InputField passwordField;
-
+	private File backupPath = null;
+	
 	private HorizontalPanel backupPanel() {
 		HorizontalPanel backupPanel = new HorizontalPanel(_("Backup settings"));
-		JLabel backupPathLabel = new JLabel(" " + _("No Backup defined.") + "                                                                 ");
+		final JLabel backupPathLabel = new JLabel(" " + _("No Backup defined.") + "                                                                 ");
 		JButton backupPathButton = new JButton(_("Select Backup Location"));
 		backupPathButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				selectBackupPath();
+				selectBackupPath(backupPathLabel);
 			}
 		});
 		backupPanel.add(backupPathButton);
@@ -66,7 +73,6 @@ public class CardDavCleaner extends JFrame {
 		locationButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				selectSource();
 			}
 		});
@@ -131,21 +137,32 @@ public class CardDavCleaner extends JFrame {
 		return bar;
 	}
 
-	protected void selectBackupPath() {
-		// TODO Auto-generated method stub
-		
+	protected void selectBackupPath(JLabel label) {
+		JFileChooser j = new JFileChooser();
+		j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		Integer opt = j.showSaveDialog(this);
+		if (opt == JFileChooser.APPROVE_OPTION) {
+			backupPath  = j.getSelectedFile();
+			label.setText(" " + _("Backup wil be written to #", backupPath));
+		}
 	}
 	
 	protected void selectSource() {
-		// TODO Auto-generated method stub
-		
+		JFileChooser j = new JFileChooser();
+		j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		Integer opt = j.showSaveDialog(this);
+		if (opt == JFileChooser.APPROVE_OPTION) {
+			File source = j.getSelectedFile();
+			addressField.setText("file://"+source.toString());
+		}
 	}
 	
 	private VerticalPanel serverPanel() {
 		VerticalPanel serverPanel = new VerticalPanel(_("Address book settings"));
 		serverPanel.add(locationPanel());
 		
-		serverPanel.add(addressField = new InputField(_("Location of addressbook:"), false));
+		serverPanel.add(addressField = new InputField(_("Location of addressbook:")));
+		addressField.setText("https://example.com/cardDAV");
 		serverPanel.add(userField = new InputField(_("User:"), false));
 		serverPanel.add(passwordField = new InputField(_("Password:"), true));
 		return serverPanel.scale();
@@ -153,7 +170,7 @@ public class CardDavCleaner extends JFrame {
 	
 	protected void startCleaning() {
 		// TODO Auto-generated method stub
-		
+		System.out.println("STart");
 	}
 	
 	private static void test() {

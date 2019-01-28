@@ -51,6 +51,10 @@ public class InputField extends HorizontalPanel implements DocumentListener, Foc
 	public String getText() {
 		return result.getText();
 	}
+	
+	public void setText(String tx) {
+		result.setText(tx);
+	}
 
 	public void addChangeListener(DocumentListener listener) {
 		result.getDocument().addDocumentListener(listener);

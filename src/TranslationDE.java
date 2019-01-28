@@ -7,6 +7,7 @@ public class TranslationDE extends Translation{
 		trans.put("Address book may be located on a WebDAV-Server or in a local directory.", "Adressbuch kann auf einem WebDAV-Server oder in einem lokalen Ordner liegen.");
 		trans.put("Address book settings", "Adressbuch-Einstellungen");
 		trans.put("Backup settings", "Sicherungseinstellungen");
+		trans.put("Backup wil be written to #", "Backup wird nach # geschrieben.");
 		trans.put("Fix field syntax, if broken", "Syntax von beschädigten Feldern korrigieren");
 		trans.put("Location of addressbook:", "Pfad zum Adressbuch:");
 		trans.put("Mozilla Thunderbird with default address book", "Mozilla Thunderbird mit Standard-Adressbuch");
