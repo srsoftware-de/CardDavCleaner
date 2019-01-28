@@ -41,7 +41,15 @@ public class HorizontalPanel extends JPanel {
 		init(); // Java-internes automatisches Layout abschalten
 		setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),string)); // Rahmen um Feld Erzeugen
 	}
-
+	
+	public void disable(){
+		for (Component c:getComponents()) c.setEnabled(false);
+	}
+	
+	public void enable() {
+		for (Component c:getComponents()) c.setEnabled(true);
+	}
+	
 	/**
 	 * schaltet das Java-eigene automatische Layout ab
 	 */

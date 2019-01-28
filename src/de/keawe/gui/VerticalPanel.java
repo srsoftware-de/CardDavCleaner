@@ -31,6 +31,14 @@ public class VerticalPanel extends JPanel {
 		}
 		init();
 	}
+	
+	public void disable(){
+		for (Component c:getComponents()) c.setEnabled(false);
+	}
+	
+	public void enable() {
+		for (Component c:getComponents()) c.setEnabled(true);
+	}
 
 	private void init() {
 		this.setLayout(null);

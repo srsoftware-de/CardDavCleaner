@@ -1,21 +1,18 @@
 package de.keawe.carddavcleaner;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
-
-import com.sun.corba.se.pept.transport.ContactInfo;
 
 import de.keawe.gui.HorizontalPanel;
 import de.keawe.gui.InputField;
@@ -24,11 +21,34 @@ import de.keawe.gui.VerticalPanel;
 
 public class CardDavCleaner extends JFrame {
 	
-	private static String _(String text) {
+	private class cleaningThread extends Thread {
+		private Component owner;
+
+		public cleaningThread(Component owner) {
+			this.owner = owner;
+		}
+
+		public void run() {
+			try {
+				mainPanel.setEnabled(false);
+				startCleaning();
+				mainPanel.setEnabled(true);
+			} catch (Exception e) {
+				e.printStackTrace();
+				JOptionPane.showMessageDialog(owner, _("Error during server communication!"));
+			}
+			setVisible(false);
+			System.exit(0);
+
+		}
+	}
+
+	
+	static String _(String text) {
 		return Translations.get(text);
 	}
 	
-	private static String _(String key, Object insert) {
+	static String _(String key, Object insert) {
 		return Translations.get(key, insert);
 	}
 
@@ -40,6 +60,11 @@ public class CardDavCleaner extends JFrame {
 	private JCheckBox fixSyntaxOption;
 	private JCheckBox dropEmptyFieldsOption;
 	private JCheckBox dropEmptyContactsOption;
+	private HorizontalPanel backupPanel;
+	private VerticalPanel serverPanel;
+	private VerticalPanel optionPanel;
+	private HorizontalPanel statusPanel;
+	private VerticalPanel mainPanel;
 	
 	private boolean askForCommit(AddressBook addressBook) {
 		// TODO Auto-generated method stub
@@ -73,12 +98,12 @@ public class CardDavCleaner extends JFrame {
 	 * creates all the components for the server login form
 	 */
 	private void createComponents() {
-		VerticalPanel mainPanel = new VerticalPanel();
+		mainPanel = new VerticalPanel();
 
-		mainPanel.add(backupPanel());
-		mainPanel.add(serverPanel());
-		mainPanel.add(optionsPanel());
-		mainPanel.add(progressPanel());
+		mainPanel.add(serverPanel = serverPanel());
+		mainPanel.add(backupPanel = backupPanel());
+		mainPanel.add(optionPanel = optionsPanel());
+		mainPanel.add(statusPanel = progressPanel());
 		mainPanel.scale();
 		
 		add(mainPanel);
@@ -87,7 +112,9 @@ public class CardDavCleaner extends JFrame {
 	}
 	
 	public void enterPressed() {
-		startCleaning();
+		cleaningThread cleaningThread = new cleaningThread(this);
+		cleaningThread.start();
+		
 	}
 	
 	private JComponent locationPanel() {
@@ -117,7 +144,7 @@ public class CardDavCleaner extends JFrame {
 		}
 	}
 	
-	private JComponent optionsPanel() {
+	private VerticalPanel optionsPanel() {
 		VerticalPanel optionsPanel = new VerticalPanel(_("Optional settings"));
 		
 		fixSyntaxOption = new JCheckBox(_("Fix field syntax, if broken"));
@@ -140,7 +167,7 @@ public class CardDavCleaner extends JFrame {
 		return optionsPanel.scale();
 	}
 
-	private JComponent progressPanel() {
+	private HorizontalPanel progressPanel() {
 		HorizontalPanel bar = new HorizontalPanel();
 		
 		progressBar = new JProgressBar();
@@ -153,7 +180,7 @@ public class CardDavCleaner extends JFrame {
 		startButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				startCleaning();
+				enterPressed();
 			}
 		});
 		bar.add(startButton);
@@ -170,6 +197,7 @@ public class CardDavCleaner extends JFrame {
 	protected void selectBackupPath(JLabel label) {
 		JFileChooser j = new JFileChooser();
 		j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		
 		Integer opt = j.showSaveDialog(this);
 		if (opt == JFileChooser.APPROVE_OPTION) {
 			backupPath  = j.getSelectedFile();
@@ -179,6 +207,7 @@ public class CardDavCleaner extends JFrame {
 	
 	protected void selectSource() {
 		JFileChooser j = new JFileChooser();
+		j.setFileHidingEnabled(false);
 		j.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		Integer opt = j.showSaveDialog(this);
 		if (opt == JFileChooser.APPROVE_OPTION) {
@@ -209,14 +238,19 @@ public class CardDavCleaner extends JFrame {
 		if (fixSyntaxOption.isSelected()) addressBook.enableSytaxFixing();
 		if (dropEmptyFieldsOption.isSelected()) addressBook.enableDropEmptyFields();
 		if (dropEmptyContactsOption.isSelected()) addressBook.enableDropEmptyContacts();
+		addressBook.enableProgressBar(progressBar);
 		
-		String problem = addressBook.problem();
-		if (problem == null) {
-			addressBook.loadContacts(backupPath);
-			MergeCandidate candidate;
-			while ((candidate = addressBook.getMergeCandidate()) != null) proposeMerge(candidate);
-			if (askForCommit(addressBook)) addressBook.commit();
-		} else progressBar.setString(_("There is a problem with your settings: #",_(problem)));
+		
+		if (addressBook.ready()) {
+			try {
+				addressBook.loadContacts(backupPath);
+				MergeCandidate candidate;
+				while ((candidate = addressBook.getMergeCandidate()) != null) proposeMerge(candidate);
+				if (askForCommit(addressBook)) addressBook.commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private static void test() {
