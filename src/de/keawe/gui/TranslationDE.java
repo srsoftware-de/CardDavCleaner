@@ -11,6 +11,7 @@ public class TranslationDE extends Translation{
 		trans.put("Backup wil be written to #", "Backup wird nach # geschrieben.");
 		trans.put("Connecting to address book...", "Verbinde mit Adressbuch...");
 		trans.put("Fix field syntax, if broken", "Syntax von beschädigten Feldern korrigieren");
+		trans.put("Fix line breaks, if not standard compliant", "Zeilenumbrüche reparieren, wenn diese nicht normgerecht sind");
 		trans.put("# is not a directory!", "# ist kein Verzeichnis!");
 		trans.put("Location of addressbook:", "Pfad zum Adressbuch:");
 		trans.put("Location of addressbook is empty", "Pfad zum Adressbuch ist leer");

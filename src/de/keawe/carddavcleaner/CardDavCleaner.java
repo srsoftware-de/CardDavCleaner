@@ -37,9 +37,6 @@ public class CardDavCleaner extends JFrame {
 				e.printStackTrace();
 				JOptionPane.showMessageDialog(owner, _("Error during server communication!"));
 			}
-			setVisible(false);
-			System.exit(0);
-
 		}
 	}
 
@@ -65,6 +62,7 @@ public class CardDavCleaner extends JFrame {
 	private VerticalPanel optionPanel;
 	private HorizontalPanel statusPanel;
 	private VerticalPanel mainPanel;
+	private JCheckBox fixLineBreaksOption;
 	
 	private boolean askForCommit(AddressBook addressBook) {
 		// TODO Auto-generated method stub
@@ -151,6 +149,10 @@ public class CardDavCleaner extends JFrame {
 		fixSyntaxOption.setSelected(true);
 		optionsPanel.add(fixSyntaxOption);
 
+		fixLineBreaksOption = new JCheckBox(_("Fix line breaks, if not standard compliant"));
+		fixLineBreaksOption.setSelected(true);
+		optionsPanel.add(fixLineBreaksOption);
+
 		dropEmptyFieldsOption = new JCheckBox(_("Remove empty fields from contacts"));
 		dropEmptyFieldsOption.setSelected(true);
 		optionsPanel.add(dropEmptyFieldsOption);
@@ -190,8 +192,8 @@ public class CardDavCleaner extends JFrame {
 	}
 	
 	private void proposeMerge(MergeCandidate candidate) {
-		// TODO Auto-generated method stub
 		System.out.println("CardDavCleaner.proposeMerge not implemented");
+		System.out.println(candidate);
 	}
 
 	protected void selectBackupPath(JLabel label) {
@@ -221,7 +223,7 @@ public class CardDavCleaner extends JFrame {
 		serverPanel.add(locationPanel());
 		
 		serverPanel.add(addressField = new InputField(_("Location of addressbook:")));
-		addressField.setText("https://example.com/cardDAV");
+		addressField.setText("https://eldorado.keawe.de/cloud/remote.php/dav/addressbooks/users/srichter/standard/");
 		
 		serverPanel.add(userField = new InputField(_("User:"), false));
 		serverPanel.add(passwordField = new InputField(_("Password:"), true));
@@ -236,6 +238,7 @@ public class CardDavCleaner extends JFrame {
 		progressBar.setString(_("Connecting to address book..."));
 		AddressBook addressBook = new AddressBook(addressField.getText(),userField.getText(),passwordField.getText());
 		if (fixSyntaxOption.isSelected()) addressBook.enableSytaxFixing();
+		if (fixLineBreaksOption.isSelected()) addressBook.enableLineBreakFixing();
 		if (dropEmptyFieldsOption.isSelected()) addressBook.enableDropEmptyFields();
 		if (dropEmptyContactsOption.isSelected()) addressBook.enableDropEmptyContacts();
 		addressBook.enableProgressBar(progressBar);
@@ -245,7 +248,10 @@ public class CardDavCleaner extends JFrame {
 			try {
 				addressBook.loadContacts(backupPath);
 				MergeCandidate candidate;
-				while ((candidate = addressBook.getMergeCandidate()) != null) proposeMerge(candidate);
+				while ((candidate = addressBook.getMergeCandidate()) != null) {
+					progressBar.setValue(progressBar.getValue()+1);
+					proposeMerge(candidate);
+				}
 				if (askForCommit(addressBook)) addressBook.commit();
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -254,10 +260,12 @@ public class CardDavCleaner extends JFrame {
 	}
 
 	private static void test() {
+		boolean error = false;
 		try {
-			System.out.println("CardDavCleaner.proposeMerge not implemented");
+			error |= Contact.test();
+			error |= Tag.test();
 			System.out.println("#===================================#");
-			System.out.println(_("| All tests successfully completed! |"));
+			System.out.println(_(error ? "| Error(s) occured during tests!    |" : "| All tests successfully completed! |"));
 			System.out.println("#===================================#");
 		} catch (Exception e) {
 			e.printStackTrace();

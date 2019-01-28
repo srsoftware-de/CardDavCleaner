@@ -20,6 +20,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
@@ -46,6 +47,9 @@ public class AddressBook {
 	private boolean dropEmptyFields = false;
 	private boolean dropEmptyContacts = false;
 	private JProgressBar progressBar = null;
+	private boolean fixLineBreaks;
+	private Vector<Contact> contacts;
+	private Vector<MergeCandidate> candidateList = null;
 	
 	private static String _(String text) {
 		return Translations.get(text);
@@ -81,6 +85,29 @@ public class AddressBook {
 		System.out.println("AddressBook.commit not implemented");
 	}
 	
+	private Vector<MergeCandidate> createCandidateList() {
+		if (progressBar != null) {
+			progressBar.setValue(0);
+			progressBar.setMaximum(contacts.size());
+			progressBar.setString(_("Searching for similar contacts..."));
+		}
+		Vector<MergeCandidate> list = new Vector<MergeCandidate>();
+		for (int i = 0; i < contacts.size(); i++) {
+			if (progressBar != null) progressBar.setValue(i);
+			for (int j=i+1; j<contacts.size(); j++) {
+				Contact a = contacts.get(i);
+				Contact b = contacts.get(j);
+				if (a.similarTo(b)) list.add(new MergeCandidate(contacts.get(i),contacts.get(j)));
+			}
+		}
+		if (progressBar != null) {
+			progressBar.setValue(0);
+			progressBar.setMaximum(list.size());
+			progressBar.setString(_("Processing merge candidates..."));
+		}
+		return list;
+	}
+	
 	private void enableAuthenticator() {
 		Authenticator.setDefault(new Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
@@ -95,6 +122,10 @@ public class AddressBook {
 
 	public void enableDropEmptyFields() {
 		dropEmptyFields  = true;
+	}
+	
+	public void enableLineBreakFixing() {
+		fixLineBreaks = true;
 	}
 	
 	public void enableProgressBar(JProgressBar progressBar) {
@@ -116,16 +147,16 @@ public class AddressBook {
 	}
 	
 	public MergeCandidate getMergeCandidate() {
-		// TODO Auto-generated method stub
-		System.out.println("AddressBook.getMergeCandidate not implemented");
-		return null;
+		if (candidateList  == null) candidateList = createCandidateList();
+		if (candidateList.isEmpty()) return null;
+		return candidateList.remove(0);
 	}
 
 	public void loadContacts(File backupPath) throws NoSuchAlgorithmException, KeyStoreException, IOException {
 		progressBar.setString(CardDavCleaner._("reading list of contacts..."));
 		TreeSet<String> contactList = getContactList();
 		
-		TreeSet<Contact> contacts = new TreeSet();
+		contacts = new Vector<Contact>();
 		int index = 0;
 		int num = contactList.size();
 		progressBar.setMaximum(num);
@@ -136,8 +167,8 @@ public class AddressBook {
 			progressBar.setValue(index);
 			VCard card = new VCard(source,fileName);
 			if (backupPath != null) storeBackup(backupPath,card);
-			//Contact contact = new Contact(card);
-			//System.out.println(card);
+			Contact contact = new Contact(card);
+			contacts.add(contact);
 		}
 	}
 

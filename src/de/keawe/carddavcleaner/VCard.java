@@ -12,12 +12,18 @@ public class VCard {
 	private StringBuffer buf;
 	private String filename=null;
 
-
+	public StringBuffer buffer() {
+		return buf;
+	}
 	
 	public String filename() {
 		return filename;
 	}
-
+	
+	public void setBuffer(StringBuffer code) {
+		buf.setLength(0);
+		buf.append(code);
+	}
 	
 	@Override
 	public String toString() {
@@ -43,4 +49,7 @@ public class VCard {
 		while ((character = reader.read()) > -1) buf.append((char)character);
 		reader.close();
 	}
+
+
+
 }
