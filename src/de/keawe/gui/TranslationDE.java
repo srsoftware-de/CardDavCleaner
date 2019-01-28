@@ -1,3 +1,4 @@
+package de.keawe.gui;
 import java.util.TreeMap;
 
 
@@ -8,6 +9,7 @@ public class TranslationDE extends Translation{
 		trans.put("Address book settings", "Adressbuch-Einstellungen");
 		trans.put("Backup settings", "Sicherungseinstellungen");
 		trans.put("Backup wil be written to #", "Backup wird nach # geschrieben.");
+		trans.put("Connecting to address book...", "Verbinde mit Adressbuch...");
 		trans.put("Fix field syntax, if broken", "Syntax von beschädigten Feldern korrigieren");
 		trans.put("Location of addressbook:", "Pfad zum Adressbuch:");
 		trans.put("Mozilla Thunderbird with default address book", "Mozilla Thunderbird mit Standard-Adressbuch");

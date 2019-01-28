@@ -1,3 +1,4 @@
+package de.keawe.carddavcleaner;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +11,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JProgressBar;
+
+import de.keawe.gui.HorizontalPanel;
+import de.keawe.gui.InputField;
+import de.keawe.gui.Translations;
+import de.keawe.gui.VerticalPanel;
 
 public class CardDavCleaner extends JFrame {
 	
@@ -25,6 +31,7 @@ public class CardDavCleaner extends JFrame {
 	private InputField userField;
 	private InputField passwordField;
 	private File backupPath = null;
+	private JProgressBar progressBar;
 	
 	private HorizontalPanel backupPanel() {
 		HorizontalPanel backupPanel = new HorizontalPanel(_("Backup settings"));
@@ -118,7 +125,7 @@ public class CardDavCleaner extends JFrame {
 	private JComponent progressPanel() {
 		HorizontalPanel bar = new HorizontalPanel();
 		
-		JProgressBar progressBar = new JProgressBar();
+		progressBar = new JProgressBar();
 		progressBar.setPreferredSize(new Dimension(800, 32));
 		progressBar.setStringPainted(true);
 		progressBar.setString(_("Ready."));
@@ -169,8 +176,8 @@ public class CardDavCleaner extends JFrame {
 	}
 	
 	protected void startCleaning() {
-		// TODO Auto-generated method stub
-		System.out.println("STart");
+		progressBar.setString(_("Connecting to address book..."));
+		AddressBook addressBook = new AddressBook(addressField.getText(),userField.getText(),passwordField.getText());
 	}
 	
 	private static void test() {

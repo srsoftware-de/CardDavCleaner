@@ -1,3 +1,4 @@
+package de.keawe.gui;
 
 import java.awt.Color;
 import java.awt.Component;

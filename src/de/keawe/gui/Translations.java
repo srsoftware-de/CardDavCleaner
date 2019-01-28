@@ -1,3 +1,4 @@
+package de.keawe.gui;
 import java.util.Locale;
 import java.util.TreeMap;
 
