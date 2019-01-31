@@ -1,14 +1,13 @@
 package de.keawe.carddavcleaner;
 
-import java.util.TreeMap;
+import java.util.Collection;
 import java.util.TreeSet;
 import java.util.Vector;
 
 public class Contact {
 
 	//original fields
-	private VCard card;
-	private String[] lines;
+	private Vector<Tag> tags = new Vector<Tag>();
 	private boolean altered=false;
 	private boolean markedForRemoval=false;
 
@@ -17,22 +16,47 @@ public class Contact {
 	private TreeSet<String> canonicalNumbers = null;
 	private TreeSet<String> emails = null;
 	private TreeSet<String> messengers = null;
-	private Vector<Tag> tags = null;
-
-
-	public Contact(VCard card) {
-		this.card = card;
+	private String filename = null;
+	
+	public VCard card() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("BEGIN:VCARD\r\n");
+		for (Tag t:tags) sb.append(t.code()+"\r\n");
+		sb.append("END:VCARD\r\n");
+		return new VCard(sb,filename);
+	}
+	
+	public String html() {
+		StringBuffer sb = new StringBuffer();
+		for (Tag t:tags) {
+			if (t.name("PRODID")) continue;
+			if (t.name("UID")) continue;
+			if (t.name("VERSION")) continue;
+			sb.append(t.shortCode()+"<br/>\n");
+		}
+		return sb.toString();
+	}
+	
+	public Contact(VCard card, boolean dropEmptyFields) {
+		filename = card.filename();
 		StringBuffer codeBuffer = fixLineBreaks(card.buffer());
-		lines = codeBuffer.toString().replace("\r\n ", "").split("\r\n");
+		for (String line:codeBuffer.toString().replace("\r\n ", "").split("\r\n")) {
+			Tag t = new Tag(line);
+			if (t.name("BEGIN")) continue; // ignore BEGIN:VCARD
+			if (t.name("END")) continue; // ignore END:VCARD
+			if (t.isEmpty() && dropEmptyFields) {
+				altered = true;
+				continue;
+			}
+			tags.add(t);
+		}
 	}
 	
 	private TreeSet<String> emails() {
 		if (emails == null) {
 			emails = new TreeSet<String>();
-			for (String line : lines) {
-				Tag tag = new Tag(line);
-				if (tag.value().isEmpty()) continue;
-				if (tag.name().toUpperCase().equals("EMAIL")) emails.add(tag.value());
+			for (Tag tag : tags) {
+				if (!tag.isEmpty() && tag.name("EMAIL")) emails.add(tag.value());
 			}
 		}
 		return emails;
@@ -41,13 +65,11 @@ public class Contact {
 	private TreeSet<String> messengers() {
 		if (messengers  == null) {
 			messengers = new TreeSet<String>();
-			for (String line : lines) {
-				Tag tag = new Tag(line);
-				if (tag.value().isEmpty()) continue;
-				String name = tag.name().toUpperCase();
-				if (name.equals("IMPP")) messengers.add(tag.value());
-				if (name.equals("X-AIM")) messengers.add(tag.value());
-				if (name.equals("X-MS-IMADDRESS")) messengers.add(tag.value());
+			for (Tag tag : tags) {
+				if (tag.isEmpty()) continue;
+				if (tag.name("IMPP")) messengers.add(tag.value());
+				if (tag.name("X-AIM")) messengers.add(tag.value());
+				if (tag.name("X-MS-IMADDRESS")) messengers.add(tag.value());
 			}
 		}
 		return messengers;
@@ -56,13 +78,11 @@ public class Contact {
 	private NameSet names() {
 		if (canonicalNames == null) {
 			canonicalNames = new NameSet();
-			for (String line : lines) {
-				Tag tag = new Tag(line);
-				if (tag.value().isEmpty()) continue;
-				String name=tag.name().toUpperCase();
-				if (name.equals("FN")) canonicalNames.addName(tag.value());
-				if (name.equals("N")) canonicalNames.addName(tag.value().replace(";"," "));
-				if (name.equals("NICKNAME")) canonicalNames.addName(tag.value());
+			for (Tag tag : tags) {
+				if (tag.isEmpty()) continue;
+				if (tag.name("FN")) canonicalNames.addName(tag.value());
+				if (tag.name("N")) canonicalNames.addName(tag.value().replace(";"," "));
+				if (tag.name("NICKNAME")) canonicalNames.addName(tag.value());
 			}
 		}
 		return canonicalNames;
@@ -71,10 +91,8 @@ public class Contact {
 	private TreeSet<String> numbers() {
 		if (canonicalNumbers == null) {
 			canonicalNumbers = new TreeSet<String>();
-			for (String line : lines) {
-				Tag tag = new Tag(line);
-				if (tag.value().isEmpty()) continue;
-				if (tag.name().toUpperCase().equals("TEL")) {
+			for (Tag tag : tags) {
+				if (tag.name("TEL") && !tag.isEmpty()) {
 					String val = tag.value().replace(" ","").replace("+49", "0").replace("(","").replace(")", "").replace("/","").replace("-","");;
 					for (int i=0; i<val.length();i++) {
 						if (!Character.isDigit(val.charAt(i))) {
@@ -82,7 +100,6 @@ public class Contact {
 							break;
 						}
 					}
-	
 					canonicalNumbers.add(val);
 				}
 			}
@@ -107,7 +124,7 @@ public class Contact {
 	public Vector<Tag> similarTags(Contact b){
 		Vector<Tag> similarTags = new Vector<Tag>();
 		for (String name: names().similarTo(b.names())) {
-			similarTags.add(new Tag("NAME:"+name));
+			similarTags.add(new Tag("Name:"+name));
 		}
 		for (String number : numbers()) {
 			if (b.numbers().contains(number)) similarTags.add(new Tag("TEL:"+number));
@@ -137,36 +154,23 @@ public class Contact {
 		System.out.println("failed");
 		return true;
 	}
-
-	public VCard card() {
-		return card;
-	}
 	
-	private static Vector<Tag> cloneTagList(Vector<Tag> tags) {
-		Vector<Tag> clone = new Vector<Tag>();
-		for (Tag t:tags) clone.add(t);
-		return clone ;
-	}
-
 	public void resetCalculatedFields() {
 		canonicalNames = null;
 		canonicalNumbers = null;
 		emails = null;
 		messengers = null;
-		tags = null;
-		
 	}
 
 	public Vector<Tag> tags() {
-		if (tags == null) {
-			tags  = new Vector<Tag>();
-			for (String line : lines) tags.add(new Tag(line));
-		}
-		return cloneTagList(tags);
+		Vector<Tag> copy = new Vector<Tag>();
+		for (Tag t : tags) copy.add(t.clone());
+		return copy;
 	}
 
-	public void updateLines(String[] newLines) {
-		this.lines=newLines;
+	public void updateTags(Collection<Tag> newTags) {
+		tags = new Vector<Tag>();
+		for (Tag t: newTags) tags.add(t);
 		resetCalculatedFields();
 		altered = true;
 	}
@@ -174,5 +178,20 @@ public class Contact {
 	public void markForRemoval() {
 		markedForRemoval=true;
 	}
+
+	public boolean markedForRemoval() {
+		return markedForRemoval;
+	}
+
+	public String filename() {
+		return filename;
+	}
+
+	public Collection<String> detectConflicts() {
+		System.out.println("Contact.detectConflicts() not implemented");
+		return new Vector<String>();
+	}
+
+
 
 }

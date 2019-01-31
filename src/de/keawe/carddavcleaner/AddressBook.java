@@ -164,7 +164,7 @@ public class AddressBook {
 			progressBar.setValue(index);
 			VCard card = new VCard(source,fileName);
 			if (backupPath != null) storeBackup(backupPath,card);
-			Contact contact = new Contact(card);
+			Contact contact = new Contact(card,dropEmptyFields);
 			contacts.add(contact);
 		}
 	}

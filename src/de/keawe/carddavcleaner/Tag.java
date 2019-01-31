@@ -9,6 +9,7 @@ public class Tag {
 	private String name = null;
 	private TreeMap<String,TreeSet<String>> params = new TreeMap<String, TreeSet<String>>(); // param-type : param-value
 	private String value = null;
+	private String origLine = null;
 	
 	private void addParam(String substring) {
 		String[] parts = substring.split("=", 2);
@@ -19,12 +20,17 @@ public class Tag {
 		for (String val:values) valSet.add(val);
 		params.put(key, valSet);
 	}
+	
+	public Tag clone() {
+		return new Tag(code());
+	}
 
 	public String name() {
 		return name;
 	}
 
 	public Tag(String line) {
+		origLine=line;
 		int semicolonPos = line.indexOf(";");
 		int endOfName = (semicolonPos < 0) ? line.indexOf(":") : Math.min(semicolonPos, line.indexOf(":"));
 		name = line.substring(0, endOfName);
@@ -215,7 +221,7 @@ public class Tag {
 		return name()+":"+value();
 	}
 	
-	public String code() {
+	private String code(boolean trim) {
 		StringBuffer code = new StringBuffer();
 		if (group!=null) code.append(group+".");
 		code.append(name);
@@ -225,8 +231,16 @@ public class Tag {
 				code.append(String.join(",", params.get(key)));
 			}
 		}
-		code.append(":"+value);
+		code.append(":"+(trim?shortVal():value));
 		return code.toString();
+	}
+	
+	public String code() {
+		return code(false);
+	}
+	
+	public String shortCode() {
+		return code(true);
 	}
 	
 	public String value() {
@@ -247,6 +261,7 @@ public class Tag {
 			"LABEL",
 			"MAILER",
 			"N",
+			"NAME",
 			"NICKNAME",
 			"NOTE",
 			"ORG",
@@ -273,10 +288,6 @@ public class Tag {
 		if (!known) System.err.println("Encountered unknown tag: "+line);
 	}
 
-	public String shortString() {
-		return name+": "+value;
-	}
-
 	public Tag mergeWith(Tag otherTag) {
 		// for a tag to be merged, both name and value have to match
 		if (!this.name.equalsIgnoreCase(otherTag.name)) return null;
@@ -301,4 +312,17 @@ public class Tag {
 		return mix;
 	}
 
+	public boolean name(String n) {
+		return name().equalsIgnoreCase(n);
+	}
+
+	public boolean isEmpty() {
+		return value.replace(";", "").trim().isEmpty();
+	}
+
+	public String shortVal() {
+		int max=50;
+		if (value.length()>max) return value.substring(0, max-3)+"...";
+		return value;
+	}
 }

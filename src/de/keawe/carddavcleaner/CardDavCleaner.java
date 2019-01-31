@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Collection;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -58,10 +59,6 @@ public class CardDavCleaner extends JFrame {
 	private JCheckBox fixSyntaxOption;
 	private JCheckBox dropEmptyFieldsOption;
 	private JCheckBox dropEmptyContactsOption;
-	private HorizontalPanel backupPanel;
-	private VerticalPanel serverPanel;
-	private VerticalPanel optionPanel;
-	private HorizontalPanel statusPanel;
 	private VerticalPanel mainPanel;
 	private JCheckBox fixLineBreaksOption;
 	
@@ -98,10 +95,10 @@ public class CardDavCleaner extends JFrame {
 	private void createComponents() {
 		mainPanel = new VerticalPanel();
 
-		mainPanel.add(serverPanel = serverPanel());
-		mainPanel.add(backupPanel = backupPanel());
-		mainPanel.add(optionPanel = optionsPanel());
-		mainPanel.add(statusPanel = progressPanel());
+		mainPanel.add(serverPanel());
+		mainPanel.add(backupPanel());
+		mainPanel.add(optionsPanel());
+		mainPanel.add(progressPanel());
 		mainPanel.scale();
 		
 		add(mainPanel);
@@ -305,7 +302,9 @@ public class CardDavCleaner extends JFrame {
 							System.exit(-1);
 							break;
 						case JOptionPane.YES_OPTION:
-							candidate.merge();
+							Contact mergedContact = candidate.merge();
+							Collection<String> conflicts = mergedContact.detectConflicts();
+							for (String conflict : conflicts) System.err.println(conflict);
 							break;
 					}
 				}

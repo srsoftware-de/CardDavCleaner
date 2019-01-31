@@ -1,6 +1,5 @@
 package de.keawe.carddavcleaner;
 
-import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.swing.JLabel;
@@ -54,7 +53,7 @@ public class MergeCandidate {
 		return contactB;
 	}
 
-	public void merge() {
+	public Contact merge() {
 		Vector<Tag> tagsOfA = contactA.tags();
 		Vector<Tag> tagsOfB = contactB.tags();
 		Vector<Tag> mergedTags = new Vector<Tag>();
@@ -94,34 +93,32 @@ public class MergeCandidate {
 			if (!aMerged) unmergedTagsOfA.add(tagOfA); // merge has not been successfull: remember A
 		}
 
-		String[] newLines = new String[mergedTags.size()+unmergedTagsOfA.size()+tagsOfB.size()+2];
-		int i=0;
-		newLines[i++] = "BEGIN:VCARD";
-		for (Tag t:mergedTags) newLines[i++] = t.code();
-		for (Tag t:unmergedTagsOfA) newLines[i++] = t.code();
-		for (Tag t:tagsOfB) newLines[i++] = t.code();
-		newLines[i++] = "END:VCARD";
-		System.out.println(String.join("\n", newLines));
-		contactA.updateLines(newLines);
+		Vector<Tag> newTags = new Vector<Tag>();
+		newTags.addAll(mergedTags);
+		newTags.addAll(unmergedTagsOfA);
+		newTags.addAll(tagsOfB);
+		contactA.updateTags(newTags);
 		contactB.markForRemoval();
+		return contactA;
 	}
 
 	public int propose() {
-		String text = "";
+		if (contactA.markedForRemoval() || contactB.markedForRemoval()) return JOptionPane.NO_OPTION;
+		String text = "<html>";
 		int num = similarities.size();
 		for (int i =0; i<similarities.size(); i++) {
 			Tag t = similarities.get(i);
-			text = text + t.shortString();
+			text = text + t.name()+": <i>"+t.shortVal()+"</i>";
 			if (i+1 < num) {
-				text += (i+2 == num) ? " and " : ", ";
+				text += (i+2 == num) ? " and<br/>\n" : ",<br/>\n";
 			} else text = _("# "+(num>1?"are":"is")+" used by the following contacts:",text);
 		}
 		
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(new JLabel(text));
 		HorizontalPanel hp = new HorizontalPanel();
-		hp.add(new JLabel("<html><br>" + contactA().card().toString().replace("\n", "&nbsp<br>")));
-		hp.add(new JLabel("<html><br>" + contactB().card().toString().replace("\n", "<br>")));
+		hp.add(new JLabel("<html><br>" + contactA().html()));
+		hp.add(new JLabel("<html><br>" + contactB().html()));
 		hp.scale();
 		vp.add(hp);
 		vp.add(new JLabel(_("<html><br>Shall those contacts be <i>merged</i>?")));

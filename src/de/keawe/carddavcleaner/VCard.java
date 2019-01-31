@@ -50,6 +50,11 @@ public class VCard {
 		reader.close();
 	}
 
+	public VCard(StringBuffer sb, String filename) {
+		buf = sb;
+		this.filename = filename;
+	}
+
 
 
 }
