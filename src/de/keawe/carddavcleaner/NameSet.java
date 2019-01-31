@@ -19,6 +19,7 @@ public class NameSet {
 		value = value.trim();
 		if (value.isEmpty()) return;
 		String[] parts = value.split(" ");
+		for (int i=0; i<parts.length;i++) parts[i] = parts[i].replace("\\,", "");
 		Arrays.sort(parts,String.CASE_INSENSITIVE_ORDER);
 		names.add(String.join(" ", parts));
 	}

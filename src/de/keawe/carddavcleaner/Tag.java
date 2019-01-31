@@ -1,18 +1,23 @@
 package de.keawe.carddavcleaner;
 
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public class Tag {
 
 	private String group = null;
 	private String name = null;
-	private TreeMap<String,String> params = new TreeMap<String, String>();
+	private TreeMap<String,TreeSet<String>> params = new TreeMap<String, TreeSet<String>>(); // param-type : param-value
 	private String value = null;
-	private String line;
 	
 	private void addParam(String substring) {
 		String[] parts = substring.split("=", 2);
-		params.put(parts[0], parts[1]);
+		String key = parts[0];
+		String[] values = parts[1].split(",");
+		TreeSet<String> valSet = params.get(key);
+		if (valSet == null) valSet = new TreeSet<String>();
+		for (String val:values) valSet.add(val);
+		params.put(key, valSet);
 	}
 
 	public String name() {
@@ -20,7 +25,6 @@ public class Tag {
 	}
 
 	public Tag(String line) {
-		this.line = line;
 		int semicolonPos = line.indexOf(";");
 		int endOfName = (semicolonPos < 0) ? line.indexOf(":") : Math.min(semicolonPos, line.indexOf(":"));
 		name = line.substring(0, endOfName);
@@ -29,7 +33,7 @@ public class Tag {
 			group = name.substring(0,dotIndex);
 			name = name.substring(dotIndex+1);
 		}
-		warnIfUnknown(name);
+		warnIfUnknown(line);
 		String postFix = line.substring(endOfName);
 		while (postFix.startsWith(";")) postFix = readParam(postFix);
 		if (postFix.startsWith(":")) value = postFix.substring(1).trim();
@@ -211,11 +215,25 @@ public class Tag {
 		return name()+":"+value();
 	}
 	
+	public String code() {
+		StringBuffer code = new StringBuffer();
+		if (group!=null) code.append(group+".");
+		code.append(name);
+		if (!params.isEmpty()) {
+			for (String key : params.keySet()) {
+				code.append(";"+key+"=");
+				code.append(String.join(",", params.get(key)));
+			}
+		}
+		code.append(":"+value);
+		return code.toString();
+	}
+	
 	public String value() {
 		return value;
 	}
 	
-	private void warnIfUnknown(String name) {
+	private void warnIfUnknown(String line) {
 		String [] knownNames = new String[] {
 			"ADR",
 			"BDAY",
@@ -250,9 +268,37 @@ public class Tag {
 			"X-THUNDERBIRD-ETAG"
 		};
 		boolean known = false;
-		name = name.toUpperCase();
+		String name = this.name.toUpperCase();
 		for (int i=0; i<knownNames.length;i++) known |= name.equals(knownNames[i]);
-		if (!known) System.err.println("Encountered unknown tag: "+this.line);
+		if (!known) System.err.println("Encountered unknown tag: "+line);
+	}
+
+	public String shortString() {
+		return name+": "+value;
+	}
+
+	public Tag mergeWith(Tag otherTag) {
+		// for a tag to be merged, both name and value have to match
+		if (!this.name.equalsIgnoreCase(otherTag.name)) return null;
+		if (!this.value.equals(otherTag.value)) return null;
+		
+		// merge parameter sets
+		Tag mix = new Tag(name+":"+value);
+		for (String key : params.keySet()) {
+			if (!mix.params.containsKey(key)) mix.params.put(key, new TreeSet<String>());
+			TreeSet<String> sourceParamSet = params.get(key);
+			for (String val:sourceParamSet) mix.params.get(key).add(val);
+		}
+		for (String key : otherTag.params.keySet()) {
+			if (!mix.params.containsKey(key)) mix.params.put(key, new TreeSet<String>());
+			TreeSet<String> sourceParamSet = otherTag.params.get(key);
+			for (String val:sourceParamSet) mix.params.get(key).add(val);
+		}
+		
+		if (group != null) mix.group = group;
+		if (otherTag.group != null) mix.group = otherTag.group;
+		
+		return mix;
 	}
 
 }

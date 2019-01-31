@@ -1,16 +1,23 @@
 package de.keawe.carddavcleaner;
 
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
 public class Contact {
 
+	//original fields
 	private VCard card;
 	private String[] lines;
+	private boolean altered=false;
+	private boolean markedForRemoval=false;
+
+	// these fields can be reset and will be regenerated from lines
 	private NameSet canonicalNames = null;
 	private TreeSet<String> canonicalNumbers = null;
 	private TreeSet<String> emails = null;
-	private TreeSet<String> messengers;
+	private TreeSet<String> messengers = null;
+	private Vector<Tag> tags = null;
 
 
 	public Contact(VCard card) {
@@ -134,6 +141,38 @@ public class Contact {
 	public VCard card() {
 		return card;
 	}
+	
+	private static Vector<Tag> cloneTagList(Vector<Tag> tags) {
+		Vector<Tag> clone = new Vector<Tag>();
+		for (Tag t:tags) clone.add(t);
+		return clone ;
+	}
 
+	public void resetCalculatedFields() {
+		canonicalNames = null;
+		canonicalNumbers = null;
+		emails = null;
+		messengers = null;
+		tags = null;
+		
+	}
+
+	public Vector<Tag> tags() {
+		if (tags == null) {
+			tags  = new Vector<Tag>();
+			for (String line : lines) tags.add(new Tag(line));
+		}
+		return cloneTagList(tags);
+	}
+
+	public void updateLines(String[] newLines) {
+		this.lines=newLines;
+		resetCalculatedFields();
+		altered = true;
+	}
+
+	public void markForRemoval() {
+		markedForRemoval=true;
+	}
 
 }

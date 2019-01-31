@@ -90,7 +90,6 @@ public class CardDavCleaner extends JFrame {
 		super(_("Keawe CardDAV cleaner"));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		createComponents();
-		setVisible(true);
 	}
 	
 	/**
@@ -110,10 +109,8 @@ public class CardDavCleaner extends JFrame {
 		setVisible(true);
 	}
 	
-	public void enterPressed() {
-		cleaningThread cleaningThread = new cleaningThread(this);
-		cleaningThread.start();
-		
+	private void enterPressed() {
+		start();
 	}
 	
 	private JComponent locationPanel() {
@@ -135,11 +132,22 @@ public class CardDavCleaner extends JFrame {
 
 	public static void main(String[] args) {
 		//System.setProperty("jsse.enableSNIExtension", "false");
-		if (args.length > 0 && args[0].equals("--test")) {
+		boolean testing = false;
+		boolean autostart = false;
+		CardDavCleaner cleaner = new CardDavCleaner();
+		cleaner.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		for (String arg : args) {
+			testing |= arg.equals("--test");
+			autostart |= arg.equals("--start");
+			if (arg.startsWith("--source=")) cleaner.setSeource(arg.substring(9));
+			if (arg.startsWith("--user=")) cleaner.setUsername(arg.substring(7));
+			if (arg.startsWith("--pass=")) cleaner.setPassword(arg.substring(7));
+		}
+		if (testing) {
 			test();
 		} else {
-			CardDavCleaner cleaner = new CardDavCleaner();
-			cleaner.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+			cleaner.setVisible(true);
+			if (autostart) cleaner.start();
 		}
 	}
 	
@@ -193,9 +201,6 @@ public class CardDavCleaner extends JFrame {
 	}
 	
 	private int proposeMerge(MergeCandidate candidate) {
-		System.out.println("CardDavCleaner.proposeMerge not implemented");
-
-		
 		Vector<Tag> similarities = candidate.similarities();
 		
 		String text = null;
@@ -262,6 +267,23 @@ public class CardDavCleaner extends JFrame {
 		return serverPanel.scale();
 	}
 	
+	private void setPassword(String password) {
+		passwordField.setText(password);
+	}
+	
+	private void setSeource(String source) {
+		addressField.setText(source);
+	}
+	
+	private void setUsername(String username) {
+		userField.setText(username);
+	}
+	
+	private void start() {
+		cleaningThread cleaningThread = new cleaningThread(this);
+		cleaningThread.start();
+	}
+
 	protected void startCleaning() {
 		progressBar.setString(_("Connecting to address book..."));
 		AddressBook addressBook = new AddressBook(addressField.getText(),userField.getText(),passwordField.getText());
@@ -278,8 +300,14 @@ public class CardDavCleaner extends JFrame {
 				MergeCandidate candidate;
 				while ((candidate = addressBook.getMergeCandidate()) != null) {
 					progressBar.setValue(progressBar.getValue()+1);
-					int decision = proposeMerge(candidate);
-					// TODO: handle decision
+					switch (candidate.propose()) {
+						case JOptionPane.CANCEL_OPTION:
+							System.exit(-1);
+							break;
+						case JOptionPane.YES_OPTION:
+							candidate.merge();
+							break;
+					}
 				}
 				if (askForCommit(addressBook)) addressBook.commit();
 			} catch (Exception e) {
