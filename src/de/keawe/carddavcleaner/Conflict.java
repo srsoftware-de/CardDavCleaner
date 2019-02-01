@@ -15,10 +15,7 @@ public class Conflict {
 
 	@Override
 	public String toString() {
-		
-		if (tags == null) {
-			return "Missing "+fieldName+" tag!";
-		}
+		if (tags == null) return "Missing "+fieldName+" tag!";
 		StringBuffer sb = new StringBuffer();
 		sb.append("No more than one "+fieldName+" entry allowed in contact, but found:");
 		for (Tag t:tags) sb.append("\n"+t.code());

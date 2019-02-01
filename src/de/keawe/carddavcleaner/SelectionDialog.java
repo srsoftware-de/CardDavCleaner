@@ -23,6 +23,27 @@ public class SelectionDialog extends JDialog {
 		return Translations.get(key, insert);
 	}
 	
+	private JButton defaultButton(final Tag t) {
+		return new JButton("<html>"+t.value().replace(";", "<br/>\n"));
+	}
+	
+	private JButton nameButton(final Tag t) {
+		String[] parts = t.value().split(";",5);
+		StringBuffer sb = new StringBuffer("<html>");
+		for (int i = 0; i<parts.length; i++) {
+			if (parts[i].isEmpty()) continue;
+			switch (i) {
+				case 0: sb.append(_("Family name: #",parts[i])); break;
+				case 1: sb.append(_("Given name: #",parts[i])); break;
+				case 2: sb.append(_("Additional names: #",parts[i])); break;
+				case 3: sb.append(_("Prefix: #",parts[i])); break;
+				case 4: sb.append(_("Postfi: #",parts[i])); break;
+			}
+			sb.append("<br/>");
+		}
+		return new JButton(sb.toString());
+	}
+	
 	public SelectionDialog(Conflict conflict) {
 		this.setModal(true);
 		this.setTitle(_("Conflicting properties in merged contact:"));
@@ -32,9 +53,8 @@ public class SelectionDialog extends JDialog {
 		
 		HorizontalPanel hp = new HorizontalPanel();
 		for (final Tag t:conflict.tags()) {
-			JButton btn = new JButton("<html>"+t.value().replace(";", "<br/>\n"));
+			JButton btn = t.name("N") ? nameButton(t) : defaultButton(t);
 			btn.addActionListener(new ActionListener() {
-				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					selectedTag = t;
