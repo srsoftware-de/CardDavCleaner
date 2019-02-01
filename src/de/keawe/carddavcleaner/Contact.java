@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import de.keawe.gui.Translations;
+
 public class Contact {
 
 	//original fields
@@ -17,6 +19,10 @@ public class Contact {
 	private TreeSet<String> emails = null;
 	private TreeSet<String> messengers = null;
 	private String filename = null;
+	
+	static String _(String key, Object insert) {
+		return Translations.get(key, insert);
+	}
 	
 	public VCard card() {
 		StringBuffer sb = new StringBuffer();
@@ -187,11 +193,57 @@ public class Contact {
 		return filename;
 	}
 
-	public Collection<String> detectConflicts() {
-		System.out.println("Contact.detectConflicts() not implemented");
-		return new Vector<String>();
+	/*------------+--------------------------------------------------\
+    | Cardinality | Meaning                                          |
+    +-------------+--------------------------------------------------+
+    |      1      | Exactly one instance per vCard MUST be present.  |
+    |      *1     | Exactly one instance per vCard MAY be present.   |
+    |      1*     | One or more instances per vCard MUST be present. |
+    |      *      | One or more instances per vCard MAY be present.  |
+    \-------------+-------------------------------------------------*/
+	
+	public Conflict detectConflicts() {
+		String[] fields = new String[] {"ANNIVERSARY","F","BDAY","GENDER","KIND","N","PRODID","REV","UID","VERSION"};
+		
+		for (String fieldName : fields) {
+			Conflict conflict = detectMultiple(fieldName);
+			if (conflict!= null) return conflict;
+		}
+		
+		fields = new String[] { "FN", "VERSION" };
+		for (String fieldName : fields) {
+			Conflict conflict = detectMissing(fieldName);
+			if (conflict!= null) return conflict;
+		}
+		return null;
 	}
 
+	private Conflict detectMissing(String fieldName) {
+		Vector<Tag> matchingTags = new Vector<Tag>();
+		for (Tag t : tags) {
+			if (t.name(fieldName)) matchingTags.add(t);
+		}
+		if (tags.isEmpty()) return new Conflict(fieldName);
+		return null;
+	}
 
+	private Conflict detectMultiple(String fieldName) {
+		Vector<Tag> matchingTags = new Vector<Tag>();
+		for (Tag t : tags) {
+			if (t.name(fieldName)) matchingTags.add(t);
+		}
+		if (matchingTags.size()>1) return new Conflict(fieldName).setTags(matchingTags);
+		return null;
+	}
 
+	public void dropConflictingUids(Conflict conflict) { // remove all but the first UID
+		Vector<Tag> conflictTags = conflict.tags();
+		conflictTags.remove(0);
+		removeTags(conflictTags);
+	}
+
+	public void removeTags(Vector<Tag> conflictingTags) {
+		tags.removeAll(conflictingTags);
+		altered = true;
+	}
 }

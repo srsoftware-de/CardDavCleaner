@@ -14,6 +14,7 @@ public class MergeCandidate {
 	private Contact contactB;
 	private Contact contactA;
 	private Vector<Tag> similarities;
+	private static Tag prodId = new Tag("PRODID:Keawe CardDavCleaner");
 
 	static String _(String text) {
 		return Translations.get(text);
@@ -73,7 +74,7 @@ public class MergeCandidate {
 				key = tagOfB.name().toUpperCase();
 				if (key.equals("BEGIN") || key.equals("END") || key.equals("PRODID")) {
 					tagsOfB.removeElementAt(index); // remove B-tag from B-list
-					continue; // ignore BEGIN:VCARD and END:VCARD
+					continue; // ignore BEGIN:VCARD, END:VCARD and PRODID
 				}
 				if (tagOfB.value().isEmpty()) {
 					tagsOfB.removeElementAt(index); // remove B-tag from B-list
@@ -82,7 +83,7 @@ public class MergeCandidate {
 				
 				Tag mergedTag = tagOfA.mergeWith(tagOfB);
 				
-				if (mergedTag != null) { // if tags coud be merged:
+				if (mergedTag != null) { // if tags could be merged:
 					mergedTags.add(mergedTag);
 					tagsOfB.removeElementAt(index); // remove B-tag from B-list, A-tag has already been removed
 					aMerged = true;
@@ -97,6 +98,7 @@ public class MergeCandidate {
 		newTags.addAll(mergedTags);
 		newTags.addAll(unmergedTagsOfA);
 		newTags.addAll(tagsOfB);
+		newTags.add(prodId);
 		contactA.updateTags(newTags);
 		contactB.markForRemoval();
 		return contactA;

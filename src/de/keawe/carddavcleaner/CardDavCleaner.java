@@ -85,8 +85,10 @@ public class CardDavCleaner extends JFrame {
 	
 	public CardDavCleaner() {
 		super(_("Keawe CardDAV cleaner"));
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		createComponents();
+		pack();
+		setLocationRelativeTo(null);
 	}
 	
 	/**
@@ -132,7 +134,7 @@ public class CardDavCleaner extends JFrame {
 		boolean testing = false;
 		boolean autostart = false;
 		CardDavCleaner cleaner = new CardDavCleaner();
-		cleaner.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		
 		for (String arg : args) {
 			testing |= arg.equals("--test");
 			autostart |= arg.equals("--start");
@@ -303,14 +305,34 @@ public class CardDavCleaner extends JFrame {
 							break;
 						case JOptionPane.YES_OPTION:
 							Contact mergedContact = candidate.merge();
-							Collection<String> conflicts = mergedContact.detectConflicts();
-							for (String conflict : conflicts) System.err.println(conflict);
+							handleConflicts(mergedContact);
 							break;
 					}
 				}
 				if (askForCommit(addressBook)) addressBook.commit();
 			} catch (Exception e) {
 				e.printStackTrace();
+			}
+		}
+	}
+	
+		private void handleConflicts(Contact mergedContact) {
+		Conflict conflict;
+		while ((conflict = mergedContact.detectConflicts()) != null) { 
+			if (conflict.param("UID")) {
+				mergedContact.dropConflictingUids(conflict);
+			} else {
+				System.out.println("\n"+conflict);
+				if (conflict.tags()==null) {
+					System.out.println("SHowing input dialog for missing tag not implemented, yet.");
+				} else {
+					SelectionDialog dialog = new SelectionDialog(conflict);
+					Tag tagToKeep = dialog.selectedTag();
+					if (tagToKeep == null) System.exit(-1);
+					Vector<Tag> conflictingTags = conflict.tags();
+					conflictingTags.remove(tagToKeep);
+					mergedContact.removeTags(conflictingTags);
+				}
 			}
 		}
 	}
