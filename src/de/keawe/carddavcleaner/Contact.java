@@ -246,4 +246,8 @@ public class Contact {
 		tags.removeAll(conflictingTags);
 		altered = true;
 	}
+
+	public boolean altered() {
+		return altered;
+	}
 }

@@ -1,4 +1,4 @@
-package de.keawe.carddavcleaner;
+package de.keawe.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,9 +7,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 
-import de.keawe.gui.HorizontalPanel;
-import de.keawe.gui.Translations;
-import de.keawe.gui.VerticalPanel;
+import de.keawe.carddavcleaner.Conflict;
+import de.keawe.carddavcleaner.Tag;
 
 public class SelectionDialog extends JDialog {
 	
@@ -37,7 +36,7 @@ public class SelectionDialog extends JDialog {
 				case 1: sb.append(_("Given name: #",parts[i])); break;
 				case 2: sb.append(_("Additional names: #",parts[i])); break;
 				case 3: sb.append(_("Prefix: #",parts[i])); break;
-				case 4: sb.append(_("Postfi: #",parts[i])); break;
+				case 4: sb.append(_("Postfix: #",parts[i])); break;
 			}
 			sb.append("<br/>");
 		}
@@ -48,7 +47,9 @@ public class SelectionDialog extends JDialog {
 		this.setModal(true);
 		this.setTitle(_("Conflicting properties in merged contact:"));
 		VerticalPanel vp = new VerticalPanel();
-		vp.add(new JLabel(_("No more than one # entry allowed in VCard.",conflict.param())));
+		String p = conflict.param();
+		if (p.equals("N")) p="Name";
+		vp.add(new JLabel(_("No more than one # entry allowed in VCard.",p)));
 		vp.add(new JLabel(_("Please select one:")));
 		
 		HorizontalPanel hp = new HorizontalPanel();

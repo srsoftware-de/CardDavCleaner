@@ -4,11 +4,13 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -17,6 +19,7 @@ import javax.swing.JProgressBar;
 
 import de.keawe.gui.HorizontalPanel;
 import de.keawe.gui.InputField;
+import de.keawe.gui.SelectionDialog;
 import de.keawe.gui.Translations;
 import de.keawe.gui.VerticalPanel;
 
@@ -62,9 +65,16 @@ public class CardDavCleaner extends JFrame {
 	private JCheckBox fixLineBreaksOption;
 	
 	private boolean askForCommit(AddressBook addressBook) {
-		// TODO Auto-generated method stub
-		System.out.println("CardDavCleaner.askForCommit not implemented");
-		return false;
+		Vector<Contact> updatedContacts = addressBook.getUpdatedContacts();
+		Vector<Contact> removableContacts = addressBook.getRemovableContacts();
+		
+		VerticalPanel vp = new VerticalPanel();
+		vp.add(new JLabel(_("Summary of your edits:")));
+		vp.add(new JLabel(_("# contacts have been #",new String[]{""+updatedContacts.size(),_("updated")})));
+		vp.add(new JLabel(_("# contacts have been #",new String[]{""+removableContacts.size(),_("marked for removal")})));
+		vp.add(new JLabel(_("Shall these changes be written to your address book?")));
+		vp.scale();
+		return JOptionPane.showConfirmDialog(null, vp, _("Confirm updates"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
 	}
 	
 	private HorizontalPanel backupPanel() {
@@ -107,7 +117,7 @@ public class CardDavCleaner extends JFrame {
 		setVisible(true);
 	}
 	
-	private void enterPressed() {
+	public void enterPressed() {
 		start();
 	}
 	

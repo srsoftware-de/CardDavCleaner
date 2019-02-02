@@ -78,8 +78,10 @@ public class AddressBook {
 	}
 	
 	public void commit() {
-		// TODO Auto-generated method stub
 		System.out.println("AddressBook.commit not implemented");
+		for (Contact contact : contacts) {
+			if (contact.altered()) System.out.println(contact);
+		}
 	}
 	
 	private Vector<MergeCandidate> createCandidateList() {
@@ -151,7 +153,7 @@ public class AddressBook {
 	}
 
 	public void loadContacts(File backupPath) throws NoSuchAlgorithmException, KeyStoreException, IOException {
-		progressBar.setString(CardDavCleaner._("reading list of contacts..."));
+		progressBar.setString(CardDavCleaner._("Reading list of contacts..."));
 		TreeSet<String> contactList = getContactList();
 		
 		contacts = new Vector<Contact>();
@@ -286,8 +288,20 @@ public class AddressBook {
 		backup.close();
 	}
 
+	public Vector<Contact> getUpdatedContacts(){
+		Vector<Contact> list = new Vector<Contact>();
+		for(Contact c:contacts) {
+			if (c.altered()) list.add(c);
+		}
+		return list;
+	}
 
-
-
+	public Vector<Contact> getRemovableContacts() {
+		Vector<Contact> list = new Vector<Contact>();
+		for(Contact c:contacts) {
+			if (c.markedForRemoval()) list.add(c);
+		}
+		return list;
+	}
 
 }

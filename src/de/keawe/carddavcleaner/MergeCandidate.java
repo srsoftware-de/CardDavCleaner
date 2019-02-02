@@ -112,7 +112,7 @@ public class MergeCandidate {
 			Tag t = similarities.get(i);
 			text = text + t.name()+": <i>"+t.shortVal()+"</i>";
 			if (i+1 < num) {
-				text += (i+2 == num) ? " and<br/>\n" : ",<br/>\n";
+				text += (i+2 == num) ? " "+_("and")+"<br/>\n" : ",<br/>\n";
 			} else text = _("# "+(num>1?"are":"is")+" used by the following contacts:",text);
 		}
 		
@@ -123,11 +123,11 @@ public class MergeCandidate {
 		hp.add(new JLabel("<html><br>" + contactB().html()));
 		hp.scale();
 		vp.add(hp);
-		vp.add(new JLabel(_("<html><br>Shall those contacts be <i>merged</i>?")));
+		vp.add(new JLabel("<html><br>"+_("Shall those contacts be <i>merged</i>?")));
 /*		if (contact.birthday() != null && contact2.birthday() != null && !contact.birthday().equals(contact2.birthday())) {
 			vp.add(new JLabel(_("<html><font color=\"red\">Warning! Those contacts contain unequal birth dates!")));
 		}*/
 		vp.scale();
-		return JOptionPane.showConfirmDialog(null, vp, _("Please decide!"), JOptionPane.YES_NO_CANCEL_OPTION);
+		return JOptionPane.showConfirmDialog(null, vp, _("Merge contacts?"), JOptionPane.YES_NO_CANCEL_OPTION);
 	}
 }
