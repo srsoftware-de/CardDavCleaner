@@ -1,5 +1,6 @@
 package de.keawe.carddavcleaner;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -249,5 +250,13 @@ public class Contact {
 
 	public boolean altered() {
 		return altered;
+	}
+
+	public void generateName() {
+		try {
+			filename = (new MD5Hash(this)) + ".vcf";
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 	}
 }

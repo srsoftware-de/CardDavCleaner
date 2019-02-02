@@ -4,13 +4,11 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -67,9 +65,11 @@ public class CardDavCleaner extends JFrame {
 	private boolean askForCommit(AddressBook addressBook) {
 		Vector<Contact> updatedContacts = addressBook.getUpdatedContacts();
 		Vector<Contact> removableContacts = addressBook.getRemovableContacts();
+		if (updatedContacts.size() + removableContacts.size()<1) return false;
 		
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(new JLabel(_("Summary of your edits:")));
+		
 		vp.add(new JLabel(_("# contacts have been #",new String[]{""+updatedContacts.size(),_("updated")})));
 		vp.add(new JLabel(_("# contacts have been #",new String[]{""+removableContacts.size(),_("marked for removal")})));
 		vp.add(new JLabel(_("Shall these changes be written to your address book?")));

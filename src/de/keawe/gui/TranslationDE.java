@@ -8,6 +8,7 @@ public class TranslationDE extends Translation{
 		trans.put("Additional names: #", "weitere Namen: #");
 		trans.put("Address book may be located on a WebDAV-Server or in a local directory.", "Adressbuch kann auf einem WebDAV-Server oder in einem lokalen Ordner liegen.");
 		trans.put("Address book settings", "Adressbuch-Einstellungen");
+		trans.put("and", "und");
 		trans.put("# are used by the following contacts:", "# werden von den folgenden Kontakten verwendet:");
 		trans.put("Backup settings", "Sicherungseinstellungen");
 		trans.put("Backup wil be written to #", "Backup wird nach # geschrieben.");

@@ -13,6 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.rmi.UnexpectedException;
 import java.security.InvalidParameterException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -77,13 +78,133 @@ public class AddressBook {
 		problem = null;
 	}
 	
-	public void commit() {
-		System.out.println("AddressBook.commit not implemented");
-		for (Contact contact : contacts) {
-			if (contact.altered()) System.out.println(contact);
+	public void commit() throws IOException {
+		writeMergedContacts();
+		deleteMarkedContacts();
+	}
+	
+	/**
+	 * actually removes a contact from the server
+	 * 
+	 * @param u the url of the contact to be erased
+	 * @throws IOException
+	 */
+	private void deleteDAVContact(Contact c) throws IOException {
+		URL u = new URL(source+c.filename());
+		HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+		conn.setRequestMethod("DELETE");
+		conn.setDoOutput(true);
+		conn.connect();
+		int response = conn.getResponseCode();
+		conn.disconnect();
+		if (response != 204) throw new UnexpectedException(_("Server responded with CODE #", response));
+	}
+	
+	private void deleteMarkedContacts() throws IOException {
+		Vector<Contact> deleteList = getRemovableContacts();
+		int count = deleteList.size();
+		int index=0;
+		progressBar.setMaximum(count);
+		boolean local = source.startsWith("file://");
+		for (Contact c:getRemovableContacts()) {
+			index++;
+			progressBar.setValue(index);
+			progressBar.setString(_("Removing #", c.filename()) + " - " + index + "/" + count);
+
+			if (local) {
+				deleteLocalContact(c);
+			} else {
+				deleteDAVContact(c);
+			}
 		}
 	}
 	
+	private void deleteLocalContact(Contact c) {
+		File f = new File(source.substring(5)+c.filename());
+		f.delete();
+	}
+
+	private void writeDAVContact(Contact c) throws IOException {
+
+		byte[] data = c.card().buffer().toString().getBytes();
+		URL putUrl = new URL(source + c.filename());
+		HttpURLConnection conn = (HttpURLConnection) putUrl.openConnection();
+		conn.setRequestMethod("PUT");
+		conn.setDoOutput(true);
+		conn.setRequestProperty("Content-Type", "text/vcard");
+		conn.connect();
+		OutputStream out = conn.getOutputStream();
+		ByteArrayInputStream in = new ByteArrayInputStream(data);
+		int read = -1;
+		while ((read = in.read()) != -1) out.write(read);
+		out.close();
+		int response = conn.getResponseCode();
+		conn.disconnect();
+		if (response < 200 || response > 299) {
+			System.out.println(_("...not successful (# / #). Trying to remove first...", new Object[] { response, conn.getResponseMessage() }));
+
+			// the next two lines have been added to circumvent the problem, that on some caldav servers, entries can not simply be overwritten
+			deleteDAVContact(c);
+			c.generateName();
+
+			putUrl = new URL(source + c.filename());
+			conn = (HttpURLConnection) putUrl.openConnection();
+			conn.setRequestMethod("PUT");
+			conn.setDoOutput(true);
+			conn.setRequestProperty("Content-Type", "text/vcard");
+			conn.connect();
+			out = conn.getOutputStream();
+			in = new ByteArrayInputStream(data);
+			read = -1;
+
+			while ((read = in.read()) != -1) out.write(read);
+			out.close();
+			response = conn.getResponseCode();
+			conn.disconnect();
+			if (response < 200 || response > 299) {
+				File f = new File(c.filename());
+				FileWriter file = new FileWriter(f);
+				file.write(c.card().toString());
+				file.close();
+				JOptionPane.showMessageDialog(null, _("<html>Sorry! Unfortunateley, i was not able to write a file to the WebDAV server.<br>But don't worry, i created a <b>Backup</b> of the file at #", f.getAbsolutePath()));
+				throw new UnexpectedException(_("Server responded with CODE ", response));
+			}
+		}
+	
+	}
+	
+	/**
+	 * writes back the modified contacts to the server
+	 * 
+	 * @param host the hostname and path to write to
+	 * @param writeList the set of contacts to upload
+	 * @throws IOException
+	 */
+	private void writeMergedContacts() throws IOException {
+		Vector<Contact> writeList = getUpdatedContacts();
+		int count = writeList.size();
+		int index = 0;
+		progressBar.setMaximum(count);
+		boolean local = source.startsWith("file://");
+		for (Contact c : writeList) {
+			index++;
+			progressBar.setValue(index);
+			progressBar.setString(_("Uploading #", c.filename()) + " - " + index + "/" + count);
+
+			if (local) {
+				writeLocalContact(c);
+			} else writeDAVContact(c);
+		}
+	}
+	
+	private void writeLocalContact(Contact c) throws IOException {
+		File f = new File(source.substring(5)+c.filename());
+		System.out.println(f);
+		FileWriter file = new FileWriter(f);
+		file.write(c.card().toString());
+		file.close();
+	}
+
 	private Vector<MergeCandidate> createCandidateList() {
 		if (progressBar != null) {
 			progressBar.setValue(0);
