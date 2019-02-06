@@ -63,15 +63,42 @@ public class CardDavCleaner extends JFrame {
 	private JCheckBox fixLineBreaksOption;
 	
 	private boolean askForCommit(AddressBook addressBook) {
-		Vector<Contact> updatedContacts = addressBook.getUpdatedContacts();
-		Vector<Contact> removableContacts = addressBook.getRemovableContacts();
-		if (updatedContacts.size() + removableContacts.size()<1) return false;
+		final Vector<Contact> updatedContacts = addressBook.getUpdatedContacts();
+		final Vector<Contact> removableContacts = addressBook.getRemovableContacts();
+		if (updatedContacts.size() + removableContacts.size()<1) {
+			JOptionPane.showMessageDialog(null, _("Congratulations. You address book seems to be clean, nothing to do for me."), _("Operation done."), JOptionPane.OK_OPTION);
+			return false;
+		}
 		
 		VerticalPanel vp = new VerticalPanel();
 		vp.add(new JLabel(_("Summary of your edits:")));
 		
-		vp.add(new JLabel(_("# contacts have been #",new String[]{""+updatedContacts.size(),_("updated")})));
-		vp.add(new JLabel(_("# contacts have been #",new String[]{""+removableContacts.size(),_("marked for removal")})));
+		HorizontalPanel hp1 = new HorizontalPanel();
+		hp1.add(new JLabel(_("# contacts have been #",new String[]{""+updatedContacts.size(),_("updated")})));
+		JButton showUpdates = new JButton(_("Show"));
+		showUpdates.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ContactListPreview.show(updatedContacts,_("Edited contacts"));
+			}
+		});
+		hp1.add(showUpdates);
+		hp1.scale();
+		vp.add(hp1);
+		HorizontalPanel hp2 = new HorizontalPanel();
+		hp2.add(new JLabel(_("# contacts have been #",new String[]{""+removableContacts.size(),_("marked for removal")})));
+		JButton showRemovals = new JButton(_("Show"));
+		showRemovals.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ContactListPreview.show(removableContacts,_("Obsolete contacts"));
+			}
+		});
+		hp2.add(showRemovals);
+		hp2.scale();
+		vp.add(hp2);
 		vp.add(new JLabel(_("Shall these changes be written to your address book?")));
 		vp.scale();
 		return JOptionPane.showConfirmDialog(null, vp, _("Confirm updates"), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
@@ -289,7 +316,11 @@ public class CardDavCleaner extends JFrame {
 							break;
 					}
 				}
-				if (askForCommit(addressBook)) addressBook.commit();
+				if (askForCommit(addressBook)) {
+					addressBook.commit();
+					JOptionPane.showMessageDialog(null, _("Cleaning of you address book has been performed."), _("Operation done."), JOptionPane.OK_OPTION);
+				}
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -9,7 +9,6 @@ public class Tag {
 	private String name = null;
 	private TreeMap<String,TreeSet<String>> params = new TreeMap<String, TreeSet<String>>(); // param-type : param-value
 	private String value = null;
-	private String origLine = null;
 	
 	private void addParam(String substring) {
 		String[] parts = substring.split("=", 2);
@@ -30,7 +29,6 @@ public class Tag {
 	}
 
 	public Tag(String line) {
-		origLine=line;
 		int semicolonPos = line.indexOf(";");
 		int endOfName = (semicolonPos < 0) ? line.indexOf(":") : Math.min(semicolonPos, line.indexOf(":"));
 		name = line.substring(0, endOfName);
@@ -321,7 +319,7 @@ public class Tag {
 	}
 
 	public String shortVal() {
-		int max=50;
+		int max=75;
 		if (value.length()>max) return value.substring(0, max-3)+"...";
 		return value;
 	}

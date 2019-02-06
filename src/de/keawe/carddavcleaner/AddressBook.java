@@ -92,7 +92,7 @@ public class AddressBook {
 	private void deleteDAVContact(Contact c) throws IOException {
 		URL u = new URL(source+c.filename());
 		HttpURLConnection conn = (HttpURLConnection) u.openConnection();
-		conn.setRequestMethod("DELETE");
+		conn.setRequestMethod("DELETE"); 
 		conn.setDoOutput(true);
 		conn.connect();
 		int response = conn.getResponseCode();
@@ -113,9 +113,7 @@ public class AddressBook {
 
 			if (local) {
 				deleteLocalContact(c);
-			} else {
-				deleteDAVContact(c);
-			}
+			} else deleteDAVContact(c);
 		}
 	}
 	
@@ -199,7 +197,6 @@ public class AddressBook {
 	
 	private void writeLocalContact(Contact c) throws IOException {
 		File f = new File(source.substring(5)+c.filename());
-		System.out.println(f);
 		FileWriter file = new FileWriter(f);
 		file.write(c.card().toString());
 		file.close();

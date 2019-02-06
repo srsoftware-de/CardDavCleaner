@@ -20,6 +20,8 @@ public class Contact {
 	private TreeSet<String> emails = null;
 	private TreeSet<String> messengers = null;
 	private String filename = null;
+	private VCard orig = null;
+	private Contact mergedContact = null; // if this contact is merged into an other contact, this stores the other contact
 	
 	static String _(String key, Object insert) {
 		return Translations.get(key, insert);
@@ -45,6 +47,7 @@ public class Contact {
 	}
 	
 	public Contact(VCard card, boolean dropEmptyFields) {
+		this.orig = card;
 		filename = card.filename();
 		StringBuffer codeBuffer = fixLineBreaks(card.buffer());
 		for (String line:codeBuffer.toString().replace("\r\n ", "").split("\r\n")) {
@@ -182,7 +185,8 @@ public class Contact {
 		altered = true;
 	}
 
-	public void markForRemoval() {
+	public void markForRemoval(Contact merged) {
+		mergedContact  = merged;
 		markedForRemoval=true;
 	}
 
@@ -258,5 +262,20 @@ public class Contact {
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public String tags(String name) {
+		for (Tag t:tags) {
+			if (t.name(name)) return t.value();
+		}
+		return null;
+	}
+
+	public String orig() {
+		return orig.toString();
+	}
+
+	public Contact merged() {
+		return mergedContact;
 	}
 }

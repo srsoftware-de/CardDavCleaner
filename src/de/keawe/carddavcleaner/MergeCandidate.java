@@ -100,7 +100,7 @@ public class MergeCandidate {
 		newTags.addAll(tagsOfB);
 		newTags.add(prodId);
 		contactA.updateTags(newTags);
-		contactB.markForRemoval();
+		contactB.markForRemoval(contactA);
 		return contactA;
 	}
 

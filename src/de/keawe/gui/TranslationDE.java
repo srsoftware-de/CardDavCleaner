@@ -13,10 +13,13 @@ public class TranslationDE extends Translation{
 		trans.put("Backup settings", "Sicherungseinstellungen");
 		trans.put("Backup wil be written to #", "Backup wird nach # geschrieben.");
 		trans.put("Cancel", "Abbrechen");
+		trans.put("Cleaning of you address book has been performed.", "Ihr Adressbuch wurde bereinigt.");
 		trans.put("Confirm updates", "Änderungen bestätigen");
 		trans.put("Conflicting properties in merged contact:", "Im zusammengeführten Kontakt gibt es Konfilte:");
+		trans.put("Congratulations. You address book seems to be clean, nothing to do for me.", "Glückwunsch. Ihr Adressbuch scheint sauber zu sein, es ist nichts zu tun.");
 		trans.put("Connecting to address book...", "Verbinde mit Adressbuch...");
 		trans.put("# contacts have been #", "# Kontakte wurden #");
+		trans.put("Edited contacts", "Bearbeitete Kontakte");
 		trans.put("Family name: #", "Familienname: #");
 		trans.put("Fix field syntax, if broken", "Syntax von beschädigten Feldern korrigieren");
 		trans.put("Fix line breaks, if not standard compliant", "Zeilenumbrüche reparieren, wenn diese nicht normgerecht sind");
@@ -32,7 +35,10 @@ public class TranslationDE extends Translation{
 		trans.put("No Backup defined.", "Keine Sicherung geplant.");
 		trans.put("No more than one # entry allowed in VCard.", "Es ist nicht mehr als ein #-Eintrag in der VCard erlaubt.");
 		trans.put("Not initialized", "Nicht initialisiert");
+		trans.put("Obsolete contacts", "Hinfällige Kontakte");
+		trans.put("Operation done.","Aktion durchgeführt.");
 		trans.put("Optional settings", "Optionale Einstellungen");
+		trans.put("Original VCard:", "Originale VCard:");
 		trans.put("Please select one:", "Bitte wählen Sie einen:");
 		trans.put("Prefix: #", "Präfix: #");
 		trans.put("Processing merge candidates...", "Verarbeite Kandidaten für Zusammenführung...");
@@ -46,11 +52,14 @@ public class TranslationDE extends Translation{
 		trans.put("Select directory", "Ordner wählen");
 		trans.put("Shall those contacts be <i>merged</i>?","Sollen diese Kontakte <i>zusammengeführt</i> werden?");
 		trans.put("Shall these changes be written to your address book?", "Sollen diese Änderungen in Ihr Adressbuch geschrieben werden?");
+		trans.put("Show","Anzeigen");
 		trans.put("<html>Some programs cannot handle all fields defined by the vCard standard.<br>To apply workarounds, select programs you use from the follwing list:", "<html>Manche Programme unterstützen nicht alle Felder des vCard-Standards.<br>Zum Aktivieren von Anpassungen, markieren Sie von Ihnen genutzte Programme in der Liste:");
 		trans.put("Summary of your edits:", "Zusammenfassung Ihrer Änderungen:");
 		trans.put("start", "starten");
 		trans.put("There is a problem with your settings: #", "Es gibt ein Problem mit Ihren Einstellungen: #");
+		trans.put("This card has been merged into other contact:", "Diese VCard wurde in einen anderen Kontakt integriert:");
 		trans.put("updated", "aktualisiert");
+		trans.put("Updated VCard:", "Aktualisierte VCard:");
 		return trans;
 	}
 }

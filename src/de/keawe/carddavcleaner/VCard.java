@@ -54,7 +54,4 @@ public class VCard {
 		buf = sb;
 		this.filename = filename;
 	}
-
-
-
 }
