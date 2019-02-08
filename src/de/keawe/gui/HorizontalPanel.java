@@ -1,3 +1,4 @@
+package de.keawe.gui;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -40,7 +41,15 @@ public class HorizontalPanel extends JPanel {
 		init(); // Java-internes automatisches Layout abschalten
 		setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),string)); // Rahmen um Feld Erzeugen
 	}
-
+	
+	public void disable(){
+		for (Component c:getComponents()) c.setEnabled(false);
+	}
+	
+	public void enable() {
+		for (Component c:getComponents()) c.setEnabled(true);
+	}
+	
 	/**
 	 * schaltet das Java-eigene automatische Layout ab
 	 */
@@ -48,9 +57,7 @@ public class HorizontalPanel extends JPanel {
 		this.setLayout(null);
 		width=5;
 		offset=5;
-		if (caption){
-			offset+=15;
-		}
+		if (caption) offset+=15;
 	}
 	
 	/**
@@ -78,9 +85,7 @@ public class HorizontalPanel extends JPanel {
 		super.removeAll();
 		init();
 		for (Component c:oldComps){
-			if (c==givenComponent) {
-				add(newComponent);
-			}
+			if (c==givenComponent) add(newComponent);
 			add((JComponent)c);
 		}
 		scale();
@@ -94,9 +99,7 @@ public class HorizontalPanel extends JPanel {
 		for (Component c:oldComps){
 			if (c==old) {
 				add(replacement);
-			} else {
-				add((JComponent)c);
-			}
+			} else add((JComponent)c);
 		}
 		scale();
 		this.repaint();

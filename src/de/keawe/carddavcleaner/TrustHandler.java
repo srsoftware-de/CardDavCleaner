@@ -1,3 +1,5 @@
+package de.keawe.carddavcleaner;
+
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
@@ -10,6 +12,8 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+
+import de.keawe.gui.Translations;
 
 public class TrustHandler {
 

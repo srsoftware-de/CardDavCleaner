@@ -1,3 +1,4 @@
+package de.keawe.carddavcleaner;
 
 import java.util.Comparator;
 

@@ -1,3 +1,4 @@
+package de.keawe.gui;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -30,14 +31,20 @@ public class VerticalPanel extends JPanel {
 		}
 		init();
 	}
+	
+	public void disable(){
+		for (Component c:getComponents()) c.setEnabled(false);
+	}
+	
+	public void enable() {
+		for (Component c:getComponents()) c.setEnabled(true);
+	}
 
 	private void init() {
 		this.setLayout(null);
 		width=0;
 		height=offset;
-		if (hasTitle){
-			height+=15;
-		}
+		if (hasTitle) height+=15;
 	}
 	
 	public void add(JComponent c){
@@ -62,9 +69,7 @@ public class VerticalPanel extends JPanel {
 		super.removeAll();
 		init();
 		for (Component c:oldComps){
-			if (c==givenComponent) {
-				add(newComponent);
-			}
+			if (c==givenComponent) add(newComponent);
 			add((JComponent)c);
 		}
 		scale();
@@ -78,9 +83,7 @@ public class VerticalPanel extends JPanel {
 		for (Component c:oldComps){
 			if (c==old) {
 				add(replacement);
-			} else {
-				add((JComponent)c);
-			}
+			} else add((JComponent)c);
 		}
 		scale();
 		this.repaint();
@@ -88,9 +91,7 @@ public class VerticalPanel extends JPanel {
 	
 	@Override
 	public void setBackground(Color bg) {
-	  super.setBackground(bg);
-	  for (Component c:super.getComponents()){
-	  	c.setBackground(bg);
-	  }
+		super.setBackground(bg);
+		for (Component c:super.getComponents()) c.setBackground(bg);
 	}
 }
