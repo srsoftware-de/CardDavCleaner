@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 
 import de.keawe.gui.Translations;
 import de.keawe.gui.VerticalPanel;
-import sun.security.validator.ValidatorException;
 
 /**
  * This Trust Manager is checks certificates using an external trust manager
@@ -35,7 +34,7 @@ public class SelfTrustManager implements X509TrustManager {
 	public void checkClientTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
 		try {
 			externalTrustManager.checkClientTrusted(certificates, authType);
-		} catch (ValidatorException ve) {
+		} catch (CertificateException ve) {
 			if (certificates == null || certificates.length == 0) throw new IllegalArgumentException(_("Empty certificate chain supplied!"));
 			if (authType == null || authType.isEmpty()) throw new IllegalArgumentException(_("No authType given!"));
 			for (X509Certificate certificate : certificates) {
@@ -54,7 +53,7 @@ public class SelfTrustManager implements X509TrustManager {
 	public void checkServerTrusted(X509Certificate[] certificates, String authType) throws CertificateException {
 		try {
 			externalTrustManager.checkServerTrusted(certificates, authType);
-		} catch (ValidatorException ve) {
+		} catch (CertificateException ve) {
 			if (certificates == null || certificates.length == 0) throw new IllegalArgumentException(_("Empty certificate chain supplied!"));
 			if (authType == null || authType.isEmpty()) throw new IllegalArgumentException(_("No authType given!"));
 			for (X509Certificate certificate : certificates) {
